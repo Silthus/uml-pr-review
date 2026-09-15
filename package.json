@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "typescript": "^5"
+    "tree-sitter": "^0.25.1",
+    "tree-sitter-typescript": "^0.23.2",
+    "typescript": "6.0.3"
   }
 }

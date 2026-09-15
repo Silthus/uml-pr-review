@@ -1,0 +1,1357 @@
+{
+  "version": 0,
+  "pr": {
+    "url": "https://github.com/Omni-GM/lonir/pull/4819",
+    "number": 4819,
+    "headSha": "8f5e6fe75a51431d2d1c2fcfaebb05d3aa960654",
+    "title": "fix(chat): end a turn that produced nothing instead of crashing the action"
+  },
+  "files": [
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "path": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "apps/web/src/features/chat/testing.ts",
+      "path": "apps/web/src/features/chat/testing.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats.sendAction.providerOptions.test.ts",
+      "path": "packages/backend/convex/chats.sendAction.providerOptions.test.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "path": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts",
+      "path": "packages/backend/convex/chats/agent.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/agent/buildProviderOptions.ts",
+      "path": "packages/backend/convex/chats/agent/buildProviderOptions.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/assistantBubbleKey.ts",
+      "path": "packages/backend/convex/chats/lib/assistantBubbleKey.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/chatContextHandler.ts",
+      "path": "packages/backend/convex/chats/lib/chatContextHandler.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "path": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "path": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "path": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/streamError.ts",
+      "path": "packages/backend/convex/chats/lib/streamError.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "path": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts",
+      "path": "packages/backend/convex/chats/sendAction.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt.ts",
+      "path": "packages/backend/convex/chats/systemPrompt.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts",
+      "path": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/tasks/model.ts",
+      "path": "packages/backend/convex/chats/tasks/model.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts",
+      "path": "packages/backend/convex/chats/testing.ts",
+      "touched": true,
+      "status": "modified"
+    },
+    {
+      "id": "packages/backend/convex/lib/models/index.ts",
+      "path": "packages/backend/convex/lib/models/index.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/prepSessions/chatPrep.ts",
+      "path": "packages/backend/convex/prepSessions/chatPrep.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "path": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "touched": true,
+      "status": "added"
+    },
+    {
+      "id": "packages/backend/convex/skills/buildCatalogSection.ts",
+      "path": "packages/backend/convex/skills/buildCatalogSection.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/skills/perTurnCatalog.ts",
+      "path": "packages/backend/convex/skills/perTurnCatalog.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "path": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/backend/convex/testing.ts",
+      "path": "packages/backend/convex/testing.ts",
+      "touched": false,
+      "status": "untouched"
+    },
+    {
+      "id": "packages/errors/src/index.ts",
+      "path": "packages/errors/src/index.ts",
+      "touched": false,
+      "status": "untouched"
+    }
+  ],
+  "symbols": [
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts#latestAssistantTurnIndex",
+      "fileId": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "name": "latestAssistantTurnIndex",
+      "kind": "function",
+      "line": {
+        "start": 73,
+        "end": 86
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts#hasTerminalSignal",
+      "fileId": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "name": "hasTerminalSignal",
+      "kind": "function",
+      "line": {
+        "start": 88,
+        "end": 90
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts#resolveChatTurn",
+      "fileId": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "name": "resolveChatTurn",
+      "kind": "function",
+      "line": {
+        "start": 92,
+        "end": 127
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "apps/web/src/features/chat/testing.ts#createChatTestHarness",
+      "fileId": "apps/web/src/features/chat/testing.ts",
+      "name": "createChatTestHarness",
+      "kind": "function",
+      "line": {
+        "start": 44,
+        "end": 103
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats.sendAction.providerOptions.test.ts#installCapturingAgent",
+      "fileId": "packages/backend/convex/chats.sendAction.providerOptions.test.ts",
+      "name": "installCapturingAgent",
+      "kind": "function",
+      "line": {
+        "start": 80,
+        "end": 94
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#makeConvexTest",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "makeConvexTest",
+      "kind": "function",
+      "line": {
+        "start": 55,
+        "end": 60
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#readChatMessages",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "readChatMessages",
+      "kind": "function",
+      "line": {
+        "start": 62,
+        "end": 77
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#createOpenAiContractModel",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "createOpenAiContractModel",
+      "kind": "function",
+      "line": {
+        "start": 79,
+        "end": 116
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#createChatAgent",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "createChatAgent",
+      "kind": "function",
+      "line": {
+        "start": 167,
+        "end": 211
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#assembleTurnTools",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "assembleTurnTools",
+      "kind": "function",
+      "line": {
+        "start": 379,
+        "end": 450
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "getChatAgentForWrites",
+      "kind": "function",
+      "line": {
+        "start": 466,
+        "end": 475
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#setChatAgentForTesting",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "setChatAgentForTesting",
+      "kind": "function",
+      "line": {
+        "start": 495,
+        "end": 513
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent/buildProviderOptions.ts#buildProviderOptions",
+      "fileId": "packages/backend/convex/chats/agent/buildProviderOptions.ts",
+      "name": "buildProviderOptions",
+      "kind": "function",
+      "line": {
+        "start": 81,
+        "end": 136
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/assistantBubbleKey.ts#assistantBubbleKey",
+      "fileId": "packages/backend/convex/chats/lib/assistantBubbleKey.ts",
+      "name": "assistantBubbleKey",
+      "kind": "function",
+      "line": {
+        "start": 29,
+        "end": 61
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/chatContextHandler.ts#buildChatContextHandler",
+      "fileId": "packages/backend/convex/chats/lib/chatContextHandler.ts",
+      "name": "buildChatContextHandler",
+      "kind": "function",
+      "line": {
+        "start": 152,
+        "end": 160
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "assistantText",
+      "kind": "arrow",
+      "line": {
+        "start": 8,
+        "end": 18
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantStringContent",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "assistantStringContent",
+      "kind": "arrow",
+      "line": {
+        "start": 20,
+        "end": 22
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "toolCall",
+      "kind": "arrow",
+      "line": {
+        "start": 24,
+        "end": 30
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#askUserCall",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "askUserCall",
+      "kind": "arrow",
+      "line": {
+        "start": 32,
+        "end": 45
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "toolResult",
+      "kind": "arrow",
+      "line": {
+        "start": 47,
+        "end": 53
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "userPrompt",
+      "kind": "arrow",
+      "line": {
+        "start": 55,
+        "end": 57
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#withId",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "withId",
+      "kind": "arrow",
+      "line": {
+        "start": 380,
+        "end": 380
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#turnSavedAnyResponse",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "turnSavedAnyResponse",
+      "kind": "function",
+      "line": {
+        "start": 73,
+        "end": 78
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#deriveFailureCategory",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "deriveFailureCategory",
+      "kind": "function",
+      "line": {
+        "start": 86,
+        "end": 117
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#classifyError",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "classifyError",
+      "kind": "function",
+      "line": {
+        "start": 138,
+        "end": 145
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#categoryFromOutput",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "categoryFromOutput",
+      "kind": "function",
+      "line": {
+        "start": 147,
+        "end": 164
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "findCutOffMessage",
+      "kind": "function",
+      "line": {
+        "start": 196,
+        "end": 242
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildFallbackText",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "buildFallbackText",
+      "kind": "function",
+      "line": {
+        "start": 244,
+        "end": 250
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "buildNoResponseFallback",
+      "kind": "function",
+      "line": {
+        "start": 252,
+        "end": 304
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantText",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "assistantText",
+      "kind": "function",
+      "line": {
+        "start": 40,
+        "end": 54
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantHasToolCallPart",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "assistantHasToolCallPart",
+      "kind": "function",
+      "line": {
+        "start": 56,
+        "end": 72
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "turnProducedFinalText",
+      "kind": "function",
+      "line": {
+        "start": 74,
+        "end": 85
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#isFinalTextRow",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "isFinalTextRow",
+      "kind": "function",
+      "line": {
+        "start": 87,
+        "end": 98
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnHasPendingQuestion",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "turnHasPendingQuestion",
+      "kind": "function",
+      "line": {
+        "start": 100,
+        "end": 119
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#unwrapOutput",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "unwrapOutput",
+      "kind": "function",
+      "line": {
+        "start": 121,
+        "end": 128
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/streamError.ts#serializeStreamError",
+      "fileId": "packages/backend/convex/chats/lib/streamError.ts",
+      "name": "serializeStreamError",
+      "kind": "function",
+      "line": {
+        "start": 60,
+        "end": 88
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#isBudgetExhausted",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "isBudgetExhausted",
+      "kind": "function",
+      "line": {
+        "start": 38,
+        "end": 59
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#shouldFireSummaryTurn",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "shouldFireSummaryTurn",
+      "kind": "function",
+      "line": {
+        "start": 61,
+        "end": 84
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#countToolSteps",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "countToolSteps",
+      "kind": "function",
+      "line": {
+        "start": 86,
+        "end": 109
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#buildTruncationSummaryInstruction",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "buildTruncationSummaryInstruction",
+      "kind": "function",
+      "line": {
+        "start": 111,
+        "end": 140
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "buildStreamArgs",
+      "kind": "function",
+      "line": {
+        "start": 69,
+        "end": 316
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs.composeSystem",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "composeSystem",
+      "kind": "arrow",
+      "parentId": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs",
+      "line": {
+        "start": 227,
+        "end": 233
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#buildUserContent",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "buildUserContent",
+      "kind": "function",
+      "line": {
+        "start": 320,
+        "end": 341
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#renderLibraryItemContextBlocks",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "renderLibraryItemContextBlocks",
+      "kind": "function",
+      "line": {
+        "start": 343,
+        "end": 366
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#renderImageAssetContext",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "renderImageAssetContext",
+      "kind": "function",
+      "line": {
+        "start": 368,
+        "end": 371
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#renderInvokedSkillSection",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "renderInvokedSkillSection",
+      "kind": "function",
+      "line": {
+        "start": 373,
+        "end": 407
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#settleTurnFinishReason",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "settleTurnFinishReason",
+      "kind": "function",
+      "line": {
+        "start": 409,
+        "end": 432
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#turnHasSavedFailure",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "turnHasSavedFailure",
+      "kind": "function",
+      "line": {
+        "start": 446,
+        "end": 468
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "markMessageCutOff",
+      "kind": "function",
+      "line": {
+        "start": 470,
+        "end": 508
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "streamChatResponse",
+      "kind": "const",
+      "line": {
+        "start": 510,
+        "end": 1429
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#abortChatStream",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "abortChatStream",
+      "kind": "const",
+      "line": {
+        "start": 1431,
+        "end": 1454
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt.ts#buildSystemPrompt",
+      "fileId": "packages/backend/convex/chats/systemPrompt.ts",
+      "name": "buildSystemPrompt",
+      "kind": "function",
+      "line": {
+        "start": 215,
+        "end": 281
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts#buildOutputLanguageSection",
+      "fileId": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts",
+      "name": "buildOutputLanguageSection",
+      "kind": "function",
+      "line": {
+        "start": 26,
+        "end": 42
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/tasks/model.ts#renderTaskListBlock",
+      "fileId": "packages/backend/convex/chats/tasks/model.ts",
+      "name": "renderTaskListBlock",
+      "kind": "function",
+      "line": {
+        "start": 110,
+        "end": 124
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#repairMockFinishReason",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "repairMockFinishReason",
+      "kind": "function",
+      "line": {
+        "start": 36,
+        "end": 68
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "withRepairedFinishReason",
+      "kind": "function",
+      "line": {
+        "start": 70,
+        "end": 82
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason.doStream",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "doStream",
+      "kind": "arrow",
+      "parentId": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "line": {
+        "start": 77,
+        "end": 80
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "createChatAgentWithMockModel",
+      "kind": "function",
+      "line": {
+        "start": 125,
+        "end": 170
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#installOfflineChatSeams",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "installOfflineChatSeams",
+      "kind": "function",
+      "line": {
+        "start": 172,
+        "end": 208
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/lib/models/index.ts#isReasoningModel",
+      "fileId": "packages/backend/convex/lib/models/index.ts",
+      "name": "isReasoningModel",
+      "kind": "function",
+      "line": {
+        "start": 56,
+        "end": 63
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/prepSessions/chatPrep.ts#isPrepSkillActive",
+      "fileId": "packages/backend/convex/prepSessions/chatPrep.ts",
+      "name": "isPrepSkillActive",
+      "kind": "function",
+      "line": {
+        "start": 29,
+        "end": 37
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "makeConvexTest",
+      "kind": "function",
+      "line": {
+        "start": 43,
+        "end": 48
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "installScriptedStream",
+      "kind": "function",
+      "line": {
+        "start": 50,
+        "end": 58
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "sendAndReadThread",
+      "kind": "function",
+      "line": {
+        "start": 67,
+        "end": 94
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/skills/buildCatalogSection.ts#buildCatalogSection",
+      "fileId": "packages/backend/convex/skills/buildCatalogSection.ts",
+      "name": "buildCatalogSection",
+      "kind": "function",
+      "line": {
+        "start": 33,
+        "end": 49
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/perTurnCatalog.ts#buildPerTurnCatalog",
+      "fileId": "packages/backend/convex/skills/perTurnCatalog.ts",
+      "name": "buildPerTurnCatalog",
+      "kind": "function",
+      "line": {
+        "start": 29,
+        "end": 50
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/stance/resolveStance.ts#resolveStanceForSlug",
+      "fileId": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "name": "resolveStanceForSlug",
+      "kind": "function",
+      "line": {
+        "start": 34,
+        "end": 41
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/stance/resolveStance.ts#stanceFlagKeyForSlug",
+      "fileId": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "name": "stanceFlagKeyForSlug",
+      "kind": "function",
+      "line": {
+        "start": 53,
+        "end": 62
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/testing.ts#seedConvexWorkspace",
+      "fileId": "packages/backend/convex/testing.ts",
+      "name": "seedConvexWorkspace",
+      "kind": "function",
+      "line": {
+        "start": 111,
+        "end": 157
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/errors/src/index.ts#createError",
+      "fileId": "packages/errors/src/index.ts",
+      "name": "createError",
+      "kind": "function",
+      "line": {
+        "start": 40,
+        "end": 42
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "apps/web/src/features/chat/testing.ts#createChatTestHarness",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.sendAction.providerOptions.test.ts#installCapturingAgent",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.textFiles.provider.test.ts#createOpenAiContractModel",
+      "to": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildFallbackText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#deriveFailureCategory",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#turnSavedAnyResponse",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnHasPendingQuestion",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnHasPendingQuestion",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/savedMessageReaders.ts#isFinalTextRow",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantHasToolCallPart",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/savedMessageReaders.ts#isFinalTextRow",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/truncationSummary.ts#shouldFireSummaryTurn",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "to": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "to": "packages/errors/src/index.ts#createError",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/agent.ts#assembleTurnTools",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/agent/buildProviderOptions.ts#buildProviderOptions",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/assistantBubbleKey.ts#assistantBubbleKey",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/chatContextHandler.ts#buildChatContextHandler",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/streamError.ts#serializeStreamError",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#buildTruncationSummaryInstruction",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#countToolSteps",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#isBudgetExhausted",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#shouldFireSummaryTurn",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#buildUserContent",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#renderInvokedSkillSection",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#settleTurnFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#turnHasSavedFailure",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/systemPrompt.ts#buildSystemPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts#buildOutputLanguageSection",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/tasks/model.ts#renderTaskListBlock",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/lib/models/index.ts#isReasoningModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/prepSessions/chatPrep.ts#isPrepSkillActive",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/buildCatalogSection.ts#buildCatalogSection",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/perTurnCatalog.ts#buildPerTurnCatalog",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/stance/resolveStance.ts#resolveStanceForSlug",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/stance/resolveStance.ts#stanceFlagKeyForSlug",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/errors/src/index.ts#createError",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#turnHasSavedFailure",
+      "to": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "to": "packages/backend/convex/chats/agent.ts#createChatAgent",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "to": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#installOfflineChatSeams",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason.doStream",
+      "to": "packages/backend/convex/chats/testing.ts#repairMockFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "to": "packages/backend/convex/chats/agent.ts#setChatAgentForTesting",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "to": "packages/backend/convex/testing.ts#seedConvexWorkspace",
+      "kind": "call"
+    }
+  ],
+  "meta": {
+    "extractor": "tsc",
+    "notes": [
+      "callees resolved through the checker; callees outside the workspace are dropped",
+      "one symbol per convex action: the handler arrow is not split out",
+      "typescript 6.0.3"
+    ],
+    "counters": {
+      "workspaceFiles": 3290,
+      "programSourceFiles": 7387,
+      "rootFilesMissingFromProgram": 0,
+      "touchedSymbols": 17,
+      "calleeCallSites": 179,
+      "calleesOutsideWorkspace": 163,
+      "calleeUnresolved": 122,
+      "calleeDeclarationNotAListedSymbol": 1,
+      "callersAtModuleTopLevel": 26
+    }
+  }
+}

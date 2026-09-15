@@ -1,0 +1,157 @@
+{
+  "version": 0,
+  "pr": {
+    "url": "https://github.com/Omni-GM/lonir/pull/4819",
+    "number": 4819,
+    "headSha": "8f5e6fe75a51431d2d1c2fcfaebb05d3aa960654",
+    "title": "fix(chat): end a turn that produced nothing instead of crashing the action"
+  },
+  "files": [
+    { "id": "f-resolveChatTurn", "path": "apps/web/src/features/chat/hooks/resolveChatTurn.ts", "touched": true, "status": "modified" },
+    { "id": "f-chatThread", "path": "apps/web/src/features/chat/components/ChatThread.tsx", "touched": false, "status": "untouched" },
+    { "id": "f-useChatViewMessages", "path": "apps/web/src/features/chat/hooks/useChatViewMessages.ts", "touched": false, "status": "untouched" },
+    { "id": "f-providerTest", "path": "packages/backend/convex/chats.textFiles.provider.test.ts", "touched": true, "status": "modified" },
+    { "id": "f-noResponseFallback", "path": "packages/backend/convex/chats/lib/noResponseFallback.ts", "touched": true, "status": "modified" },
+    { "id": "f-noResponseFallbackTest", "path": "packages/backend/convex/chats/lib/noResponseFallback.test.ts", "touched": true, "status": "modified" },
+    { "id": "f-savedMessageReaders", "path": "packages/backend/convex/chats/lib/savedMessageReaders.ts", "touched": true, "status": "modified" },
+    { "id": "f-turnCrashGuard", "path": "packages/backend/convex/chats/lib/turnCrashGuard.ts", "touched": true, "status": "deleted" },
+    { "id": "f-sendAction", "path": "packages/backend/convex/chats/sendAction.ts", "touched": true, "status": "modified" },
+    { "id": "f-testing", "path": "packages/backend/convex/chats/testing.ts", "touched": true, "status": "modified" },
+    { "id": "f-faultedTurnTest", "path": "packages/backend/convex/sendAction.faultedTurn.test.ts", "touched": true, "status": "added" },
+    { "id": "f-send", "path": "packages/backend/convex/chats/send.ts", "touched": false, "status": "untouched" },
+    { "id": "f-agent", "path": "packages/backend/convex/chats/agent.ts", "touched": false, "status": "untouched" },
+    { "id": "f-failureCategory", "path": "packages/backend/convex/chats/lib/failureCategory.ts", "touched": false, "status": "untouched" },
+    { "id": "f-messageWriters", "path": "packages/backend/convex/chats/lib/messageWriters.ts", "touched": false, "status": "untouched" },
+    { "id": "f-logging", "path": "packages/backend/convex/lib/logging.ts", "touched": false, "status": "untouched" },
+    { "id": "f-seedWorkspace", "path": "packages/backend/convex/testing/seedConvexWorkspace.ts", "touched": false, "status": "untouched" }
+  ],
+  "symbols": [
+    { "id": "s-turnEndedFallbackText", "fileId": "f-resolveChatTurn", "name": "TURN_ENDED_FALLBACK_TEXT", "kind": "const", "line": { "start": 33, "end": 35 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-resolveChatTurn", "fileId": "f-resolveChatTurn", "name": "resolveChatTurn", "kind": "function", "line": { "start": 41, "end": 96 }, "touched": true, "signatureTouched": true, "hop": 0 },
+    { "id": "s-isTurnClosed", "fileId": "f-resolveChatTurn", "name": "isTurnClosed", "kind": "arrow", "line": { "start": 98, "end": 104 }, "touched": false, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-chatThread", "fileId": "f-chatThread", "name": "ChatThread", "kind": "function", "line": { "start": 34, "end": 141 }, "touched": false, "signatureTouched": false, "hop": 1 },
+    { "id": "s-useChatViewMessages", "fileId": "f-useChatViewMessages", "name": "useChatViewMessages", "kind": "function", "line": { "start": 18, "end": 72 }, "touched": false, "signatureTouched": false, "hop": 1 },
+
+    { "id": "s-createOpenAiContractModel", "fileId": "f-providerTest", "name": "createOpenAiContractModel", "kind": "function", "line": { "start": 91, "end": 118 }, "touched": true, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-buildNoResponseFallback", "fileId": "f-noResponseFallback", "name": "buildNoResponseFallback", "kind": "function", "line": { "start": 45, "end": 148 }, "touched": true, "signatureTouched": true, "hop": 0 },
+    { "id": "s-categoryPhrase", "fileId": "f-noResponseFallback", "name": "CATEGORY_PHRASE", "kind": "const", "line": { "start": 151, "end": 169 }, "touched": false, "signatureTouched": false, "hop": 0 },
+    { "id": "s-cutOffTurnError", "fileId": "f-noResponseFallback", "name": "CUT_OFF_TURN_ERROR", "kind": "const", "line": { "start": 172, "end": 173 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-findCutOffMessage", "fileId": "f-noResponseFallback", "name": "findCutOffMessage", "kind": "function", "line": { "start": 176, "end": 246 }, "touched": true, "signatureTouched": true, "hop": 0 },
+    { "id": "s-buildFallbackText", "fileId": "f-noResponseFallback", "name": "buildFallbackText", "kind": "function", "line": { "start": 261, "end": 283 }, "touched": false, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-assistantText", "fileId": "f-noResponseFallbackTest", "name": "assistantText", "kind": "function", "line": { "start": 21, "end": 33 }, "touched": false, "signatureTouched": false, "hop": 0 },
+    { "id": "s-withId", "fileId": "f-noResponseFallbackTest", "name": "withId", "kind": "arrow", "line": { "start": 366, "end": 368 }, "touched": true, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-assistantHasToolCallPart", "fileId": "f-savedMessageReaders", "name": "assistantHasToolCallPart", "kind": "function", "line": { "start": 60, "end": 79 }, "touched": false, "signatureTouched": false, "hop": 0 },
+    { "id": "s-isFinalTextRow", "fileId": "f-savedMessageReaders", "name": "isFinalTextRow", "kind": "function", "line": { "start": 81, "end": 100 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-turnProducedFinalText", "fileId": "f-savedMessageReaders", "name": "turnProducedFinalText", "kind": "function", "line": { "start": 102, "end": 124 }, "touched": true, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-assertTurnProducedOutput", "fileId": "f-turnCrashGuard", "name": "assertTurnProducedOutput", "kind": "function", "line": { "start": 14, "end": 40 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-turnCrashError", "fileId": "f-turnCrashGuard", "name": "TurnCrashError", "kind": "class", "line": { "start": 42, "end": 58 }, "touched": true, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-renderInvokedSkillSection", "fileId": "f-sendAction", "name": "renderInvokedSkillSection", "kind": "function", "line": { "start": 390, "end": 404 }, "touched": false, "signatureTouched": false, "hop": 0 },
+    { "id": "s-settleTurnFinishReason", "fileId": "f-sendAction", "name": "settleTurnFinishReason", "kind": "function", "line": { "start": 406, "end": 440 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-turnHasSavedFailure", "fileId": "f-sendAction", "name": "turnHasSavedFailure", "kind": "function", "line": { "start": 443, "end": 479 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-markMessageCutOff", "fileId": "f-sendAction", "name": "markMessageCutOff", "kind": "function", "line": { "start": 481, "end": 512 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-streamChatResponse", "fileId": "f-sendAction", "name": "streamChatResponse", "kind": "const", "line": { "start": 1177, "end": 1334 }, "touched": true, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-repairMockFinishReason", "fileId": "f-testing", "name": "repairMockFinishReason", "kind": "function", "line": { "start": 20, "end": 60 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-withRepairedFinishReason", "fileId": "f-testing", "name": "withRepairedFinishReason", "kind": "function", "line": { "start": 62, "end": 86 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-scheduledFunctionDrainer", "fileId": "f-testing", "name": "ScheduledFunctionDrainer", "kind": "class", "line": { "start": 88, "end": 135 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-drainerDrain", "fileId": "f-testing", "name": "drain", "kind": "method", "parentId": "s-scheduledFunctionDrainer", "line": { "start": 96, "end": 110 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-drainerFlushAll", "fileId": "f-testing", "name": "flushAll", "kind": "method", "parentId": "s-scheduledFunctionDrainer", "line": { "start": 112, "end": 124 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-drainerStop", "fileId": "f-testing", "name": "stop", "kind": "method", "parentId": "s-scheduledFunctionDrainer", "line": { "start": 126, "end": 134 }, "touched": false, "signatureTouched": false, "hop": 0 },
+    { "id": "s-createChatAgentWithMockModel", "fileId": "f-testing", "name": "createChatAgentWithMockModel", "kind": "function", "line": { "start": 137, "end": 175 }, "touched": true, "signatureTouched": true, "hop": 0 },
+
+    { "id": "s-makeConvexTest", "fileId": "f-faultedTurnTest", "name": "makeConvexTest", "kind": "function", "line": { "start": 22, "end": 43 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-installScriptedStream", "fileId": "f-faultedTurnTest", "name": "installScriptedStream", "kind": "function", "line": { "start": 45, "end": 63 }, "touched": true, "signatureTouched": false, "hop": 0 },
+    { "id": "s-sendAndReadThread", "fileId": "f-faultedTurnTest", "name": "sendAndReadThread", "kind": "function", "line": { "start": 65, "end": 98 }, "touched": true, "signatureTouched": false, "hop": 0 },
+
+    { "id": "s-send", "fileId": "f-send", "name": "send", "kind": "const", "line": { "start": 44, "end": 118 }, "touched": false, "signatureTouched": false, "hop": 1 },
+    { "id": "s-scheduleStreamTurn", "fileId": "f-send", "name": "scheduleStreamTurn", "kind": "function", "line": { "start": 120, "end": 147 }, "touched": false, "signatureTouched": false, "hop": 1 },
+
+    { "id": "s-createChatAgent", "fileId": "f-agent", "name": "createChatAgent", "kind": "function", "line": { "start": 28, "end": 96 }, "touched": false, "signatureTouched": false, "hop": 1 },
+    { "id": "s-getChatAgentForWrites", "fileId": "f-agent", "name": "getChatAgentForWrites", "kind": "function", "line": { "start": 98, "end": 112 }, "touched": false, "signatureTouched": false, "hop": 1 },
+
+    { "id": "s-categorizeFailure", "fileId": "f-failureCategory", "name": "categorizeFailure", "kind": "function", "line": { "start": 24, "end": 78 }, "touched": false, "signatureTouched": false, "hop": 1 },
+    { "id": "s-isRetryableFailure", "fileId": "f-failureCategory", "name": "isRetryableFailure", "kind": "function", "line": { "start": 80, "end": 94 }, "touched": false, "signatureTouched": false, "hop": 1 },
+
+    { "id": "s-saveFallbackMessage", "fileId": "f-messageWriters", "name": "saveFallbackMessage", "kind": "function", "line": { "start": 31, "end": 74 }, "touched": false, "signatureTouched": false, "hop": 1 },
+    { "id": "s-markTurnFailed", "fileId": "f-messageWriters", "name": "markTurnFailed", "kind": "function", "line": { "start": 76, "end": 108 }, "touched": false, "signatureTouched": false, "hop": 1 },
+    { "id": "s-patchMessageMetadata", "fileId": "f-messageWriters", "name": "patchMessageMetadata", "kind": "function", "line": { "start": 110, "end": 132 }, "touched": false, "signatureTouched": false, "hop": 1 },
+
+    { "id": "s-logTurnEvent", "fileId": "f-logging", "name": "logTurnEvent", "kind": "function", "line": { "start": 40, "end": 66 }, "touched": false, "signatureTouched": false, "hop": 1 },
+
+    { "id": "s-seedConvexWorkspace", "fileId": "f-seedWorkspace", "name": "seedConvexWorkspace", "kind": "function", "line": { "start": 26, "end": 118 }, "touched": false, "signatureTouched": false, "hop": 1 }
+  ],
+  "edges": [
+    { "from": "s-chatThread", "to": "s-resolveChatTurn", "kind": "call" },
+    { "from": "s-useChatViewMessages", "to": "s-resolveChatTurn", "kind": "call" },
+    { "from": "s-resolveChatTurn", "to": "s-turnEndedFallbackText", "kind": "call" },
+    { "from": "s-resolveChatTurn", "to": "s-isTurnClosed", "kind": "call" },
+    { "from": "s-resolveChatTurn", "to": "s-cutOffTurnError", "kind": "call" },
+
+    { "from": "s-send", "to": "s-scheduleStreamTurn", "kind": "call" },
+    { "from": "s-scheduleStreamTurn", "to": "s-streamChatResponse", "kind": "call" },
+
+    { "from": "s-streamChatResponse", "to": "s-settleTurnFinishReason", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-turnHasSavedFailure", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-markMessageCutOff", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-turnProducedFinalText", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-buildNoResponseFallback", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-findCutOffMessage", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-renderInvokedSkillSection", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-getChatAgentForWrites", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-logTurnEvent", "kind": "call" },
+    { "from": "s-streamChatResponse", "to": "s-assertTurnProducedOutput", "kind": "call" },
+
+    { "from": "s-settleTurnFinishReason", "to": "s-logTurnEvent", "kind": "call" },
+    { "from": "s-turnHasSavedFailure", "to": "s-getChatAgentForWrites", "kind": "call" },
+    { "from": "s-turnHasSavedFailure", "to": "s-isRetryableFailure", "kind": "call" },
+    { "from": "s-markMessageCutOff", "to": "s-patchMessageMetadata", "kind": "call" },
+    { "from": "s-markMessageCutOff", "to": "s-cutOffTurnError", "kind": "call" },
+
+    { "from": "s-buildNoResponseFallback", "to": "s-buildFallbackText", "kind": "call" },
+    { "from": "s-buildNoResponseFallback", "to": "s-categorizeFailure", "kind": "call" },
+    { "from": "s-buildNoResponseFallback", "to": "s-saveFallbackMessage", "kind": "call" },
+    { "from": "s-buildNoResponseFallback", "to": "s-markTurnFailed", "kind": "call" },
+    { "from": "s-buildNoResponseFallback", "to": "s-turnCrashError", "kind": "call" },
+    { "from": "s-findCutOffMessage", "to": "s-isFinalTextRow", "kind": "call" },
+    { "from": "s-findCutOffMessage", "to": "s-turnProducedFinalText", "kind": "call" },
+    { "from": "s-buildFallbackText", "to": "s-categoryPhrase", "kind": "call" },
+    { "from": "s-buildFallbackText", "to": "s-categorizeFailure", "kind": "call" },
+
+    { "from": "s-turnProducedFinalText", "to": "s-isFinalTextRow", "kind": "call" },
+    { "from": "s-isFinalTextRow", "to": "s-assistantHasToolCallPart", "kind": "call" },
+
+    { "from": "s-assertTurnProducedOutput", "to": "s-turnCrashError", "kind": "call" },
+    { "from": "s-assertTurnProducedOutput", "to": "s-turnProducedFinalText", "kind": "call" },
+
+    { "from": "s-withRepairedFinishReason", "to": "s-repairMockFinishReason", "kind": "call" },
+    { "from": "s-createChatAgentWithMockModel", "to": "s-withRepairedFinishReason", "kind": "call" },
+    { "from": "s-createChatAgentWithMockModel", "to": "s-createChatAgent", "kind": "call" },
+    { "from": "s-drainerDrain", "to": "s-logTurnEvent", "kind": "call" },
+    { "from": "s-drainerFlushAll", "to": "s-drainerDrain", "kind": "call" },
+    { "from": "s-drainerStop", "to": "s-drainerDrain", "kind": "call" },
+
+    { "from": "s-makeConvexTest", "to": "s-createChatAgentWithMockModel", "kind": "call" },
+    { "from": "s-makeConvexTest", "to": "s-seedConvexWorkspace", "kind": "call" },
+    { "from": "s-installScriptedStream", "to": "s-repairMockFinishReason", "kind": "call" },
+    { "from": "s-sendAndReadThread", "to": "s-send", "kind": "call" },
+    { "from": "s-sendAndReadThread", "to": "s-drainerDrain", "kind": "call" },
+    { "from": "s-sendAndReadThread", "to": "s-drainerFlushAll", "kind": "call" },
+
+    { "from": "s-createOpenAiContractModel", "to": "s-withRepairedFinishReason", "kind": "call" },
+    { "from": "s-withId", "to": "s-assistantText", "kind": "call" },
+    { "from": "s-categorizeFailure", "to": "s-isRetryableFailure", "kind": "call" },
+    { "from": "s-saveFallbackMessage", "to": "s-patchMessageMetadata", "kind": "call" },
+    { "from": "s-markTurnFailed", "to": "s-patchMessageMetadata", "kind": "call" },
+
+    { "from": "s-createOpenAiContractModel", "to": "s-cutOffTurnError", "kind": "import" },
+    { "from": "s-installScriptedStream", "to": "s-scheduledFunctionDrainer", "kind": "import" },
+    { "from": "s-chatThread", "to": "s-turnEndedFallbackText", "kind": "import" },
+    { "from": "s-withId", "to": "s-buildNoResponseFallback", "kind": "import" }
+  ]
+}

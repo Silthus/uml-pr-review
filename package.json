@@ -1,0 +1,20 @@
+{
+  "name": "uml-pr-review",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Draws the architecture a pull request touches: files, symbols, callers, and callees, as one explorable HTML artifact.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "uml-pr-review": "./src/cli.ts"
+  },
+  "scripts": {
+    "cli": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}

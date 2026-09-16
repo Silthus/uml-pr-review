@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * THROWAWAY ENRICHMENT STEP - github issue #6, round 2. Not production code.
+ * THROWAWAY ENRICHMENT STEP - github issue #6, rounds 2 and 3. Not production code.
  *
  * The analyzer graph (#5) lacks module, library, test/production, source, and
  * diff information. This script adds those fields from the PR head checkout so
@@ -38,6 +38,13 @@ type Graph = {
   meta?: Record<string, unknown>;
 };
 
+/** A base-side line the PR removed. `anchor` is the head line it sat before. */
+export type RemovedLine = { anchor: number; old: number; text: string };
+/** One line of a symbol's diff: context, added, or removed. `o` old number, `n` new number. */
+export type DiffLine = { k: "ctx" | "add" | "del"; o: number | null; n: number | null; t: string };
+/** Git change state as GitHub colors it: green, amber, red, grey. */
+export type ChangeState = "added" | "modified" | "deleted" | "renamed" | "unchanged";
+
 /** What the renderer consumes. Every added field is marked with a trailing comment. */
 export type EnrichedGraph = {
   version: 1;
@@ -49,6 +56,7 @@ export type EnrichedGraph = {
     library: boolean; // ADDED: true for node_modules
     changedLines: number[]; // ADDED: head line numbers the PR added or edited
     deleteAnchors: number[]; // ADDED: head line numbers where lines were removed before
+    removedLines: RemovedLine[]; // ADDED round 3: base-side lines the PR removed, with their old numbers
   })[];
   symbols: (Omit<Graph["symbols"][number], "kind"> & {
     kind: SymbolKind | "test"; // ADDED: "test" for a test case (it/test block)
@@ -56,6 +64,8 @@ export type EnrichedGraph = {
     changedLines: number[]; // ADDED: head line numbers inside the symbol that the PR changed
     source?: string; // ADDED: head source text of touched symbols
     handAdded?: boolean; // ADDED: true where this script, not the analyzer, produced the symbol
+    change: ChangeState; // ADDED round 3: Git change state of the symbol, for the standard colors
+    diff?: DiffLine[]; // ADDED round 3: unified diff of touched symbols, old and new numbers, removed lines included
   })[];
   edges: (Graph["edges"][number] & { handAdded?: boolean })[];
   meta: Record<string, unknown> & { enrichment: Record<string, unknown> };
@@ -137,20 +147,59 @@ const isLibrary = (path: string) => /(^|\/)node_modules\//.test(path);
 // Changed head lines per file, from the unified diff patch.
 // ---------------------------------------------------------------------------
 
-function changedHeadLines(patch: string | undefined) {
-  const changed: number[] = [];
-  const anchors: number[] = [];
-  if (!patch) return { changed, anchors };
-  let head = 0;
-  for (const line of patch.split("\n")) {
-    const hunk = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/.exec(line);
-    if (hunk) { head = Number(hunk[1]); continue; }
-    if (line.startsWith("+")) { changed.push(head); head++; }
-    else if (line.startsWith("-")) { if (!anchors.includes(head)) anchors.push(head); }
+/**
+ * Walk a unified diff. Returns the head lines the PR added, the removed base
+ * lines anchored at the head line they sat before, and a map from head line to
+ * base line for unchanged lines (also outside hunks, via the running offset).
+ */
+function parsePatch(patch: string | undefined) {
+  const added = new Set<number>();
+  const oldOfCtx = new Map<number, number>();
+  const removed: RemovedLine[] = [];
+  const after: { newEnd: number; delta: number }[] = [];
+  let o = 0;
+  let n = 0;
+  for (const line of (patch ?? "").split("\n")) {
+    const hunk = /^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/.exec(line);
+    if (hunk) { if (n) after.push({ newEnd: n, delta: o - n }); o = Number(hunk[1]); n = Number(hunk[2]); continue; }
+    if (line.startsWith("+")) { added.add(n); n++; }
+    else if (line.startsWith("-")) { removed.push({ anchor: n, old: o, text: line.slice(1) }); o++; }
     else if (line.startsWith("\\")) { /* no newline marker */ }
-    else head++;
+    else if (n) { oldOfCtx.set(n, o); o++; n++; }
   }
-  return { changed, anchors };
+  if (n) after.push({ newEnd: n, delta: o - n });
+  const oldOf = (head: number): number | null => {
+    if (added.has(head)) return null;
+    const ctx = oldOfCtx.get(head);
+    if (ctx !== undefined) return ctx;
+    let delta = 0;
+    for (const a of after) if (a.newEnd <= head) delta = a.delta;
+    return head + delta;
+  };
+  const changed = [...added].sort((a, b) => a - b);
+  const anchors = [...new Set(removed.map((r) => r.anchor))].sort((a, b) => a - b);
+  return { changed, anchors, removed, oldOf };
+}
+
+/** The symbol's diff: head lines start..end with the removed lines spliced in before their anchor. */
+function symbolDiff(headLines: string[], start: number, end: number, patch: ReturnType<typeof parsePatch>, fileDeleted: boolean): DiffLine[] {
+  const out: DiffLine[] = [];
+  if (fileDeleted) return patch.removed.map((r) => ({ k: "del", o: r.old, n: null, t: r.text }));
+  for (let head = start; head <= end; head++) {
+    for (const r of patch.removed) if (r.anchor === head) out.push({ k: "del", o: r.old, n: null, t: r.text });
+    const old = patch.oldOf(head);
+    out.push({ k: old === null ? "add" : "ctx", o: old, n: head, t: headLines[head - 1] ?? "" });
+  }
+  return out;
+}
+
+function changeOf(status: FileStatus, touched: boolean, diff: DiffLine[]): ChangeState {
+  if (status === "deleted") return "deleted";
+  if (status === "added") return "added";
+  if (!touched) return "unchanged";
+  if (diff.length && diff.every((l) => l.k === "add")) return "added";
+  if (diff.some((l) => l.k !== "ctx")) return "modified";
+  return status === "renamed" ? "renamed" : "modified";
 }
 
 const patchByPath = new Map(prFiles.map((f) => [f.filename, f.patch]));
@@ -165,9 +214,16 @@ async function linesOf(path: string) {
   return lines;
 }
 
+const patchOf = new Map<string, ReturnType<typeof parsePatch>>();
+const parsedPatch = (path: string) => {
+  let p = patchOf.get(path);
+  if (!p) { p = parsePatch(patchByPath.get(path)); patchOf.set(path, p); }
+  return p;
+};
+
 const files: EnrichedGraph["files"] = [];
 for (const f of graph.files) {
-  const { changed, anchors } = changedHeadLines(patchByPath.get(f.path));
+  const { changed, anchors, removed } = parsedPatch(f.path);
   files.push({
     ...f,
     moduleId: moduleOf(f.path),
@@ -175,6 +231,7 @@ for (const f of graph.files) {
     library: isLibrary(f.path),
     changedLines: changed,
     deleteAnchors: anchors,
+    removedLines: removed,
   });
 }
 const fileById = new Map(files.map((f) => [f.id, f]));
@@ -184,11 +241,14 @@ for (const s of graph.symbols) {
   const f = fileById.get(s.fileId)!;
   const inRange = (n: number) => n >= s.line.start && n <= s.line.end;
   const lines = await linesOf(f.path);
+  const diff = s.touched ? symbolDiff(lines, s.line.start, s.line.end, parsedPatch(f.path), f.status === "deleted") : undefined;
   symbols.push({
     ...s,
     lineCount: s.line.end - s.line.start + 1,
     changedLines: [...f.changedLines.filter(inRange), ...f.deleteAnchors.filter(inRange)].sort((a, b) => a - b),
     source: s.touched ? lines.slice(s.line.start - 1, s.line.end).join("\n") : undefined,
+    change: changeOf(f.status, s.touched, diff ?? []),
+    diff,
   });
 }
 const edges: EnrichedGraph["edges"] = [...graph.edges];
@@ -215,8 +275,8 @@ for (const path of [...candidateTestFiles].sort()) {
   if (lines.length === 0) continue;
   let file = files.find((f) => f.path === path);
   if (!file) {
-    const { changed, anchors } = changedHeadLines(patchByPath.get(path));
-    file = { id: path, path, touched: changed.length > 0, status: changed.length > 0 ? "modified" : "untouched", moduleId: moduleOf(path), role: "test", library: false, changedLines: changed, deleteAnchors: anchors };
+    const { changed, anchors, removed } = parsedPatch(path);
+    file = { id: path, path, touched: changed.length > 0, status: changed.length > 0 ? "modified" : "untouched", moduleId: moduleOf(path), role: "test", library: false, changedLines: changed, deleteAnchors: anchors, removedLines: removed };
     files.push(file);
     fileById.set(file.id, file);
   }
@@ -247,6 +307,7 @@ for (const path of [...candidateTestFiles].sort()) {
     const stop = end + 1;
     const inRange = (n: number) => n >= start && n <= stop;
     const changed = [...file.changedLines.filter(inRange), ...file.deleteAnchors.filter(inRange)].sort((a, b) => a - b);
+    const diff = changed.length > 0 ? symbolDiff(lines, start, stop, parsedPatch(path), false) : undefined;
     symbols.push({
       id,
       fileId: file.id,
@@ -260,6 +321,8 @@ for (const path of [...candidateTestFiles].sort()) {
       changedLines: changed,
       source: changed.length > 0 ? body : undefined,
       handAdded: true,
+      change: changeOf(file.status, changed.length > 0, diff ?? []),
+      diff,
     });
     addedTests++;
     for (const t of [...targets].sort()) {

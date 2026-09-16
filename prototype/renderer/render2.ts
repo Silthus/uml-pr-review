@@ -1,17 +1,22 @@
 #!/usr/bin/env bun
 /**
- * THROWAWAY UI PROTOTYPE - github issue #6, round 2. Not production code.
+ * THROWAWAY UI PROTOTYPE - github issue #6, round 3. Not production code.
  *
  * Question: can a reviewer see, at a glance, whether a pull request stays inside
  * one module or leaks across module seams, and what it does to tests versus
- * production code?
+ * production code? Round 3 iterates the winning variant E Blueprint: Git colors
+ * for change state, a side diff panel in GitHub style, code linked to canvas,
+ * and incremental disclosure of neighbors through ports.
  *
- * Answer shape: three variants of one enriched Graph in a single self-contained
- * HTML file, switchable with `?variant=` and a floating bottom bar.
+ *   E1 Blueprint, tests framed   module > (production files | tests frame) > symbols
+ *   E2 Blueprint, tests dimmed   module > file > symbol, test files dimmed until hovered
+ *   F  Seams                     reachable with ?variant=F, not in the switcher
+ *   G  Compass                   reachable with ?variant=G, not in the switcher
  *
- *   E  Blueprint   module > file > symbol containers, elkjs layered, neighbors behind ports
- *   F  Seams       module > file containers only, calls aggregated per file pair
- *   G  Compass     surprise: modules as arcs on a ring, files as segments, calls as chords
+ * Incremental disclosure: clicking a port (or one entry of its list) places the
+ * disclosed neighbors in a lane beside the drawing, at view time, with no layout
+ * library. The elkjs layouts (focus and full) never move, so the reviewer's mental
+ * map holds. See the `lane` functions in the client script.
  *
  * elkjs runs here, at generation time. The artifact loads nothing at view time.
  *
@@ -69,6 +74,8 @@ const symbolsInFile = (fileId: string) =>
   symbols.filter((s) => s.fileId === fileId).sort((a, b) => a.line.start - b.line.start || cmp(a.name, b.name));
 const isTest = (s: Sym) => s.kind === "test";
 const isLong = (s: Sym) => s.touched && !isTest(s) && s.lineCount > LONG_SYMBOL_LINES;
+/** Git change state; the enricher computes it, older fixtures fall back to the file status. */
+const changeOf = (s: Sym): string => s.change ?? (s.touched ? fileById.get(s.fileId)!.status : "unchanged");
 
 /** Modules that hold at least one file of the graph, touched ones first, by id. */
 const modulesInGraph = [...new Set(files.map((f) => moduleOfFile(f).id))]
@@ -163,7 +170,7 @@ type State = {
   w: number;
   h: number;
 };
-type Variant = { key: string; name: string; note: string; cells: Cell[]; groups: Group[]; edges: EdgeRef[]; full: State; focus: State };
+type Variant = { key: string; name: string; note: string; hidden?: boolean; cells: Cell[]; groups: Group[]; edges: EdgeRef[]; full: State; focus: State };
 
 const emptyState = (): State => ({ cells: {}, groups: {}, edges: {}, labels: {}, w: 0, h: 0 });
 
@@ -277,15 +284,17 @@ const MOD_HEAD = 34;
 
 function symClass(s: Sym) {
   const f = fileById.get(s.fileId)!;
-  const out = ["cell", "sym", `k-${s.kind}`, f.role === "test" ? "is-test" : "is-prod", s.touched ? "is-touched" : "is-neighbor"];
+  const out = ["cell", "sym", `k-${s.kind}`, `st-${changeOf(s)}`, ...(f.role === "test" ? ["is-test", "tdim"] : ["is-prod"]), s.touched ? "is-touched" : "is-neighbor"];
   if (s.signatureTouched) out.push("is-sig");
   if (isLong(s)) out.push("is-long");
   if (f.status === "deleted") out.push("is-gone");
   return out.join(" ");
 }
+/** The long flag is a badge, not a color: `long 920 L` in an outlined pill. */
+const linesLabel = (s: Sym) => (isLong(s) ? `! ${s.lineCount} L` : `${s.lineCount} L`);
 function symCellSize(s: Sym) {
   const name = isTest(s) ? truncate(s.name, 44) : s.name;
-  const w = 24 + monoW(name, 11.5) + 14 + monoW(`${s.lineCount} L`, 9) + 12;
+  const w = 24 + monoW(name, 11.5) + 14 + monoW(linesLabel(s), 9) + (isLong(s) ? 24 : 12);
   return { w: Math.max(150, Math.round(w)), h: ROW };
 }
 function symCell(prefix: string, s: Sym): Cell {
@@ -303,7 +312,8 @@ function symCell(prefix: string, s: Sym): Cell {
       `<rect class="sig" x="0" y="0" width="${w}" height="2.5"/>` +
       `<text class="c-kind" x="9" y="${h / 2 + 3.5}">${kindTag[s.kind]}</text>` +
       `<text class="c-name" x="24" y="${h / 2 + 3.5}">${esc(name)}</text>` +
-      `<text class="c-lines" x="${w - 8}" y="${h / 2 + 3.5}" text-anchor="end">${s.lineCount} L</text>`,
+      (isLong(s) ? `<rect class="lbadge" x="${w - 14 - monoW(linesLabel(s), 9) - 6}" y="${h / 2 - 8}" width="${Math.round(monoW(linesLabel(s), 9) + 12)}" height="16" rx="8"/>` : "") +
+      `<text class="c-lines" x="${w - (isLong(s) ? 14 : 8)}" y="${h / 2 + 3.5}" text-anchor="end">${linesLabel(s)}</text>`,
   };
 }
 /** One cell that stands for every test case of a file in the focus state. */
@@ -316,7 +326,7 @@ function testGroupCell(prefix: string, f: File, tests: Sym[]): Cell {
     cid: `${prefix}-tests-${f.id}`,
     sel: `file:${f.id}`,
     w, h: ROW,
-    cls: `cell sym tests is-test ${touched ? "is-touched" : "is-neighbor"}`,
+    cls: `cell sym tests is-test tdim st-${f.touched ? f.status : "unchanged"} ${touched ? "is-touched" : "is-neighbor"}`,
     body:
       `<rect class="box" x="0" y="0" width="${w}" height="${ROW}" rx="2"/>` +
       `<rect class="mark" x="0" y="0" width="3" height="${ROW}"/>` +
@@ -337,7 +347,7 @@ function fileGroup(prefix: string, f: File, extra = ""): Group {
     gid: `${prefix}-file-${f.id}`,
     sel: `file:${f.id}`,
     un: !f.touched,
-    cls: `group file st-${f.status} ${f.role === "test" ? "is-test" : "is-prod"} ${f.touched ? "is-touched" : "is-neighbor"}${extra}`,
+    cls: `group file st-${f.touched ? f.status : "unchanged"} ${f.role === "test" ? "is-test tdim" : "is-prod"} ${f.touched ? "is-touched" : "is-neighbor"}${extra}`,
     body:
       `<rect class="box" x="0" y="0" width="10" height="10" rx="3"/>` +
       `<rect class="band" x="0" y="0" width="10" height="${FILE_HEAD}" data-span="width"/>` +
@@ -345,6 +355,20 @@ function fileGroup(prefix: string, f: File, extra = ""): Group {
       `<text class="g-name" x="13" y="17">${esc(baseOf(f.path))}</text>` +
       `<text class="g-meta" x="13" y="31">${esc(meta)}</text>` +
       `<text class="g-role" x="10" y="17" text-anchor="end" data-spanx="width" data-dx="-10">${f.role}</text>`,
+  };
+}
+/** E1: one frame per module that holds its test files, split from production. */
+function testFrameGroup(prefix: string, m: Mod): Group {
+  const tests = filesInModule(m.id).filter((f) => f.role === "test");
+  const touched = tests.filter((f) => f.touched).length;
+  return {
+    gid: `${prefix}-tframe-${m.id}`,
+    un: touched === 0,
+    cls: `group tframe ${touched ? "is-touched" : "is-neighbor"}`,
+    body:
+      `<rect class="box" x="0" y="0" width="10" height="10" rx="4"/>` +
+      `<text class="t-name" x="12" y="18">tests</text>` +
+      `<text class="t-meta" x="10" y="18" text-anchor="end" data-spanx="width" data-dx="-12">${tests.length} file${tests.length === 1 ? "" : "s"}${touched ? `, ${touched} changed` : ""}</text>`,
   };
 }
 function moduleGroup(prefix: string, m: Mod): Group {
@@ -391,14 +415,16 @@ function edgeClass(from: Sym, to: Sym) {
 // ===========================================================================
 
 type Leaf = "symbol" | "file";
+const TFRAME_HEAD = 28;
 
-function buildNested(prefix: string, leaf: Leaf) {
+function buildNested(prefix: string, leaf: Leaf, testFrame = false) {
   const cells: Cell[] = [];
   const groups: Group[] = [];
   const edgeRefs: EdgeRef[] = [];
 
   for (const m of modulesInGraph) {
     groups.push(moduleGroup(prefix, m));
+    if (testFrame && filesInModule(m.id).some((f) => f.role === "test")) groups.push(testFrameGroup(prefix, m));
     for (const f of filesInModule(m.id)) {
       groups.push(fileGroup(prefix, f, leaf === "file" ? " leaf" : ""));
       if (leaf === "symbol") {
@@ -449,7 +475,7 @@ function buildNested(prefix: string, leaf: Leaf) {
  * focus: touched files only, tests grouped per file, ports for hidden neighbors.
  * full: every file and symbol, every test case, no ports.
  */
-async function layoutNested(prefix: string, leaf: Leaf, v: Variant, mode: "focus" | "full"): Promise<State> {
+async function layoutNested(prefix: string, leaf: Leaf, v: Variant, mode: "focus" | "full", testFrame = false): Promise<State> {
   const cellById = new Map(v.cells.map((c) => [c.cid, c]));
   const focus = mode === "focus";
   const showFile = (f: File) => (focus ? f.touched : true);
@@ -494,6 +520,18 @@ async function layoutNested(prefix: string, leaf: Leaf, v: Variant, mode: "focus
       fileNodes.push(fileNode);
     }
     if (fileNodes.length === 0) continue;
+    // E1: test files move into one nested frame per module.
+    let children = fileNodes;
+    if (testFrame) {
+      const testIds = new Set(filesInModule(m.id).filter((f) => f.role === "test").map((f) => `file:${f.id}`));
+      const tests = fileNodes.filter((n) => testIds.has(n.id));
+      const prod = fileNodes.filter((n) => !testIds.has(n.id));
+      children = prod;
+      if (tests.length) {
+        children = [...prod, { id: `tframe:${m.id}`, layoutOptions: { "elk.padding": `[top=${TFRAME_HEAD + 10},left=12,bottom=12,right=12]`, "elk.spacing.nodeNode": "20", "elk.layered.spacing.nodeNodeBetweenLayers": "40" }, children: tests }];
+        nodeIds.add(`tframe:${m.id}`);
+      }
+    }
     elkChildren.push({
       id: `mod:${m.id}`,
       layoutOptions: {
@@ -501,7 +539,7 @@ async function layoutNested(prefix: string, leaf: Leaf, v: Variant, mode: "focus
         "elk.spacing.nodeNode": "24",
         "elk.layered.spacing.nodeNodeBetweenLayers": "44",
       },
-      children: fileNodes,
+      children,
     });
   }
 
@@ -539,7 +577,11 @@ async function layoutNested(prefix: string, leaf: Leaf, v: Variant, mode: "focus
     if (b && nodeIds.has(key)) st.cells[c.cid] = [b[0], b[1]];
   }
   for (const g of v.groups) {
-    const key = g.gid.startsWith(`${prefix}-file-`) ? `file:${g.gid.slice(`${prefix}-file-`.length)}` : `mod:${g.gid.slice(`${prefix}-mod-`.length)}`;
+    const key = g.gid.startsWith(`${prefix}-file-`)
+      ? `file:${g.gid.slice(`${prefix}-file-`.length)}`
+      : g.gid.startsWith(`${prefix}-tframe-`)
+        ? `tframe:${g.gid.slice(`${prefix}-tframe-`.length)}`
+        : `mod:${g.gid.slice(`${prefix}-mod-`.length)}`;
     const b = flat.box.get(key);
     if (b) st.groups[g.gid] = b;
   }
@@ -684,21 +726,25 @@ function layoutCompass(prefix: string, v: Variant, mode: "focus" | "full"): Stat
 // Build every variant
 // ===========================================================================
 
-const mk = (key: string, name: string, note: string, built: { cells: Cell[]; groups: Group[]; edges: EdgeRef[] }): Variant => ({ key, name, note, ...built, full: emptyState(), focus: emptyState() });
+const mk = (key: string, name: string, note: string, built: { cells: Cell[]; groups: Group[]; edges: EdgeRef[] }, hidden = false): Variant => ({ key, name, note, hidden, ...built, full: emptyState(), focus: emptyState() });
 
-const E = mk("E", "Blueprint", "module > file > symbol, neighbors behind ports", buildNested("E", "symbol"));
-E.focus = await layoutNested("E", "symbol", E, "focus");
-E.full = await layoutNested("E", "symbol", E, "full");
+const E1 = mk("E1", "Blueprint, tests framed", "test files in their own frame inside the module", buildNested("E1", "symbol", true));
+E1.focus = await layoutNested("E1", "symbol", E1, "focus", true);
+E1.full = await layoutNested("E1", "symbol", E1, "full", true);
 
-const F = mk("F", "Seams", "module > file, calls bundled per file pair", buildNested("F", "file"));
+const E2 = mk("E2", "Blueprint, tests dimmed", "test files in place, dimmed until hovered", buildNested("E2", "symbol"));
+E2.focus = await layoutNested("E2", "symbol", E2, "focus");
+E2.full = await layoutNested("E2", "symbol", E2, "full");
+
+const F = mk("F", "Seams", "module > file, calls bundled per file pair", buildNested("F", "file"), true);
 F.focus = await layoutNested("F", "file", F, "focus");
 F.full = await layoutNested("F", "file", F, "full");
 
-const G = mk("G", "Compass", "surprise: modules as arcs, files as segments, calls as chords", buildCompass("G"));
+const G = mk("G", "Compass", "surprise: modules as arcs, files as segments, calls as chords", buildCompass("G"), true);
 G.focus = layoutCompass("G", G, "focus");
 G.full = layoutCompass("G", G, "full");
 
-const variants = [E, F, G];
+const variants = [E1, E2, F, G];
 
 // ===========================================================================
 // Emit
@@ -712,9 +758,9 @@ const graphData = {
   modules: [...modulesInGraph].map((m) => ({ id: m.id, name: m.name, root: m.root })),
   files: files.map((f) => ({ id: f.id, path: f.path, rel: relPath(f), module: moduleOfFile(f).id, moduleName: moduleOfFile(f).name, touched: f.touched, status: f.status, role: f.role, changed: f.changedLines.length })),
   symbols: symbols.map((s) => ({
-    id: s.id, file: s.fileId, name: s.parentId ? `${symById.get(s.parentId)!.name}.${s.name}` : s.name, kind: s.kind,
-    start: s.line.start, end: s.line.end, lines: s.lineCount, touched: s.touched, sig: s.signatureTouched, hop: s.hop,
-    changed: s.changedLines, source: s.source ?? null, hand: s.handAdded ?? false,
+    id: s.id, file: s.fileId, name: s.parentId ? `${symById.get(s.parentId)!.name}.${s.name}` : s.name, short: s.name, kind: s.kind,
+    start: s.line.start, end: s.line.end, lines: s.lineCount, touched: s.touched, sig: s.signatureTouched, hop: s.hop, change: changeOf(s),
+    long: isLong(s), changed: s.changedLines, diff: s.diff ?? null, hand: s.handAdded ?? false,
   })),
   edges: edges.map((e) => ({ from: e.from, to: e.to, hand: e.handAdded ?? false })),
   ports: Object.fromEntries(touchedFiles.flatMap((f) => portsFor(f.id)).map((p) => [`${p.dir}:${p.fileId}`, p.ids])),
@@ -726,7 +772,7 @@ const sceneSvg = (v: Variant) => {
   const groups = v.groups.map((g) => `<g class="${g.cls}" data-gid="${g.gid}"${g.sel ? ` data-sel="${esc(g.sel)}"` : ""}${g.un ? ` data-un="1"` : ""}>${g.body}</g>`).join("");
   const wires = v.edges.map((e) => `<g class="wire" data-eid="${esc(e.eid)}"${e.un ? ` data-un="1"` : ""} data-pairs="${esc(JSON.stringify(e.pairs))}"><path class="${e.cls}" marker-end="url(#arrow)"/>${e.pairs.length > 1 ? `<g class="elabel"><rect rx="7" width="${12 + String(e.pairs.length).length * 7}" height="14" x="${-(12 + String(e.pairs.length).length * 7) / 2}" y="-7"/><text y="3.5" text-anchor="middle">${e.pairs.length}</text></g>` : ""}</g>`).join("");
   const cells = v.cells.map((c) => `<g class="${c.cls}" data-cid="${esc(c.cid)}"${c.sel ? ` data-sel="${esc(c.sel)}"` : ""}${c.port ? ` data-port="${esc(c.port)}"` : ""}${c.un ? ` data-un="1"` : ""}>${c.body}</g>`).join("");
-  return `<g class="scene" data-v="${v.key}"><g class="vp"><rect class="grid" x="-6000" y="-6000" width="20000" height="20000"/><g class="layer-groups">${groups}</g><g class="layer-edges">${wires}</g><g class="layer-cells">${cells}</g></g></g>`;
+  return `<g class="scene" data-v="${v.key}"><g class="vp"><rect class="grid" x="-6000" y="-6000" width="20000" height="20000"/><g class="layer-groups">${groups}</g><g class="layer-edges">${wires}</g><g class="layer-cells">${cells}</g><g class="layer-lane"></g></g></g>`;
 };
 
 const counts = {
@@ -737,6 +783,8 @@ const counts = {
   neighborFiles: files.filter((f) => !f.touched).length,
   modules: touchedModules.length,
   long: symbols.filter(isLong).length,
+  added: symbols.filter((s) => s.touched && !isTest(s) && changeOf(s) === "added").length,
+  modified: symbols.filter((s) => s.touched && !isTest(s) && changeOf(s) === "modified").length,
 };
 
 const css = `
@@ -744,12 +792,19 @@ const css = `
   --paper:oklch(0.975 0.004 250);--paper-2:oklch(0.945 0.006 250);--card:oklch(0.995 0.002 250);
   --ink:oklch(0.24 0.02 262);--ink-2:oklch(0.44 0.018 262);--ink-3:oklch(0.62 0.014 262);
   --hair:oklch(0.24 0.02 262 / 0.2);--hair-2:oklch(0.24 0.02 262 / 0.4);
-  --touch:oklch(0.53 0.2 18);--touch-soft:oklch(0.53 0.2 18 / 0.1);
-  --test:oklch(0.5 0.17 300);--test-soft:oklch(0.5 0.17 300 / 0.1);
+  /* Git change state, the colors every Git tool uses. Red only ever means deleted. */
+  --add:oklch(0.56 0.15 152);--add-bg:oklch(0.94 0.06 152);--add-bg-2:oklch(0.88 0.11 152);
+  --chg:oklch(0.66 0.14 76);--chg-bg:oklch(0.95 0.06 86);
+  --del:oklch(0.54 0.19 26);--del-bg:oklch(0.94 0.045 22);--del-bg-2:oklch(0.88 0.08 22);
+  --ren:oklch(0.58 0.02 262);
+  --accent:oklch(0.48 0.15 266);--accent-soft:oklch(0.48 0.15 266 / 0.1);
+  --touch:var(--chg);--touch-soft:oklch(0.66 0.14 76 / 0.14);
+  --test:oklch(0.52 0.11 302);--test-soft:oklch(0.52 0.11 302 / 0.09);
   --prod:oklch(0.42 0.04 240);
-  --sig:oklch(0.45 0.13 286);
+  --sig:oklch(0.45 0.16 322);
   --in:oklch(0.5 0.16 250);--out:oklch(0.5 0.13 160);
-  --long:oklch(0.62 0.17 55);
+  --long:var(--ink-2);
+  --link:oklch(0.55 0.16 232);--link-soft:oklch(0.55 0.16 232 / 0.16);
   --mod:oklch(0.24 0.02 262 / 0.05);
   --shadow:oklch(0.24 0.02 262 / 0.28);
   --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Inter,system-ui,sans-serif;
@@ -760,22 +815,29 @@ const css = `
   --paper:oklch(0.2 0.012 262);--paper-2:oklch(0.25 0.014 262);--card:oklch(0.235 0.013 262);
   --ink:oklch(0.93 0.008 250);--ink-2:oklch(0.74 0.012 250);--ink-3:oklch(0.56 0.012 250);
   --hair:oklch(0.93 0.008 250 / 0.16);--hair-2:oklch(0.93 0.008 250 / 0.36);
-  --touch:oklch(0.7 0.17 18);--touch-soft:oklch(0.7 0.17 18 / 0.14);
-  --test:oklch(0.74 0.14 300);--test-soft:oklch(0.74 0.14 300 / 0.14);
+  --add:oklch(0.74 0.16 152);--add-bg:oklch(0.32 0.055 152);--add-bg-2:oklch(0.42 0.1 152);
+  --chg:oklch(0.79 0.14 80);--chg-bg:oklch(0.33 0.05 86);
+  --del:oklch(0.7 0.16 24);--del-bg:oklch(0.31 0.06 22);--del-bg-2:oklch(0.4 0.1 22);
+  --ren:oklch(0.7 0.02 262);
+  --accent:oklch(0.74 0.13 266);--accent-soft:oklch(0.74 0.13 266 / 0.16);
+  --touch:var(--chg);--touch-soft:oklch(0.79 0.14 80 / 0.16);
+  --test:oklch(0.72 0.1 302);--test-soft:oklch(0.72 0.1 302 / 0.12);
   --prod:oklch(0.78 0.04 240);
-  --sig:oklch(0.72 0.12 286);
+  --sig:oklch(0.76 0.14 322);
   --in:oklch(0.72 0.13 250);--out:oklch(0.72 0.13 160);
-  --long:oklch(0.78 0.15 60);
+  --long:var(--ink-2);
+  --link:oklch(0.76 0.13 232);--link-soft:oklch(0.76 0.13 232 / 0.2);
   --mod:oklch(0.93 0.008 250 / 0.04);
   --shadow:oklch(0 0 0 / 0.6);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);display:grid;grid-template-columns:1fr 320px;grid-template-rows:auto 1fr;overflow:hidden;-webkit-font-smoothing:antialiased}
+body{--side-w:340px;background:var(--paper);color:var(--ink);font-family:var(--sans);display:grid;grid-template-columns:minmax(0,1fr) var(--side-w);grid-template-rows:auto minmax(0,1fr);overflow:hidden;-webkit-font-smoothing:antialiased}
+body.resizing{cursor:col-resize;user-select:none}
 .masthead{grid-column:1/3;display:grid;grid-template-columns:1fr auto;gap:6px 24px;padding:14px 22px 12px;border-bottom:1px solid var(--hair);background:var(--paper);align-items:start}
 .masthead .top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-.masthead .pr{font-family:var(--mono);font-size:11px;color:var(--touch)}
+.masthead .pr{font-family:var(--mono);font-size:11px;color:var(--accent)}
 .masthead h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
 .masthead .sha{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
 .verdict{font-size:14px;line-height:1.45;max-width:78ch;color:var(--ink-2);margin-top:2px}
@@ -783,11 +845,12 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);display:gr
 .masthead .side{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .tally{display:flex;gap:14px;font-family:var(--mono);font-size:10.5px;color:var(--ink-2);white-space:nowrap}
 .tally b{font-weight:600;color:var(--ink)}
-.tally .long b{color:var(--long)}
+.tally .long b{color:var(--ink)}
+.tally .add b{color:var(--add)}
 .theme{display:flex;border:1px solid var(--hair);border-radius:999px;overflow:hidden}
 .theme button{background:none;border:0;color:var(--ink-3);font:inherit;font-size:11px;padding:3px 10px;cursor:pointer}
 .theme button.on{background:var(--paper-2);color:var(--ink)}
-.stagewrap{position:relative;overflow:hidden;border-right:1px solid var(--hair)}
+.stagewrap{position:relative;overflow:hidden;min-height:0;min-width:0;border-right:1px solid var(--hair)}
 svg#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 svg#stage.dragging{cursor:grabbing}
 .scene{display:none}.scene.on{display:inline}
@@ -801,7 +864,7 @@ svg#stage.dragging{cursor:grabbing}
 .group.file .box{fill:var(--card);stroke:var(--hair-2);stroke-width:1}
 .group.file .band{fill:var(--paper-2)}
 .group.file .mark{fill:var(--prod)}
-.group.file.is-test .mark{fill:var(--test)}
+.group.file.is-test.st-unchanged .mark{fill:var(--test)}
 .group.file.is-test .band{fill:var(--test-soft)}
 .group.file.is-neighbor .box{fill:none;stroke-dasharray:3 3;stroke:var(--hair)}
 .group.file.is-neighbor .band{fill:none}
@@ -811,24 +874,59 @@ svg#stage.dragging{cursor:grabbing}
 .g-meta{font-family:var(--mono);font-size:9px;fill:var(--ink-3)}
 .g-role{font-family:var(--mono);font-size:9px;fill:var(--prod)}
 .group.file.is-test .g-role{fill:var(--test)}
-.group.st-added .g-meta{fill:var(--touch)}
+.group.st-added .g-meta{fill:var(--add)}
+.group.st-modified .g-meta{fill:var(--chg)}
+.group.st-deleted .g-meta{fill:var(--del)}
 .group.st-deleted .g-name{text-decoration:line-through}
+/* E1: the module's test files live in their own frame */
+.group.tframe .box{fill:none;stroke:var(--test);stroke-width:1.2;stroke-dasharray:6 4;opacity:.75}
+.t-name{font-family:var(--mono);font-size:10.5px;font-weight:600;fill:var(--test);letter-spacing:.04em}
+.t-meta{font-family:var(--mono);font-size:9px;fill:var(--ink-3)}
+/* E2: test files stay in place but step back until the pointer finds them */
+.scene[data-v="E2"] .tdim{opacity:.3;transition:opacity .14s linear}
+.scene[data-v="E2"] .tdim.tlit{opacity:1}
+.scene[data-v="E2"].has-sel .tdim.lit{opacity:1}
+/* disclosed neighbors, parked in a lane beside the drawing */
+.chip .box{fill:var(--card);stroke:var(--link);stroke-width:1.2;stroke-dasharray:4 2.5}
+.chip .mark{fill:var(--ink-3)}
+.chip.is-test .box{stroke:var(--test)}
+.chip .c-name{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+.chip .c-kind{font-family:var(--mono);font-size:8.5px;fill:var(--ink-3)}
+.chip .c-where{font-family:var(--mono);font-size:8.5px;fill:var(--ink-3)}
+.chip .x{fill:var(--ink-3);font-family:var(--mono);font-size:11px;cursor:pointer}
+.chip .x:hover{fill:var(--del)}
+.lane-edge{fill:none;stroke:var(--link);stroke-width:1.3;stroke-dasharray:5 3;opacity:.8}
+.lane-rule{stroke:var(--hair);stroke-width:1;stroke-dasharray:3 5}
+.lane-cap{font-family:var(--mono);font-size:9.5px;fill:var(--ink-3)}
 
 /* ---- symbols ---- */
 .cell{cursor:pointer}
 .cell .box{fill:var(--card);stroke:var(--hair);stroke-width:1}
 .cell .mark,.cell .sig{fill:none}
-.cell.is-touched .box{stroke:oklch(from var(--touch) l c h / 0.55)}
-.cell.is-touched .mark{fill:var(--touch)}
-.cell.is-neighbor .box{fill:var(--paper-2);stroke-dasharray:3 2.5}
+/* Git change state, on symbols and on files. The left rule carries the state. */
+.cell.st-added .mark,.group.st-added .mark{fill:var(--add)}
+.cell.st-modified .mark,.group.st-modified .mark{fill:var(--chg)}
+.cell.st-deleted .mark,.group.st-deleted .mark{fill:var(--del)}
+.cell.st-renamed .mark,.group.st-renamed .mark{fill:var(--ren)}
+.cell.st-added .box{stroke:oklch(from var(--add) l c h / 0.5)}
+.cell.st-modified .box{stroke:oklch(from var(--chg) l c h / 0.55)}
+.cell.st-deleted .box{stroke:oklch(from var(--del) l c h / 0.5)}
+.cell.st-renamed .box{stroke:oklch(from var(--ren) l c h / 0.5)}
+.cell.st-deleted .c-name{text-decoration:line-through}
+.cell.is-neighbor .box{fill:var(--paper-2);stroke-dasharray:3 2.5;stroke:var(--hair)}
 .cell.is-neighbor .mark{fill:var(--ink-3)}
 .cell.is-neighbor .c-name{fill:var(--ink-2)}
-.cell.is-test .box{fill:oklch(from var(--test) l c h / 0.06)}
+.cell.is-test .box{fill:oklch(from var(--test) l c h / 0.05)}
 .cell.is-test .c-kind{fill:var(--test)}
 .cell.is-sig .sig{fill:var(--sig)}
-.cell.is-long .c-lines{fill:var(--long);font-weight:700}
-.cell.is-long .box{stroke:var(--long)}
+/* The long-symbol flag is a badge, never a color: colors belong to Git state. */
+.cell.is-long .lbadge{fill:none;stroke:var(--ink-2);stroke-width:1}
+.cell.is-long .c-lines{fill:var(--ink);font-weight:700}
 .cell.tests .box{stroke-dasharray:none}
+/* code-to-canvas link: an identifier in the open diff points here */
+.cell.hot .box{stroke:var(--link);stroke-width:2.4}
+.cell.hot .c-name{fill:var(--link)}
+.scene.has-sel .cell.hot{opacity:1}
 .c-kind{font-family:var(--mono);font-size:8.5px;fill:var(--ink-3)}
 .c-name{font-family:var(--mono);font-size:11.5px;fill:var(--ink)}
 .c-lines{font-family:var(--mono);font-size:9px;fill:var(--ink-3)}
@@ -837,7 +935,7 @@ svg#stage.dragging{cursor:grabbing}
 .port .box{fill:var(--ink);stroke:none}
 .p-text{font-family:var(--mono);font-size:10px;fill:var(--paper);font-weight:600}
 .p-arrow{fill:oklch(from var(--paper) l c h / 0.7)}
-.port:hover .box{fill:var(--touch)}
+.port:hover .box{fill:var(--accent)}
 
 /* ---- edges ---- */
 .edge{fill:none;stroke:var(--hair-2);stroke-width:1.1}
@@ -880,19 +978,35 @@ svg#stage.dragging{cursor:grabbing}
 .wire.lit-in .edge{stroke:var(--in)}
 .wire.lit-out .edge{stroke:var(--out)}
 
-/* ---- rail ---- */
+/* ---- right column: review rail and code panel share one resizable side ---- */
+.side{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0;overflow:hidden;background:var(--paper)}
+.grip{position:absolute;left:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:33}
+.grip::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:1px;background:var(--hair)}
+.grip:hover::after,body.resizing .grip::after{background:var(--accent);width:2px;left:2.5px}
+.tabs{display:flex;gap:2px;padding:9px 14px 0;border-bottom:1px solid var(--hair)}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--ink-3);font:inherit;font-size:12px;padding:5px 11px 7px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button[disabled]{opacity:.42;cursor:default}
+.tabs .where{font-family:var(--mono);font-size:10px;color:var(--ink-3);max-width:20ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pane{min-height:0;flex-direction:column}
+.pane:not(.on){display:none}
+.pane.on{display:flex}
 .rail{overflow-y:auto;padding:16px 18px 90px;display:flex;flex-direction:column;gap:18px;background:var(--paper)}
 .rail h2{font-size:11px;letter-spacing:.02em;color:var(--ink-3);margin:0 0 9px;font-weight:600}
 .legend{display:flex;flex-direction:column;gap:7px}
 .legend div{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--ink-2)}
 .sw{width:28px;height:16px;flex:none;border:1px solid var(--hair);background:var(--card);position:relative}
-.sw.t{border-color:oklch(from var(--touch) l c h / .55);box-shadow:inset 3px 0 0 var(--touch)}
-.sw.s{border-color:oklch(from var(--touch) l c h / .55);box-shadow:inset 3px 0 0 var(--touch),inset 0 3px 0 var(--sig)}
+.sw.a{border-color:oklch(from var(--add) l c h / .5);box-shadow:inset 3px 0 0 var(--add)}
+.sw.m{border-color:oklch(from var(--chg) l c h / .55);box-shadow:inset 3px 0 0 var(--chg)}
+.sw.dl{border-color:oklch(from var(--del) l c h / .5);box-shadow:inset 3px 0 0 var(--del)}
+.sw.rn{border-color:oklch(from var(--ren) l c h / .5);box-shadow:inset 3px 0 0 var(--ren)}
+.sw.s{border-color:oklch(from var(--chg) l c h / .55);box-shadow:inset 3px 0 0 var(--chg),inset 0 3px 0 var(--sig)}
 .sw.n{background:var(--paper-2);border-style:dashed;box-shadow:inset 3px 0 0 var(--ink-3)}
 .sw.te{background:var(--test-soft);border-color:var(--test)}
 .sw.pr{border-color:var(--prod);box-shadow:inset 3px 0 0 var(--prod)}
-.sw.lo{border-color:var(--long)}
-.sw.lo::after{content:"920 L";position:absolute;right:3px;top:1px;font:700 8px var(--mono);color:var(--long)}
+.sw.lo{width:46px}
+.sw.lo::after{content:"! 920 L";position:absolute;right:2px;top:1px;padding:0 3px;white-space:nowrap;border:1px solid var(--ink-2);border-radius:7px;font:700 8px/12px var(--mono);color:var(--ink)}
 .sw.po{background:var(--ink);border-radius:8px;border:0}
 .sw.po::after{content:"3+1t \\2192";position:absolute;inset:0;text-align:center;font:600 8px/16px var(--mono);color:var(--paper)}
 .sw.line{border:0;background:none;height:2px;background:var(--ink)}
@@ -902,22 +1016,28 @@ svg#stage.dragging{cursor:grabbing}
 .toggle{display:flex;align-items:center;gap:10px;font-size:12px;cursor:pointer;user-select:none;color:var(--ink)}
 .toggle input{appearance:none;width:32px;height:18px;border-radius:9px;background:var(--paper-2);border:1px solid var(--hair);position:relative;cursor:pointer;transition:background .18s;margin:0}
 .toggle input::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--ink-3);transition:transform .2s cubic-bezier(.22,1,.36,1)}
-.toggle input:checked{background:var(--touch-soft);border-color:var(--touch)}
-.toggle input:checked::after{transform:translateX(14px);background:var(--touch)}
+.toggle input:checked{background:var(--accent-soft);border-color:var(--accent)}
+.toggle input:checked::after{transform:translateX(14px);background:var(--accent)}
 .hint{font-size:11px;line-height:1.5;color:var(--ink-3);margin:8px 0 0}
+.hint b{color:var(--ink-2)}
+.linky{background:none;border:0;padding:0;font:inherit;color:var(--link);cursor:pointer;text-decoration:underline}
 .inspector{border-top:1px solid var(--hair);padding-top:15px}
 .insp-name{font-family:var(--mono);font-size:13.5px;font-weight:600;word-break:break-all;line-height:1.3}
 .insp-path{font-family:var(--mono);font-size:10px;color:var(--ink-3);word-break:break-all;margin-top:5px;line-height:1.45}
 .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
 .badge{font-family:var(--mono);font-size:9.5px;padding:2.5px 6px;border:1px solid var(--hair);color:var(--ink-2);border-radius:3px}
-.badge.t{border-color:var(--touch);color:var(--touch)}
+.badge.t{border-color:var(--accent);color:var(--accent)}
+.badge.st-added{border-color:var(--add);color:var(--add)}
+.badge.st-modified{border-color:var(--chg);color:var(--chg)}
+.badge.st-deleted{border-color:var(--del);color:var(--del)}
+.badge.st-renamed{border-color:var(--ren);color:var(--ren)}
 .badge.s{border-color:var(--sig);color:var(--sig)}
 .badge.te{border-color:var(--test);color:var(--test)}
-.badge.lo{border-color:var(--long);color:var(--long)}
+.badge.lo{border-color:var(--ink-2);color:var(--ink);font-weight:700}
 .rel{margin-top:15px}
 .rel h3{font-size:10px;color:var(--ink-3);margin:0 0 6px;font-weight:600;display:flex;justify-content:space-between}
 .rel button,.rail .open{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--hair);padding:5px 0;font-family:var(--mono);font-size:11px;color:var(--ink);cursor:pointer;line-height:1.35}
-.rel button:hover{color:var(--touch)}
+.rel button:hover{color:var(--accent)}
 .rel button span{display:block;font-size:9px;color:var(--ink-3)}
 .rel button span.seam{color:var(--ink);font-weight:600}
 .rel .none{font-size:11px;color:var(--ink-3);font-style:italic}
@@ -925,31 +1045,57 @@ svg#stage.dragging{cursor:grabbing}
 .rail .open:hover{border-color:var(--ink)}
 
 /* ---- popover for a port ---- */
-.pop{position:fixed;z-index:45;background:var(--card);border:1px solid var(--hair-2);box-shadow:0 8px 28px var(--shadow);padding:10px 12px;min-width:260px;max-width:380px;max-height:60vh;overflow:auto;font-size:11px;display:none;border-radius:4px}
+.pop{position:fixed;pointer-events:auto;z-index:45;background:var(--card);border:1px solid var(--hair-2);box-shadow:0 8px 28px var(--shadow);padding:10px 12px;min-width:260px;max-width:380px;max-height:60vh;overflow:auto;font-size:11px;display:none;border-radius:4px}
 .pop.on{display:block}
 .pop h4{margin:0 0 6px;font-size:11px;font-weight:600;color:var(--ink)}
 .pop .grp{margin-top:8px}
 .pop .grp h5{margin:0 0 3px;font:600 10px var(--mono);color:var(--ink-2)}
 .pop .grp h5.te{color:var(--test)}
-.pop .grp div{font-family:var(--mono);font-size:10.5px;color:var(--ink);padding:1.5px 0 1.5px 10px;line-height:1.35}
-.pop .grp div span{color:var(--ink-3)}
+.pop .grp button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:3px;font-family:var(--mono);font-size:10.5px;color:var(--ink);padding:2.5px 7px 2.5px 10px;line-height:1.35;cursor:pointer}
+.pop .grp button:hover{background:var(--link-soft);color:var(--link)}
+.pop .grp button span{color:var(--ink-3)}
+.pop .grp button.shown{opacity:.5}
+.pop .all{margin-top:9px;width:100%;background:none;border:1px solid var(--hair);border-radius:3px;color:var(--ink);font:inherit;font-size:10.5px;padding:4px;cursor:pointer}
+.pop .all:hover{border-color:var(--link);color:var(--link)}
 .pop .foot{margin-top:9px;color:var(--ink-3);font-size:10.5px}
 
-/* ---- source drawer ---- */
-.drawer{position:absolute;left:0;right:0;bottom:0;height:46%;background:var(--card);border-top:1px solid var(--hair-2);box-shadow:0 -10px 30px var(--shadow);transform:translateY(102%);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;z-index:30}
-.drawer.on{transform:none}
-.drawer header{display:flex;align-items:baseline;gap:12px;padding:9px 16px;border-bottom:1px solid var(--hair);font-size:12px}
-.drawer header b{font-family:var(--mono);font-size:13px}
-.drawer header span{color:var(--ink-3);font-family:var(--mono);font-size:10.5px}
-.drawer header .warn{color:var(--long);font-weight:600;font-family:var(--sans);font-size:11.5px}
-.drawer header button{margin-left:auto;background:none;border:1px solid var(--hair);border-radius:3px;color:var(--ink-2);font:inherit;font-size:11px;padding:2px 9px;cursor:pointer}
-.drawer pre{margin:0;overflow:auto;flex:1;font-family:var(--mono);font-size:11px;line-height:1.5;padding:8px 0;tab-size:2}
-.drawer .ln{display:flex}
-.drawer .ln .n{width:64px;flex:none;text-align:right;padding-right:14px;color:var(--ink-3);user-select:none;border-right:1px solid var(--hair);margin-right:14px}
-.drawer .ln.chg{background:var(--touch-soft)}
-.drawer .ln.chg .n{color:var(--touch);border-right-color:var(--touch);font-weight:700}
-.drawer .ln .n::before{content:"";display:inline-block;width:6px}
-.drawer .ln.chg .n::before{content:"+"}
+/* ---- code panel: a unified diff in the shape every Git tool draws it ---- */
+.code{background:var(--card);border-left:1px solid var(--hair)}
+.code .head{padding:11px 14px 10px;border-bottom:1px solid var(--hair);display:flex;flex-direction:column;gap:5px}
+.code .head .t{display:flex;align-items:baseline;gap:9px}
+.code .head b{font-family:var(--mono);font-size:13px;font-weight:600;word-break:break-all}
+.code .head .path{font-family:var(--mono);font-size:10px;color:var(--ink-3);word-break:break-all;line-height:1.45}
+.code .head .stat{display:flex;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);align-items:center;flex-wrap:wrap}
+.code .head .stat .plus{color:var(--add);font-weight:700}
+.code .head .stat .minus{color:var(--del);font-weight:700}
+.code .head .close{margin-left:auto;background:none;border:1px solid var(--hair);border-radius:3px;color:var(--ink-2);font:inherit;font-size:11px;padding:2px 8px;cursor:pointer;flex:none}
+.code .head .close:hover{border-color:var(--ink-2);color:var(--ink)}
+.code .warn{font-size:11px;color:var(--ink);background:var(--paper-2);border:1px solid var(--hair-2);border-radius:3px;padding:5px 8px;line-height:1.4}
+.code .warn b{font-family:var(--mono);font-weight:700;font-size:11px}
+.diff{margin:0;overflow:auto;flex:1;font-family:var(--mono);font-size:11.5px;line-height:1.55;tab-size:2;white-space:pre}
+.diff .ln{display:flex;min-width:max-content}
+.diff .ln .n{width:40px;flex:none;text-align:right;padding:0 7px 0 4px;color:oklch(from var(--ink-3) l c h / .8);user-select:none;font-variant-numeric:tabular-nums}
+.diff .ln .s{width:15px;flex:none;text-align:center;user-select:none;color:var(--ink-3)}
+.diff .ln .t{padding:0 16px 0 2px;flex:1}
+.diff .ln.add{background:var(--add-bg)}
+.diff .ln.add .s{color:var(--add);font-weight:700}
+.diff .ln.add .n{color:oklch(from var(--add) l c h / .85)}
+.diff .ln.del{background:var(--del-bg)}
+.diff .ln.del .s{color:var(--del);font-weight:700}
+.diff .ln.del .n{color:oklch(from var(--del) l c h / .85)}
+.diff .ln.sig{box-shadow:inset 3px 0 0 var(--sig)}
+.diff .exp{display:flex;align-items:stretch;background:var(--paper-2);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);color:var(--ink-3);font-size:10.5px;user-select:none}
+.diff .exp button{background:none;border:0;border-right:1px solid var(--hair);color:var(--link);font:inherit;font-family:var(--mono);cursor:pointer;padding:3px 0;width:55px;flex:none;text-align:center}
+.diff .exp button:hover{background:var(--link-soft)}
+.diff .exp span{padding:3px 10px;flex:1;font-family:var(--mono)}
+/* the code-to-canvas link */
+.diff .id{border-bottom:1px dotted oklch(from var(--link) l c h / .6);cursor:pointer;border-radius:2px}
+.diff .id.here{background:var(--link-soft);border-bottom:1px solid var(--link)}
+.diff .id.hot{background:var(--link);color:var(--paper);border-bottom-color:transparent}
+.diff .id.self{border-bottom-style:none;font-weight:700}
+.code .foot{border-top:1px solid var(--hair);padding:7px 14px;font-size:10.5px;color:var(--ink-3);line-height:1.45;display:flex;gap:8px;align-items:center}
+.code .foot .key{border-bottom:1px dotted oklch(from var(--link) l c h / .6);color:var(--ink-2)}
+.code .empty{padding:24px 16px;color:var(--ink-3);font-size:12px;line-height:1.5}
 
 /* ---- tooltip ---- */
 .tip{position:fixed;pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .11s;background:var(--ink);color:var(--paper);padding:6px 9px;font-family:var(--mono);font-size:10.5px;line-height:1.5;max-width:420px;z-index:40;box-shadow:0 5px 18px var(--shadow);border-radius:3px}
@@ -963,20 +1109,20 @@ svg#stage.dragging{cursor:grabbing}
 .switcher button:hover{opacity:1}
 .switcher .label{padding:8px 16px;display:flex;flex-direction:column;gap:1px;min-width:280px;border-left:1px solid oklch(from var(--paper) l c h / .16);border-right:1px solid oklch(from var(--paper) l c h / .16)}
 .switcher .k{font-family:var(--mono);font-size:11.5px}
-.switcher .k b{color:var(--long)}
+.switcher .k b{color:var(--paper);font-weight:700}
 .switcher .n{font-size:10px;opacity:.65}
 .zoom{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--hair);z-index:31}
 .zoom button{background:none;border:0;border-bottom:1px solid var(--hair);width:29px;height:27px;cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--ink-2)}
 .zoom button:last-child{border-bottom:0;font-size:9px}
 .zoom button:hover{background:var(--paper-2);color:var(--ink)}
 .proto{position:absolute;left:14px;bottom:14px;font-family:var(--mono);font-size:9px;color:var(--ink-3)}
-@media (prefers-reduced-motion: reduce){.cell,.group,.wire,.drawer{transition:none}}
+@media (prefers-reduced-motion: reduce){.cell,.group,.wire,.tdim{transition:none}}
 `;
 
 const script = `
 const G = JSON.parse(document.getElementById("graph-data").textContent);
 const L = JSON.parse(document.getElementById("layout-data").textContent);
-const VS = ${JSON.stringify(variants.map((v) => ({ key: v.key, name: v.name, note: v.note })))};
+const VS = ${JSON.stringify(variants.map((v) => ({ key: v.key, name: v.name, note: v.note, hidden: v.hidden ?? false })))};
 
 const sym = new Map(G.symbols.map(s => [s.id, s]));
 const file = new Map(G.files.map(f => [f.id, f]));
@@ -1006,11 +1152,15 @@ for (const g of stage.querySelectorAll(".scene")) {
     cells: [...g.querySelectorAll("[data-cid]")],
     groups: [...g.querySelectorAll("[data-gid]")],
     wires: [...g.querySelectorAll("[data-eid]")],
+    laneG: g.querySelector(".layer-lane"), chips: [], order: [],
     view: null, fitted: false,
   };
 }
 
-let variant = "E", disclosed = false, selected = null;
+let variant = "E1", disclosed = false, selected = null, openSym = null;
+const NAV = VS.filter(v => !v.hidden);
+const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const att = t => esc(t).replace(/"/g, "&quot;");
 
 /* ---- geometry ---- */
 function place(key, state) {
@@ -1054,13 +1204,20 @@ function place(key, state) {
 }
 
 /* ---- pan and zoom ---- */
+/** Drawing box plus whatever the lanes hold, so a fit never cuts a disclosed chip. */
+function extent(S) {
+  const b = S.bounds || { w: 1000, h: 1000 };
+  let x0 = 0, x1 = b.w, y1 = b.h;
+  for (const c of S.chips) { x0 = Math.min(x0, c.x); x1 = Math.max(x1, c.x + LANE_W); y1 = Math.max(y1, c.y + CHIP_H); }
+  return { x: x0, y: 0, w: x1 - x0, h: y1 };
+}
 function view(key, floor) {
   const S = scenes[key];
   if (!S.view) {
-    const r = stage.getBoundingClientRect(), b = S.bounds || { w: 1000, h: 1000 };
+    const r = stage.getBoundingClientRect(), b = extent(S);
     const whole = Math.min((r.width - 40) / Math.max(b.w, 1), (r.height - 40) / Math.max(b.h, 1));
     const k = Math.min(1.1, Math.max(whole, floor || 0));
-    S.view = { k, x: (r.width - b.w * k) / 2, y: Math.max(14, (r.height - b.h * k) / 2) };
+    S.view = { k, x: (r.width - b.w * k) / 2 - b.x * k, y: Math.max(14, (r.height - b.h * k) / 2) };
   }
   return S.view;
 }
@@ -1071,7 +1228,7 @@ let drag = null;
 stage.addEventListener("pointerdown", e => {
   if (e.button !== 0) return;
   const v = view(variant);
-  const hit = e.target.closest("[data-sel],[data-port]");
+  const hit = e.target.closest("[data-sel],[data-port],[data-drop]");
   drag = { px: e.clientX, py: e.clientY, x: v.x, y: v.y, moved: false, hit };
   stage.setPointerCapture(e.pointerId); stage.classList.add("dragging");
 });
@@ -1084,7 +1241,9 @@ stage.addEventListener("pointermove", e => {
 stage.addEventListener("pointerup", e => {
   if (drag && !drag.moved) {
     const h = drag.hit;
-    if (h && h.dataset.port) disclose(h.dataset.port);
+    const drop = e.target.closest("[data-drop]");
+    if (drop) dropChip(variant, drop.dataset.drop);
+    else if (h && h.dataset.port) discloseP(h.dataset.port);
     else if (h) select(h.dataset.sel, true);
     else select(null);
   }
@@ -1112,6 +1271,8 @@ stage.addEventListener("mousemove", e => {
   if (port && !drag) { showPop(port.dataset.port, e.clientX, e.clientY); tip.classList.remove("on"); return; }
   if (!pinnedPop) pop.classList.remove("on");
   const hit = e.target.closest("[data-sel]");
+  hotCode(hit && !hit.dataset.sel.startsWith("file:") ? hit.dataset.sel : null);
+  litTests(hit ? hit.dataset.sel : null);
   if (!hit || drag) { tip.classList.remove("on"); return; }
   const id = hit.dataset.sel;
   if (id.startsWith("file:")) {
@@ -1120,17 +1281,36 @@ stage.addEventListener("mousemove", e => {
   } else {
     const s = sym.get(id), f = file.get(s.file);
     tip.innerHTML = "<b>" + s.name + "</b>  <i>" + s.kind + (s.hand ? " (hand-added)" : "") + "</i><br>" + f.path + "<i>:" + s.start + "-" + s.end + "</i>" +
-      "<br><i>" + s.lines + " lines" + (s.touched && s.kind !== "test" && s.lines > G.longThreshold ? " &#183; LONG, over " + G.longThreshold : "") + " &#183; " + inOf.get(s.id).length + " callers &#183; " + outOf.get(s.id).length + " callees" +
+      "<br><i>" + s.lines + " lines" + (s.long ? " &#183; long, over " + G.longThreshold : "") + " &#183; " + inOf.get(s.id).length + " callers &#183; " + outOf.get(s.id).length + " callees" +
       (s.touched ? " &#183; touched, " + s.changed.length + " lines changed" : " &#183; neighbor") + (s.sig ? " &#183; signature changed" : "") + "</i>" +
-      (s.source ? "<br><i>click to open the source</i>" : "");
+      (s.diff ? "<br><i>click to open the diff</i>" : "");
   }
   tip.classList.add("on");
   const r = tip.getBoundingClientRect();
   tip.style.left = Math.min(e.clientX + 14, innerWidth - r.width - 8) + "px";
   tip.style.top = Math.min(e.clientY + 16, innerHeight - r.height - 8) + "px";
 });
-stage.addEventListener("mouseleave", () => { tip.classList.remove("on"); if (!pinnedPop) pop.classList.remove("on"); });
+stage.addEventListener("mouseleave", () => { tip.classList.remove("on"); hotCode(null); litTests(null); if (!pinnedPop) pop.classList.remove("on"); });
+/** E2 keeps test files in place but steps them back until the pointer finds one. */
+function litTests(sel) {
+  const S = scenes[variant];
+  const fid = !sel ? null : sel.startsWith("file:") ? sel.slice(5) : sym.get(sel) && sym.get(sel).file;
+  for (const el of [...S.cells, ...S.groups]) {
+    if (!el.classList.contains("tdim")) continue;
+    const own = el.dataset.sel || "";
+    const f = own.startsWith("file:") ? own.slice(5) : sym.get(own) && sym.get(own).file;
+    el.classList.toggle("tlit", !!fid && f === fid);
+  }
+}
 
+pop.addEventListener("mouseenter", () => { pinnedPop = 1; });
+pop.addEventListener("mouseleave", () => { pinnedPop = null; pop.classList.remove("on"); });
+pop.addEventListener("click", e => {
+  const one = e.target.closest("[data-one]");
+  if (one) { discloseOne(one.dataset.one, one.dataset.dir, pop.dataset.anchor); one.classList.add("shown"); select(one.dataset.one, false); return; }
+  const all = e.target.closest("[data-all]");
+  if (all) { discloseP(all.dataset.all); pinnedPop = null; pop.classList.remove("on"); }
+});
 function showPop(portKey, x, y) {
   const [dir, fileId] = [portKey.slice(0, portKey.indexOf(":")), portKey.slice(portKey.indexOf(":") + 1)];
   const ids = G.ports[portKey] || [];
@@ -1146,22 +1326,115 @@ function showPop(portKey, x, y) {
   for (const [k, list] of [...byMod.entries()].sort()) {
     const [m, role] = k.split("|");
     html += "<div class='grp'><h5 class='" + (role === "test" ? "te" : "") + "'>" + m + " &#183; " + role + (m !== f.moduleName ? " &#183; across a seam" : "") + "</h5>";
-    for (const s of list) html += "<div>" + s.name + " <span>" + file.get(s.file).rel + ":" + s.start + "</span></div>";
+    for (const s of list) html += '<button data-one="' + att(s.id) + '" data-dir="' + dir + '">' + esc(s.short) + " <span>" + esc(file.get(s.file).rel) + ":" + s.start + "</span></button>";
     html += "</div>";
   }
-  html += "<div class='foot'>Click the port to show these neighbors in the drawing.</div>";
+  html += '<button class="all" data-all="' + att(portKey) + '">Place all ' + ids.length + " in the lane</button>";
+  html += "<div class='foot'>Or click one entry to place only that symbol.</div>";
   pop.innerHTML = html;
+  pop.dataset.anchor = fileId;
   pop.classList.add("on");
   const r = pop.getBoundingClientRect();
   pop.style.left = Math.min(x + 14, innerWidth - r.width - 8) + "px";
   pop.style.top = Math.min(y + 14, innerHeight - r.height - 8) + "px";
 }
-function disclose(portKey) {
+/* ---- incremental disclosure -------------------------------------------
+   No layout library runs at view time, so a disclosed neighbor is not folded
+   back into the elkjs drawing. It is parked in a lane beside the drawing and
+   tied to its anchor by a dashed line. The elkjs geometry never moves, and a
+   chip that is already placed never shifts, so the reviewer's mental map holds.
+   The cost: a chip's position in the lane is disclosure order, not graph
+   structure. The chip carries its module and path as text instead.        */
+const LANE_W = 244, CHIP_H = 28, CHIP_GAP = 8, LANE_GAP = 120, COL_GAP = 18;
+
+function anchorBox(key, sel) {
+  const P = L[key][disclosed ? "full" : "focus"];
+  const g = P.groups[key + "-file-" + sel];
+  if (g) return g;
+  const c = P.cells[key + "-sym-" + sel];
+  return c ? [c[0], c[1], 150, 24] : null;
+}
+/** Place one neighbor in the lane of the active scene. Returns false if it is already there. */
+function placeChip(key, id, dir, anchorId) {
+  const S = scenes[key];
+  if (S.chips.some(c => c.id === id)) return false;
+  const s = sym.get(id), f = file.get(s.file), b = extent(S);
+  const list = S.chips.filter(c => c.dir === dir);
+  const rows = Math.max(5, Math.floor((S.bounds.h || 600) / (CHIP_H + CHIP_GAP)));
+  const i = list.length, col = Math.floor(i / rows), row = i % rows;
+  const laneX = dir === "out"
+    ? (S.bounds.w || 0) + LANE_GAP + col * (LANE_W + COL_GAP)
+    : -LANE_GAP - LANE_W - col * (LANE_W + COL_GAP);
+  const ab0 = anchorBox(key, anchorId);
+  if (!list.length) S["top_" + dir] = ab0 ? Math.max(0, ab0[1] - 10) : 30;
+  const chip = { id, dir, anchorId, x: laneX, y: (S["top_" + dir] || 30) + row * (CHIP_H + CHIP_GAP) };
+  const where = f.moduleName + " \u00b7 " + f.rel + ":" + s.start;
+  const html =
+    '<g class="cell chip ' + (f.role === "test" ? "is-test" : "is-prod") + '" data-chip="1" data-sel="' + att(id) + '" transform="translate(' + chip.x + " " + chip.y + ')">' +
+    '<rect class="box" x="0" y="0" width="' + LANE_W + '" height="' + CHIP_H + '" rx="3"/>' +
+    '<rect class="mark" x="0" y="0" width="3" height="' + CHIP_H + '"/>' +
+    '<text class="c-kind" x="9" y="12">' + (s.kind === "test" ? "t" : s.kind[0]) + '</text>' +
+    '<text class="c-name" x="22" y="12">' + esc(s.short.length > 26 ? s.short.slice(0, 25) + "\u2026" : s.short) + '</text>' +
+    '<text class="c-where" x="22" y="23">' + esc(where.length > 34 ? "\u2026" + where.slice(-33) : where) + '</text>' +
+    '<text class="x" x="' + (LANE_W - 8) + '" y="13" text-anchor="end" data-drop="' + att(id) + '">\u00d7</text>' +
+    '</g>';
+  const ab = anchorBox(key, anchorId) || [0, 0, 10, 10];
+  const ax = dir === "out" ? ab[0] + ab[2] : ab[0];
+  const ay = ab[1] + Math.min(ab[3], 40) / 2;
+  const cx = dir === "out" ? chip.x : chip.x + LANE_W;
+  const cy = chip.y + CHIP_H / 2;
+  const mid = (ax + cx) / 2;
+  const edge = '<path class="lane-edge" d="M' + ax + " " + ay + " C" + mid + " " + ay + " " + mid + " " + cy + " " + cx + " " + cy + '" marker-end="url(#arrow)"/>';
+  S.laneG.insertAdjacentHTML("beforeend", edge + html);
+  chip.el = S.laneG.lastElementChild;
+  chip.edgeEl = chip.el.previousElementSibling;
+  S.chips.push(chip);
+  return true;
+}
+function dropChip(key, id) {
+  const S = scenes[key], i = S.chips.findIndex(c => c.id === id);
+  if (i < 0) return;
+  S.chips[i].el.remove(); S.chips[i].edgeEl.remove(); S.chips.splice(i, 1);
+  afterLane(key);
+}
+function clearLane(key) {
+  const S = scenes[key];
+  S.laneG.textContent = ""; S.chips = [];
+  afterLane(key);
+}
+function afterLane(key) {
+  const S = scenes[key], caps = S.chips.length;
+  laneNote();
+  refreshIdents();
+  if (selected) select(selected, false, true);
+}
+function laneNote() {
+  const S = scenes[variant], n = S.chips.length;
+  const box = document.getElementById("lane-state");
+  box.innerHTML = n === 0
+    ? '<p class="hint" style="margin:0 0 9px">Nothing disclosed yet.</p>'
+    : '<p class="hint" style="margin:0 0 9px"><b>' + n + '</b> neighbor' + (n === 1 ? "" : "s") + ' in the lane. <button class="linky" id="clear-lane">Clear</button></p>';
+  const b = document.getElementById("clear-lane");
+  if (b) b.addEventListener("click", () => { clearLane(variant); fit(variant, 0.3); });
+}
+/** A whole port: every neighbor behind that one count, and nothing else. */
+function discloseP(portKey) {
   const ids = G.ports[portKey] || [];
+  const dir = portKey.slice(0, portKey.indexOf(":"));
   const fileId = portKey.slice(portKey.indexOf(":") + 1);
-  setDisclosed(true);
-  pinnedPop = null; pop.classList.remove("on");
-  select("file:" + fileId, false);
+  if (disclosed) { setDisclosed(false); }
+  let added = 0;
+  for (const id of ids) if (placeChip(variant, id, dir, fileId)) added++;
+  afterLane(variant);
+  if (added) fit(variant, 0.28);
+}
+/** One entry of a port list, or one identifier in the open diff. */
+function discloseOne(id, dir, anchorId) {
+  if (disclosed) setDisclosed(false);
+  const ok = placeChip(variant, id, dir, anchorId);
+  afterLane(variant);
+  if (ok) fit(variant, 0.32);
+  return ok;
 }
 
 /* ---- selection: a symbol, or a whole file ---- */
@@ -1169,15 +1442,15 @@ function selectionSet(id) {
   if (!id) return new Set();
   return new Set(id.startsWith("file:") ? symsOfFile(id.slice(5)) : [id]);
 }
-function select(id, withSource) {
-  selected = selected === id ? null : id;
+function select(id, withCode, keep) {
+  selected = keep ? id : (selected === id ? null : id);
   const set = selectionSet(selected);
   const ins = new Set(), outs = new Set();
   for (const s of set) { for (const i of inOf.get(s)) if (!set.has(i)) ins.add(i); for (const o of outOf.get(s)) if (!set.has(o)) outs.add(o); }
   for (const key in scenes) {
     const S = scenes[key];
     S.root.classList.toggle("has-sel", !!selected);
-    for (const el of [...S.cells, ...S.groups]) {
+    for (const el of [...S.cells, ...S.chips.map(c => c.el), ...S.groups]) {
       el.classList.remove("lit", "lit-in", "lit-out", "sel");
       if (!selected || !el.dataset.sel) continue;
       const mine = selectionSet(el.dataset.sel);
@@ -1197,8 +1470,8 @@ function select(id, withSource) {
     }
   }
   inspect();
-  if (selected && !selected.startsWith("file:") && sym.get(selected).source && withSource !== false) openSource(selected);
-  else if (!selected) closeDrawer();
+  if (selected && !selected.startsWith("file:") && sym.get(selected).diff && withCode !== false) openCode(selected);
+  else if (!selected && !keep) closeCode();
 }
 
 /* ---- inspector ---- */
@@ -1217,9 +1490,9 @@ function inspect() {
   if (selected.startsWith("file:")) {
     const f = file.get(selected.slice(5)), syms = symsOfFile(f.id).map(id => sym.get(id));
     insp.innerHTML = '<h2>Selection</h2><div class="insp-name">' + f.path.slice(f.path.lastIndexOf("/") + 1) + '</div><div class="insp-path">' + f.path + '</div>' +
-      '<div class="badges"><span class="badge ' + (f.role === "test" ? "te" : "") + '">' + f.role + '</span><span class="badge">' + f.moduleName + '</span><span class="badge' + (f.touched ? " t" : "") + '">' + f.status + '</span></div>' +
+      '<div class="badges"><span class="badge ' + (f.role === "test" ? "te" : "") + '">' + f.role + '</span><span class="badge">' + f.moduleName + '</span><span class="badge ' + (f.touched ? "st-" + f.status : "") + '">' + f.status + '</span></div>' +
       '<div class="rel"><h3><span>Symbols</span><span>' + syms.length + '</span></h3>' +
-      syms.sort((a, b) => a.start - b.start).map(s => '<button data-jump="' + s.id + '">' + s.name + '<span>' + s.kind + ' &#183; ' + s.lines + ' lines' + (s.touched ? ' &#183; touched' : '') + (s.touched && s.kind !== "test" && s.lines > G.longThreshold ? ' &#183; LONG' : '') + '</span></button>').join("") + '</div>';
+      syms.sort((a, b) => a.start - b.start).map(s => '<button data-jump="' + s.id + '">' + s.name + '<span>' + s.kind + ' &#183; ' + s.lines + ' lines' + (s.touched ? ' &#183; touched' : '') + (s.long ? ' &#183; long' : '') + '</span></button>').join("") + '</div>';
     return;
   }
   const s = sym.get(selected), f = file.get(s.file);
@@ -1228,12 +1501,12 @@ function inspect() {
     '<div class="insp-name">' + s.name + '</div>' +
     '<div class="insp-path">' + f.path + ':' + s.start + '-' + s.end + '</div>' +
     '<div class="badges"><span class="badge">' + s.kind + '</span>' +
-      (s.touched ? '<span class="badge t">touched</span>' : '<span class="badge">neighbor</span>') +
+      (s.touched ? '<span class="badge st-' + s.change + '">' + s.change + '</span>' : '<span class="badge">neighbor</span>') +
       (s.sig ? '<span class="badge s">signature</span>' : '') +
       '<span class="badge ' + (f.role === "test" ? "te" : "") + '">' + f.role + '</span>' +
-      '<span class="badge' + (s.touched && s.kind !== "test" && s.lines > G.longThreshold ? ' lo' : '') + '">' + s.lines + ' lines</span>' +
+      '<span class="badge' + (s.long ? ' lo' : '') + '">' + (s.long ? '! ' : '') + s.lines + ' lines</span>' +
       (s.hand ? '<span class="badge">hand-added</span>' : '') + '</div>' +
-    (s.source ? '<button class="open" data-open="' + s.id + '">Open source, ' + s.changed.length + ' changed lines</button>' : '') +
+    (s.diff ? '<button class="open" data-open="' + att(s.id) + '">Open the diff, ' + s.changed.length + ' changed lines</button>' : '') +
     '<div class="rel"><h3><span>Called by</span><span>' + ins.length + '</span></h3>' +
       (ins.length ? ins.map(i => row(i, "in", s.file)).join("") : '<div class="none">Nothing in this graph calls it.</div>') + '</div>' +
     '<div class="rel"><h3><span>Calls</span><span>' + outs.length + '</span></h3>' +
@@ -1243,32 +1516,184 @@ insp.addEventListener("click", e => {
   const b = e.target.closest("[data-jump]");
   if (b) { selected = null; select(b.dataset.jump, false); return; }
   const o = e.target.closest("[data-open]");
-  if (o) openSource(o.dataset.open);
+  if (o) openCode(o.dataset.open);
 });
 
-/* ---- source drawer ---- */
-const drawer = document.querySelector(".drawer");
-function openSource(id) {
-  const s = sym.get(id), f = file.get(s.file);
-  if (!s.source) return;
-  const changed = new Set(s.changed);
-  const lines = s.source.split("\\n");
-  const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-  drawer.querySelector("header").innerHTML = "<b>" + s.name + "</b><span>" + f.path + ":" + s.start + "-" + s.end + "</span><span>" + s.lines + " lines, " + s.changed.length + " changed</span>" +
-    (s.kind !== "test" && s.lines > G.longThreshold ? "<span class='warn'>Long symbol: " + s.lines + " lines, threshold " + G.longThreshold + ". Consider splitting it.</span>" : "") +
-    "<button data-close>Close</button>";
-  drawer.querySelector("pre").innerHTML = lines.map((t, i) => "<div class='ln" + (changed.has(s.start + i) ? " chg" : "") + "'><span class='n'>" + (s.start + i) + "</span><span>" + esc(t) + "</span></div>").join("");
-  drawer.classList.add("on");
-  const first = drawer.querySelector(".ln.chg");
-  if (first) setTimeout(() => first.scrollIntoView({ block: "center" }), 60);
+/* ---- code panel: one symbol's unified diff, GitHub shape -----------------
+   Unchanged runs collapse to an expander with three lines of context around
+   each hunk. Identifiers that name a symbol in this graph are marked, so the
+   code and the canvas point at each other.                               */
+const codePane = document.querySelector(".pane.code");
+const diffEl = codePane.querySelector(".diff");
+const CTX = 3, STEP = 20;
+let expanded = [], names = new Map(), IDRE = null;
+
+const BS = String.fromCharCode(92);
+const rxEsc = t => t.replace(/[^A-Za-z0-9_$]/g, c => BS + c);
+
+function buildNames(id) {
+  names = new Map(); IDRE = null;
+  const add = (n, sid) => { if (!n || n.length < 2) return; if (!names.has(n)) names.set(n, []); if (!names.get(n).includes(sid)) names.get(n).push(sid); };
+  for (const o of outOf.get(id) || []) add(sym.get(o).short, o);
+  add(sym.get(id).short, id);
+  if (!names.size) return;
+  const keys = [...names.keys()].sort((a, b) => b.length - a.length || (a < b ? -1 : 1));
+  IDRE = new RegExp(BS + "b(?:" + keys.map(rxEsc).join("|") + ")" + BS + "b", "g");
 }
-function closeDrawer() { drawer.classList.remove("on"); }
-drawer.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeDrawer(); });
+/** Escape the line, then wrap the identifiers that are symbols in this graph. */
+function markup(t) {
+  if (!IDRE) return esc(t);
+  let out = "", last = 0, m;
+  IDRE.lastIndex = 0;
+  while ((m = IDRE.exec(t))) {
+    out += esc(t.slice(last, m.index));
+    const ids = names.get(m[0]);
+    out += '<span class="id' + (ids.includes(openSym) ? " self" : "") + '" data-sym="' + att(ids[0]) + '">' + esc(m[0]) + "</span>";
+    last = m.index + m[0].length;
+  }
+  return out + esc(t.slice(last));
+}
+function renderDiff() {
+  const s = sym.get(openSym), rows = s.diff || [];
+  if (!rows.length) { diffEl.innerHTML = '<div class="empty">No diff for this symbol.</div>'; return; }
+  const keep = new Array(rows.length).fill(false);
+  rows.forEach((r, i) => { if (r.k !== "ctx") for (let j = Math.max(0, i - CTX); j <= Math.min(rows.length - 1, i + CTX); j++) keep[j] = true; });
+  for (const [a, b] of expanded) for (let j = a; j <= b; j++) keep[j] = true;
+  const sigLines = new Set(s.sig ? [s.start] : []);
+  let html = "", i = 0;
+  while (i < rows.length) {
+    if (keep[i]) {
+      const r = rows[i];
+      html += '<div class="ln ' + r.k + (r.n && sigLines.has(r.n) ? " sig" : "") + '">' +
+        '<span class="n">' + (r.o == null ? "" : r.o) + '</span>' +
+        '<span class="n">' + (r.n == null ? "" : r.n) + '</span>' +
+        '<span class="s">' + (r.k === "add" ? "+" : r.k === "del" ? "−" : " ") + '</span>' +
+        '<span class="t">' + markup(r.t) + "</span></div>";
+      i++; continue;
+    }
+    let j = i; while (j < rows.length && !keep[j]) j++;
+    const a = i, b = j - 1, gap = b - a + 1;
+    html += '<div class="exp">' +
+      (gap > STEP ? '<button data-exp="' + a + "," + Math.min(b, a + STEP - 1) + '" title="Expand ' + STEP + ' lines up">↑</button>' : "") +
+      '<button data-exp="' + a + "," + b + '" title="Expand every hidden line">' + (gap > STEP ? "all" : "↕") + "</button>" +
+      (gap > STEP ? '<button data-exp="' + Math.max(a, b - STEP + 1) + "," + b + '" title="Expand ' + STEP + ' lines down">↓</button>' : "") +
+      "<span>" + gap + " unchanged line" + (gap === 1 ? "" : "s") + "</span></div>";
+    i = j;
+  }
+  diffEl.innerHTML = html;
+  refreshIdents();
+}
+function openCode(id) {
+  const s = sym.get(id), f = file.get(s.file);
+  if (!s.diff) return;
+  openSym = id; expanded = [];
+  buildNames(id);
+  const plus = s.diff.filter(r => r.k === "add").length, minus = s.diff.filter(r => r.k === "del").length;
+  codePane.querySelector(".head").innerHTML =
+    '<div class="t"><b>' + esc(s.name) + "</b>" +
+      '<span class="badge st-' + s.change + '">' + s.change + "</span>" +
+      '<button class="close" data-close>Close</button></div>' +
+    '<div class="path">' + esc(f.path) + ":" + s.start + "–" + s.end + "</div>" +
+    '<div class="stat"><span class="plus">+' + plus + '</span><span class="minus">−' + minus + "</span>" +
+      "<span>" + s.lines + " lines</span><span>" + f.moduleName + "</span><span>" + f.role + "</span>" +
+      (s.sig ? '<span style="color:var(--sig);font-weight:700">signature changed</span>' : "") + "</div>" +
+    (s.long ? '<div class="warn"><b>! ' + s.lines + " L</b> — over the " + G.longThreshold + " line threshold. A symbol this long hides its own seams.</div>" : "");
+  codePane.querySelector(".foot").innerHTML =
+    '<span><span class="key">dotted</span> identifiers are symbols in this graph. Hover to find one on the canvas, click to place it.</span>';
+  renderDiff();
+  document.querySelector('.tabs [data-tab="code"]').disabled = false;
+  document.querySelector('.tabs .where').textContent = " " + f.path.slice(f.path.lastIndexOf("/") + 1);
+  setTab("code");
+  const first = diffEl.querySelector(".ln.add, .ln.del");
+  if (first) setTimeout(() => first.scrollIntoView({ block: "center" }), 40);
+}
+function closeCode() {
+  openSym = null; names = new Map(); IDRE = null;
+  diffEl.innerHTML = ""; codePane.querySelector(".head").innerHTML = ""; codePane.querySelector(".foot").innerHTML = "";
+  document.querySelector('.tabs [data-tab="code"]').disabled = true;
+  document.querySelector('.tabs .where').textContent = "";
+  setTab("review");
+  hotCanvas(null);
+}
+/** Which symbols the active scene currently shows: placed cells plus lane chips. */
+function placedIds() {
+  const S = scenes[variant], out = new Set();
+  for (const el of S.cells) if (!el.classList.contains("hidden") && el.dataset.sel && !el.dataset.sel.startsWith("file:")) out.add(el.dataset.sel);
+  for (const c of S.chips) out.add(c.id);
+  return out;
+}
+function refreshIdents() {
+  if (!openSym) return;
+  const on = placedIds();
+  for (const el of diffEl.querySelectorAll(".id")) el.classList.toggle("here", on.has(el.dataset.sym));
+}
+/** Light the canvas from the code, and the code from the canvas. */
+function hotCanvas(ids) {
+  for (const key in scenes) {
+    const S = scenes[key];
+    for (const el of [...S.cells, ...S.chips.map(c => c.el)]) el.classList.toggle("hot", !!ids && ids.has(el.dataset.sel));
+  }
+}
+function hotCode(id) {
+  for (const el of diffEl.querySelectorAll(".id")) el.classList.toggle("hot", !!id && el.dataset.sym === id);
+}
+diffEl.addEventListener("click", e => {
+  const x = e.target.closest("[data-exp]");
+  if (x) { const [a, b] = x.dataset.exp.split(",").map(Number); expanded.push([a, b]); renderDiff(); return; }
+  const id = e.target.closest(".id");
+  if (!id) return;
+  const sid = id.dataset.sym;
+  if (sid === openSym) return;
+  if (!placedIds().has(sid)) discloseOne(sid, "out", sym.get(openSym).file);
+  select(sid, false);
+});
+diffEl.addEventListener("mouseover", e => {
+  const id = e.target.closest(".id");
+  hotCanvas(id ? new Set([id.dataset.sym]) : null);
+});
+diffEl.addEventListener("mouseleave", () => hotCanvas(null));
+codePane.addEventListener("click", e => { if (e.target.closest("[data-close]")) { selected = null; select(null); } });
+
+/* ---- tabs and the resizable side ---- */
+let railW = 340, codeW = 620;
+function setTab(name) {
+  for (const b of document.querySelectorAll(".tabs button")) b.classList.toggle("on", b.dataset.tab === name);
+  for (const pane of document.querySelectorAll(".pane")) pane.classList.toggle("on", pane.dataset.pane === name);
+  document.body.style.setProperty("--side-w", (name === "code" ? codeW : railW) + "px");
+  for (const k in scenes) scenes[k].fitted = false;
+  requestAnimationFrame(() => show(variant, false));
+}
+document.querySelector(".tabs").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (b && !b.disabled) setTab(b.dataset.tab);
+});
+const grip = document.querySelector(".grip");
+grip.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  const code = document.querySelector('.tabs [data-tab="code"]').classList.contains("on");
+  const start = e.clientX, from = code ? codeW : railW;
+  document.body.classList.add("resizing");
+  grip.setPointerCapture(e.pointerId);
+  const move = ev => {
+    const w = Math.max(code ? 380 : 260, Math.min(code ? 1000 : 520, from + (start - ev.clientX)));
+    if (code) codeW = w; else railW = w;
+    document.body.style.setProperty("--side-w", w + "px");
+  };
+  const up = () => {
+    grip.removeEventListener("pointermove", move); grip.removeEventListener("pointerup", up);
+    document.body.classList.remove("resizing");
+    for (const k in scenes) scenes[k].fitted = false;
+    show(variant, false);
+  };
+  grip.addEventListener("pointermove", move); grip.addEventListener("pointerup", up);
+});
 
 /* ---- disclosure toggle ---- */
 const toggle = document.getElementById("disclose-toggle");
 function setDisclosed(on) {
   disclosed = on; toggle.checked = on;
+  for (const key in scenes) { scenes[key].laneG.textContent = ""; scenes[key].chips = []; }
+  laneNote(); refreshIdents();
   for (const key in scenes) { scenes[key].root.classList.add("swapping"); place(key, on ? "full" : "focus"); }
   setTimeout(() => { for (const key in scenes) scenes[key].root.classList.remove("swapping"); }, 360);
   for (const k in scenes) scenes[k].fitted = false;
@@ -1288,13 +1713,13 @@ function show(key, push) {
 }
 document.querySelector(".switcher .prev").addEventListener("click", () => step(-1));
 document.querySelector(".switcher .next").addEventListener("click", () => step(1));
-function step(d) { const i = VS.findIndex(v => v.key === variant); show(VS[(i + d + VS.length) % VS.length].key, true); }
+function step(d) { const i = NAV.findIndex(v => v.key === variant); show(NAV[(i < 0 ? 0 : i + d + NAV.length) % NAV.length].key, true); }
 addEventListener("keydown", e => {
   const t = e.target;
   if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
   if (e.key === "ArrowLeft") step(-1);
   else if (e.key === "ArrowRight") step(1);
-  else if (e.key === "Escape") { select(null); closeDrawer(); }
+  else if (e.key === "Escape") { select(null); closeCode(); }
   else if (e.key === "f") setDisclosed(!disclosed);
   else if (e.key === "d") setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
 });
@@ -1304,11 +1729,12 @@ document.querySelector(".zoom .fit").addEventListener("click", () => fit(variant
 
 for (const key in scenes) place(key, "focus");
 inspect();
+laneNote();
 const q = new URL(location.href).searchParams;
 if (q.get("disclosed") === "1") { disclosed = true; toggle.checked = true; for (const key in scenes) place(key, "full"); }
 if (q.get("theme")) setTheme(q.get("theme"));
 const want = q.get("variant");
-show(VS.some(v => v.key === want) ? want : "E", false);
+show(VS.some(v => v.key === want) ? want : "E1", false);
 addEventListener("resize", () => { for (const k in scenes) scenes[k].fitted = false; show(variant, false); });
 `;
 
@@ -1337,6 +1763,8 @@ const html = `<!doctype html>
       <span><b>${counts.touchedFiles}</b> files</span>
       <span><b>${counts.touchedSymbols}</b> symbols</span>
       <span><b>${counts.touchedTests}</b> test cases</span>
+      <span class="add"><b>${counts.added}</b> added</span>
+      <span><b>${counts.modified}</b> modified</span>
       <span class="long"><b>${counts.long}</b> long</span>
       <span><b>${counts.neighbors}</b> neighbors in ${counts.neighborFiles} files</span>
     </div>
@@ -1352,15 +1780,23 @@ const html = `<!doctype html>
     ${variants.map(sceneSvg).join("\n    ")}
   </svg>
   <div class="zoom"><button class="in" title="Zoom in">+</button><button class="out" title="Zoom out">&#8722;</button><button class="fit" title="Fit">fit</button></div>
-  <div class="proto">prototype round 2 &#183; issue #6</div>
-  <div class="drawer"><header></header><pre></pre></div>
+  <div class="proto">prototype round 3 &#183; issue #6</div>
 </div>
 
-<aside class="rail">
+<aside class="side">
+  <div class="grip" title="Drag to resize"></div>
+  <div class="tabs">
+    <button data-tab="review" class="on">Review</button>
+    <button data-tab="code" disabled>Code<span class="where"></span></button>
+  </div>
+  <div class="pane rail on" data-pane="review">
   <div>
     <h2>Legend</h2>
     <div class="legend">
-      <div><span class="sw t"></span>Touched symbol</div>
+      <div><span class="sw a"></span>Added</div>
+      <div><span class="sw m"></span>Modified</div>
+      <div><span class="sw dl"></span>Deleted</div>
+      <div><span class="sw rn"></span>Renamed</div>
       <div><span class="sw s"></span>Signature changed</div>
       <div><span class="sw lo"></span>Long symbol, over ${LONG_SYMBOL_LINES} lines</div>
       <div><span class="sw pr"></span>Production file</div>
@@ -1375,13 +1811,21 @@ const html = `<!doctype html>
   </div>
   <div>
     <h2>Neighbors</h2>
-    <label class="toggle"><input type="checkbox" id="disclose-toggle"><span>Show untouched neighbors</span></label>
-    <p class="hint">Hidden by default. Each touched file shows a port with the count. Hover a port to list them, click it to draw them. Press <b>f</b>.</p>
+    <p class="hint" style="margin:0 0 9px">Hover a port to list what hides behind it. Click the port to place those neighbors in the lane beside the drawing, or click one entry to place just that symbol.</p>
+    <div id="lane-state"></div>
+    <label class="toggle"><input type="checkbox" id="disclose-toggle"><span>Show every neighbor at once</span></label>
+    <p class="hint">Reflows into the full layout and clears the lane. Press <b>f</b>.</p>
   </div>
   <div class="inspector" id="inspector"></div>
   <div>
     <h2>Controls</h2>
     <p class="hint" style="margin:0">Drag to pan, scroll to zoom, arrow keys change variant, <b>d</b> toggles dark mode, Esc clears.</p>
+  </div>
+  </div>
+  <div class="pane code" data-pane="code">
+    <div class="head"></div>
+    <pre class="diff"></pre>
+    <div class="foot"></div>
   </div>
 </aside>
 

@@ -30,6 +30,7 @@ import type {
 } from "./interface.ts";
 import { dedupeEdges, sortGraph } from "./interface.ts";
 import {
+  isTestPath,
   listWorkspaceFiles,
   overlaps,
   repoRelative,
@@ -560,6 +561,7 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
       path: file.path,
       touched: true,
       status: file.status,
+      isTest: isTestPath(file.path),
     });
     if (file.status === "deleted") continue;
     const f = facts.get(abs);
@@ -588,6 +590,7 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
         path: s.relPath,
         touched: false,
         status: "untouched",
+        isTest: isTestPath(s.relPath),
       });
     }
   };

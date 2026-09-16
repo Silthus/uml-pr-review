@@ -21,6 +21,7 @@ import type {
 import { dedupeEdges, sortGraph } from "./interface.ts";
 import {
   isExternalPath,
+  isTestPath,
   listWorkspaceFiles,
   overlaps,
   repoRelative,
@@ -61,6 +62,12 @@ type Decl = {
   /** The node whose body holds the calls this symbol makes. */
   bodyNode: TsNode;
   relPath: string;
+  /**
+   * False for a test or hook symbol. Nothing calls a test case, so asking the
+   * call hierarchy for its incoming calls would answer with the callers of
+   * `it` itself. See issue #13.
+   */
+  callHierarchy: boolean;
 };
 
 function containsFunction(ts: ts, node: TsNode): boolean {
@@ -86,6 +93,177 @@ function memberName(ts: ts, node: TsNode): string | undefined {
   return undefined;
 }
 
+
+// --- Test cases as symbols (issue #13) --------------------------------------
+//
+// A call inside `it('...', () => { ... })` has no enclosing declaration, so the
+// extractor used to drop it. These helpers turn the `it(...)` call expression
+// itself into a Symbol, so "which test covers this change" becomes a call edge.
+
+/** Names that open a group. A group is a name prefix, never a Symbol. */
+const SUITE_NAMES = new Set(["describe", "suite"]);
+/** Names that open one test case. */
+const CASE_NAMES = new Set(["it", "test", "bench"]);
+/** Names that open a lifecycle hook. */
+const HOOK_NAMES = new Set([
+  "beforeEach",
+  "afterEach",
+  "beforeAll",
+  "afterAll",
+]);
+/**
+ * Members allowed between the base name and the call, such as the `skip` in
+ * `test.skip(...)`. An unknown member means this is not a test call at all,
+ * which keeps `foo.describe(...)` out of the graph.
+ */
+const TEST_MODIFIERS = new Set([
+  "only",
+  "skip",
+  "todo",
+  "fails",
+  "failing",
+  "concurrent",
+  "sequential",
+  "each",
+  "for",
+  "skipIf",
+  "runIf",
+  "extend",
+  "scoped",
+]);
+
+/** Joins a nested describe title to the title below it. Vitest reporter style. */
+const TITLE_JOIN = " > ";
+
+type TestRole = "suite" | "case" | "hook";
+
+type TestCall = {
+  role: TestRole;
+  base: string;
+  /** The member chain in source order: `["each"]` for `it.each`. */
+  modifiers: string[];
+  title: string;
+  titleSource: "literal" | "template" | "expression" | "hookName";
+  /** Last node of the signature. Editing it marks the symbol signatureTouched. */
+  sigEndNode: TsNode;
+  /** The arrow or function expression that holds the body, if there is one. */
+  callback: TsNode | undefined;
+};
+
+function isFunctionLike(ts: ts, node: TsNode): boolean {
+  return ts.isArrowFunction(node) || ts.isFunctionExpression(node);
+}
+
+/** Collapse whitespace and cap a title so an id stays one readable line. */
+function compactTitle(raw: string): string {
+  const flat = raw.replace(/\s+/g, " ").trim();
+  return flat.length > 120 ? `${flat.slice(0, 117)}...` : flat;
+}
+
+/**
+ * Read the base name and the member chain off the thing being called.
+ *
+ * Unwraps one layer of `it.each([...])(...)` and of ``it.each`table`(...)``,
+ * because there the title lives on the OUTER call and the table on the inner.
+ */
+function readTestCallee(
+  ts: ts,
+  expression: TsNode,
+): { base: string; modifiers: string[] } | undefined {
+  let node = expression;
+  if (ts.isCallExpression(node)) node = node.expression;
+  else if (ts.isTaggedTemplateExpression(node)) node = node.tag;
+  const modifiers: string[] = [];
+  while (ts.isPropertyAccessExpression(node)) {
+    const member = node.name.text;
+    if (!TEST_MODIFIERS.has(member)) return undefined;
+    modifiers.unshift(member);
+    node = node.expression;
+  }
+  if (!ts.isIdentifier(node)) return undefined;
+  return { base: node.text, modifiers };
+}
+
+/**
+ * The title of a test, and how it was read.
+ *
+ * - A string literal or a backtick with no substitution gives its text.
+ * - A template with a substitution keeps the source form, so
+ *   ``it(`renders ${mode}`)`` is titled ``renders ${mode}``. One symbol stands
+ *   for every value the substitution takes, which is also what `it.each` does.
+ * - Anything else (an identifier, a call, a concatenation) uses its source
+ *   text. It is still stable across runs and it still names something a human
+ *   can find in the file.
+ */
+function readTestTitle(
+  ts: ts,
+  sf: TsSourceFile,
+  node: TsNode,
+): { title: string; titleSource: TestCall["titleSource"] } {
+  if (ts.isStringLiteralLike(node)) {
+    return { title: compactTitle(node.text), titleSource: "literal" };
+  }
+  if (ts.isTemplateExpression(node)) {
+    const raw = node.getText(sf);
+    const inner = raw.startsWith("`") && raw.endsWith("`") ? raw.slice(1, -1) : raw;
+    return { title: compactTitle(inner), titleSource: "template" };
+  }
+  return { title: compactTitle(node.getText(sf)), titleSource: "expression" };
+}
+
+/** Match one call expression against the test shapes. Undefined if it is none. */
+export function matchTestCall(
+  ts: ts,
+  sf: TsSourceFile,
+  node: TsNode,
+): TestCall | undefined {
+  if (!ts.isCallExpression(node)) return undefined;
+  const callee = readTestCallee(ts, node.expression);
+  if (!callee) return undefined;
+
+  const role: TestRole | undefined = SUITE_NAMES.has(callee.base)
+    ? "suite"
+    : CASE_NAMES.has(callee.base)
+      ? "case"
+      : HOOK_NAMES.has(callee.base)
+        ? "hook"
+        : undefined;
+  if (!role) return undefined;
+
+  const args = node.arguments;
+  if (role === "hook") {
+    // A hook takes the callback first and has no title of its own.
+    const callback = args.find((a) => isFunctionLike(ts, a));
+    if (!callback) return undefined;
+    return {
+      role,
+      base: callee.base,
+      modifiers: callee.modifiers,
+      title: callee.base,
+      titleSource: "hookName",
+      sigEndNode: node.expression,
+      callback,
+    };
+  }
+
+  // A case or a suite needs a title AND a body. `it.each([...])` on its own has
+  // one array argument and no body, so it is rejected here and only the outer
+  // call that carries the title survives. `it('pending')` is rejected too.
+  const title = args[0];
+  if (!title) return undefined;
+  const callback = args.slice(1).find((a) => isFunctionLike(ts, a));
+  const read = readTestTitle(ts, sf, title);
+  return {
+    role,
+    base: callee.base,
+    modifiers: callee.modifiers,
+    title: read.title,
+    titleSource: read.titleSource,
+    sigEndNode: title,
+    callback,
+  };
+}
+
 /**
  * Every symbol declared in one file, innermost last within a parent.
  *
@@ -99,9 +277,23 @@ function memberName(ts: ts, node: TsNode): string | undefined {
  * - `const api = { a() {}, b: () => {} }` is a const with two method members,
  *   because the initializer is an object literal directly.
  * - A const whose initializer holds no function at all is not a symbol.
+ *
+ * Added for issue #13, in a test file only:
+ * - `it('...', () => {})` and `test(...)` are symbols of kind test.
+ * - `beforeEach(() => {})` and its siblings are symbols of kind hook.
+ * - `describe('...')` is NOT a symbol. It only prefixes the titles below it.
  */
-function listSymbols(ts: ts, sf: TsSourceFile, relPath: string): Decl[] {
+export function listSymbols(
+  ts: ts,
+  sf: TsSourceFile,
+  relPath: string,
+  stats: (key: string) => void = () => {},
+): Decl[] {
   const out: Decl[] = [];
+  const isTestFile = isTestPath(relPath);
+  // Two tests in one file can carry the same title path. An id must stay
+  // unique, so the second one gets a "#2" suffix and the clash is counted.
+  const usedQualified = new Map<string, number>();
   const lineOf = (pos: number) =>
     sf.getLineAndCharacterOfPosition(pos).line + 1;
 
@@ -114,10 +306,13 @@ function listSymbols(ts: ts, sf: TsSourceFile, relPath: string): Decl[] {
     nameNode: TsNode;
     sigEndNode: TsNode;
     bodyNode: TsNode;
+    /** A test symbol names itself by its title path, not by its parent. */
+    qualifiedOverride?: string;
+    callHierarchy?: boolean;
   }): Decl => {
-    const qualified = args.parent
-      ? `${args.parent.qualified}.${args.name}`
-      : args.name;
+    const qualified =
+      args.qualifiedOverride ??
+      (args.parent ? `${args.parent.qualified}.${args.name}` : args.name);
     const decl: Decl = {
       id: `${relPath}#${qualified}`,
       name: args.name,
@@ -134,9 +329,22 @@ function listSymbols(ts: ts, sf: TsSourceFile, relPath: string): Decl[] {
       node: args.node,
       bodyNode: args.bodyNode,
       relPath,
+      callHierarchy: args.callHierarchy ?? true,
     };
     out.push(decl);
     return decl;
+  };
+
+  /** Keep an id unique inside one file. Two tests can share a title path. */
+  const uniqueQualified = (qualified: string): string => {
+    const seen = usedQualified.get(qualified);
+    if (seen === undefined) {
+      usedQualified.set(qualified, 1);
+      return qualified;
+    }
+    usedQualified.set(qualified, seen + 1);
+    stats("testTitlePathCollisions");
+    return `${qualified} #${seen + 1}`;
   };
 
   const sigEnd = (node: TsNode, fallback: TsNode): TsNode => {
@@ -146,8 +354,57 @@ function listSymbols(ts: ts, sf: TsSourceFile, relPath: string): Decl[] {
     return fallback;
   };
 
-  const visit = (node: TsNode, parent: Decl | undefined) => {
+  const visit = (
+    node: TsNode,
+    parent: Decl | undefined,
+    titlePath: readonly string[] = [],
+  ) => {
     let next = parent;
+
+    const test = isTestFile ? matchTestCall(ts, sf, node) : undefined;
+    if (test) {
+      stats(`test_${test.role}`);
+      for (const modifier of test.modifiers) stats(`testModifier_${modifier}`);
+      if (test.titleSource !== "literal") stats(`testTitle_${test.titleSource}`);
+
+      if (test.role === "suite") {
+        // A describe is a name prefix and not a Symbol. It declares nothing,
+        // nothing calls it, and a box for it would carry no edge of its own.
+        const inner = [...titlePath, test.title];
+        if (test.callback) {
+          test.callback.forEachChild((child) => visit(child, parent, inner));
+        }
+        return;
+      }
+
+      if (!test.callback) {
+        // `it.todo('...')` and `it('pending')` have no body, so no call either.
+        stats("testCasesWithoutBody");
+        return;
+      }
+
+      const prefix = test.role === "hook" ? "hook:" : "test:";
+      const titlePathHere = [...titlePath, test.title];
+      const decl = push({
+        name: test.title,
+        kind: test.role === "hook" ? "hook" : "test",
+        ...(parent ? { parent } : {}),
+        node,
+        // The range starts at the leading comment, the same rule the other
+        // kinds use, so a pull request that only edits the comment above a
+        // test still marks that test touched.
+        rangeNode: node,
+        nameNode: node,
+        sigEndNode: test.sigEndNode,
+        bodyNode: test.callback,
+        qualifiedOverride: uniqueQualified(
+          `${prefix}${titlePathHere.join(TITLE_JOIN)}`,
+        ),
+        callHierarchy: false,
+      });
+      test.callback.forEachChild((child) => visit(child, decl, titlePathHere));
+      return;
+    }
 
     if (ts.isFunctionDeclaration(node)) {
       const name = node.name ? node.name.text : "default";
@@ -311,7 +568,7 @@ function listSymbols(ts: ts, sf: TsSourceFile, relPath: string): Decl[] {
       }
     }
 
-    node.forEachChild((child) => visit(child, next));
+    node.forEachChild((child) => visit(child, next, titlePath));
   };
 
   sf.forEachChild((child) => visit(child, undefined));
@@ -455,7 +712,9 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
     const cached = symbolsByFile.get(abs);
     if (cached) return cached;
     const sf = program.getSourceFile(abs);
-    const decls = sf ? listSymbols(ts, sf, repoRelative(worktree, abs)) : [];
+    const decls = sf
+      ? listSymbols(ts, sf, repoRelative(worktree, abs), (k) => bump(k))
+      : [];
     symbolsByFile.set(abs, decls);
     return decls;
   };
@@ -498,6 +757,7 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
       path: file.path,
       touched: true,
       status: file.status,
+      isTest: isTestPath(file.path),
     });
     if (file.status === "deleted") {
       notes.push(`${file.path} is deleted on the head side, so it has no symbols`);
@@ -529,6 +789,7 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
         path: d.relPath,
         touched: false,
         status: "untouched",
+        isTest: isTestPath(d.relPath),
       });
     }
   };
@@ -601,6 +862,12 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
 
   // --- Callers: the call hierarchy incoming calls ---------------------------
   for (const d of touchedDecls) {
+    if (!d.callHierarchy) {
+      // A test case has no callers. Asking the call hierarchy here would
+      // answer with every caller of `it` in the repository.
+      bump("callHierarchySkippedForTestSymbol");
+      continue;
+    }
     const abs = `${worktree}/${d.relPath}`;
     let incoming;
     try {
@@ -629,14 +896,45 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
         continue;
       }
       const callerDecls = declsFor(fromFile);
-      const caller = innermostAt(callerDecls, call.from.selectionSpan.start);
-      if (!caller) {
-        // A call at module top level. The item is the source file itself.
-        bump("callersAtModuleTopLevel");
-        continue;
+      // What the baseline extractor would have found: the call hierarchy item
+      // itself. Keeping it lets the report split the recovery by cause.
+      const legacyCaller = innermostAt(
+        callerDecls,
+        call.from.selectionSpan.start,
+      );
+      // Attribute by the CALL SITE, not by the call hierarchy item.
+      //
+      // Issue #13: the call hierarchy walks up to the nearest declaration it
+      // recognises. An arrow passed as an argument is not one, so for a call
+      // inside `it('...', () => { ... })` it walks all the way to the source
+      // file and reports selectionSpan 0. Using the span of the call itself
+      // finds the innermost listed symbol that really encloses it, which is
+      // the test case. For a normal function the two agree.
+      for (const span of realSpans) {
+        const caller = innermostAt(callerDecls, span.start);
+        if (!caller) {
+          // No enclosing symbol at all. Record file and line so the remainder
+          // can be explained one by one instead of only counted.
+          bump("callersAtModuleTopLevel");
+          const line = fromSf.getLineAndCharacterOfPosition(span.start).line + 1;
+          notes.push(
+            `unattributed caller into ${d.name}: ${repoRelative(worktree, fromFile)}:${line}`,
+          );
+          continue;
+        }
+        if (caller.kind === "test") bump("callersThatAreTestCases");
+        else if (caller.kind === "hook") bump("callersThatAreTestHooks");
+        if (!legacyCaller) {
+          // The baseline dropped this one. Record what recovered it.
+          bump(`recovered_${caller.kind}`);
+          const line = fromSf.getLineAndCharacterOfPosition(span.start).line + 1;
+          notes.push(
+            `recovered caller into ${d.name} as ${caller.kind}: ${repoRelative(worktree, fromFile)}:${line}`,
+          );
+        }
+        edges.push({ from: caller.id, to: d.id, kind: "call" });
+        if (!touchedDecls.some((t) => t.id === caller.id)) noteNeighbor(caller);
       }
-      edges.push({ from: caller.id, to: d.id, kind: "call" });
-      if (!touchedDecls.some((t) => t.id === caller.id)) noteNeighbor(caller);
     }
   }
 
@@ -647,6 +945,9 @@ export async function analyze(input: AnalyzeInput): Promise<Graph> {
   notes.push(
     "callees resolved through the checker; callees outside the workspace are dropped",
     "one symbol per convex action: the handler arrow is not split out",
+    `test symbols are on in test files only; id is "<path>#test:<describe titles joined by '${TITLE_JOIN}'> > <it title>"`,
+    "a describe block is a name prefix, not a symbol",
+    "it.each and a template-literal title give one symbol for the whole block",
   );
 
   return sortGraph({

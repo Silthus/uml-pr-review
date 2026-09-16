@@ -83,3 +83,12 @@ export function overlaps(
   for (const line of lines) if (line >= start && line <= end) return true;
   return false;
 }
+
+/**
+ * True for a file that holds test cases rather than production code. Matches a
+ * `.test.` / `.spec.` name or a `__tests__` directory, which is every test file
+ * in lonir. This is the per-file flag; the symbol kind carries the rest.
+ */
+export function isTestPath(p: string): boolean {
+  return /\.(test|spec)\.(ts|tsx|js|jsx)$/.test(p) || p.includes("/__tests__/");
+}

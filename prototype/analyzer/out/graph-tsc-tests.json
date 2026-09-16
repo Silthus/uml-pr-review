@@ -1,0 +1,2956 @@
+{
+  "version": 0,
+  "pr": {
+    "url": "https://github.com/Omni-GM/lonir/pull/4819",
+    "number": 4819,
+    "headSha": "8f5e6fe75a51431d2d1c2fcfaebb05d3aa960654",
+    "title": "fix(chat): end a turn that produced nothing instead of crashing the action"
+  },
+  "files": [
+    {
+      "id": "apps/web/src/features/capture/capture.contract.test.tsx",
+      "path": "apps/web/src/features/capture/capture.contract.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/features/chat/components/ChatSearchSource.test.tsx",
+      "path": "apps/web/src/features/chat/components/ChatSearchSource.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "path": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": false
+    },
+    {
+      "id": "apps/web/src/features/chat/testing.ts",
+      "path": "apps/web/src/features/chat/testing.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "apps/web/src/features/dashboard/components/DashboardSurface.test.tsx",
+      "path": "apps/web/src/features/dashboard/components/DashboardSurface.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/features/dashboard/components/PrepNextSessionNudge.test.tsx",
+      "path": "apps/web/src/features/dashboard/components/PrepNextSessionNudge.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/features/onboarding/components/PrepNextSessionCta.test.tsx",
+      "path": "apps/web/src/features/onboarding/components/PrepNextSessionCta.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.fullscreen-chat.test.tsx",
+      "path": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.fullscreen-chat.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.test.tsx",
+      "path": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.preselect-skill.test.tsx",
+      "path": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.preselect-skill.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.test.tsx",
+      "path": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.test.tsx",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/chats.entityProposalTools.test.ts",
+      "path": "packages/backend/convex/chats.entityProposalTools.test.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/chats.sendAction.providerOptions.test.ts",
+      "path": "packages/backend/convex/chats.sendAction.providerOptions.test.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "path": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts",
+      "path": "packages/backend/convex/chats/agent.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/agent/buildProviderOptions.ts",
+      "path": "packages/backend/convex/chats/agent/buildProviderOptions.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/assistantBubbleKey.ts",
+      "path": "packages/backend/convex/chats/lib/assistantBubbleKey.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/chatContextHandler.ts",
+      "path": "packages/backend/convex/chats/lib/chatContextHandler.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "path": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "path": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "path": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/streamError.ts",
+      "path": "packages/backend/convex/chats/lib/streamError.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "path": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.truncation.test.ts",
+      "path": "packages/backend/convex/chats/sendAction.truncation.test.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts",
+      "path": "packages/backend/convex/chats/sendAction.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt.ts",
+      "path": "packages/backend/convex/chats/systemPrompt.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts",
+      "path": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/tasks/model.ts",
+      "path": "packages/backend/convex/chats/tasks/model.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts",
+      "path": "packages/backend/convex/chats/testing.ts",
+      "touched": true,
+      "status": "modified",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/chats/titleGen.ts",
+      "path": "packages/backend/convex/chats/titleGen.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/lib/models/index.ts",
+      "path": "packages/backend/convex/lib/models/index.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/prepSessions/chatPrep.ts",
+      "path": "packages/backend/convex/prepSessions/chatPrep.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "path": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "touched": true,
+      "status": "added",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/sendAction.streamError.test.ts",
+      "path": "packages/backend/convex/sendAction.streamError.test.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": true
+    },
+    {
+      "id": "packages/backend/convex/skills/buildCatalogSection.ts",
+      "path": "packages/backend/convex/skills/buildCatalogSection.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/skills/perTurnCatalog.ts",
+      "path": "packages/backend/convex/skills/perTurnCatalog.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "path": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/backend/convex/testing.ts",
+      "path": "packages/backend/convex/testing.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    },
+    {
+      "id": "packages/errors/src/index.ts",
+      "path": "packages/errors/src/index.ts",
+      "touched": false,
+      "status": "untouched",
+      "isTest": false
+    }
+  ],
+  "symbols": [
+    {
+      "id": "apps/web/src/features/capture/capture.contract.test.tsx#hook:useCapture — distill: raw fragments transition to distilling on trigger > beforeEach",
+      "fileId": "apps/web/src/features/capture/capture.contract.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 747,
+        "end": 751
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/features/chat/components/ChatSearchSource.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/features/chat/components/ChatSearchSource.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 73,
+        "end": 83
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts#latestAssistantTurnIndex",
+      "fileId": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "name": "latestAssistantTurnIndex",
+      "kind": "function",
+      "line": {
+        "start": 73,
+        "end": 86
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts#hasTerminalSignal",
+      "fileId": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "name": "hasTerminalSignal",
+      "kind": "function",
+      "line": {
+        "start": 88,
+        "end": 90
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "apps/web/src/features/chat/hooks/resolveChatTurn.ts#resolveChatTurn",
+      "fileId": "apps/web/src/features/chat/hooks/resolveChatTurn.ts",
+      "name": "resolveChatTurn",
+      "kind": "function",
+      "line": {
+        "start": 92,
+        "end": 127
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "apps/web/src/features/chat/testing.ts#createChatTestHarness",
+      "fileId": "apps/web/src/features/chat/testing.ts",
+      "name": "createChatTestHarness",
+      "kind": "function",
+      "line": {
+        "start": 44,
+        "end": 103
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/features/dashboard/components/DashboardSurface.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/features/dashboard/components/DashboardSurface.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 78,
+        "end": 87
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/features/dashboard/components/PrepNextSessionNudge.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/features/dashboard/components/PrepNextSessionNudge.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 60,
+        "end": 68
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/features/onboarding/components/PrepNextSessionCta.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/features/onboarding/components/PrepNextSessionCta.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 40,
+        "end": 47
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.fullscreen-chat.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.fullscreen-chat.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 134,
+        "end": 145
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 135,
+        "end": 146
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.preselect-skill.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.preselect-skill.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 101,
+        "end": 112
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.test.tsx#hook:beforeEach",
+      "fileId": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.test.tsx",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 153,
+        "end": 162
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats.entityProposalTools.test.ts#test:entity write tools always registered > test override seam replaces and restores the chat agent outside production",
+      "fileId": "packages/backend/convex/chats.entityProposalTools.test.ts",
+      "name": "test override seam replaces and restores the chat agent outside production",
+      "kind": "test",
+      "line": {
+        "start": 128,
+        "end": 138
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats.sendAction.providerOptions.test.ts#installCapturingAgent",
+      "fileId": "packages/backend/convex/chats.sendAction.providerOptions.test.ts",
+      "name": "installCapturingAgent",
+      "kind": "function",
+      "line": {
+        "start": 80,
+        "end": 94
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#makeConvexTest",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "makeConvexTest",
+      "kind": "function",
+      "line": {
+        "start": 55,
+        "end": 60
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#readChatMessages",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "readChatMessages",
+      "kind": "function",
+      "line": {
+        "start": 62,
+        "end": 77
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#createOpenAiContractModel",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "createOpenAiContractModel",
+      "kind": "function",
+      "line": {
+        "start": 79,
+        "end": 116
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#hook:beforeEach",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 118,
+        "end": 122
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#hook:afterEach",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "afterEach",
+      "kind": "hook",
+      "line": {
+        "start": 124,
+        "end": 129
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#test:Chat text-file attachments > a User can continue a Chat after attaching a Markdown file",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "a User can continue a Chat after attaching a Markdown file",
+      "kind": "test",
+      "line": {
+        "start": 132,
+        "end": 156
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats.textFiles.provider.test.ts#test:Chat text-file attachments > a User can retry a failed turn after attaching a Markdown file",
+      "fileId": "packages/backend/convex/chats.textFiles.provider.test.ts",
+      "name": "a User can retry a failed turn after attaching a Markdown file",
+      "kind": "test",
+      "line": {
+        "start": 158,
+        "end": 196
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#createChatAgent",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "createChatAgent",
+      "kind": "function",
+      "line": {
+        "start": 167,
+        "end": 211
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#assembleTurnTools",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "assembleTurnTools",
+      "kind": "function",
+      "line": {
+        "start": 379,
+        "end": 450
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "getChatAgentForWrites",
+      "kind": "function",
+      "line": {
+        "start": 466,
+        "end": 475
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#setChatAgentForTesting",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "setChatAgentForTesting",
+      "kind": "function",
+      "line": {
+        "start": 495,
+        "end": 513
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent.ts#clearChatAgentForTesting",
+      "fileId": "packages/backend/convex/chats/agent.ts",
+      "name": "clearChatAgentForTesting",
+      "kind": "function",
+      "line": {
+        "start": 515,
+        "end": 518
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/agent/buildProviderOptions.ts#buildProviderOptions",
+      "fileId": "packages/backend/convex/chats/agent/buildProviderOptions.ts",
+      "name": "buildProviderOptions",
+      "kind": "function",
+      "line": {
+        "start": 81,
+        "end": 136
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/assistantBubbleKey.ts#assistantBubbleKey",
+      "fileId": "packages/backend/convex/chats/lib/assistantBubbleKey.ts",
+      "name": "assistantBubbleKey",
+      "kind": "function",
+      "line": {
+        "start": 29,
+        "end": 61
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/chatContextHandler.ts#buildChatContextHandler",
+      "fileId": "packages/backend/convex/chats/lib/chatContextHandler.ts",
+      "name": "buildChatContextHandler",
+      "kind": "function",
+      "line": {
+        "start": 152,
+        "end": 160
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "assistantText",
+      "kind": "arrow",
+      "line": {
+        "start": 8,
+        "end": 18
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantStringContent",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "assistantStringContent",
+      "kind": "arrow",
+      "line": {
+        "start": 20,
+        "end": 22
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "toolCall",
+      "kind": "arrow",
+      "line": {
+        "start": 24,
+        "end": 30
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#askUserCall",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "askUserCall",
+      "kind": "arrow",
+      "line": {
+        "start": 32,
+        "end": 45
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "toolResult",
+      "kind": "arrow",
+      "line": {
+        "start": 47,
+        "end": 53
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "userPrompt",
+      "kind": "arrow",
+      "line": {
+        "start": 55,
+        "end": 57
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > returns no fallback when the turn produced final assistant text",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "returns no fallback when the turn produced final assistant text",
+      "kind": "test",
+      "line": {
+        "start": 61,
+        "end": 68
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > treats a bare string assistant content as final text",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "treats a bare string assistant content as final text",
+      "kind": "test",
+      "line": {
+        "start": 70,
+        "end": 77
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > ignores whitespace-only assistant text (that is not a real reply)",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "ignores whitespace-only assistant text (that is not a real reply)",
+      "kind": "test",
+      "line": {
+        "start": 79,
+        "end": 86
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > does NOT treat a mixed text + tool-call assistant row as final text",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "does NOT treat a mixed text + tool-call assistant row as final text",
+      "kind": "test",
+      "line": {
+        "start": 93,
+        "end": 109
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > saves a friendly fallback when only tool calls/results were produced",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "saves a friendly fallback when only tool calls/results were produced",
+      "kind": "test",
+      "line": {
+        "start": 113,
+        "end": 125
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > surfaces a friendly CATEGORY when every op failed with a known code",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "surfaces a friendly CATEGORY when every op failed with a known code",
+      "kind": "test",
+      "line": {
+        "start": 127,
+        "end": 144
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > stays generic-but-warm when no failed-tool reason is derivable",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "stays generic-but-warm when no failed-tool reason is derivable",
+      "kind": "test",
+      "line": {
+        "start": 146,
+        "end": 154
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > does NOT surface an agent-facing guidance string verbatim",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "does NOT surface an agent-facing guidance string verbatim",
+      "kind": "test",
+      "line": {
+        "start": 161,
+        "end": 180
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to the generic fallback for an unrecognized error code",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "drops to the generic fallback for an unrecognized error code",
+      "kind": "test",
+      "line": {
+        "start": 182,
+        "end": 200
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to generic when failures span MIXED categories",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "drops to generic when failures span MIXED categories",
+      "kind": "test",
+      "line": {
+        "start": 202,
+        "end": 220
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > the step ceiling was hit (finishReason length) > saves a fallback when the model burned the step budget with no final text",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "saves a fallback when the model burned the step budget with no final text",
+      "kind": "test",
+      "line": {
+        "start": 224,
+        "end": 232
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > does NOT save a fallback while an askUser Question is unanswered",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "does NOT save a fallback while an askUser Question is unanswered",
+      "kind": "test",
+      "line": {
+        "start": 241,
+        "end": 248
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > DOES save a fallback once the askUser Question has been answered",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "DOES save a fallback once the askUser Question has been answered",
+      "kind": "test",
+      "line": {
+        "start": 250,
+        "end": 263
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when finishReason is error",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "does not save a fallback when finishReason is error",
+      "kind": "test",
+      "line": {
+        "start": 267,
+        "end": 274
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when a failed message already closed the turn",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "does not save a fallback when a failed message already closed the turn",
+      "kind": "test",
+      "line": {
+        "start": 276,
+        "end": 285
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn even when it ran steps first",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "stays silent over a stopped turn even when it ran steps first",
+      "kind": "test",
+      "line": {
+        "start": 287,
+        "end": 297
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn whose cancellation was never reported to the app",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "stays silent over a stopped turn whose cancellation was never reported to the app",
+      "kind": "test",
+      "line": {
+        "start": 299,
+        "end": 309
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > closes the turn when nothing at all was written for it",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "closes the turn when nothing at all was written for it",
+      "kind": "test",
+      "line": {
+        "start": 313,
+        "end": 323
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > says the turn stopped and nothing was saved, and offers a smaller retry",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "says the turn stopped and nothing was saved, and offers a smaller retry",
+      "kind": "test",
+      "line": {
+        "start": 325,
+        "end": 336
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > still leaves a pending askUser Question alone when no failed message exists",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "still leaves a pending askUser Question alone when no failed message exists",
+      "kind": "test",
+      "line": {
+        "start": 338,
+        "end": 347
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > empty completion — the model returned nothing > saves a friendly fallback when the turn finished cleanly with no response rows",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "saves a friendly fallback when the turn finished cleanly with no response rows",
+      "kind": "test",
+      "line": {
+        "start": 351,
+        "end": 361
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > empty completion — the model returned nothing > saves a fallback when the step budget was exhausted with no response rows",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "saves a fallback when the step budget was exhausted with no response rows",
+      "kind": "test",
+      "line": {
+        "start": 363,
+        "end": 370
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#withId",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "withId",
+      "kind": "arrow",
+      "line": {
+        "start": 380,
+        "end": 380
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the fragment row so the turn can be marked failed",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "returns the fragment row so the turn can be marked failed",
+      "kind": "test",
+      "line": {
+        "start": 383,
+        "end": 391
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the LAST reply row — the one the GM is left looking at",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "returns the LAST reply row — the one the GM is left looking at",
+      "kind": "test",
+      "line": {
+        "start": 393,
+        "end": 405
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a reply the model actually finished",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "leaves a reply the model actually finished",
+      "kind": "test",
+      "line": {
+        "start": 409,
+        "end": 416
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn the GM stopped, whose failed row is already its ending",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "leaves a turn the GM stopped, whose failed row is already its ending",
+      "kind": "test",
+      "line": {
+        "start": 418,
+        "end": 429
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn waiting on a pending askUser Question",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "leaves a turn waiting on a pending askUser Question",
+      "kind": "test",
+      "line": {
+        "start": 431,
+        "end": 439
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn that produced no reply text for the fallback to close",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.test.ts",
+      "name": "leaves a turn that produced no reply text for the fallback to close",
+      "kind": "test",
+      "line": {
+        "start": 441,
+        "end": 457
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#turnSavedAnyResponse",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "turnSavedAnyResponse",
+      "kind": "function",
+      "line": {
+        "start": 73,
+        "end": 78
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#deriveFailureCategory",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "deriveFailureCategory",
+      "kind": "function",
+      "line": {
+        "start": 86,
+        "end": 117
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#classifyError",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "classifyError",
+      "kind": "function",
+      "line": {
+        "start": 138,
+        "end": 145
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#categoryFromOutput",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "categoryFromOutput",
+      "kind": "function",
+      "line": {
+        "start": 147,
+        "end": 164
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "findCutOffMessage",
+      "kind": "function",
+      "line": {
+        "start": 196,
+        "end": 242
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildFallbackText",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "buildFallbackText",
+      "kind": "function",
+      "line": {
+        "start": 244,
+        "end": 250
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "fileId": "packages/backend/convex/chats/lib/noResponseFallback.ts",
+      "name": "buildNoResponseFallback",
+      "kind": "function",
+      "line": {
+        "start": 252,
+        "end": 304
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantText",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "assistantText",
+      "kind": "function",
+      "line": {
+        "start": 40,
+        "end": 54
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantHasToolCallPart",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "assistantHasToolCallPart",
+      "kind": "function",
+      "line": {
+        "start": 56,
+        "end": 72
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "turnProducedFinalText",
+      "kind": "function",
+      "line": {
+        "start": 74,
+        "end": 85
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#isFinalTextRow",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "isFinalTextRow",
+      "kind": "function",
+      "line": {
+        "start": 87,
+        "end": 98
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnHasPendingQuestion",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "turnHasPendingQuestion",
+      "kind": "function",
+      "line": {
+        "start": 100,
+        "end": 119
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/savedMessageReaders.ts#unwrapOutput",
+      "fileId": "packages/backend/convex/chats/lib/savedMessageReaders.ts",
+      "name": "unwrapOutput",
+      "kind": "function",
+      "line": {
+        "start": 121,
+        "end": 128
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/streamError.ts#serializeStreamError",
+      "fileId": "packages/backend/convex/chats/lib/streamError.ts",
+      "name": "serializeStreamError",
+      "kind": "function",
+      "line": {
+        "start": 60,
+        "end": 88
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#isBudgetExhausted",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "isBudgetExhausted",
+      "kind": "function",
+      "line": {
+        "start": 38,
+        "end": 59
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#shouldFireSummaryTurn",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "shouldFireSummaryTurn",
+      "kind": "function",
+      "line": {
+        "start": 61,
+        "end": 84
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#countToolSteps",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "countToolSteps",
+      "kind": "function",
+      "line": {
+        "start": 86,
+        "end": 109
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/lib/truncationSummary.ts#buildTruncationSummaryInstruction",
+      "fileId": "packages/backend/convex/chats/lib/truncationSummary.ts",
+      "name": "buildTruncationSummaryInstruction",
+      "kind": "function",
+      "line": {
+        "start": 111,
+        "end": 140
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.truncation.test.ts#test:streamChatResponse — truncation-summary turn (ADR-0159 decision 3) > empty summary generation — turn still closed by the static fallback (AC4, AC12) > an empty summary generation does NOT count as a closed turn",
+      "fileId": "packages/backend/convex/chats/sendAction.truncation.test.ts",
+      "name": "an empty summary generation does NOT count as a closed turn",
+      "kind": "test",
+      "line": {
+        "start": 161,
+        "end": 165
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.truncation.test.ts#test:streamChatResponse — truncation-summary turn (ADR-0159 decision 3) > empty summary generation — turn still closed by the static fallback (AC4, AC12) > a summary that wrote final assistant text DOES count as a closed turn",
+      "fileId": "packages/backend/convex/chats/sendAction.truncation.test.ts",
+      "name": "a summary that wrote final assistant text DOES count as a closed turn",
+      "kind": "test",
+      "line": {
+        "start": 167,
+        "end": 173
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "buildStreamArgs",
+      "kind": "function",
+      "line": {
+        "start": 69,
+        "end": 316
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs.composeSystem",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "composeSystem",
+      "kind": "arrow",
+      "parentId": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs",
+      "line": {
+        "start": 227,
+        "end": 233
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#buildUserContent",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "buildUserContent",
+      "kind": "function",
+      "line": {
+        "start": 320,
+        "end": 341
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#renderLibraryItemContextBlocks",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "renderLibraryItemContextBlocks",
+      "kind": "function",
+      "line": {
+        "start": 343,
+        "end": 366
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#renderImageAssetContext",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "renderImageAssetContext",
+      "kind": "function",
+      "line": {
+        "start": 368,
+        "end": 371
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#renderInvokedSkillSection",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "renderInvokedSkillSection",
+      "kind": "function",
+      "line": {
+        "start": 373,
+        "end": 407
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#settleTurnFinishReason",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "settleTurnFinishReason",
+      "kind": "function",
+      "line": {
+        "start": 409,
+        "end": 432
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#turnHasSavedFailure",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "turnHasSavedFailure",
+      "kind": "function",
+      "line": {
+        "start": 446,
+        "end": 468
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "markMessageCutOff",
+      "kind": "function",
+      "line": {
+        "start": 470,
+        "end": 508
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "streamChatResponse",
+      "kind": "const",
+      "line": {
+        "start": 510,
+        "end": 1429
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/sendAction.ts#abortChatStream",
+      "fileId": "packages/backend/convex/chats/sendAction.ts",
+      "name": "abortChatStream",
+      "kind": "const",
+      "line": {
+        "start": 1431,
+        "end": 1454
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt.ts#buildSystemPrompt",
+      "fileId": "packages/backend/convex/chats/systemPrompt.ts",
+      "name": "buildSystemPrompt",
+      "kind": "function",
+      "line": {
+        "start": 215,
+        "end": 281
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts#buildOutputLanguageSection",
+      "fileId": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts",
+      "name": "buildOutputLanguageSection",
+      "kind": "function",
+      "line": {
+        "start": 26,
+        "end": 42
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/tasks/model.ts#renderTaskListBlock",
+      "fileId": "packages/backend/convex/chats/tasks/model.ts",
+      "name": "renderTaskListBlock",
+      "kind": "function",
+      "line": {
+        "start": 110,
+        "end": 124
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#repairMockFinishReason",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "repairMockFinishReason",
+      "kind": "function",
+      "line": {
+        "start": 36,
+        "end": 68
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "withRepairedFinishReason",
+      "kind": "function",
+      "line": {
+        "start": 70,
+        "end": 82
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason.doStream",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "doStream",
+      "kind": "arrow",
+      "parentId": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "line": {
+        "start": 77,
+        "end": 80
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "createChatAgentWithMockModel",
+      "kind": "function",
+      "line": {
+        "start": 125,
+        "end": 170
+      },
+      "touched": true,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/testing.ts#installOfflineChatSeams",
+      "fileId": "packages/backend/convex/chats/testing.ts",
+      "name": "installOfflineChatSeams",
+      "kind": "function",
+      "line": {
+        "start": 172,
+        "end": 208
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/chats/titleGen.ts#setTitleGeneratorForTesting",
+      "fileId": "packages/backend/convex/chats/titleGen.ts",
+      "name": "setTitleGeneratorForTesting",
+      "kind": "function",
+      "line": {
+        "start": 106,
+        "end": 121
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/chats/titleGen.ts#clearTitleGeneratorForTesting",
+      "fileId": "packages/backend/convex/chats/titleGen.ts",
+      "name": "clearTitleGeneratorForTesting",
+      "kind": "function",
+      "line": {
+        "start": 123,
+        "end": 126
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/lib/models/index.ts#isReasoningModel",
+      "fileId": "packages/backend/convex/lib/models/index.ts",
+      "name": "isReasoningModel",
+      "kind": "function",
+      "line": {
+        "start": 56,
+        "end": 63
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/prepSessions/chatPrep.ts#isPrepSkillActive",
+      "fileId": "packages/backend/convex/prepSessions/chatPrep.ts",
+      "name": "isPrepSkillActive",
+      "kind": "function",
+      "line": {
+        "start": 29,
+        "end": 37
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "makeConvexTest",
+      "kind": "function",
+      "line": {
+        "start": 43,
+        "end": 48
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "installScriptedStream",
+      "kind": "function",
+      "line": {
+        "start": 50,
+        "end": 58
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "sendAndReadThread",
+      "kind": "function",
+      "line": {
+        "start": 67,
+        "end": 94
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:beforeEach",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 96,
+        "end": 99
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:afterEach",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "afterEach",
+      "kind": "hook",
+      "line": {
+        "start": 101,
+        "end": 106
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:streamChatResponse — a turn whose model produced nothing at all > beforeEach",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 113,
+        "end": 115
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > runs the turn to completion instead of dying on the missing finish reason",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "runs the turn to completion instead of dying on the missing finish reason",
+      "kind": "test",
+      "line": {
+        "start": 117,
+        "end": 125
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > leaves the GM the retryable failed bubble the component wrote",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "leaves the GM the retryable failed bubble the component wrote",
+      "kind": "test",
+      "line": {
+        "start": 127,
+        "end": 134
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > does not talk over that bubble with a second closing message",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "does not talk over that bubble with a second closing message",
+      "kind": "test",
+      "line": {
+        "start": 136,
+        "end": 150
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:streamChatResponse — a turn whose stream was cut mid-reply > beforeEach",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 160,
+        "end": 166
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > does not record the fragment as a successful reply",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "does not record the fragment as a successful reply",
+      "kind": "test",
+      "line": {
+        "start": 168,
+        "end": 175
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > keeps the words the model did get out, and makes the turn retryable",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "keeps the words the model did get out, and makes the turn retryable",
+      "kind": "test",
+      "line": {
+        "start": 177,
+        "end": 188
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > does not also append a closing message beside it",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "does not also append a closing message beside it",
+      "kind": "test",
+      "line": {
+        "start": 190,
+        "end": 198
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:streamChatResponse — an ordinary turn that answers > beforeEach",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 202,
+        "end": 214
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — an ordinary turn that answers > is left exactly as the model wrote it",
+      "fileId": "packages/backend/convex/sendAction.faultedTurn.test.ts",
+      "name": "is left exactly as the model wrote it",
+      "kind": "test",
+      "line": {
+        "start": 216,
+        "end": 230
+      },
+      "touched": true,
+      "signatureTouched": true,
+      "hop": 0
+    },
+    {
+      "id": "packages/backend/convex/sendAction.streamError.test.ts#hook:beforeEach",
+      "fileId": "packages/backend/convex/sendAction.streamError.test.ts",
+      "name": "beforeEach",
+      "kind": "hook",
+      "line": {
+        "start": 52,
+        "end": 61
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/buildCatalogSection.ts#buildCatalogSection",
+      "fileId": "packages/backend/convex/skills/buildCatalogSection.ts",
+      "name": "buildCatalogSection",
+      "kind": "function",
+      "line": {
+        "start": 33,
+        "end": 49
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/perTurnCatalog.ts#buildPerTurnCatalog",
+      "fileId": "packages/backend/convex/skills/perTurnCatalog.ts",
+      "name": "buildPerTurnCatalog",
+      "kind": "function",
+      "line": {
+        "start": 29,
+        "end": 50
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/stance/resolveStance.ts#resolveStanceForSlug",
+      "fileId": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "name": "resolveStanceForSlug",
+      "kind": "function",
+      "line": {
+        "start": 34,
+        "end": 41
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/skills/stance/resolveStance.ts#stanceFlagKeyForSlug",
+      "fileId": "packages/backend/convex/skills/stance/resolveStance.ts",
+      "name": "stanceFlagKeyForSlug",
+      "kind": "function",
+      "line": {
+        "start": 53,
+        "end": 62
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/backend/convex/testing.ts#seedConvexWorkspace",
+      "fileId": "packages/backend/convex/testing.ts",
+      "name": "seedConvexWorkspace",
+      "kind": "function",
+      "line": {
+        "start": 111,
+        "end": 157
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    },
+    {
+      "id": "packages/errors/src/index.ts#createError",
+      "fileId": "packages/errors/src/index.ts",
+      "name": "createError",
+      "kind": "function",
+      "line": {
+        "start": 40,
+        "end": 42
+      },
+      "touched": false,
+      "signatureTouched": false,
+      "hop": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "apps/web/src/features/capture/capture.contract.test.tsx#hook:useCapture — distill: raw fragments transition to distilling on trigger > beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/features/chat/components/ChatSearchSource.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/features/chat/testing.ts#createChatTestHarness",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/features/dashboard/components/DashboardSurface.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/features/dashboard/components/PrepNextSessionNudge.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/features/onboarding/components/PrepNextSessionCta.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.fullscreen-chat.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.preselect-skill.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.test.tsx#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.entityProposalTools.test.ts#test:entity write tools always registered > test override seam replaces and restores the chat agent outside production",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.sendAction.providerOptions.test.ts#installCapturingAgent",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.textFiles.provider.test.ts#createOpenAiContractModel",
+      "to": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.textFiles.provider.test.ts#hook:beforeEach",
+      "to": "packages/backend/convex/chats.textFiles.provider.test.ts#createOpenAiContractModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.textFiles.provider.test.ts#test:Chat text-file attachments > a User can retry a failed turn after attaching a Markdown file",
+      "to": "packages/backend/convex/chats.textFiles.provider.test.ts#createOpenAiContractModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats.textFiles.provider.test.ts#test:Chat text-file attachments > a User can retry a failed turn after attaching a Markdown file",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > closes the turn when nothing at all was written for it",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > closes the turn when nothing at all was written for it",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > says the turn stopped and nothing was saved, and offers a smaller retry",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > says the turn stopped and nothing was saved, and offers a smaller retry",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > still leaves a pending askUser Question alone when no failed message exists",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#askUserCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > still leaves a pending askUser Question alone when no failed message exists",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a stream that faulted and left no failed message behind > still leaves a pending askUser Question alone when no failed message exists",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > saves a friendly fallback when only tool calls/results were produced",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > saves a friendly fallback when only tool calls/results were produced",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > saves a friendly fallback when only tool calls/results were produced",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > saves a friendly fallback when only tool calls/results were produced",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > stays generic-but-warm when no failed-tool reason is derivable",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > stays generic-but-warm when no failed-tool reason is derivable",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > stays generic-but-warm when no failed-tool reason is derivable",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > surfaces a friendly CATEGORY when every op failed with a known code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > surfaces a friendly CATEGORY when every op failed with a known code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > surfaces a friendly CATEGORY when every op failed with a known code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn that ran tools but never wrote a closing message > surfaces a friendly CATEGORY when every op failed with a known code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > DOES save a fallback once the askUser Question has been answered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#askUserCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > DOES save a fallback once the askUser Question has been answered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > DOES save a fallback once the askUser Question has been answered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > DOES save a fallback once the askUser Question has been answered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > does NOT save a fallback while an askUser Question is unanswered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#askUserCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > does NOT save a fallback while an askUser Question is unanswered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > a turn waiting on a pending askUser Question — no fallback > does NOT save a fallback while an askUser Question is unanswered",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > empty completion — the model returned nothing > saves a fallback when the step budget was exhausted with no response rows",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > empty completion — the model returned nothing > saves a fallback when the step budget was exhausted with no response rows",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > empty completion — the model returned nothing > saves a friendly fallback when the turn finished cleanly with no response rows",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > empty completion — the model returned nothing > saves a friendly fallback when the turn finished cleanly with no response rows",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > does NOT surface an agent-facing guidance string verbatim",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > does NOT surface an agent-facing guidance string verbatim",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > does NOT surface an agent-facing guidance string verbatim",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > does NOT surface an agent-facing guidance string verbatim",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to generic when failures span MIXED categories",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to generic when failures span MIXED categories",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to generic when failures span MIXED categories",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to generic when failures span MIXED categories",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to the generic fallback for an unrecognized error code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to the generic fallback for an unrecognized error code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolResult",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to the generic fallback for an unrecognized error code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > never leaks raw backend/tool error text to the GM > drops to the generic fallback for an unrecognized error code",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when a failed message already closed the turn",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when a failed message already closed the turn",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when finishReason is error",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when finishReason is error",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > does not save a fallback when finishReason is error",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn even when it ran steps first",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn even when it ran steps first",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn even when it ran steps first",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn whose cancellation was never reported to the app",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > provider error / nothing saved — leave it to the existing failed path > stays silent over a stopped turn whose cancellation was never reported to the app",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > the step ceiling was hit (finishReason length) > saves a fallback when the model burned the step budget with no final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > the step ceiling was hit (finishReason length) > saves a fallback when the model burned the step budget with no final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > the step ceiling was hit (finishReason length) > saves a fallback when the model burned the step budget with no final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > does NOT treat a mixed text + tool-call assistant row as final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > does NOT treat a mixed text + tool-call assistant row as final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > ignores whitespace-only assistant text (that is not a real reply)",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > ignores whitespace-only assistant text (that is not a real reply)",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > ignores whitespace-only assistant text (that is not a real reply)",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > returns no fallback when the turn produced final assistant text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > returns no fallback when the turn produced final assistant text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > returns no fallback when the turn produced final assistant text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > treats a bare string assistant content as final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantStringContent",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > treats a bare string assistant content as final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:buildNoResponseFallback > turns that already gave the user a reply — no fallback > treats a bare string assistant content as final text",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the LAST reply row — the one the GM is left looking at",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the LAST reply row — the one the GM is left looking at",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the LAST reply row — the one the GM is left looking at",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#withId",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the LAST reply row — the one the GM is left looking at",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the fragment row so the turn can be marked failed",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the fragment row so the turn can be marked failed",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the fragment row so the turn can be marked failed",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#withId",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > a reply the stream cut mid-sentence > returns the fragment row so the turn can be marked failed",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a reply the model actually finished",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a reply the model actually finished",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a reply the model actually finished",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn that produced no reply text for the fallback to close",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#toolCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn that produced no reply text for the fallback to close",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn that produced no reply text for the fallback to close",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn that produced no reply text for the fallback to close",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn the GM stopped, whose failed row is already its ending",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn the GM stopped, whose failed row is already its ending",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn the GM stopped, whose failed row is already its ending",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn waiting on a pending askUser Question",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#askUserCall",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn waiting on a pending askUser Question",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn waiting on a pending askUser Question",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#userPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.test.ts#test:findCutOffMessage > turns that already ended honestly — left alone > leaves a turn waiting on a pending askUser Question",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildFallbackText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#deriveFailureCategory",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#turnSavedAnyResponse",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnHasPendingQuestion",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnHasPendingQuestion",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/savedMessageReaders.ts#isFinalTextRow",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantHasToolCallPart",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/savedMessageReaders.ts#isFinalTextRow",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#assistantText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/lib/truncationSummary.ts#shouldFireSummaryTurn",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.truncation.test.ts#test:streamChatResponse — truncation-summary turn (ADR-0159 decision 3) > empty summary generation — turn still closed by the static fallback (AC4, AC12) > a summary that wrote final assistant text DOES count as a closed turn",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.truncation.test.ts#test:streamChatResponse — truncation-summary turn (ADR-0159 decision 3) > empty summary generation — turn still closed by the static fallback (AC4, AC12) > an empty summary generation does NOT count as a closed turn",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "to": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "to": "packages/errors/src/index.ts#createError",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/agent.ts#assembleTurnTools",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/agent/buildProviderOptions.ts#buildProviderOptions",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/assistantBubbleKey.ts#assistantBubbleKey",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/chatContextHandler.ts#buildChatContextHandler",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#buildNoResponseFallback",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/noResponseFallback.ts#findCutOffMessage",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/savedMessageReaders.ts#turnProducedFinalText",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/streamError.ts#serializeStreamError",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#buildTruncationSummaryInstruction",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#countToolSteps",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#isBudgetExhausted",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/lib/truncationSummary.ts#shouldFireSummaryTurn",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#buildStreamArgs",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#buildUserContent",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#markMessageCutOff",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#renderInvokedSkillSection",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#settleTurnFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/sendAction.ts#turnHasSavedFailure",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/systemPrompt.ts#buildSystemPrompt",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/systemPrompt/outputLanguage.ts#buildOutputLanguageSection",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/chats/tasks/model.ts#renderTaskListBlock",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/lib/models/index.ts#isReasoningModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/prepSessions/chatPrep.ts#isPrepSkillActive",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/buildCatalogSection.ts#buildCatalogSection",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/perTurnCatalog.ts#buildPerTurnCatalog",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/stance/resolveStance.ts#resolveStanceForSlug",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/backend/convex/skills/stance/resolveStance.ts#stanceFlagKeyForSlug",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#streamChatResponse",
+      "to": "packages/errors/src/index.ts#createError",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/sendAction.ts#turnHasSavedFailure",
+      "to": "packages/backend/convex/chats/agent.ts#getChatAgentForWrites",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "to": "packages/backend/convex/chats/agent.ts#createChatAgent",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "to": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#installOfflineChatSeams",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/chats/testing.ts#withRepairedFinishReason.doStream",
+      "to": "packages/backend/convex/chats/testing.ts#repairMockFinishReason",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:afterEach",
+      "to": "packages/backend/convex/chats/agent.ts#clearChatAgentForTesting",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:afterEach",
+      "to": "packages/backend/convex/chats/titleGen.ts#clearTitleGeneratorForTesting",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:beforeEach",
+      "to": "packages/backend/convex/chats/titleGen.ts#setTitleGeneratorForTesting",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:streamChatResponse — a turn whose model produced nothing at all > beforeEach",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:streamChatResponse — a turn whose stream was cut mid-reply > beforeEach",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#hook:streamChatResponse — an ordinary turn that answers > beforeEach",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "to": "packages/backend/convex/chats/agent.ts#setChatAgentForTesting",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#installScriptedStream",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "to": "packages/backend/convex/testing.ts#seedConvexWorkspace",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > does not talk over that bubble with a second closing message",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > does not talk over that bubble with a second closing message",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > leaves the GM the retryable failed bubble the component wrote",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > leaves the GM the retryable failed bubble the component wrote",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > runs the turn to completion instead of dying on the missing finish reason",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose model produced nothing at all > runs the turn to completion instead of dying on the missing finish reason",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > does not also append a closing message beside it",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > does not also append a closing message beside it",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > does not record the fragment as a successful reply",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > does not record the fragment as a successful reply",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > keeps the words the model did get out, and makes the turn retryable",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — a turn whose stream was cut mid-reply > keeps the words the model did get out, and makes the turn retryable",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — an ordinary turn that answers > is left exactly as the model wrote it",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#makeConvexTest",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.faultedTurn.test.ts#test:streamChatResponse — an ordinary turn that answers > is left exactly as the model wrote it",
+      "to": "packages/backend/convex/sendAction.faultedTurn.test.ts#sendAndReadThread",
+      "kind": "call"
+    },
+    {
+      "from": "packages/backend/convex/sendAction.streamError.test.ts#hook:beforeEach",
+      "to": "packages/backend/convex/chats/testing.ts#createChatAgentWithMockModel",
+      "kind": "call"
+    }
+  ],
+  "meta": {
+    "extractor": "tsc",
+    "notes": [
+      "a describe block is a name prefix, not a symbol",
+      "callees resolved through the checker; callees outside the workspace are dropped",
+      "it.each and a template-literal title give one symbol for the whole block",
+      "one symbol per convex action: the handler arrow is not split out",
+      "recovered caller into buildNoResponseFallback as const: packages/backend/convex/chats/sendAction.ts:1317",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:103",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:114",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:128",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:147",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:164",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:183",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:203",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:225",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:242",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:253",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:268",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:279",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:291",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:303",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:317",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:328",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:341",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:354",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:364",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:451",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:62",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:71",
+      "recovered caller into buildNoResponseFallback as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:80",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/features/capture/capture.contract.test.tsx:749",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/features/chat/components/ChatSearchSource.test.tsx:76",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/features/dashboard/components/DashboardSurface.test.tsx:84",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/features/dashboard/components/PrepNextSessionNudge.test.tsx:65",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/features/onboarding/components/PrepNextSessionCta.test.tsx:44",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.fullscreen-chat.test.tsx:137",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/routes/_app/w.$workspaceId/_main/chats/$chatId.test.tsx:138",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.preselect-skill.test.tsx:104",
+      "recovered caller into createChatAgentWithMockModel as hook: apps/web/src/routes/_app/w.$workspaceId/_main/chats/index.test.tsx:156",
+      "recovered caller into createChatAgentWithMockModel as hook: packages/backend/convex/sendAction.streamError.test.ts:57",
+      "recovered caller into createChatAgentWithMockModel as test: packages/backend/convex/chats.entityProposalTools.test.ts:129",
+      "recovered caller into createChatAgentWithMockModel as test: packages/backend/convex/chats.textFiles.provider.test.ts:160",
+      "recovered caller into createOpenAiContractModel as hook: packages/backend/convex/chats.textFiles.provider.test.ts:119",
+      "recovered caller into createOpenAiContractModel as test: packages/backend/convex/chats.textFiles.provider.test.ts:182",
+      "recovered caller into findCutOffMessage as const: packages/backend/convex/chats/sendAction.ts:1313",
+      "recovered caller into findCutOffMessage as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:385",
+      "recovered caller into findCutOffMessage as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:395",
+      "recovered caller into findCutOffMessage as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:410",
+      "recovered caller into findCutOffMessage as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:423",
+      "recovered caller into findCutOffMessage as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:433",
+      "recovered caller into findCutOffMessage as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:444",
+      "recovered caller into installScriptedStream as hook: packages/backend/convex/sendAction.faultedTurn.test.ts:114",
+      "recovered caller into installScriptedStream as hook: packages/backend/convex/sendAction.faultedTurn.test.ts:161",
+      "recovered caller into installScriptedStream as hook: packages/backend/convex/sendAction.faultedTurn.test.ts:203",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:118",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:128",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:137",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:169",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:178",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:191",
+      "recovered caller into makeConvexTest as test: packages/backend/convex/sendAction.faultedTurn.test.ts:217",
+      "recovered caller into markMessageCutOff as const: packages/backend/convex/chats/sendAction.ts:1315",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:119",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:129",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:138",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:170",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:179",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:192",
+      "recovered caller into sendAndReadThread as test: packages/backend/convex/sendAction.faultedTurn.test.ts:218",
+      "recovered caller into settleTurnFinishReason as const: packages/backend/convex/chats/sendAction.ts:1180",
+      "recovered caller into turnHasSavedFailure as const: packages/backend/convex/chats/sendAction.ts:1304",
+      "recovered caller into turnProducedFinalText as const: packages/backend/convex/chats/sendAction.ts:1246",
+      "recovered caller into turnProducedFinalText as const: packages/backend/convex/chats/sendAction.ts:1293",
+      "recovered caller into turnProducedFinalText as test: packages/backend/convex/chats/sendAction.truncation.test.ts:164",
+      "recovered caller into turnProducedFinalText as test: packages/backend/convex/chats/sendAction.truncation.test.ts:172",
+      "recovered caller into withId as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:384",
+      "recovered caller into withId as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:386",
+      "recovered caller into withId as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:394",
+      "recovered caller into withId as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:397",
+      "recovered caller into withId as test: packages/backend/convex/chats/lib/noResponseFallback.test.ts:398",
+      "test symbols are on in test files only; id is \"<path>#test:<describe titles joined by ' > '> > <it title>\"",
+      "typescript 6.0.3"
+    ],
+    "counters": {
+      "workspaceFiles": 3290,
+      "programSourceFiles": 7387,
+      "rootFilesMissingFromProgram": 0,
+      "test_hook": 34,
+      "testTitle_hookName": 34,
+      "test_suite": 73,
+      "test_case": 150,
+      "touchedSymbols": 57,
+      "calleeCallSites": 478,
+      "calleesOutsideWorkspace": 357,
+      "calleeUnresolved": 308,
+      "calleeDeclarationNotAListedSymbol": 2,
+      "callersThatAreTestHooks": 14,
+      "recovered_hook": 14,
+      "callersThatAreTestCases": 53,
+      "recovered_test": 53,
+      "callHierarchySkippedForTestSymbol": 40,
+      "recovered_const": 7,
+      "testTitle_template": 2
+    }
+  }
+}

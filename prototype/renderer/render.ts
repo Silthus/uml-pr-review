@@ -442,8 +442,14 @@ async function layoutA(v: Variant, visible: Set<string>): Promise<State> {
 /** 0 callers, 1 touched, 2 callees. elkjs turns partitions into bands of layers. */
 function band(id: string) {
   if (symById.get(id)!.touched) return 1;
-  const reachesTouched = calleesOf.get(id)!.some((t) => symById.get(t)!.touched);
-  return reachesTouched ? 0 : 2;
+  const callsTouched = calleesOf.get(id)!.some((t) => symById.get(t)!.touched);
+  const calledByTouched = callersOf.get(id)!.some((t) => symById.get(t)!.touched);
+  // A neighbor that is both caller and callee of touched symbols would form a
+  // partition-crossing cycle (1 -> 0 -> 1). ELK only honours partitions when no
+  // such cycle exists, so it silently drops the constraint for the whole graph.
+  // Keep those neighbors in the touched band; they loop back into the change.
+  if (callsTouched && calledByTouched) return 1;
+  return callsTouched ? 0 : 2;
 }
 
 function bCellSize(s: Graph["symbols"][number]) {
@@ -517,6 +523,9 @@ async function layoutB(v: Variant, visible: Set<string>): Promise<State> {
       "elk.direction": "RIGHT",
       "elk.randomSeed": "1",
       "elk.partitioning.activate": "true",
+      // Partitions only order nodes inside one connected component. Symbols with
+      // no edge would otherwise be packed as their own component at x = 0.
+      "elk.separateConnectedComponents": "false",
       "elk.spacing.nodeNode": "16",
       "elk.layered.spacing.nodeNodeBetweenLayers": "110",
       "elk.spacing.edgeNode": "16",

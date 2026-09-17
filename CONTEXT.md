@@ -25,8 +25,16 @@ A neighbor that a touched symbol calls.
 _Avoid_: Dependency, outgoing, target
 
 **Graph**:
-The extracted model of files, symbols, and the edges between them for one pull request.
+The extracted model of packages, files, symbols, and the edges between them for one pull request. It holds no geometry.
 _Avoid_: Model, diagram data, index
+
+**Package**:
+A folder with its own `package.json` that the workspace lists. Every file belongs to one package. A single-package repository has one package at the root.
+_Avoid_: Module, workspace, project
+
+**Layout**:
+The geometry for one graph, keyed by the graph's ids. It exists only inside an artifact.
+_Avoid_: Positions, coordinates
 
 **Artifact**:
 The generated HTML file that renders one graph.

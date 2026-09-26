@@ -9,6 +9,8 @@ export type Extracted = ImportRef[] | null;
 export type ExtractionCounts = { parsed: number; cacheHits: number; failed: number };
 export type ExtractionResult = { refsOf: (blob: BlobToExtract) => Extracted; counts: ExtractionCounts };
 
+const currentExtractors = `${extractorVersion}/`;
+
 export class ExtractionStore {
   private readonly database: Database;
   private readonly remembered = new Map<string, Extracted>();
@@ -19,12 +21,17 @@ export class ExtractionStore {
     this.database.run("PRAGMA journal_mode = WAL");
     this.database.run("PRAGMA synchronous = NORMAL");
     this.database.run("CREATE TABLE IF NOT EXISTS extraction (sha TEXT, extractor TEXT, data TEXT, PRIMARY KEY (sha, extractor)) WITHOUT ROWID");
+    this.database.run("DELETE FROM extraction WHERE substr(extractor, 1, length(?1)) <> ?1", [currentExtractors]);
   }
 
   async extract(cwd: string, blobs: BlobToExtract[], workerCount: number): Promise<ExtractionResult> {
     const unique = [...new Map(blobs.map((blob) => [keyOf(blob), blob])).values()];
     const misses = unique.filter((blob) => !this.recall(blob));
-    const extractions = await extractInWorkers(cwd, misses, workerCount);
+    const extractions = await extractInWorkers(
+      cwd,
+      misses.map(({ sha, language }) => ({ sha, language })),
+      workerCount,
+    );
     this.remember(extractions.map(({ blob, refs }) => [blob, refs]));
     const failed = extractions.filter(({ refs }) => refs === null).length;
     return {
@@ -54,7 +61,7 @@ export class ExtractionStore {
 }
 
 function extractorOf({ language }: BlobToExtract): string {
-  return `${extractorVersion}/${language}`;
+  return `${currentExtractors}${language}`;
 }
 
 function keyOf(blob: BlobToExtract): string {

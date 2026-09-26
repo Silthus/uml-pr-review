@@ -87,10 +87,11 @@ describe("working-tree snapshot", () => {
     expect(importsOf(payload)).toEqual(["app/local.ts:1 -> app/use.ts static", "app/use.ts:1 -> lib/api.ts static"]);
   });
 
-  test("captures untracked files outside a sparse checkout without deleting the files it leaves out", async () => {
+  test("captures untracked files outside a sparse-index checkout without deleting the files it leaves out", async () => {
     const repository = await temporaryRepository({ "app/use.ts": "", "outside/kept.ts": "" });
     repositories.push(repository);
-    await repository.git("sparse-checkout", "set", "app");
+    await repository.git("config", "index.sparse", "true");
+    await repository.git("sparse-checkout", "set", "--cone", "app");
     await repository.write({ "outside/new.ts": 'import "./kept";\n' });
 
     const payload = await createRepositoryIndexer().index(repository.dir, "working-tree");

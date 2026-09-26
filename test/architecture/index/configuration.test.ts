@@ -50,12 +50,41 @@ describe("tsconfig inheritance", () => {
     ).toEqual({ imports: ["web/src/app.ts:1 -> web/src/scenes/home.ts static"], unresolved: [] });
   });
 
+
   test("stops at an extends cycle", async () => {
     expect(
       await indexOf({
         "tsconfig.json": JSON.stringify({ extends: "./loop.json" }),
         "loop.json": JSON.stringify({ extends: "./tsconfig.json", compilerOptions: { paths: { "@lib/*": ["lib/*"] } } }),
-        "app/use.ts": 'import "@lib/api";\nimport "@other/thing";\n',
+        "app/use.ts": 'import "@lib/api";\n',
+        "lib/api.ts": "",
+      }),
+    ).toEqual({ imports: ["app/use.ts:1 -> lib/api.ts static"], unresolved: [] });
+  });
+
+  test("prefers the exact extends path over the same path with .json appended", async () => {
+    expect(
+      await indexOf({
+        "tsconfig.json": JSON.stringify({ extends: "./base" }),
+        base: JSON.stringify({ compilerOptions: { paths: { "@a/*": ["exact/*"] } } }),
+        "base.json": JSON.stringify({ compilerOptions: { paths: { "@a/*": ["appended/*"] } } }),
+        "app/use.ts": 'import "@a/x";\n',
+        "exact/x.ts": "",
+        "appended/x.ts": "",
+      }),
+    ).toEqual({ imports: ["app/use.ts:1 -> exact/x.ts static"], unresolved: [] });
+  });
+
+  test("reads each config of a deep extends diamond once", async () => {
+    const depth = 40;
+    const level = (index: number) => (index === depth ? { compilerOptions: { baseUrl: "..", paths: { "@lib/*": ["lib/*"] } } } : { extends: [`./a${index + 1}.json`, `./b${index + 1}.json`] });
+    const diamond = Object.fromEntries(Array.from({ length: depth }, (_, index) => [[`configs/a${index + 1}.json`, JSON.stringify(level(index + 1))], [`configs/b${index + 1}.json`, JSON.stringify(level(index + 1))]]).flat());
+
+    expect(
+      await indexOf({
+        ...diamond,
+        "tsconfig.json": JSON.stringify({ extends: ["./configs/a1.json", "./configs/b1.json"] }),
+        "app/use.ts": 'import "@lib/api";\n',
         "lib/api.ts": "",
       }),
     ).toEqual({ imports: ["app/use.ts:1 -> lib/api.ts static"], unresolved: [] });
@@ -63,22 +92,57 @@ describe("tsconfig inheritance", () => {
 });
 
 describe("malformed configuration", () => {
-  test("reports imports through an invalid alias as unresolved and keeps resolving everything else", async () => {
+  test("reports imports through an alias with invalid targets as unresolved and keeps the valid aliases", async () => {
     expect(
       await indexOf({
-        "tsconfig.json": JSON.stringify({ extends: 7, compilerOptions: { baseUrl: ["."], paths: { "@lib/*": 42, "@ok/*": ["ok/*"], "@mixed/*": ["ok/*", 3] } } }),
-        "package.json": "42",
-        "packages/broken/package.json": JSON.stringify({ name: 42, main: { not: "a path" }, exports: [1, 2] }),
-        "packages/odd/package.json": JSON.stringify({ name: "odd", main: 5, exports: { ".": 9 } }),
-        "packages/odd/src/index.ts": "",
-        "app/use.ts": 'import "@lib/api";\nimport "@ok/thing";\nimport "@mixed/thing";\nimport "odd";\nimport "./local";\n',
-        "app/local.ts": "",
+        "tsconfig.json": JSON.stringify({ compilerOptions: { paths: { "@lib/*": 42, "@mixed/*": ["ok/*", 3], "@ok/*": ["ok/*"] } } }),
+        "app/use.ts": 'import "@lib/api";\nimport "@mixed/thing";\nimport "@ok/thing";\n',
         "ok/thing.ts": "",
       }),
-    ).toEqual({
-      imports: ["app/use.ts:5 -> app/local.ts static", "app/use.ts:2 -> ok/thing.ts static", "app/use.ts:4 -> packages/odd/src/index.ts static"],
-      unresolved: ["app/use.ts:1 @lib/api", "app/use.ts:3 @mixed/thing"],
-    });
+    ).toEqual({ imports: ["app/use.ts:3 -> ok/thing.ts static"], unresolved: ["app/use.ts:1 @lib/api", "app/use.ts:2 @mixed/thing"] });
+  });
+
+  const brokenConfigs: [string, Files][] = [
+    ["paths that are not an object", { "tsconfig.json": JSON.stringify({ compilerOptions: { paths: [["@lib/*", "lib/*"]] } }) }],
+    ["baseUrl that is not a string", { "tsconfig.json": JSON.stringify({ extends: "./base.json", compilerOptions: { baseUrl: 5, paths: { "@lib/*": ["lib/*"] } } }), "base.json": JSON.stringify({ compilerOptions: { baseUrl: "." } }) }],
+    ["compilerOptions that are not an object", { "tsconfig.json": JSON.stringify({ compilerOptions: "strict" }) }],
+    ["paths that would otherwise be inherited", { "tsconfig.json": JSON.stringify({ extends: "./base.json", compilerOptions: { paths: "oops" } }), "base.json": JSON.stringify({ compilerOptions: { paths: { "@lib/*": ["lib/*"] } } }) }],
+    ["syntax error", { "tsconfig.json": '{ "compilerOptions": { "paths": { "@lib/*": ["lib/*"' }],
+  ];
+
+  test.each(brokenConfigs)("reports bare imports governed by a tsconfig with %s as unresolved", async (_, config) => {
+    expect(
+      await indexOf({
+        ...config,
+        "app/use.ts": 'import "@lib/api";\nimport "react";\nimport "./local";\n',
+        "app/local.ts": "",
+        "lib/api.ts": "",
+      }),
+    ).toEqual({ imports: ["app/use.ts:3 -> app/local.ts static"], unresolved: ["app/use.ts:1 @lib/api", "app/use.ts:2 react"] });
+  });
+
+  test("follows the valid entries of an extends array and skips the invalid ones", async () => {
+    expect(
+      await indexOf({
+        "tsconfig.json": JSON.stringify({ extends: [3, "./base.json", { path: "./other.json" }] }),
+        "base.json": JSON.stringify({ compilerOptions: { paths: { "@lib/*": ["lib/*"] } } }),
+        "app/use.ts": 'import "@lib/api";\n',
+        "lib/api.ts": "",
+      }),
+    ).toEqual({ imports: ["app/use.ts:1 -> lib/api.ts static"], unresolved: [] });
+  });
+
+  test("ignores package.json fields of the wrong type", async () => {
+    expect(
+      await indexOf({
+        "package.json": "42",
+        "packages/nameless/package.json": JSON.stringify({ name: 42, main: "./src/index.ts" }),
+        "packages/nameless/src/index.ts": "",
+        "packages/odd/package.json": JSON.stringify({ name: "odd", main: 5, exports: { ".": 9 } }),
+        "packages/odd/src/index.ts": "",
+        "app/use.ts": 'import "odd";\n',
+      }),
+    ).toEqual({ imports: ["app/use.ts:1 -> packages/odd/src/index.ts static"], unresolved: [] });
   });
 });
 

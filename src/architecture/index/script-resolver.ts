@@ -1,14 +1,13 @@
 import { posix } from "node:path";
 import type { ImportRef } from "./imports.ts";
 import { external, unresolved, type RepositoryFiles, type Resolution } from "./resolution.ts";
-import type { PackageManifest, PathAlias, ScriptConfiguration } from "./script-configuration.ts";
+import { catchAllPattern, unknownAliases, type Aliases, type PackageManifest, type ScriptConfiguration } from "./script-configuration.ts";
 
 const scriptExtensions = [".ts", ".tsx", ".js", ".jsx", ".mts", ".mjs", ".cts", ".cjs", ".d.ts"];
 const candidateSuffixes = ["", ...scriptExtensions, ...scriptExtensions.map((extension) => `/index${extension}`)];
 const exportConditions = ["source", "development", "import", "default", "require", "types"];
 const sourceFilePattern = /\.(pyi?|[mc]?[jt]sx?)$/;
 const buildOutputPattern = /^(\.\/)?(dist|lib|build)\//;
-const catchAllPattern = "*";
 const rootExport = ".";
 
 export class ScriptResolver {
@@ -20,11 +19,13 @@ export class ScriptResolver {
   resolve(fromPath: string, ref: ImportRef): Resolution {
     const specifier = ref.specifier.replace(/[?#].*$/, "").replace(/^[a-z-]+!/, "");
     if (specifier.startsWith(".")) return this.fileAt(posix.join(posix.dirname(fromPath), specifier), ref.names);
-    return this.resolveAlias(fromPath, specifier, ref.names) ?? this.resolveWorkspacePackage(specifier, ref.names) ?? this.resolveAbsolute(specifier, ref.names);
+    const aliases = this.aliasesFor(fromPath);
+    return this.resolveAlias(aliases, specifier, ref.names) ?? this.resolveWorkspacePackage(specifier, ref.names) ?? this.resolveUnaliased(specifier, ref.names, aliases);
   }
 
-  private resolveAlias(fromPath: string, specifier: string, names: string[]): Resolution | undefined {
-    for (const alias of this.aliasesFor(fromPath)) {
+  private resolveAlias(aliases: Aliases, specifier: string, names: string[]): Resolution | undefined {
+    if (aliases === unknownAliases) return undefined;
+    for (const alias of aliases) {
       const match = matchAlias(alias.pattern, specifier);
       if (match === undefined) continue;
       if (alias.targets.length > 0 && alias.targets.every((target) => target.includes("node_modules/"))) return external;
@@ -49,8 +50,9 @@ export class ScriptResolver {
     return unresolved;
   }
 
-  private resolveAbsolute(specifier: string, names: string[]): Resolution {
-    return specifier.startsWith("/") ? this.fileAt(specifier.slice(1), names) : external;
+  private resolveUnaliased(specifier: string, names: string[], aliases: Aliases): Resolution {
+    if (specifier.startsWith("/")) return this.fileAt(specifier.slice(1), names);
+    return aliases === unknownAliases ? unresolved : external;
   }
 
   private fileAt(target: string, names: string[]): Resolution {
@@ -63,7 +65,7 @@ export class ScriptResolver {
     return sourceFilePattern.test(file) && !file.endsWith(".d.ts") ? { outcome: "internal", targets: [{ file, names }] } : { outcome: "asset" };
   }
 
-  private aliasesFor(fromPath: string): PathAlias[] {
+  private aliasesFor(fromPath: string): Aliases {
     for (let directory = posix.dirname(fromPath); ; directory = posix.dirname(directory)) {
       const aliases = this.configuration.aliasesByDirectory.get(directory);
       if (aliases) return aliases;

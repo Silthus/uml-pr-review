@@ -13,6 +13,12 @@
     "originalModel": "claude-fable-5-1"
   },
   "baseCommit": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+  "baseCheck": {
+    "command": "git diff --stat cea129a217b5267ac1fec3d14db26c9a742968ee 7babd9e978e7fe866d2b527b43b318fbbefb4db5",
+    "files": 6,
+    "prChangedFiles": 6,
+    "matches": true
+  },
   "finalHead": "7babd9e978e7fe866d2b527b43b318fbbefb4db5",
   "firstPushHead": "f57d6f1010196a3e87e0aec9e1218f8d1cd977f2",
   "taskStatement": "![image.png](t3-context://v1/image/image_5446a446-d842-43fd-9d07-7e9142f3fe9c) \nCan you check if there are docs for the actual sending tiers? The allowance tier is set to tier 07, but I can't find any link here that explains these tiers. They're only in code or internal docs.\nGive me a quick link to PostHog.com. Pull it down. I think the docs should live there. Clone it in my dev dir, then add a description of the tiers and a link here in the actual UI that says what the tiers are.\n\nAdditionally, in the actual product, add a question mark icon behind the tier badge in line, and then add a styled hover there for the actual tiers with a link in the hover. Additionally, that goes to the docs, so users can quickly look up the tiers on the actual page.\n\nThe tooltip seems not well formatted. Make sure it uses the card design system and tokens and so on. At least in the screenshot, it's black against white. Doesn't seem correct",

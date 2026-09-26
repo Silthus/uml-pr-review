@@ -1,0 +1,63 @@
+{
+  "head": "12aa4a28665a6049bde9a5265c3901b2a32287a4",
+  "changes": {
+    "commits": 1,
+    "files": [
+      "products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx"
+    ],
+    "added": 99,
+    "deleted": 0,
+    "lines": 99,
+    "maxLines": 300
+  },
+  "busyFilesTouched": [],
+  "outsideScope": [],
+  "lint": {
+    "status": "run",
+    "files": 1,
+    "before": 0,
+    "after": 0
+  },
+  "tests": [
+    {
+      "runner": "jest",
+      "files": [
+        "products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx"
+      ],
+      "status": "passed",
+      "reason": null,
+      "output": " ms)\n    ✓ reports each name edit through onNameChange (3 ms)\n    ✓ calls onRemove when the remove button is clicked (12 ms)\n    ✓ does not call onRemove while a removeDisabledReason is set (21 ms)\n    ✓ selects its branch on focus and on pointer down (6 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       5 passed, 5 total\nSnapshots:   0 total\nTime:        1.27 s, estimated 2 s\nRan all test suites matching /..\\/products\\/workflows\\/frontend\\/Workflows\\/hogflows\\/steps\\/HogFlowBranchCard.test.tsx/i."
+    }
+  ],
+  "index": {
+    "scope": "products/workflows/frontend/Workflows/hogflows/steps",
+    "composite": {
+      "before": 74,
+      "after": 74.1
+    },
+    "dimensions": {
+      "architecture": {
+        "before": 91.6,
+        "after": 91.6
+      },
+      "complexity": {
+        "before": 81.2,
+        "after": 81.2
+      },
+      "smells": {
+        "before": 90.6,
+        "after": 90.6
+      },
+      "tests": {
+        "before": 17.7,
+        "after": 18.3
+      }
+    },
+    "targeted": [
+      "tests"
+    ],
+    "regressed": []
+  },
+  "verdict": "pass",
+  "problems": []
+}

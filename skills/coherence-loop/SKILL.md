@@ -47,10 +47,10 @@ Done when it prints the workspace `path` and `branch`.
 Apply the recipe step (see Recipe steps) in the workspace as the smallest change that completes it:
 
 - one purpose, at most about 300 changed lines;
-- inside the scope, with every busy file left as it is;
+- inside the scope, with every busy file left as it is; a facade also re-routes its callers outside the scope;
 - in the repository's own conventions: read its `AGENTS.md` or `CLAUDE.md`, the neighbouring code, and the tests next to it.
 
-Commit once, with a subject that says what the change does: `git -C <path> commit`.
+Commit once, with a subject that says what the change does: `git -C <path> commit`. When a commit hook needs tools the workspace lacks (PostHog's hooks need the flox Python), commit with `--no-verify`, run the formatter and linter the hook would run, and name the skipped hook in the summary.
 
 Done when `git -C <path> status --porcelain` prints nothing and the branch holds your commit.
 
@@ -75,9 +75,9 @@ Done when it prints the `body` path of `pr.md`, and in draft mode the `pullReque
 
 ## 7. Record
 
-Run `bun coherence/loop/record.ts --iteration <iteration> --outcome proposed`, then return to step 2.
+Run `bun coherence/loop/record.ts --iteration <iteration> --outcome proposed`.
 
-Done when choose prints `done`.
+Done when it prints the ledger `entry`. Then return to step 2.
 
 ## Report
 
@@ -96,4 +96,4 @@ Every pull request carries a verification class:
 
 - **mechanical**: moves, tests, and baselines, reviewable from the diff alone;
 - **behaviour-adjacent**: internals change behind pinned tests;
-- **boundary**: what other modules may depend on changes. A human decides first, so the runner asks.
+- **boundary**: what other modules may depend on changes.

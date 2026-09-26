@@ -1,0 +1,68 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/loop-inbox.test.ts:
+44 | }
+45 | 
+46 | async function run<T>(args: string[]): Promise<{ code: number; json: T }> {
+47 |   const child = Bun.spawn(["bun", inbox, ...args], { stdout: "pipe", stderr: "pipe", env: gh.env });
+48 |   const [stdout, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
+49 |   return { code, json: JSON.parse(stdout) as T };
+                                 ^
+SyntaxError: JSON Parse error: Unexpected EOF
+      at run (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:49:29)
+      at async <anonymous> (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:66:26)
+(fail) the question inbox > raises the drafted question as a labelled issue in Silthus/uml-pr-review, with context and options [5.23ms]
+44 | }
+45 | 
+46 | async function run<T>(args: string[]): Promise<{ code: number; json: T }> {
+47 |   const child = Bun.spawn(["bun", inbox, ...args], { stdout: "pipe", stderr: "pipe", env: gh.env });
+48 |   const [stdout, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
+49 |   return { code, json: JSON.parse(stdout) as T };
+                                 ^
+SyntaxError: JSON Parse error: Unexpected EOF
+      at run (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:49:29)
+      at async <anonymous> (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:81:11)
+(fail) the question inbox > raises the agent's own question for a target it was about to act on [4.52ms]
+44 | }
+45 | 
+46 | async function run<T>(args: string[]): Promise<{ code: number; json: T }> {
+47 |   const child = Bun.spawn(["bun", inbox, ...args], { stdout: "pipe", stderr: "pipe", env: gh.env });
+48 |   const [stdout, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
+49 |   return { code, json: JSON.parse(stdout) as T };
+                                 ^
+SyntaxError: JSON Parse error: Unexpected EOF
+      at run (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:49:29)
+      at async <anonymous> (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:88:11)
+(fail) the question inbox > refuses to raise the same iteration twice [4.31ms]
+44 | }
+45 | 
+46 | async function run<T>(args: string[]): Promise<{ code: number; json: T }> {
+47 |   const child = Bun.spawn(["bun", inbox, ...args], { stdout: "pipe", stderr: "pipe", env: gh.env });
+48 |   const [stdout, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
+49 |   return { code, json: JSON.parse(stdout) as T };
+                                 ^
+SyntaxError: JSON Parse error: Unexpected EOF
+      at run (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:49:29)
+      at async <anonymous> (/private/tmp/uml-loop-red/test/coherence/loop-inbox.test.ts:98:11)
+(fail) the question inbox > lists open questions and reads the answer of a resolved one [4.00ms]
+
+test/coherence/loop-session.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../coherence/loop/session.ts' from '/private/tmp/uml-loop-red/test/coherence/loop-session.test.ts'
+-------------------------------
+
+
+test/coherence/loop.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'githubPushGuard' not found in module '/private/tmp/uml-loop-red/benchmark/lib/invocation.ts'.
+-------------------------------
+
+
+ 0 pass
+ 6 fail
+ 2 errors
+Ran 6 tests across 3 files. [32.00ms]

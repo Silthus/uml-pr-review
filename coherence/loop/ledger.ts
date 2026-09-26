@@ -11,6 +11,7 @@ export const IndexDeltaSchema = z.object({
 });
 
 export const outcomes = ["proposed", "question", "abandoned"] as const;
+export const OutcomeSchema = z.enum(outcomes);
 
 export const LedgerEntrySchema = z.object({
   at: z.iso.datetime(),
@@ -19,7 +20,7 @@ export const LedgerEntrySchema = z.object({
   module: z.string(),
   step: z.string(),
   verification: z.string(),
-  outcome: z.enum(outcomes),
+  outcome: OutcomeSchema,
   indexDelta: IndexDeltaSchema.nullable(),
   questions: z.array(z.string()),
   branch: z.string().nullable(),
@@ -28,7 +29,7 @@ export const LedgerEntrySchema = z.object({
 });
 
 export type IndexDelta = z.infer<typeof IndexDeltaSchema>;
-export type Outcome = (typeof outcomes)[number];
+export type Outcome = z.infer<typeof OutcomeSchema>;
 export type LedgerEntry = z.infer<typeof LedgerEntrySchema>;
 
 export async function readLedger(path: string): Promise<LedgerEntry[]> {

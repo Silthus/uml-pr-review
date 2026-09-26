@@ -35,7 +35,7 @@ export function renderPullRequest({ iteration, verification, title, summary, mod
     "",
     "## Checks",
     "",
-    `- Changed: ${verification.changes.files.length} files, +${verification.changes.added} −${verification.changes.deleted} (${verification.changes.lines} of ${verification.changes.maxLines} lines), ${verification.changes.movedLines} deleted lines reappear unchanged.`,
+    `- Changed: ${verification.changes.files.length} files, +${verification.changes.added} −${verification.changes.deleted} (${verification.changes.lines} of ${verification.changes.maxLines} lines; renamed files count only their edits).`,
     `- Lint: ${lintLine(verification.lint)}`,
     ...testLines(verification.tests),
     `- Files in active pull requests: ${verification.busyFilesTouched.length === 0 ? "untouched" : verification.busyFilesTouched.join(", ")}.`,
@@ -50,7 +50,7 @@ export function renderPullRequest({ iteration, verification, title, summary, mod
 function indexRow(name: string, { before, after }: { before: number | null; after: number | null }, targeted = false): string {
   const label = targeted ? `**${name}**` : name;
   const change = before === null || after === null ? "n/a" : `${after - before >= 0 ? "+" : ""}${(after - before).toFixed(2)}`;
-  return `| ${label} | ${before ?? "n/a"} | ${after ?? "n/a"} | ${change} |`;
+  return `| ${label} | ${before?.toFixed(2) ?? "n/a"} | ${after?.toFixed(2) ?? "n/a"} | ${change} |`;
 }
 
 function lintLine(lint: LintPass): string {

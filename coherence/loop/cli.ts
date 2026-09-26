@@ -12,9 +12,9 @@ export function usageError(usage: string): never {
   process.exit(2);
 }
 
-export function wholeNumber(value: string | undefined, name: string): number {
+export function wholeNumber(value: string | undefined, name: string, minimum = 0): number {
   const number = Number(value);
-  if (!Number.isInteger(number) || number < 0) throw new Error(`--${name} must be a whole number, not ${value}`);
+  if (!Number.isInteger(number) || number < minimum) throw new Error(`--${name} must be a whole number of at least ${minimum}, not ${value}`);
   return number;
 }
 

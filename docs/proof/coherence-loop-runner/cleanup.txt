@@ -1,0 +1,5 @@
+Cleanup after the proof run
+- git -C ~/dev/posthog worktree remove --force <scratch worktree>; chmod -R u+w and rm -rf (nothing was left); worktree prune
+- git -C ~/dev/posthog branch -D coherence/workflows/frontend-workflows-hogflows-steps-characterisation-tests (was 12aa4a28665)
+- PostHog worktrees named coherence-* afterwards: 0
+- PostHog branches under coherence/ afterwards: 0

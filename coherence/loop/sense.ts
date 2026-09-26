@@ -51,7 +51,7 @@ await emit(async () => {
       rules,
       signals: signals === null ? null : await readSignalReport(signals),
       openPullRequests: githubOpenPullRequests(repository, values.github),
-      activeDays: wholeNumber(values["active-days"], "active-days"),
+      activeDays: wholeNumber(values["active-days"], "active-days", 1),
     }),
   ]);
   const sense: Sense = {
@@ -60,7 +60,7 @@ await emit(async () => {
     scope,
     scopeName: name,
     base: { ref: baseRef, commit },
-    budget: Math.max(1, wholeNumber(values.budget, "budget")),
+    budget: wholeNumber(values.budget, "budget", 1),
     maxQuestions: wholeNumber(values["max-questions"], "max-questions"),
     rules,
     signals,

@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { githubPushGuard } from "../../benchmark/lib/invocation.ts";
@@ -113,7 +113,7 @@ async function committedChange(sensePath: string, files: Files): Promise<{ itera
   await rm(workspace, { recursive: true });
   const { json } = await step<{ path: string; branch: string }>("workspace.ts", ["--iteration", chosen.iteration, "--path", workspace]);
   workspaces.push(json);
-  for (const [path, content] of Object.entries(files)) await Bun.write(join(json.path, path), content ?? "");
+  for (const [path, content] of Object.entries(files)) await (content === null ? rm(join(json.path, path)) : Bun.write(join(json.path, path), content));
   await git(json.path, ["add", "--all"]);
   await git(json.path, ["-c", "user.name=Loop", "-c", "user.email=loop@example.com", "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "Pin dispatch with characterisation tests"]);
   return { iteration: chosen.iteration, workspace: json.path, branch: json.branch };
@@ -196,7 +196,7 @@ describe("one dry-run iteration", () => {
       expect(body).toContain("- pytest on `products/a/backend/test/test_runner.py`: not run locally: no Python test environment");
 
       const recorded = await step<{ entry: LedgerEntry }>("record.ts", ["--iteration", change.iteration, "--outcome", "proposed"]);
-      expect(recorded.json.entry).toMatchObject({ outcome: "proposed", branch: change.branch, pullRequest: proposed.json.body, indexDelta: { scope: "products/a/backend" } });
+      expect(recorded.json.entry).toMatchObject({ outcome: "proposed", branch: change.branch, pullRequest: `${day}/backend-jobs-characterisation-tests/pr.md`, indexDelta: { scope: "products/a/backend" } });
 
       expect((await step<unknown>("choose.ts", ["--sense", sensePath])).json).toEqual({ action: "done", reason: "budget spent: 1 of 1 pull requests proposed" });
       expect((await gh.calls()).map(({ args }) => args.slice(0, 2).join(" "))).not.toContain("pr create");
@@ -214,6 +214,13 @@ describe("choosing the target", () => {
     expect(choice).toMatchObject({ action: "act", target: { module: "products/a/backend/core", step: "facade" }, answer: { answer: answered.answer } });
   });
 
+  test("moves past a boundary target whose question was closed without an answer", async () => {
+    const declined = question({ state: "resolved", answer: null });
+    const choice = (await step<Chosen>("choose.ts", ["--sense", await freshRuns((sense) => ({ ...sense, questions: [declined] }))])).json;
+
+    expect(choice).toMatchObject({ action: "act", target: { module: "products/a/backend/jobs" } });
+  });
+
   test("moves past a module with an open question and a step proposed before", async () => {
     const sensePath = await freshRuns((sense) => ({ ...sense, questions: [question({})] }), [ledgerEntry({})]);
     const choice = (await step<Chosen>("choose.ts", ["--sense", sensePath])).json;
@@ -221,6 +228,19 @@ describe("choosing the target", () => {
     expect(choice.action).toBe("act");
     expect(["products/a/backend/core", "products/a/backend/jobs"]).not.toContain(choice.target.module);
   });
+
+  test(
+    "hands back the unrecorded iteration, workspace included, when choose runs again",
+    async () => {
+      const sensePath = await freshRuns((sense) => ({ ...sense, maxQuestions: 0 }));
+      const change = await committedChange(sensePath, { "products/a/backend/test/test_runner.py": characterisationTest });
+
+      const again = (await step<Chosen & { reused: boolean; workspace: { branch: string } }>("choose.ts", ["--sense", sensePath])).json;
+
+      expect(again).toMatchObject({ iteration: change.iteration, reused: true, workspace: { branch: change.branch } });
+    },
+    toolTimeoutMs,
+  );
 
   test("acts instead of asking once the run has raised --max-questions questions", async () => {
     const choice = (await step<Chosen>("choose.ts", ["--sense", await freshRuns((sense) => ({ ...sense, maxQuestions: 0 }))])).json;
@@ -240,6 +260,80 @@ describe("verification gates the proposal", () => {
 
       expect(verified.json).toMatchObject({ verdict: "fail", problems: ["9 changed lines exceed the budget of 5; split the change"] });
       expect(proposed).toEqual({ code: 1, json: { error: "the last verification failed: 9 changed lines exceed the budget of 5; split the change" } });
+    },
+    toolTimeoutMs,
+  );
+});
+
+describe("verification checks", () => {
+  const mechanical = (sense: Sense) => ({ ...sense, maxQuestions: 0 });
+
+  test(
+    "fails a change that touches a file an active pull request touches anywhere in the scope",
+    async () => {
+      const busy = (sense: Sense) => ({ ...mechanical(sense), report: { ...sense.report, busyFiles: [{ path: "products/a/backend/test/test_runner.py", pullRequests: [9] }] } });
+      const change = await committedChange(await freshRuns(busy), { "products/a/backend/test/test_runner.py": characterisationTest });
+
+      const verified = await step<Verification>("verify.ts", ["--iteration", change.iteration]);
+
+      expect(verified.json.problems).toEqual(["the change touches files that active pull requests touch: products/a/backend/test/test_runner.py"]);
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "counts a renamed file only by its edits against the line budget",
+    async () => {
+      const change = await committedChange(await freshRuns(mechanical), {
+        "products/a/backend/test/test_runner.py": characterisationTest,
+        "products/a/backend/test/test_engine.py": null,
+        "products/a/backend/test/test_engine_steps.py": product["products/a/backend/test/test_engine.py"]!,
+      });
+
+      const verified = await step<Verification>("verify.ts", ["--iteration", change.iteration]);
+
+      expect(verified.json.changes).toMatchObject({ lines: 9, files: ["products/a/backend/test/test_engine.py", "products/a/backend/test/test_engine_steps.py", "products/a/backend/test/test_runner.py"] });
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "lets a facade re-route its callers outside the scope, and only those",
+    async () => {
+      const approved = (sense: Sense) => ({ ...sense, questions: [question({ state: "resolved", answer: "A: go ahead" })] });
+      const change = await committedChange(await freshRuns(approved), {
+        "products/a/backend/core/api.py": "from products.a.backend.core.engine import step\n\n__all__ = [\"step\"]\n",
+        "products/b/backend/consumer.py": "from products.a.backend.core.api import step\n\n\ndef consume():\n    return step(2)\n",
+        "products/b/backend/unrelated.py": "VALUE = 1\n",
+      });
+
+      const verified = await step<Verification>("verify.ts", ["--iteration", change.iteration]);
+
+      expect(verified.json.outsideScope).toEqual(["products/b/backend/unrelated.py"]);
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "reports pytest as not run when a service it needs is unreachable, and as failing otherwise",
+    async () => {
+      const pytest = join(repository.dir, ".flox", "cache", "venv", "bin", "pytest");
+      await Bun.write(pytest, '#!/bin/sh\necho "$FAKE_PYTEST_OUTPUT"\nexit 1\n');
+      await chmod(pytest, 0o755);
+      try {
+        const change = await committedChange(await freshRuns(mechanical), { "products/a/backend/test/test_runner.py": characterisationTest });
+        const refused = 'psycopg.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused';
+
+        const unreachable = await step<Verification>("verify.ts", ["--iteration", change.iteration], { ...gh.env, FAKE_PYTEST_OUTPUT: refused });
+        const failing = await step<Verification>("verify.ts", ["--iteration", change.iteration], { ...gh.env, FAKE_PYTEST_OUTPUT: "1 failed, 1 passed" });
+
+        expect(unreachable.json.tests).toEqual([expect.objectContaining({ status: "not run", reason: expect.stringContaining("not reachable locally") })]);
+        expect(unreachable.json.verdict).toBe("pass");
+        expect(failing.json.tests).toEqual([expect.objectContaining({ status: "failed" })]);
+        expect(failing.json.problems).toEqual(["pytest fails on products/a/backend/test/test_runner.py"]);
+      } finally {
+        await rm(join(repository.dir, ".flox"), { recursive: true });
+      }
     },
     toolTimeoutMs,
   );

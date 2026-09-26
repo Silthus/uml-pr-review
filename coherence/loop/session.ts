@@ -2,6 +2,7 @@
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 import { githubPushGuard, type Invocation } from "../../benchmark/lib/invocation.ts";
 import { emit, usageError, wholeNumber } from "./cli.ts";
 
@@ -12,6 +13,7 @@ export const skillPath = join(import.meta.dir, "..", "..", "skills", "coherence-
 
 const usage = "Usage: bun coherence/loop/session.ts --repo <path> --scope <path> [--budget <n>] [--draft] [--fetch] [--posthog-signals <file>] [--model <id>] [--transcript <file>]";
 const inheritedEnvironment = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "TERM", "LANG", "LC_ALL", "TMPDIR"];
+const ResultEventSchema = z.object({ type: z.literal("result"), result: z.string() });
 const agentOutwardTools = ["Bash(git push:*)", "Bash(gh:*)", "Bash(curl:*github.com*)"];
 
 export function sessionInvocation(options: SessionOptions, skill: string, environment: Record<string, string | undefined>): Invocation {
@@ -85,7 +87,7 @@ async function main(): Promise<void> {
     const options: SessionOptions = {
       repository: resolve(values.repo!),
       scope: values.scope!,
-      budget: Math.max(1, wholeNumber(values.budget, "budget")),
+      budget: wholeNumber(values.budget, "budget", 1),
       draft: values.draft,
       fetch: values.fetch,
       signals: values["posthog-signals"] === undefined ? null : resolve(values["posthog-signals"]),
@@ -100,8 +102,11 @@ async function main(): Promise<void> {
 
 async function finalResult(transcript: string): Promise<string | null> {
   const events = (await Bun.file(transcript).text()).split("\n").filter(Boolean);
-  const result = events.map((line) => JSON.parse(line) as { type?: string; result?: string }).findLast(({ type }) => type === "result");
-  return result?.result ?? null;
+  const results = events.flatMap((line) => {
+    const parsed = ResultEventSchema.safeParse(JSON.parse(line));
+    return parsed.success ? [parsed.data.result] : [];
+  });
+  return results.at(-1) ?? null;
 }
 
 if (import.meta.main) await main();

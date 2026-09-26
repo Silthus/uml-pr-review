@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 export type GhCall = { args: string[]; stdin: string };
-export type FakeIssue = { number: number; url: string; title: string; state: "OPEN" | "CLOSED"; body: string; comments: { body: string }[] };
+export type FakeIssue = { number: number; url: string; title: string; state: "OPEN" | "CLOSED"; stateReason: string | null; body: string; comments: { body: string; authorAssociation: string }[] };
 export type FakeGhState = { issues: FakeIssue[]; pullRequests: unknown[]; labels: string[] };
 export type FakeGh = { env: Record<string, string>; calls(): Promise<GhCall[]>; state(): Promise<FakeGhState>; cleanup(): Promise<void> };
 
@@ -45,14 +45,15 @@ async function respond(args: string[], stdin: string, state: FakeGhState): Promi
     case "issue create": {
       const number = 100 + state.issues.length;
       const url = `https://github.com/${repository}/issues/${number}`;
-      state.issues.push({ number, url, title: option(args, "--title")!, state: "OPEN", body: stdin, comments: [] });
+      state.issues.push({ number, url, title: option(args, "--title")!, state: "OPEN", stateReason: null, body: stdin, comments: [] });
       return `${url}\n`;
     }
     case "issue comment":
-      issue().comments.push({ body: stdin });
+      issue().comments.push({ body: stdin, authorAssociation: "OWNER" });
       return "";
     case "issue close":
       issue().state = "CLOSED";
+      issue().stateReason = option(args, "--reason") === "not planned" ? "NOT_PLANNED" : "COMPLETED";
       return "";
     default:
       throw new Error(`the fake gh has no answer for: gh ${args.join(" ")}`);

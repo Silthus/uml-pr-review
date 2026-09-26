@@ -35,6 +35,7 @@ export type TargetReport = {
   ignored: SignalKind[];
   openPullRequests: { repository: string; active: number; activeDays: number } | null;
   skipped: Skipped[];
+  busyFiles: BusyFile[];
   targets: Target[];
 };
 
@@ -95,6 +96,7 @@ export async function rankTargets({ repository, scope, commit = "HEAD", rules: r
     ...availability(signals, [complexity, rules.unavailable, pullRequests.unavailable]),
     openPullRequests: pullRequests.value && { repository: pullRequests.value.repository, active: [...new Set([...busy.values()].flat())].length, activeDays },
     skipped,
+    busyFiles: [...busy].filter(([path]) => modules.moduleOf(path) !== undefined).map(([path, pullRequests]) => ({ path, pullRequests })).sort((a, b) => compare(a.path, b.path)),
     targets,
   };
 }

@@ -1,0 +1,156 @@
+{
+  "sense": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/coherence/runs/2026-09-26/workflows.sense.json",
+  "senseId": "2026-09-26T21:04:07.552Z",
+  "repository": "/Users/mreichenbach/dev/posthog",
+  "scope": "products/workflows",
+  "scopeName": "workflows",
+  "rules": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/docs/harvest/workflows/rules.json",
+  "base": {
+    "ref": "upstream/master",
+    "commit": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8"
+  },
+  "slug": "frontend-workflows-hogflows-steps-characterisation-tests",
+  "action": "act",
+  "target": {
+    "rank": 3,
+    "module": "products/workflows/frontend/Workflows/hogflows/steps",
+    "score": 0.5378,
+    "step": "characterisation-tests",
+    "verification": "mechanical",
+    "reason": "tests import 10 of 23 files; untested: products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.tsx, products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchNameInput.tsx, products/workflows/frontend/Workflows/hogflows/steps/Nodes.tsx",
+    "evidence": [
+      "commits: c660d0fc76ef",
+      "commits: 6c3603f5a99f",
+      "commits: 900075f8bc2a",
+      "commits: 91952fa3c268",
+      "commits: 96e7582a9771",
+      "commits: 16 of 45 co-authored by an agent",
+      "review findings: editor-schema-accepts-what-the-server-stores: 2 findings × 0.25 of its component, e.g. https://github.com/PostHog/posthog/pull/62649#discussion_r3429112567",
+      "review findings: code-managed-workflows-are-read-only: 3 findings × 0.25 of its component, e.g. local:t3/896884be-14e4-4a9e-9da4-397fff67c0b0#dfd22683-df36-49e5-b32d-38ba0845bffe"
+    ],
+    "busyFiles": [
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/HogFlowSteps.tsx",
+        "pullRequests": [
+          106759
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/Nodes.tsx",
+        "pullRequests": [
+          95021
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/StepConditionalBranch.tsx",
+        "pullRequests": [
+          83801,
+          88238
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/StepFunction.tsx",
+        "pullRequests": [
+          106553
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.tsx",
+        "pullRequests": [
+          74031,
+          88238,
+          103187,
+          103540,
+          104452
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/StepWaitUntilCondition.tsx",
+        "pullRequests": [
+          99583
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/hogflows/steps/utils.ts",
+        "pullRequests": [
+          106062
+        ]
+      }
+    ]
+  },
+  "answer": null,
+  "question": null,
+  "workspace": {
+    "path": "/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-hogflows-steps-characterisation-tests",
+    "branch": "coherence/workflows/frontend-workflows-hogflows-steps-characterisation-tests"
+  },
+  "verification": {
+    "head": "12aa4a28665a6049bde9a5265c3901b2a32287a4",
+    "changes": {
+      "commits": 1,
+      "files": [
+        "products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx"
+      ],
+      "added": 99,
+      "deleted": 0,
+      "lines": 99,
+      "maxLines": 300,
+      "movedLines": 0
+    },
+    "busyFilesTouched": [],
+    "outsideScope": [],
+    "lint": {
+      "status": "run",
+      "files": 1,
+      "before": 0,
+      "after": 0
+    },
+    "tests": [
+      {
+        "runner": "jest",
+        "files": [
+          "products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx"
+        ],
+        "status": "not run",
+        "reason": "no node_modules/.bin/jest between products/workflows/frontend/Workflows/hogflows/steps and the workspace root; install the dependencies in /var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-hogflows-steps-characterisation-tests to run jest",
+        "output": ""
+      }
+    ],
+    "index": {
+      "scope": "products/workflows/frontend/Workflows/hogflows/steps",
+      "composite": {
+        "before": 74,
+        "after": 74.1
+      },
+      "dimensions": {
+        "architecture": {
+          "before": 91.6,
+          "after": 91.6
+        },
+        "complexity": {
+          "before": 81.2,
+          "after": 81.2
+        },
+        "smells": {
+          "before": 90.6,
+          "after": 90.6
+        },
+        "tests": {
+          "before": 17.7,
+          "after": 18.3
+        }
+      },
+      "targeted": [
+        "tests"
+      ],
+      "regressed": []
+    },
+    "verdict": "pass",
+    "problems": []
+  },
+  "proposal": {
+    "mode": "dry-run",
+    "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/coherence/runs/2026-09-26/frontend-workflows-hogflows-steps-characterisation-tests/pr.md",
+    "pullRequest": null
+  }
+}

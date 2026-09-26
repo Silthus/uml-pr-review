@@ -63,6 +63,7 @@ export const IterationSchema = z.object({
   rules: z.string(),
   base: BaseSchema,
   slug: z.string(),
+  busyFiles: z.array(BusyFileSchema),
   action: z.enum(["act", "ask"]),
   target: ChosenTargetSchema,
   answer: QuestionSchema.nullable(),

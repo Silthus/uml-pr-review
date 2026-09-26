@@ -1,9 +1,10 @@
 #!/usr/bin/env bun
+import { relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { run } from "../src/git.ts";
 import { emit, usageError } from "./loop/cli.ts";
-import { readIteration, writeIteration, type Question, type QuestionDraft } from "./loop/state.ts";
+import { readIteration, runsDirectoryOf, writeIteration, type Question, type QuestionDraft } from "./loop/state.ts";
 
 export const inboxRepository = "Silthus/uml-pr-review";
 export const questionLabel = "coherence:question";
@@ -13,18 +14,27 @@ export type QuestionSubject = { scope: string; module: string; step: string; ite
 const usage = [
   "Usage: bun coherence/inbox.ts raise --iteration <dir> [--question <text>] [--context <text>] [--option <text>]...",
   "       bun coherence/inbox.ts list [--state open|resolved|all]",
-  "       bun coherence/inbox.ts resolve <number> --answer <text>",
+  "       bun coherence/inbox.ts resolve <number> --answer <text> | --skip",
 ].join("\n");
 
 const subjectMarker = /<!-- coherence-question (\{.*\}) -->/;
 const SubjectSchema = z.object({ scope: z.string(), module: z.string(), step: z.string(), iteration: z.string() });
 const IssuesSchema = z.array(
-  z.object({ number: z.number().int(), url: z.string(), title: z.string(), state: z.string(), body: z.string(), comments: z.array(z.object({ body: z.string() })) }),
+  z.object({
+    number: z.number().int(),
+    url: z.string(),
+    title: z.string(),
+    state: z.string(),
+    stateReason: z.string().nullish(),
+    body: z.string(),
+    comments: z.array(z.object({ body: z.string(), authorAssociation: z.string() })),
+  }),
 );
+const trustedAuthors = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
 const optionLetters = "ABCDEFGHIJ";
 
 export async function listQuestions(): Promise<Question[]> {
-  const output = await gh(["issue", "list", "--label", questionLabel, "--state", "all", "--limit", "500", "--json", "number,url,title,state,body,comments"]);
+  const output = await gh(["issue", "list", "--label", questionLabel, "--state", "all", "--limit", "500", "--json", "number,url,title,state,stateReason,body,comments"]);
   return IssuesSchema.parse(JSON.parse(output)).flatMap((issue) => {
     const subject = subjectOf(issue.body);
     if (subject === null) return [];
@@ -46,6 +56,10 @@ export async function resolveQuestion(number: number, answer: string): Promise<v
   await gh(["issue", "close", String(number)]);
 }
 
+export async function skipQuestion(number: number): Promise<void> {
+  await gh(["issue", "close", String(number), "--reason", "not planned"]);
+}
+
 export function questionBody(subject: QuestionSubject, { question, context, options }: QuestionDraft): string {
   return [
     question,
@@ -58,7 +72,7 @@ export function questionBody(subject: QuestionSubject, { question, context, opti
     "",
     ...options.map((option, index) => `- [ ] ${optionLetters[index]}. ${option}`),
     "",
-    `Answer with a comment naming the option and any detail, then close the issue. Or run \`bun coherence/inbox.ts resolve <number> --answer "<answer>"\`. The next loop iteration reads the answer.`,
+    `Answer with a comment naming the option and any detail, then close the issue; close it as not planned to skip. Or run \`bun coherence/inbox.ts resolve <number> --answer "<answer>"\` or \`--skip\`. The next loop iteration reads the answer.`,
     "",
     `<!-- coherence-question ${JSON.stringify(subject)} -->`,
   ].join("\n");
@@ -71,8 +85,9 @@ function subjectOf(body: string): QuestionSubject | null {
   return parsed.success ? parsed.data : null;
 }
 
-function answerOf({ body, comments }: z.infer<typeof IssuesSchema>[number]): string | null {
-  const comment = comments.at(-1)?.body.trim();
+function answerOf({ body, comments, stateReason }: z.infer<typeof IssuesSchema>[number]): string | null {
+  if (stateReason?.toUpperCase() === "NOT_PLANNED") return null;
+  const comment = comments.filter(({ authorAssociation }) => trustedAuthors.has(authorAssociation)).at(-1)?.body.trim();
   if (comment) return comment;
   const ticked = body.split("\n").filter((line) => /^- \[x\] /i.test(line));
   return ticked.length > 0 ? ticked.map((line) => line.slice(6)).join("\n") : null;
@@ -86,7 +101,8 @@ async function raiseFromIteration(directory: string, overrides: { question?: str
   const iteration = await readIteration(directory);
   if (iteration.question?.raised) throw new Error(`${directory} already raised ${iteration.question.raised.url}`);
   const draft = mergedDraft(iteration.question, iteration.target.module, iteration.target.step, overrides);
-  const raised = await raiseQuestion({ scope: iteration.scope, module: iteration.target.module, step: iteration.target.step, iteration: directory }, draft);
+  const subject = { scope: iteration.scope, module: iteration.target.module, step: iteration.target.step, iteration: relative(runsDirectoryOf(iteration.sense), directory) };
+  const raised = await raiseQuestion(subject, draft);
   await writeIteration(directory, { ...iteration, question: { ...draft, raised } });
   return raised;
 }
@@ -109,12 +125,16 @@ async function main(): Promise<void> {
       option: { type: "string", multiple: true },
       state: { type: "string", default: "open" },
       answer: { type: "string" },
+      skip: { type: "boolean", default: false },
     },
   });
   const [command, number] = positionals;
-  if (command === "raise" && values.iteration) return emit(() => raiseFromIteration(values.iteration!, values));
+  if (command === "raise" && values.iteration) return emit(() => raiseFromIteration(resolve(values.iteration!), values));
   if (command === "list" && ["open", "resolved", "all"].includes(values.state)) {
     return emit(async () => (await listQuestions()).filter(({ state }) => values.state === "all" || state === values.state));
+  }
+  if (command === "resolve" && Number.isInteger(Number(number)) && values.skip) {
+    return emit(async () => (await skipQuestion(Number(number)), { skipped: Number(number) }));
   }
   if (command === "resolve" && Number.isInteger(Number(number)) && values.answer) {
     return emit(async () => (await resolveQuestion(Number(number), values.answer!), { resolved: Number(number) }));

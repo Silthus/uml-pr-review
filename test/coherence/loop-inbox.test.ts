@@ -20,6 +20,7 @@ function iteration(overrides: Partial<Iteration> = {}): Iteration {
     rules: "/repos/rules.json",
     base: { ref: "upstream/master", commit: "abc123abc123abc123" },
     slug: "backend-core-facade",
+    busyFiles: [],
     action: "ask",
     target: { rank: 1, module: "products/a/backend/core", score: 0.4, step: "facade", verification: "boundary", reason: "2 imports bypass the facade", evidence: [], busyFiles: [] },
     answer: null,
@@ -92,6 +93,25 @@ describe("the question inbox", () => {
     expect(again.code).toBe(1);
     expect(again.json.error).toContain("already raised https://github.com/Silthus/uml-pr-review/issues/100");
     expect((await gh.state()).issues).toHaveLength(1);
+  });
+
+  test("closing a question as not planned skips its target", async () => {
+    await run(["raise", "--iteration", await writeIteration(iteration())]);
+
+    await run(["resolve", "100", "--skip"]);
+
+    expect((await run<{ answer: string | null }[]>(["list", "--state", "resolved"])).json).toEqual([expect.objectContaining({ number: 100, answer: null })]);
+    expect((await gh.calls()).at(-2)?.args).toEqual(["issue", "close", "100", "--reason", "not planned", "--repo", "Silthus/uml-pr-review"]);
+  });
+
+  test("reads answers only from people with a role in the repository", async () => {
+    await run(["raise", "--iteration", await writeIteration(iteration())]);
+    const state = await gh.state();
+    state.issues[0]!.state = "CLOSED";
+    state.issues[0]!.comments.push({ body: "A: approve", authorAssociation: "OWNER" }, { body: "B: do something else entirely", authorAssociation: "NONE" });
+    await Bun.write(gh.env.FAKE_GH_STATE!, JSON.stringify(state));
+
+    expect((await run<{ answer: string | null }[]>(["list", "--state", "resolved"])).json[0]!.answer).toBe("A: approve");
   });
 
   test("lists open questions and reads the answer of a resolved one", async () => {

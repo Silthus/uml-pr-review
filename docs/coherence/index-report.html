@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coherence Index · posthog</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11, 11, 11, 0.10); --mid: #f0efec;
+  --slot-1: #2a78d6; --slot-2: #eb6834; --slot-3: #1baf7a; --good: #006300; --bad: #d03b3b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --mid: #383835;
+    --slot-1: #3987e5; --slot-2: #d95926; --slot-3: #199e70; --good: #0ca30c; --bad: #e66767;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --mid: #383835;
+  --slot-1: #3987e5; --slot-2: #d95926; --slot-3: #199e70; --good: #0ca30c; --bad: #e66767;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 48px; }
+header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 18px; margin: 0 0 8px; }
+p { margin: 0 0 8px; }
+code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+a { color: inherit; text-decoration-color: var(--axis); text-underline-offset: 2px; }
+a:hover { text-decoration-color: var(--ink); }
+.subtitle, .note { color: var(--ink-2); }
+.note { font-size: 13px; max-width: 900px; }
+.lead { font-size: 16px; max-width: 900px; }
+section, footer { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+footer { font-size: 13px; color: var(--ink-2); }
+footer ul { padding-left: 18px; margin: 0; }
+footer li { margin-bottom: 4px; }
+button { font: inherit; font-size: 13px; white-space: nowrap; color: var(--ink-2); background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+button:hover { color: var(--ink); border-color: var(--axis); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0 12px; }
+.tile { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.tile .label { color: var(--ink-2); font-size: 13px; display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.tile .value { font-size: 40px; font-weight: 600; line-height: 1.1; margin-bottom: 4px; }
+.tile .delta { font-size: 13px; color: var(--ink-2); }
+.tile .delta.up { color: var(--good); }
+.tile .delta.down { color: var(--bad); }
+.tile .detail { font-size: 12px; color: var(--muted); }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.sparkline { display: block; width: 120px; height: 32px; margin-top: 8px; }
+.sparkline path { fill: none; stroke: var(--axis); stroke-width: 1.5; }
+.sparkline circle { fill: var(--ink-2); }
+.slot-1 { --series: var(--slot-1); } .slot-2 { --series: var(--slot-2); } .slot-3 { --series: var(--slot-3); }
+.swatch, .key { background: var(--series); }
+.key { display: inline-block; width: 16px; height: 2px; vertical-align: middle; margin-right: 6px; }
+figure.chart { margin: 0; position: relative; }
+figure.chart figcaption { font-size: 13px; color: var(--ink-2); margin-bottom: 4px; }
+.legend { list-style: none; display: flex; gap: 16px; padding: 0; margin: 0 0 4px; font-size: 13px; color: var(--ink-2); }
+.plot { position: relative; }
+.plot svg { display: block; width: 100%; height: auto; outline: none; }
+.plot svg:focus-visible { outline: 2px solid var(--slot-1); outline-offset: 2px; border-radius: 6px; }
+.grid { stroke: var(--grid); stroke-width: 1; }
+.axis { stroke: var(--axis); stroke-width: 1; }
+.tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.noise-band { fill: var(--series); fill-opacity: 0.18; stroke: none; }
+.line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.end-dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
+.leader { stroke: var(--axis); stroke-width: 1; }
+.end-label { fill: var(--ink-2); font-size: 12px; }
+.end-label .value { fill: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.crosshair { stroke: var(--ink-2); stroke-width: 1; }
+.tooltip { position: absolute; top: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); pointer-events: none; white-space: nowrap; }
+.tooltip .when { color: var(--muted); font-size: 12px; margin-bottom: 2px; }
+.tooltip div { display: flex; align-items: center; gap: 6px; }
+.tooltip b { font-variant-numeric: tabular-nums; }
+.tooltip span:last-child { color: var(--ink-2); }
+.table-view { font-size: 12px; color: var(--ink-2); margin-top: 4px; }
+.table-view summary { cursor: pointer; }
+.charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { color: var(--ink-2); font-weight: 500; }
+th small, td small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; line-height: 1.3; }
+td { font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--mid); }
+.delta-cell { position: relative; min-width: 120px; }
+.delta-cell .bar { position: absolute; left: 0; top: 8px; bottom: 8px; border-radius: 0 4px 4px 0; opacity: 0.18; background: var(--bad); }
+.delta-cell .bar.up { background: var(--good); }
+.delta-cell b { position: relative; }
+.subject { max-width: 520px; }
+.sha { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+td.module b { font-weight: 600; }
+@media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { .delta-cell .bar { transition: width 200ms ease; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>Coherence Index</h1>
+    <p class="subtitle">posthog <code>upstream/master</code> · <code>products/workflows</code>, <code>products/surveys</code>, <code>products/error_tracking</code> · 27 weekly points, 2026-03-23 to 2026-09-21 · built 2026-09-26 at <code>c25b27f874a1</code></p>
+  </div>
+  <button type="button" id="theme" aria-label="Switch colour theme">Theme: system</button>
+</header>
+<section>
+  <h2>Is the index trustworthy, and where does workflows stand?</h2>
+  <p class="lead">One weekday of ordinary commits moves the workflows composite by 0.1 points typically and 0.6 at the 90th percentile (23 day pairs, largest 1.6), so a change beyond ±0.6 is a real change.</p><p class="lead">workflows stands at 59.7, +7.1 over 26 weeks against surveys 46.2 and error_tracking 71.5. A typical week moves it 0.2; the largest week moved it +1.6 (ending 2026-06-08). Its weakest dimensions are tests 26.3 and architecture 59.3. Its largest single change was +0.6, 1.0× the band: refactor(frontend): remove defunct tabId from workflows scenes (#62026).</p>
+  <div class="tiles"><article class="tile">
+    <p class="label"><span class="swatch slot-1"></span>workflows</p>
+    <p class="value">59.7</p>
+    <p class="delta up">▲ +7.1 over 26 weeks</p>
+    <p class="detail">weekday band ±0.6 · typical week 0.2 · largest week +1.6</p>
+    <svg class="sparkline" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0,23.6L3.7,26.0L7.4,25.4L11.1,24.5L14.8,23.3L18.5,22.7L22.2,23.0L25.8,22.7L29.5,22.7L33.2,21.1L36.9,21.7L40.6,16.9L44.3,14.2L48.0,13.5L51.7,12.9L55.4,10.2L59.1,9.9L62.8,8.7L66.5,7.8L70.2,7.5L73.8,7.8L77.5,7.5L81.2,8.1L84.9,5.9L88.6,3.5L92.3,3.2L96.0,2.0"/><circle cx="96.0" cy="2.0" r="3"/></svg>
+  </article><article class="tile">
+    <p class="label"><span class="swatch slot-2"></span>surveys</p>
+    <p class="value">46.2</p>
+    <p class="delta down">▼ −12.3 over 26 weeks</p>
+    <p class="detail">weekday band ±3.9 · typical week 0.3 · largest week −13.8</p>
+    <svg class="sparkline" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0,2.0L3.7,18.1L7.4,15.0L11.1,15.2L14.8,15.0L18.5,24.5L22.2,23.6L25.8,23.6L29.5,23.6L33.2,18.7L36.9,18.7L40.6,23.2L44.3,23.0L48.0,22.9L51.7,22.9L55.4,22.4L59.1,22.4L62.8,22.7L66.5,22.9L70.2,22.4L73.8,25.4L77.5,26.0L81.2,25.7L84.9,25.7L88.6,21.1L92.3,19.1L96.0,16.3"/><circle cx="96.0" cy="16.3" r="3"/></svg>
+  </article><article class="tile">
+    <p class="label"><span class="swatch slot-3"></span>error_tracking</p>
+    <p class="value">71.5</p>
+    <p class="delta up">▲ +11.9 over 26 weeks</p>
+    <p class="detail">weekday band ±0.4 · typical week 0.4 · largest week +7.5</p>
+    <svg class="sparkline" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0,25.0L3.7,24.3L7.4,24.1L11.1,26.0L14.8,11.6L18.5,13.1L22.2,13.1L25.8,12.2L29.5,12.4L33.2,12.9L36.9,12.9L40.6,12.0L44.3,10.1L48.0,8.3L51.7,10.3L55.4,10.1L59.1,6.4L62.8,3.9L66.5,3.5L70.2,2.6L73.8,2.4L77.5,2.0L81.2,3.3L84.9,2.8L88.6,3.5L92.3,3.2L96.0,2.2"/><circle cx="96.0" cy="2.2" r="3"/></svg>
+  </article></div>
+  <p class="note">The index has no measurement noise: the same commit always gives the same number. The band is background movement. For every week in which a product changed, the commits at Wednesday and Thursday 00:00 UTC were scored too, and the band is the 90th percentile of that one-weekday movement, drawn as a shaded band around every line below. A single commit inside the band is the size of ordinary work; the biggest movers below are the commits that exceed it.</p>
+</section>
+<section>
+  <h2>Composite, week by week</h2>
+  <figure class="chart" data-chart="{&quot;weeks&quot;:[&quot;2026-03-23&quot;,&quot;2026-03-30&quot;,&quot;2026-04-06&quot;,&quot;2026-04-13&quot;,&quot;2026-04-20&quot;,&quot;2026-04-27&quot;,&quot;2026-05-04&quot;,&quot;2026-05-11&quot;,&quot;2026-05-18&quot;,&quot;2026-05-25&quot;,&quot;2026-06-01&quot;,&quot;2026-06-08&quot;,&quot;2026-06-15&quot;,&quot;2026-06-22&quot;,&quot;2026-06-29&quot;,&quot;2026-07-06&quot;,&quot;2026-07-13&quot;,&quot;2026-07-20&quot;,&quot;2026-07-27&quot;,&quot;2026-08-03&quot;,&quot;2026-08-10&quot;,&quot;2026-08-17&quot;,&quot;2026-08-24&quot;,&quot;2026-08-31&quot;,&quot;2026-09-07&quot;,&quot;2026-09-14&quot;,&quot;2026-09-21&quot;],&quot;series&quot;:[{&quot;label&quot;:&quot;workflows&quot;,&quot;slot&quot;:1,&quot;values&quot;:[52.6,51.8,52,52.3,52.7,52.9,52.8,52.9,52.9,53.4,53.2,54.8,55.7,55.9,56.1,57,57.1,57.5,57.8,57.9,57.8,57.9,57.7,58.4,59.2,59.3,59.7]},{&quot;label&quot;:&quot;surveys&quot;,&quot;slot&quot;:2,&quot;values&quot;:[58.5,44.7,47.3,47.2,47.3,39.2,40,40,40,44.2,44.2,40.3,40.5,40.6,40.6,41,41,40.7,40.6,41,38.4,37.9,38.2,38.2,42.1,43.8,46.2]},{&quot;label&quot;:&quot;error_tracking&quot;,&quot;slot&quot;:3,&quot;values&quot;:[59.6,60,60.1,59.1,66.6,65.8,65.8,66.3,66.2,65.9,65.9,66.4,67.4,68.3,67.3,67.4,69.3,70.6,70.8,71.3,71.4,71.6,70.9,71.2,70.8,71,71.5]}]}">
+    <figcaption>Composite score, 0 to 100</figcaption>
+    <ul class="legend"><li><span class="key slot-1"></span>workflows</li><li><span class="key slot-2"></span>surveys</li><li><span class="key slot-3"></span>error_tracking</li></ul>
+    <div class="plot"><svg viewBox="0 0 1100 340" role="img" aria-label="Composite score, 0 to 100" data-plot="38,934"><line class="grid" x1="38" x2="972" y1="310.0" y2="310.0"/><text class="tick" x="32" y="313.5" text-anchor="end">0</text><line class="grid" x1="38" x2="972" y1="237.0" y2="237.0"/><text class="tick" x="32" y="240.5" text-anchor="end">25</text><line class="grid" x1="38" x2="972" y1="164.0" y2="164.0"/><text class="tick" x="32" y="167.5" text-anchor="end">50</text><line class="grid" x1="38" x2="972" y1="91.0" y2="91.0"/><text class="tick" x="32" y="94.5" text-anchor="end">75</text><line class="grid" x1="38" x2="972" y1="18.0" y2="18.0"/><text class="tick" x="32" y="21.5" text-anchor="end">100</text><line class="axis" x1="38" x2="972" y1="310" y2="310"/><text class="tick" x="38.0" y="328" text-anchor="middle">03-23</text><text class="tick" x="181.7" y="328" text-anchor="middle">04-20</text><text class="tick" x="325.4" y="328" text-anchor="middle">05-18</text><text class="tick" x="469.1" y="328" text-anchor="middle">06-15</text><text class="tick" x="612.8" y="328" text-anchor="middle">07-13</text><text class="tick" x="756.5" y="328" text-anchor="middle">08-10</text><text class="tick" x="972.0" y="328" text-anchor="middle">09-21</text><polygon class="noise-band slot-1" points="38.0,154.7 73.9,157.0 109.8,156.4 145.8,155.5 181.7,154.4 217.6,153.8 253.5,154.1 289.5,153.8 325.4,153.8 361.3,152.3 397.2,152.9 433.2,148.2 469.1,145.6 505.0,145.0 540.9,144.4 576.8,141.8 612.8,141.5 648.7,140.3 684.6,139.5 720.5,139.2 756.5,139.5 792.4,139.2 828.3,139.8 864.2,137.7 900.2,135.4 936.1,135.1 972.0,133.9 972.0,137.4 936.1,138.6 900.2,138.9 864.2,141.2 828.3,143.3 792.4,142.7 756.5,143.0 720.5,142.7 684.6,143.0 648.7,143.9 612.8,145.0 576.8,145.3 540.9,147.9 505.0,148.5 469.1,149.1 433.2,151.7 397.2,156.4 361.3,155.8 325.4,157.3 289.5,157.3 253.5,157.6 217.6,157.3 181.7,157.9 145.8,159.0 109.8,159.9 73.9,160.5 38.0,158.2"/><polygon class="noise-band slot-2" points="38.0,127.8 73.9,168.1 109.8,160.5 145.8,160.8 181.7,160.5 217.6,184.1 253.5,181.8 289.5,181.8 325.4,181.8 361.3,169.5 397.2,169.5 433.2,180.9 469.1,180.4 505.0,180.1 540.9,180.1 576.8,178.9 612.8,178.9 648.7,179.8 684.6,180.1 720.5,178.9 756.5,186.5 792.4,187.9 828.3,187.1 864.2,187.1 900.2,175.7 936.1,170.7 972.0,163.7 972.0,186.5 936.1,193.5 900.2,198.5 864.2,209.8 828.3,209.8 792.4,210.7 756.5,209.3 720.5,201.7 684.6,202.8 648.7,202.5 612.8,201.7 576.8,201.7 540.9,202.8 505.0,202.8 469.1,203.1 433.2,203.7 397.2,192.3 361.3,192.3 325.4,204.6 289.5,204.6 253.5,204.6 217.6,206.9 181.7,183.3 145.8,183.6 109.8,183.3 73.9,190.9 38.0,150.6"/><polygon class="noise-band slot-3" points="38.0,134.8 73.9,133.6 109.8,133.3 145.8,136.3 181.7,114.4 217.6,116.7 253.5,116.7 289.5,115.2 325.4,115.5 361.3,116.4 397.2,116.4 433.2,114.9 469.1,112.0 505.0,109.4 540.9,112.3 576.8,112.0 612.8,106.5 648.7,102.7 684.6,102.1 720.5,100.6 756.5,100.3 792.4,99.8 828.3,101.8 864.2,100.9 900.2,102.1 936.1,101.5 972.0,100.1 972.0,102.4 936.1,103.8 900.2,104.4 864.2,103.3 828.3,104.1 792.4,102.1 756.5,102.7 720.5,103.0 684.6,104.4 648.7,105.0 612.8,108.8 576.8,114.4 540.9,114.7 505.0,111.7 469.1,114.4 433.2,117.3 397.2,118.7 361.3,118.7 325.4,117.9 289.5,117.6 253.5,119.0 217.6,119.0 181.7,116.7 145.8,138.6 109.8,135.7 73.9,136.0 38.0,137.1"/><path class="line slot-1" d="M38.0,156.4L73.9,158.7L109.8,158.2L145.8,157.3L181.7,156.1L217.6,155.5L253.5,155.8L289.5,155.5L325.4,155.5L361.3,154.1L397.2,154.7L433.2,150.0L469.1,147.4L505.0,146.8L540.9,146.2L576.8,143.6L612.8,143.3L648.7,142.1L684.6,141.2L720.5,140.9L756.5,141.2L792.4,140.9L828.3,141.5L864.2,139.5L900.2,137.1L936.1,136.8L972.0,135.7"/><circle class="end-dot slot-1" cx="972.0" cy="135.7" r="4"/><path class="line slot-2" d="M38.0,139.2L73.9,179.5L109.8,171.9L145.8,172.2L181.7,171.9L217.6,195.5L253.5,193.2L289.5,193.2L325.4,193.2L361.3,180.9L397.2,180.9L433.2,192.3L469.1,191.7L505.0,191.4L540.9,191.4L576.8,190.3L612.8,190.3L648.7,191.2L684.6,191.4L720.5,190.3L756.5,197.9L792.4,199.3L828.3,198.5L864.2,198.5L900.2,187.1L936.1,182.1L972.0,175.1"/><circle class="end-dot slot-2" cx="972.0" cy="175.1" r="4"/><path class="line slot-3" d="M38.0,136.0L73.9,134.8L109.8,134.5L145.8,137.4L181.7,115.5L217.6,117.9L253.5,117.9L289.5,116.4L325.4,116.7L361.3,117.6L397.2,117.6L433.2,116.1L469.1,113.2L505.0,110.6L540.9,113.5L576.8,113.2L612.8,107.6L648.7,103.8L684.6,103.3L720.5,101.8L756.5,101.5L792.4,100.9L828.3,103.0L864.2,102.1L900.2,103.3L936.1,102.7L972.0,101.2"/><circle class="end-dot slot-3" cx="972.0" cy="101.2" r="4"/><text class="end-label" x="990.0" y="104.7"><tspan class="value">71.5</tspan> error_tracking</text><text class="end-label" x="990.0" y="139.2"><tspan class="value">59.7</tspan> workflows</text><text class="end-label" x="990.0" y="178.6"><tspan class="value">46.2</tspan> surveys</text><line class="crosshair" x1="0" x2="0" y1="18" y2="310" visibility="hidden"/></svg><div class="tooltip" hidden></div></div>
+    <details class="table-view"><summary>Table</summary><table><thead><tr><th>Week</th><th>workflows</th><th>surveys</th><th>error_tracking</th></tr></thead><tbody><tr><td>2026-03-23</td><td>52.6</td><td>58.5</td><td>59.6</td></tr><tr><td>2026-03-30</td><td>51.8</td><td>44.7</td><td>60.0</td></tr><tr><td>2026-04-06</td><td>52.0</td><td>47.3</td><td>60.1</td></tr><tr><td>2026-04-13</td><td>52.3</td><td>47.2</td><td>59.1</td></tr><tr><td>2026-04-20</td><td>52.7</td><td>47.3</td><td>66.6</td></tr><tr><td>2026-04-27</td><td>52.9</td><td>39.2</td><td>65.8</td></tr><tr><td>2026-05-04</td><td>52.8</td><td>40.0</td><td>65.8</td></tr><tr><td>2026-05-11</td><td>52.9</td><td>40.0</td><td>66.3</td></tr><tr><td>2026-05-18</td><td>52.9</td><td>40.0</td><td>66.2</td></tr><tr><td>2026-05-25</td><td>53.4</td><td>44.2</td><td>65.9</td></tr><tr><td>2026-06-01</td><td>53.2</td><td>44.2</td><td>65.9</td></tr><tr><td>2026-06-08</td><td>54.8</td><td>40.3</td><td>66.4</td></tr><tr><td>2026-06-15</td><td>55.7</td><td>40.5</td><td>67.4</td></tr><tr><td>2026-06-22</td><td>55.9</td><td>40.6</td><td>68.3</td></tr><tr><td>2026-06-29</td><td>56.1</td><td>40.6</td><td>67.3</td></tr><tr><td>2026-07-06</td><td>57.0</td><td>41.0</td><td>67.4</td></tr><tr><td>2026-07-13</td><td>57.1</td><td>41.0</td><td>69.3</td></tr><tr><td>2026-07-20</td><td>57.5</td><td>40.7</td><td>70.6</td></tr><tr><td>2026-07-27</td><td>57.8</td><td>40.6</td><td>70.8</td></tr><tr><td>2026-08-03</td><td>57.9</td><td>41.0</td><td>71.3</td></tr><tr><td>2026-08-10</td><td>57.8</td><td>38.4</td><td>71.4</td></tr><tr><td>2026-08-17</td><td>57.9</td><td>37.9</td><td>71.6</td></tr><tr><td>2026-08-24</td><td>57.7</td><td>38.2</td><td>70.9</td></tr><tr><td>2026-08-31</td><td>58.4</td><td>38.2</td><td>71.2</td></tr><tr><td>2026-09-07</td><td>59.2</td><td>42.1</td><td>70.8</td></tr><tr><td>2026-09-14</td><td>59.3</td><td>43.8</td><td>71.0</td></tr><tr><td>2026-09-21</td><td>59.7</td><td>46.2</td><td>71.5</td></tr></tbody></table></details>
+  </figure>
+</section>
+<section>
+  <h2>Each dimension</h2>
+  <p class="note">The composite weights architecture 35, complexity 25, smells 20, and tests 20. Each chart keeps the full 0 to 100 axis so the products compare honestly.</p>
+  <div class="charts"><figure class="chart" data-chart="{&quot;weeks&quot;:[&quot;2026-03-23&quot;,&quot;2026-03-30&quot;,&quot;2026-04-06&quot;,&quot;2026-04-13&quot;,&quot;2026-04-20&quot;,&quot;2026-04-27&quot;,&quot;2026-05-04&quot;,&quot;2026-05-11&quot;,&quot;2026-05-18&quot;,&quot;2026-05-25&quot;,&quot;2026-06-01&quot;,&quot;2026-06-08&quot;,&quot;2026-06-15&quot;,&quot;2026-06-22&quot;,&quot;2026-06-29&quot;,&quot;2026-07-06&quot;,&quot;2026-07-13&quot;,&quot;2026-07-20&quot;,&quot;2026-07-27&quot;,&quot;2026-08-03&quot;,&quot;2026-08-10&quot;,&quot;2026-08-17&quot;,&quot;2026-08-24&quot;,&quot;2026-08-31&quot;,&quot;2026-09-07&quot;,&quot;2026-09-14&quot;,&quot;2026-09-21&quot;],&quot;series&quot;:[{&quot;label&quot;:&quot;workflows&quot;,&quot;slot&quot;:1,&quot;values&quot;:[42.9,42.2,42.2,42.2,43,43.1,44,44,44,43.6,43.9,46.7,47.4,47.7,48,49.8,50,50.9,51.9,52.4,52.5,52.7,54.3,56.3,58.3,58.7,59.3]},{&quot;label&quot;:&quot;surveys&quot;,&quot;slot&quot;:2,&quot;values&quot;:[57.8,39.1,42.1,42.1,42.1,43.4,43.9,43.9,43.9,41.3,41.3,28.5,28.8,28.8,28.8,26.8,26.8,26.8,26.8,26.8,19.3,19.3,20.1,20,26.4,31.4,36.7]},{&quot;label&quot;:&quot;error_tracking&quot;,&quot;slot&quot;:3,&quot;values&quot;:[63,63.1,63.1,63.2,69,66.6,66.6,68.8,68.6,68.7,68.1,68,67.7,75.9,75.6,75.7,81.2,81.6,82.1,82.7,82.7,82.8,82.8,83.1,82.8,82.9,83.7]}]}">
+    <figcaption>Architecture score, 0 to 100</figcaption>
+    <ul class="legend"><li><span class="key slot-1"></span>workflows</li><li><span class="key slot-2"></span>surveys</li><li><span class="key slot-3"></span>error_tracking</li></ul>
+    <div class="plot"><svg viewBox="0 0 540 240" role="img" aria-label="Architecture score, 0 to 100" data-plot="38,374"><line class="grid" x1="38" x2="412" y1="210.0" y2="210.0"/><text class="tick" x="32" y="213.5" text-anchor="end">0</text><line class="grid" x1="38" x2="412" y1="162.0" y2="162.0"/><text class="tick" x="32" y="165.5" text-anchor="end">25</text><line class="grid" x1="38" x2="412" y1="114.0" y2="114.0"/><text class="tick" x="32" y="117.5" text-anchor="end">50</text><line class="grid" x1="38" x2="412" y1="66.0" y2="66.0"/><text class="tick" x="32" y="69.5" text-anchor="end">75</text><line class="grid" x1="38" x2="412" y1="18.0" y2="18.0"/><text class="tick" x="32" y="21.5" text-anchor="end">100</text><line class="axis" x1="38" x2="412" y1="210" y2="210"/><text class="tick" x="38.0" y="228" text-anchor="middle">03-23</text><text class="tick" x="95.5" y="228" text-anchor="middle">04-20</text><text class="tick" x="153.1" y="228" text-anchor="middle">05-18</text><text class="tick" x="210.6" y="228" text-anchor="middle">06-15</text><text class="tick" x="268.2" y="228" text-anchor="middle">07-13</text><text class="tick" x="325.7" y="228" text-anchor="middle">08-10</text><text class="tick" x="412.0" y="228" text-anchor="middle">09-21</text><polygon class="noise-band slot-1" points="38.0,126.7 52.4,128.0 66.8,128.0 81.2,128.0 95.5,126.5 109.9,126.3 124.3,124.6 138.7,124.6 153.1,124.6 167.5,125.3 181.8,124.8 196.2,119.4 210.6,118.0 225.0,117.5 239.4,116.9 253.8,113.4 268.2,113.0 282.5,111.3 296.9,109.4 311.3,108.4 325.7,108.2 340.1,107.9 354.5,104.8 368.8,100.9 383.2,97.1 397.6,96.3 412.0,95.2 412.0,97.1 397.6,98.3 383.2,99.0 368.8,102.9 354.5,106.7 340.1,109.8 325.7,110.2 311.3,110.4 296.9,111.3 282.5,113.2 268.2,115.0 253.8,115.3 239.4,118.8 225.0,119.4 210.6,120.0 196.2,121.3 181.8,126.7 167.5,127.2 153.1,126.5 138.7,126.5 124.3,126.5 109.9,128.2 95.5,128.4 81.2,129.9 66.8,129.9 52.4,129.9 38.0,128.6"/><polygon class="noise-band slot-2" points="38.0,94.0 52.4,129.9 66.8,124.2 81.2,124.2 95.5,124.2 109.9,121.7 124.3,120.7 138.7,120.7 153.1,120.7 167.5,125.7 181.8,125.7 196.2,150.3 210.6,149.7 225.0,149.7 239.4,149.7 253.8,153.6 268.2,153.6 282.5,153.6 296.9,153.6 311.3,153.6 325.7,168.0 340.1,168.0 354.5,166.4 368.8,166.6 383.2,154.3 397.6,144.7 412.0,134.5 412.0,144.5 397.6,154.7 383.2,164.3 368.8,176.6 354.5,176.4 340.1,177.9 325.7,177.9 311.3,163.5 296.9,163.5 282.5,163.5 268.2,163.5 253.8,163.5 239.4,159.7 225.0,159.7 210.6,159.7 196.2,160.3 181.8,135.7 167.5,135.7 153.1,130.7 138.7,130.7 124.3,130.7 109.9,131.7 95.5,134.2 81.2,134.2 66.8,134.2 52.4,139.9 38.0,104.0"/><polygon class="noise-band slot-3" points="38.0,88.1 52.4,87.9 66.8,87.9 81.2,87.7 95.5,76.6 109.9,81.2 124.3,81.2 138.7,76.9 153.1,77.3 167.5,77.1 181.8,78.3 196.2,78.5 210.6,79.1 225.0,63.3 239.4,63.9 253.8,63.7 268.2,53.1 282.5,52.4 296.9,51.4 311.3,50.3 325.7,50.3 340.1,50.1 354.5,50.1 368.8,49.5 383.2,50.1 397.6,49.9 412.0,48.3 412.0,50.3 397.6,51.8 383.2,52.0 368.8,51.4 354.5,52.0 340.1,52.0 325.7,52.2 311.3,52.2 296.9,53.3 282.5,54.3 268.2,55.1 253.8,65.6 239.4,65.8 225.0,65.2 210.6,81.0 196.2,80.4 181.8,80.2 167.5,79.1 153.1,79.2 138.7,78.9 124.3,83.1 109.9,83.1 95.5,78.5 81.2,89.6 66.8,89.8 52.4,89.8 38.0,90.0"/><path class="line slot-1" d="M38.0,127.6L52.4,129.0L66.8,129.0L81.2,129.0L95.5,127.4L109.9,127.2L124.3,125.5L138.7,125.5L153.1,125.5L167.5,126.3L181.8,125.7L196.2,120.3L210.6,119.0L225.0,118.4L239.4,117.8L253.8,114.4L268.2,114.0L282.5,112.3L296.9,110.4L311.3,109.4L325.7,109.2L340.1,108.8L354.5,105.7L368.8,101.9L383.2,98.1L397.6,97.3L412.0,96.1"/><circle class="end-dot slot-1" cx="412.0" cy="96.1" r="4"/><path class="line slot-2" d="M38.0,99.0L52.4,134.9L66.8,129.2L81.2,129.2L95.5,129.2L109.9,126.7L124.3,125.7L138.7,125.7L153.1,125.7L167.5,130.7L181.8,130.7L196.2,155.3L210.6,154.7L225.0,154.7L239.4,154.7L253.8,158.5L268.2,158.5L282.5,158.5L296.9,158.5L311.3,158.5L325.7,172.9L340.1,172.9L354.5,171.4L368.8,171.6L383.2,159.3L397.6,149.7L412.0,139.5"/><circle class="end-dot slot-2" cx="412.0" cy="139.5" r="4"/><path class="line slot-3" d="M38.0,89.0L52.4,88.8L66.8,88.8L81.2,88.7L95.5,77.5L109.9,82.1L124.3,82.1L138.7,77.9L153.1,78.3L167.5,78.1L181.8,79.2L196.2,79.4L210.6,80.0L225.0,64.3L239.4,64.8L253.8,64.7L268.2,54.1L282.5,53.3L296.9,52.4L311.3,51.2L325.7,51.2L340.1,51.0L354.5,51.0L368.8,50.4L383.2,51.0L397.6,50.8L412.0,49.3"/><circle class="end-dot slot-3" cx="412.0" cy="49.3" r="4"/><text class="end-label" x="430.0" y="52.8"><tspan class="value">83.7</tspan> error_tracking</text><text class="end-label" x="430.0" y="99.6"><tspan class="value">59.3</tspan> workflows</text><text class="end-label" x="430.0" y="143.0"><tspan class="value">36.7</tspan> surveys</text><line class="crosshair" x1="0" x2="0" y1="18" y2="210" visibility="hidden"/></svg><div class="tooltip" hidden></div></div>
+    <details class="table-view"><summary>Table</summary><table><thead><tr><th>Week</th><th>workflows</th><th>surveys</th><th>error_tracking</th></tr></thead><tbody><tr><td>2026-03-23</td><td>42.9</td><td>57.8</td><td>63.0</td></tr><tr><td>2026-03-30</td><td>42.2</td><td>39.1</td><td>63.1</td></tr><tr><td>2026-04-06</td><td>42.2</td><td>42.1</td><td>63.1</td></tr><tr><td>2026-04-13</td><td>42.2</td><td>42.1</td><td>63.2</td></tr><tr><td>2026-04-20</td><td>43.0</td><td>42.1</td><td>69.0</td></tr><tr><td>2026-04-27</td><td>43.1</td><td>43.4</td><td>66.6</td></tr><tr><td>2026-05-04</td><td>44.0</td><td>43.9</td><td>66.6</td></tr><tr><td>2026-05-11</td><td>44.0</td><td>43.9</td><td>68.8</td></tr><tr><td>2026-05-18</td><td>44.0</td><td>43.9</td><td>68.6</td></tr><tr><td>2026-05-25</td><td>43.6</td><td>41.3</td><td>68.7</td></tr><tr><td>2026-06-01</td><td>43.9</td><td>41.3</td><td>68.1</td></tr><tr><td>2026-06-08</td><td>46.7</td><td>28.5</td><td>68.0</td></tr><tr><td>2026-06-15</td><td>47.4</td><td>28.8</td><td>67.7</td></tr><tr><td>2026-06-22</td><td>47.7</td><td>28.8</td><td>75.9</td></tr><tr><td>2026-06-29</td><td>48.0</td><td>28.8</td><td>75.6</td></tr><tr><td>2026-07-06</td><td>49.8</td><td>26.8</td><td>75.7</td></tr><tr><td>2026-07-13</td><td>50.0</td><td>26.8</td><td>81.2</td></tr><tr><td>2026-07-20</td><td>50.9</td><td>26.8</td><td>81.6</td></tr><tr><td>2026-07-27</td><td>51.9</td><td>26.8</td><td>82.1</td></tr><tr><td>2026-08-03</td><td>52.4</td><td>26.8</td><td>82.7</td></tr><tr><td>2026-08-10</td><td>52.5</td><td>19.3</td><td>82.7</td></tr><tr><td>2026-08-17</td><td>52.7</td><td>19.3</td><td>82.8</td></tr><tr><td>2026-08-24</td><td>54.3</td><td>20.1</td><td>82.8</td></tr><tr><td>2026-08-31</td><td>56.3</td><td>20.0</td><td>83.1</td></tr><tr><td>2026-09-07</td><td>58.3</td><td>26.4</td><td>82.8</td></tr><tr><td>2026-09-14</td><td>58.7</td><td>31.4</td><td>82.9</td></tr><tr><td>2026-09-21</td><td>59.3</td><td>36.7</td><td>83.7</td></tr></tbody></table></details>
+  </figure><figure class="chart" data-chart="{&quot;weeks&quot;:[&quot;2026-03-23&quot;,&quot;2026-03-30&quot;,&quot;2026-04-06&quot;,&quot;2026-04-13&quot;,&quot;2026-04-20&quot;,&quot;2026-04-27&quot;,&quot;2026-05-04&quot;,&quot;2026-05-11&quot;,&quot;2026-05-18&quot;,&quot;2026-05-25&quot;,&quot;2026-06-01&quot;,&quot;2026-06-08&quot;,&quot;2026-06-15&quot;,&quot;2026-06-22&quot;,&quot;2026-06-29&quot;,&quot;2026-07-06&quot;,&quot;2026-07-13&quot;,&quot;2026-07-20&quot;,&quot;2026-07-27&quot;,&quot;2026-08-03&quot;,&quot;2026-08-10&quot;,&quot;2026-08-17&quot;,&quot;2026-08-24&quot;,&quot;2026-08-31&quot;,&quot;2026-09-07&quot;,&quot;2026-09-14&quot;,&quot;2026-09-21&quot;],&quot;series&quot;:[{&quot;label&quot;:&quot;workflows&quot;,&quot;slot&quot;:1,&quot;values&quot;:[84.7,85.3,84,84.1,83.6,84.1,84.2,84.1,84.1,84.1,81.6,80.7,81.2,80,79.3,79.4,79.2,78,77.2,76.3,75.3,74.9,72.2,71.7,70.5,70.4,71.1]},{&quot;label&quot;:&quot;surveys&quot;,&quot;slot&quot;:2,&quot;values&quot;:[64.8,23.1,34.5,34.1,34.4,28.1,31.6,31.8,31.8,20.5,20.5,21,21.3,21.3,21.7,25.3,25.3,24,23.5,25.3,25.3,23.1,23.1,23.2,30.1,29.9,31.8]},{&quot;label&quot;:&quot;error_tracking&quot;,&quot;slot&quot;:3,&quot;values&quot;:[84.9,85.4,85.3,84.1,84.7,84.6,84.5,81.7,81.6,81.6,81.5,82.2,82.7,83,83,83.1,82.9,82.8,82.7,82.7,82.8,82.3,81.9,81.7,81.7,81.9,81.3]}]}">
+    <figcaption>Complexity score, 0 to 100</figcaption>
+    <ul class="legend"><li><span class="key slot-1"></span>workflows</li><li><span class="key slot-2"></span>surveys</li><li><span class="key slot-3"></span>error_tracking</li></ul>
+    <div class="plot"><svg viewBox="0 0 540 240" role="img" aria-label="Complexity score, 0 to 100" data-plot="38,374"><line class="grid" x1="38" x2="412" y1="210.0" y2="210.0"/><text class="tick" x="32" y="213.5" text-anchor="end">0</text><line class="grid" x1="38" x2="412" y1="162.0" y2="162.0"/><text class="tick" x="32" y="165.5" text-anchor="end">25</text><line class="grid" x1="38" x2="412" y1="114.0" y2="114.0"/><text class="tick" x="32" y="117.5" text-anchor="end">50</text><line class="grid" x1="38" x2="412" y1="66.0" y2="66.0"/><text class="tick" x="32" y="69.5" text-anchor="end">75</text><line class="grid" x1="38" x2="412" y1="18.0" y2="18.0"/><text class="tick" x="32" y="21.5" text-anchor="end">100</text><line class="axis" x1="38" x2="412" y1="210" y2="210"/><text class="tick" x="38.0" y="228" text-anchor="middle">03-23</text><text class="tick" x="95.5" y="228" text-anchor="middle">04-20</text><text class="tick" x="153.1" y="228" text-anchor="middle">05-18</text><text class="tick" x="210.6" y="228" text-anchor="middle">06-15</text><text class="tick" x="268.2" y="228" text-anchor="middle">07-13</text><text class="tick" x="325.7" y="228" text-anchor="middle">08-10</text><text class="tick" x="412.0" y="228" text-anchor="middle">09-21</text><polygon class="noise-band slot-1" points="38.0,46.2 52.4,45.1 66.8,47.6 81.2,47.4 95.5,48.3 109.9,47.4 124.3,47.2 138.7,47.4 153.1,47.4 167.5,47.4 181.8,52.2 196.2,53.9 210.6,52.9 225.0,55.2 239.4,56.6 253.8,56.4 268.2,56.8 282.5,59.1 296.9,60.6 311.3,62.4 325.7,64.3 340.1,65.0 354.5,70.2 368.8,71.2 383.2,73.5 397.6,73.7 412.0,72.3 412.0,74.6 397.6,76.0 383.2,75.8 368.8,73.5 354.5,72.5 340.1,67.3 325.7,66.6 311.3,64.7 296.9,62.9 282.5,61.4 268.2,59.1 253.8,58.7 239.4,58.9 225.0,57.6 210.6,55.2 196.2,56.2 181.8,54.5 167.5,49.7 153.1,49.7 138.7,49.7 124.3,49.5 109.9,49.7 95.5,50.6 81.2,49.7 66.8,49.9 52.4,47.4 38.0,48.5"/><polygon class="noise-band slot-2" points="38.0,80.0 52.4,160.1 66.8,138.2 81.2,139.0 95.5,138.4 109.9,150.5 124.3,143.8 138.7,143.4 153.1,143.4 167.5,165.1 181.8,165.1 196.2,164.1 210.6,163.5 225.0,163.5 239.4,162.8 253.8,155.9 268.2,155.9 282.5,158.4 296.9,159.3 311.3,155.9 325.7,155.9 340.1,160.1 354.5,160.1 368.8,159.9 383.2,146.6 397.6,147.0 412.0,143.4 412.0,154.5 397.6,158.2 383.2,157.8 368.8,171.0 354.5,171.2 340.1,171.2 325.7,167.0 311.3,167.0 296.9,170.4 282.5,169.5 268.2,167.0 253.8,167.0 239.4,173.9 225.0,174.7 210.6,174.7 196.2,175.2 181.8,176.2 167.5,176.2 153.1,154.5 138.7,154.5 124.3,154.9 109.9,161.6 95.5,149.5 81.2,150.1 66.8,149.3 52.4,171.2 38.0,91.2"/><polygon class="noise-band slot-3" points="38.0,46.6 52.4,45.6 66.8,45.8 81.2,48.1 95.5,47.0 109.9,47.2 124.3,47.4 138.7,52.8 153.1,52.9 167.5,52.9 181.8,53.1 196.2,51.8 210.6,50.8 225.0,50.3 239.4,50.3 253.8,50.1 268.2,50.4 282.5,50.6 296.9,50.8 311.3,50.8 325.7,50.6 340.1,51.6 354.5,52.4 368.8,52.8 383.2,52.8 397.6,52.4 412.0,53.5 412.0,54.3 397.6,53.1 383.2,53.5 368.8,53.5 354.5,53.1 340.1,52.4 325.7,51.4 311.3,51.6 296.9,51.6 282.5,51.4 268.2,51.2 253.8,50.8 239.4,51.0 225.0,51.0 210.6,51.6 196.2,52.6 181.8,53.9 167.5,53.7 153.1,53.7 138.7,53.5 124.3,48.1 109.9,48.0 95.5,47.8 81.2,48.9 66.8,46.6 52.4,46.4 38.0,47.4"/><path class="line slot-1" d="M38.0,47.4L52.4,46.2L66.8,48.7L81.2,48.5L95.5,49.5L109.9,48.5L124.3,48.3L138.7,48.5L153.1,48.5L167.5,48.5L181.8,53.3L196.2,55.1L210.6,54.1L225.0,56.4L239.4,57.7L253.8,57.6L268.2,57.9L282.5,60.2L296.9,61.8L311.3,63.5L325.7,65.4L340.1,66.2L354.5,71.4L368.8,72.3L383.2,74.6L397.6,74.8L412.0,73.5"/><circle class="end-dot slot-1" cx="412.0" cy="73.5" r="4"/><path class="line slot-2" d="M38.0,85.6L52.4,165.6L66.8,143.8L81.2,144.5L95.5,144.0L109.9,156.0L124.3,149.3L138.7,148.9L153.1,148.9L167.5,170.6L181.8,170.6L196.2,169.7L210.6,169.1L225.0,169.1L239.4,168.3L253.8,161.4L268.2,161.4L282.5,163.9L296.9,164.9L311.3,161.4L325.7,161.4L340.1,165.6L354.5,165.6L368.8,165.5L383.2,152.2L397.6,152.6L412.0,148.9"/><circle class="end-dot slot-2" cx="412.0" cy="148.9" r="4"/><path class="line slot-3" d="M38.0,47.0L52.4,46.0L66.8,46.2L81.2,48.5L95.5,47.4L109.9,47.6L124.3,47.8L138.7,53.1L153.1,53.3L167.5,53.3L181.8,53.5L196.2,52.2L210.6,51.2L225.0,50.6L239.4,50.6L253.8,50.4L268.2,50.8L282.5,51.0L296.9,51.2L311.3,51.2L325.7,51.0L340.1,52.0L354.5,52.8L368.8,53.1L383.2,53.1L397.6,52.8L412.0,53.9"/><circle class="end-dot slot-3" cx="412.0" cy="53.9" r="4"/><text class="end-label" x="430.0" y="57.4"><tspan class="value">81.3</tspan> error_tracking</text><text class="end-label" x="430.0" y="77.0"><tspan class="value">71.1</tspan> workflows</text><text class="end-label" x="430.0" y="152.4"><tspan class="value">31.8</tspan> surveys</text><line class="crosshair" x1="0" x2="0" y1="18" y2="210" visibility="hidden"/></svg><div class="tooltip" hidden></div></div>
+    <details class="table-view"><summary>Table</summary><table><thead><tr><th>Week</th><th>workflows</th><th>surveys</th><th>error_tracking</th></tr></thead><tbody><tr><td>2026-03-23</td><td>84.7</td><td>64.8</td><td>84.9</td></tr><tr><td>2026-03-30</td><td>85.3</td><td>23.1</td><td>85.4</td></tr><tr><td>2026-04-06</td><td>84.0</td><td>34.5</td><td>85.3</td></tr><tr><td>2026-04-13</td><td>84.1</td><td>34.1</td><td>84.1</td></tr><tr><td>2026-04-20</td><td>83.6</td><td>34.4</td><td>84.7</td></tr><tr><td>2026-04-27</td><td>84.1</td><td>28.1</td><td>84.6</td></tr><tr><td>2026-05-04</td><td>84.2</td><td>31.6</td><td>84.5</td></tr><tr><td>2026-05-11</td><td>84.1</td><td>31.8</td><td>81.7</td></tr><tr><td>2026-05-18</td><td>84.1</td><td>31.8</td><td>81.6</td></tr><tr><td>2026-05-25</td><td>84.1</td><td>20.5</td><td>81.6</td></tr><tr><td>2026-06-01</td><td>81.6</td><td>20.5</td><td>81.5</td></tr><tr><td>2026-06-08</td><td>80.7</td><td>21.0</td><td>82.2</td></tr><tr><td>2026-06-15</td><td>81.2</td><td>21.3</td><td>82.7</td></tr><tr><td>2026-06-22</td><td>80.0</td><td>21.3</td><td>83.0</td></tr><tr><td>2026-06-29</td><td>79.3</td><td>21.7</td><td>83.0</td></tr><tr><td>2026-07-06</td><td>79.4</td><td>25.3</td><td>83.1</td></tr><tr><td>2026-07-13</td><td>79.2</td><td>25.3</td><td>82.9</td></tr><tr><td>2026-07-20</td><td>78.0</td><td>24.0</td><td>82.8</td></tr><tr><td>2026-07-27</td><td>77.2</td><td>23.5</td><td>82.7</td></tr><tr><td>2026-08-03</td><td>76.3</td><td>25.3</td><td>82.7</td></tr><tr><td>2026-08-10</td><td>75.3</td><td>25.3</td><td>82.8</td></tr><tr><td>2026-08-17</td><td>74.9</td><td>23.1</td><td>82.3</td></tr><tr><td>2026-08-24</td><td>72.2</td><td>23.1</td><td>81.9</td></tr><tr><td>2026-08-31</td><td>71.7</td><td>23.2</td><td>81.7</td></tr><tr><td>2026-09-07</td><td>70.5</td><td>30.1</td><td>81.7</td></tr><tr><td>2026-09-14</td><td>70.4</td><td>29.9</td><td>81.9</td></tr><tr><td>2026-09-21</td><td>71.1</td><td>31.8</td><td>81.3</td></tr></tbody></table></details>
+  </figure><figure class="chart" data-chart="{&quot;weeks&quot;:[&quot;2026-03-23&quot;,&quot;2026-03-30&quot;,&quot;2026-04-06&quot;,&quot;2026-04-13&quot;,&quot;2026-04-20&quot;,&quot;2026-04-27&quot;,&quot;2026-05-04&quot;,&quot;2026-05-11&quot;,&quot;2026-05-18&quot;,&quot;2026-05-25&quot;,&quot;2026-06-01&quot;,&quot;2026-06-08&quot;,&quot;2026-06-15&quot;,&quot;2026-06-22&quot;,&quot;2026-06-29&quot;,&quot;2026-07-06&quot;,&quot;2026-07-13&quot;,&quot;2026-07-20&quot;,&quot;2026-07-27&quot;,&quot;2026-08-03&quot;,&quot;2026-08-10&quot;,&quot;2026-08-17&quot;,&quot;2026-08-24&quot;,&quot;2026-08-31&quot;,&quot;2026-09-07&quot;,&quot;2026-09-14&quot;,&quot;2026-09-21&quot;],&quot;series&quot;:[{&quot;label&quot;:&quot;workflows&quot;,&quot;slot&quot;:1,&quot;values&quot;:[70.1,68.1,69,69.8,71.2,71.1,68.8,68.9,69,71.5,68.7,72.1,73.7,74.9,75.5,77,76.1,77.7,77.7,78.1,77.3,77.6,77,77.2,78.2,79.4,79.7]},{&quot;label&quot;:&quot;surveys&quot;,&quot;slot&quot;:2,&quot;values&quot;:[81.4,76.4,73.9,73.2,73.4,47.9,47.5,47.2,47.2,73.3,73.3,75.6,75.7,76,75.4,76.6,76.7,76.5,76.6,76.3,76.7,76.7,76.7,76.8,76.6,76.7,76.8]},{&quot;label&quot;:&quot;error_tracking&quot;,&quot;slot&quot;:3,&quot;values&quot;:[72.6,73.8,74.4,70.5,71.3,77.9,78.2,79,78.7,77.1,77.2,78.4,81.8,81.4,78.6,78.7,78.3,80,80.4,80.8,81.1,80.9,80.9,81.6,81.4,81.8,82.5]}]}">
+    <figcaption>Smells score, 0 to 100</figcaption>
+    <ul class="legend"><li><span class="key slot-1"></span>workflows</li><li><span class="key slot-2"></span>surveys</li><li><span class="key slot-3"></span>error_tracking</li></ul>
+    <div class="plot"><svg viewBox="0 0 540 240" role="img" aria-label="Smells score, 0 to 100" data-plot="38,374"><line class="grid" x1="38" x2="412" y1="210.0" y2="210.0"/><text class="tick" x="32" y="213.5" text-anchor="end">0</text><line class="grid" x1="38" x2="412" y1="162.0" y2="162.0"/><text class="tick" x="32" y="165.5" text-anchor="end">25</text><line class="grid" x1="38" x2="412" y1="114.0" y2="114.0"/><text class="tick" x="32" y="117.5" text-anchor="end">50</text><line class="grid" x1="38" x2="412" y1="66.0" y2="66.0"/><text class="tick" x="32" y="69.5" text-anchor="end">75</text><line class="grid" x1="38" x2="412" y1="18.0" y2="18.0"/><text class="tick" x="32" y="21.5" text-anchor="end">100</text><line class="axis" x1="38" x2="412" y1="210" y2="210"/><text class="tick" x="38.0" y="228" text-anchor="middle">03-23</text><text class="tick" x="95.5" y="228" text-anchor="middle">04-20</text><text class="tick" x="153.1" y="228" text-anchor="middle">05-18</text><text class="tick" x="210.6" y="228" text-anchor="middle">06-15</text><text class="tick" x="268.2" y="228" text-anchor="middle">07-13</text><text class="tick" x="325.7" y="228" text-anchor="middle">08-10</text><text class="tick" x="412.0" y="228" text-anchor="middle">09-21</text><polygon class="noise-band slot-1" points="38.0,73.7 52.4,77.5 66.8,75.8 81.2,74.3 95.5,71.6 109.9,71.8 124.3,76.2 138.7,76.0 153.1,75.8 167.5,71.0 181.8,76.4 196.2,69.8 210.6,66.8 225.0,64.5 239.4,63.3 253.8,60.4 268.2,62.2 282.5,59.1 296.9,59.1 311.3,58.3 325.7,59.9 340.1,59.3 354.5,60.4 368.8,60.0 383.2,58.1 397.6,55.8 412.0,55.2 412.0,58.7 397.6,59.3 383.2,61.6 368.8,63.5 354.5,63.9 340.1,62.7 325.7,63.3 311.3,61.8 296.9,62.5 282.5,62.5 268.2,65.6 253.8,63.9 239.4,66.8 225.0,67.9 210.6,70.2 196.2,73.3 181.8,79.8 167.5,74.4 153.1,79.2 138.7,79.4 124.3,79.6 109.9,75.2 95.5,75.0 81.2,77.7 66.8,79.2 52.4,81.0 38.0,77.1"/><polygon class="noise-band slot-2" points="38.0,49.3 52.4,58.9 66.8,63.7 81.2,65.0 95.5,64.7 109.9,113.6 124.3,114.4 138.7,115.0 153.1,115.0 167.5,64.8 181.8,64.8 196.2,60.4 210.6,60.2 225.0,59.7 239.4,60.8 253.8,58.5 268.2,58.3 282.5,58.7 296.9,58.5 311.3,59.1 325.7,58.3 340.1,58.3 354.5,58.3 368.8,58.1 383.2,58.5 397.6,58.3 412.0,58.1 412.0,67.0 397.6,67.2 383.2,67.3 368.8,67.0 354.5,67.2 340.1,67.2 325.7,67.2 311.3,67.9 296.9,67.3 282.5,67.5 268.2,67.2 253.8,67.3 239.4,69.6 225.0,68.5 210.6,69.1 196.2,69.3 181.8,73.7 167.5,73.7 153.1,123.8 138.7,123.8 124.3,123.2 109.9,122.4 95.5,73.5 81.2,73.9 66.8,72.5 52.4,67.7 38.0,58.1"/><polygon class="noise-band slot-3" points="38.0,69.6 52.4,67.3 66.8,66.2 81.2,73.7 95.5,72.1 109.9,59.5 124.3,58.9 138.7,57.4 153.1,57.9 167.5,61.0 181.8,60.8 196.2,58.5 210.6,52.0 225.0,52.8 239.4,58.1 253.8,57.9 268.2,58.7 282.5,55.4 296.9,54.7 311.3,53.9 325.7,53.3 340.1,53.7 354.5,53.7 368.8,52.4 383.2,52.8 397.6,52.0 412.0,50.6 412.0,52.6 397.6,53.9 383.2,54.7 368.8,54.3 354.5,55.6 340.1,55.6 325.7,55.2 311.3,55.8 296.9,56.6 282.5,57.4 268.2,60.6 253.8,59.9 239.4,60.0 225.0,54.7 210.6,53.9 196.2,60.4 181.8,62.7 167.5,62.9 153.1,59.9 138.7,59.3 124.3,60.8 109.9,61.4 95.5,74.1 81.2,75.6 66.8,68.1 52.4,69.3 38.0,71.6"/><path class="line slot-1" d="M38.0,75.4L52.4,79.2L66.8,77.5L81.2,76.0L95.5,73.3L109.9,73.5L124.3,77.9L138.7,77.7L153.1,77.5L167.5,72.7L181.8,78.1L196.2,71.6L210.6,68.5L225.0,66.2L239.4,65.0L253.8,62.2L268.2,63.9L282.5,60.8L296.9,60.8L311.3,60.0L325.7,61.6L340.1,61.0L354.5,62.2L368.8,61.8L383.2,59.9L397.6,57.6L412.0,57.0"/><circle class="end-dot slot-1" cx="412.0" cy="57.0" r="4"/><path class="line slot-2" d="M38.0,53.7L52.4,63.3L66.8,68.1L81.2,69.5L95.5,69.1L109.9,118.0L124.3,118.8L138.7,119.4L153.1,119.4L167.5,69.3L181.8,69.3L196.2,64.8L210.6,64.7L225.0,64.1L239.4,65.2L253.8,62.9L268.2,62.7L282.5,63.1L296.9,62.9L311.3,63.5L325.7,62.7L340.1,62.7L354.5,62.7L368.8,62.5L383.2,62.9L397.6,62.7L412.0,62.5"/><circle class="end-dot slot-2" cx="412.0" cy="62.5" r="4"/><path class="line slot-3" d="M38.0,70.6L52.4,68.3L66.8,67.2L81.2,74.6L95.5,73.1L109.9,60.4L124.3,59.9L138.7,58.3L153.1,58.9L167.5,62.0L181.8,61.8L196.2,59.5L210.6,52.9L225.0,53.7L239.4,59.1L253.8,58.9L268.2,59.7L282.5,56.4L296.9,55.6L311.3,54.9L325.7,54.3L340.1,54.7L354.5,54.7L368.8,53.3L383.2,53.7L397.6,52.9L412.0,51.6"/><circle class="end-dot slot-3" cx="412.0" cy="51.6" r="4"/><text class="end-label" x="430.0" y="55.1"><tspan class="value">82.5</tspan> error_tracking</text><line class="leader" x1="418.0" y1="57.0" x2="428.0" y2="66.6"/><text class="end-label" x="430.0" y="70.1"><tspan class="value">79.7</tspan> workflows</text><line class="leader" x1="418.0" y1="62.5" x2="428.0" y2="81.6"/><text class="end-label" x="430.0" y="85.1"><tspan class="value">76.8</tspan> surveys</text><line class="crosshair" x1="0" x2="0" y1="18" y2="210" visibility="hidden"/></svg><div class="tooltip" hidden></div></div>
+    <details class="table-view"><summary>Table</summary><table><thead><tr><th>Week</th><th>workflows</th><th>surveys</th><th>error_tracking</th></tr></thead><tbody><tr><td>2026-03-23</td><td>70.1</td><td>81.4</td><td>72.6</td></tr><tr><td>2026-03-30</td><td>68.1</td><td>76.4</td><td>73.8</td></tr><tr><td>2026-04-06</td><td>69.0</td><td>73.9</td><td>74.4</td></tr><tr><td>2026-04-13</td><td>69.8</td><td>73.2</td><td>70.5</td></tr><tr><td>2026-04-20</td><td>71.2</td><td>73.4</td><td>71.3</td></tr><tr><td>2026-04-27</td><td>71.1</td><td>47.9</td><td>77.9</td></tr><tr><td>2026-05-04</td><td>68.8</td><td>47.5</td><td>78.2</td></tr><tr><td>2026-05-11</td><td>68.9</td><td>47.2</td><td>79.0</td></tr><tr><td>2026-05-18</td><td>69.0</td><td>47.2</td><td>78.7</td></tr><tr><td>2026-05-25</td><td>71.5</td><td>73.3</td><td>77.1</td></tr><tr><td>2026-06-01</td><td>68.7</td><td>73.3</td><td>77.2</td></tr><tr><td>2026-06-08</td><td>72.1</td><td>75.6</td><td>78.4</td></tr><tr><td>2026-06-15</td><td>73.7</td><td>75.7</td><td>81.8</td></tr><tr><td>2026-06-22</td><td>74.9</td><td>76.0</td><td>81.4</td></tr><tr><td>2026-06-29</td><td>75.5</td><td>75.4</td><td>78.6</td></tr><tr><td>2026-07-06</td><td>77.0</td><td>76.6</td><td>78.7</td></tr><tr><td>2026-07-13</td><td>76.1</td><td>76.7</td><td>78.3</td></tr><tr><td>2026-07-20</td><td>77.7</td><td>76.5</td><td>80.0</td></tr><tr><td>2026-07-27</td><td>77.7</td><td>76.6</td><td>80.4</td></tr><tr><td>2026-08-03</td><td>78.1</td><td>76.3</td><td>80.8</td></tr><tr><td>2026-08-10</td><td>77.3</td><td>76.7</td><td>81.1</td></tr><tr><td>2026-08-17</td><td>77.6</td><td>76.7</td><td>80.9</td></tr><tr><td>2026-08-24</td><td>77.0</td><td>76.7</td><td>80.9</td></tr><tr><td>2026-08-31</td><td>77.2</td><td>76.8</td><td>81.6</td></tr><tr><td>2026-09-07</td><td>78.2</td><td>76.6</td><td>81.4</td></tr><tr><td>2026-09-14</td><td>79.4</td><td>76.7</td><td>81.8</td></tr><tr><td>2026-09-21</td><td>79.7</td><td>76.8</td><td>82.5</td></tr></tbody></table></details>
+  </figure><figure class="chart" data-chart="{&quot;weeks&quot;:[&quot;2026-03-23&quot;,&quot;2026-03-30&quot;,&quot;2026-04-06&quot;,&quot;2026-04-13&quot;,&quot;2026-04-20&quot;,&quot;2026-04-27&quot;,&quot;2026-05-04&quot;,&quot;2026-05-11&quot;,&quot;2026-05-18&quot;,&quot;2026-05-25&quot;,&quot;2026-06-01&quot;,&quot;2026-06-08&quot;,&quot;2026-06-15&quot;,&quot;2026-06-22&quot;,&quot;2026-06-29&quot;,&quot;2026-07-06&quot;,&quot;2026-07-13&quot;,&quot;2026-07-20&quot;,&quot;2026-07-27&quot;,&quot;2026-08-03&quot;,&quot;2026-08-10&quot;,&quot;2026-08-17&quot;,&quot;2026-08-24&quot;,&quot;2026-08-31&quot;,&quot;2026-09-07&quot;,&quot;2026-09-14&quot;,&quot;2026-09-21&quot;],&quot;series&quot;:[{&quot;label&quot;:&quot;workflows&quot;,&quot;slot&quot;:1,&quot;values&quot;:[11.8,10.5,12.3,12.5,12.7,13,12.7,13.3,13.2,14,18.4,19.2,20.4,21.2,21.8,21.8,23,23.3,24.1,24.5,25.5,25.8,26.3,26.4,27.6,26.6,26.3]},{&quot;label&quot;:&quot;surveys&quot;,&quot;slot&quot;:2,&quot;values&quot;:[29,50,45.7,46.5,46.5,36.9,36.3,36.4,36.4,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]},{&quot;label&quot;:&quot;error_tracking&quot;,&quot;slot&quot;:3,&quot;values&quot;:[9.1,8.9,8.8,9.5,35.1,28.8,28.6,30.2,30.2,30.3,31.4,31.7,33.1,23.5,21.9,21.9,22.5,26.5,26.6,27.8,27.9,29.1,26.1,26.6,25.7,25.7,27.1]}]}">
+    <figcaption>Tests score, 0 to 100</figcaption>
+    <ul class="legend"><li><span class="key slot-1"></span>workflows</li><li><span class="key slot-2"></span>surveys</li><li><span class="key slot-3"></span>error_tracking</li></ul>
+    <div class="plot"><svg viewBox="0 0 540 240" role="img" aria-label="Tests score, 0 to 100" data-plot="38,374"><line class="grid" x1="38" x2="412" y1="210.0" y2="210.0"/><text class="tick" x="32" y="213.5" text-anchor="end">0</text><line class="grid" x1="38" x2="412" y1="162.0" y2="162.0"/><text class="tick" x="32" y="165.5" text-anchor="end">25</text><line class="grid" x1="38" x2="412" y1="114.0" y2="114.0"/><text class="tick" x="32" y="117.5" text-anchor="end">50</text><line class="grid" x1="38" x2="412" y1="66.0" y2="66.0"/><text class="tick" x="32" y="69.5" text-anchor="end">75</text><line class="grid" x1="38" x2="412" y1="18.0" y2="18.0"/><text class="tick" x="32" y="21.5" text-anchor="end">100</text><line class="axis" x1="38" x2="412" y1="210" y2="210"/><text class="tick" x="38.0" y="228" text-anchor="middle">03-23</text><text class="tick" x="95.5" y="228" text-anchor="middle">04-20</text><text class="tick" x="153.1" y="228" text-anchor="middle">05-18</text><text class="tick" x="210.6" y="228" text-anchor="middle">06-15</text><text class="tick" x="268.2" y="228" text-anchor="middle">07-13</text><text class="tick" x="325.7" y="228" text-anchor="middle">08-10</text><text class="tick" x="412.0" y="228" text-anchor="middle">09-21</text><polygon class="noise-band slot-1" points="38.0,185.8 52.4,188.3 66.8,184.8 81.2,184.5 95.5,184.1 109.9,183.5 124.3,184.1 138.7,182.9 153.1,183.1 167.5,181.6 181.8,173.1 196.2,171.6 210.6,169.3 225.0,167.8 239.4,166.6 253.8,166.6 268.2,164.3 282.5,163.7 296.9,162.2 311.3,161.4 325.7,159.5 340.1,158.9 354.5,158.0 368.8,157.8 383.2,155.5 397.6,157.4 412.0,158.0 412.0,161.0 397.6,160.5 383.2,158.5 368.8,160.8 354.5,161.0 340.1,162.0 325.7,162.6 311.3,164.5 296.9,165.3 282.5,166.8 268.2,167.4 253.8,169.7 239.4,169.7 225.0,170.8 210.6,172.4 196.2,174.7 181.8,176.2 167.5,184.7 153.1,186.2 138.7,186.0 124.3,187.2 109.9,186.6 95.5,187.2 81.2,187.5 66.8,187.9 52.4,191.4 38.0,188.9"/><polygon class="noise-band slot-3" points="38.0,191.2 52.4,191.6 66.8,191.8 81.2,190.4 95.5,141.3 109.9,153.4 124.3,153.7 138.7,150.7 153.1,150.7 167.5,150.5 181.8,148.4 196.2,147.8 210.6,145.1 225.0,163.5 239.4,166.6 253.8,166.6 268.2,165.5 282.5,157.8 296.9,157.6 311.3,155.3 325.7,155.1 340.1,152.8 354.5,158.5 368.8,157.6 383.2,159.3 397.6,159.3 412.0,156.6 412.0,159.3 397.6,162.0 383.2,162.0 368.8,160.3 354.5,161.2 340.1,155.5 325.7,157.8 311.3,158.0 296.9,160.3 282.5,160.5 268.2,168.1 253.8,169.3 239.4,169.3 225.0,166.2 210.6,147.8 196.2,150.5 181.8,151.1 167.5,153.2 153.1,153.4 138.7,153.4 124.3,156.4 109.9,156.0 95.5,144.0 81.2,193.1 66.8,194.4 52.4,194.3 38.0,193.9"/><path class="line slot-1" d="M38.0,187.3L52.4,189.8L66.8,186.4L81.2,186.0L95.5,185.6L109.9,185.0L124.3,185.6L138.7,184.5L153.1,184.7L167.5,183.1L181.8,174.7L196.2,173.1L210.6,170.8L225.0,169.3L239.4,168.1L253.8,168.1L268.2,165.8L282.5,165.3L296.9,163.7L311.3,163.0L325.7,161.0L340.1,160.5L354.5,159.5L368.8,159.3L383.2,157.0L397.6,158.9L412.0,159.5"/><circle class="end-dot slot-1" cx="412.0" cy="159.5" r="4"/><path class="line slot-2" d="M38.0,154.3L52.4,114.0L66.8,122.3L81.2,120.7L95.5,120.7L109.9,139.2L124.3,140.3L138.7,140.1L153.1,140.1L167.5,114.0L181.8,114.0L196.2,114.0L210.6,114.0L225.0,114.0L239.4,114.0L253.8,114.0L268.2,114.0L282.5,114.0L296.9,114.0L311.3,114.0L325.7,114.0L340.1,114.0L354.5,114.0L368.8,114.0L383.2,114.0L397.6,114.0L412.0,114.0"/><circle class="end-dot slot-2" cx="412.0" cy="114.0" r="4"/><path class="line slot-3" d="M38.0,192.5L52.4,192.9L66.8,193.1L81.2,191.8L95.5,142.6L109.9,154.7L124.3,155.1L138.7,152.0L153.1,152.0L167.5,151.8L181.8,149.7L196.2,149.1L210.6,146.4L225.0,164.9L239.4,168.0L253.8,168.0L268.2,166.8L282.5,159.1L296.9,158.9L311.3,156.6L325.7,156.4L340.1,154.1L354.5,159.9L368.8,158.9L383.2,160.7L397.6,160.7L412.0,158.0"/><circle class="end-dot slot-3" cx="412.0" cy="158.0" r="4"/><text class="end-label" x="430.0" y="117.5"><tspan class="value">50.0</tspan> surveys</text><text class="end-label" x="430.0" y="161.5"><tspan class="value">27.1</tspan> error_tracking</text><line class="leader" x1="418.0" y1="159.5" x2="428.0" y2="173.0"/><text class="end-label" x="430.0" y="176.5"><tspan class="value">26.3</tspan> workflows</text><line class="crosshair" x1="0" x2="0" y1="18" y2="210" visibility="hidden"/></svg><div class="tooltip" hidden></div></div>
+    <details class="table-view"><summary>Table</summary><table><thead><tr><th>Week</th><th>workflows</th><th>surveys</th><th>error_tracking</th></tr></thead><tbody><tr><td>2026-03-23</td><td>11.8</td><td>29.0</td><td>9.1</td></tr><tr><td>2026-03-30</td><td>10.5</td><td>50.0</td><td>8.9</td></tr><tr><td>2026-04-06</td><td>12.3</td><td>45.7</td><td>8.8</td></tr><tr><td>2026-04-13</td><td>12.5</td><td>46.5</td><td>9.5</td></tr><tr><td>2026-04-20</td><td>12.7</td><td>46.5</td><td>35.1</td></tr><tr><td>2026-04-27</td><td>13.0</td><td>36.9</td><td>28.8</td></tr><tr><td>2026-05-04</td><td>12.7</td><td>36.3</td><td>28.6</td></tr><tr><td>2026-05-11</td><td>13.3</td><td>36.4</td><td>30.2</td></tr><tr><td>2026-05-18</td><td>13.2</td><td>36.4</td><td>30.2</td></tr><tr><td>2026-05-25</td><td>14.0</td><td>50.0</td><td>30.3</td></tr><tr><td>2026-06-01</td><td>18.4</td><td>50.0</td><td>31.4</td></tr><tr><td>2026-06-08</td><td>19.2</td><td>50.0</td><td>31.7</td></tr><tr><td>2026-06-15</td><td>20.4</td><td>50.0</td><td>33.1</td></tr><tr><td>2026-06-22</td><td>21.2</td><td>50.0</td><td>23.5</td></tr><tr><td>2026-06-29</td><td>21.8</td><td>50.0</td><td>21.9</td></tr><tr><td>2026-07-06</td><td>21.8</td><td>50.0</td><td>21.9</td></tr><tr><td>2026-07-13</td><td>23.0</td><td>50.0</td><td>22.5</td></tr><tr><td>2026-07-20</td><td>23.3</td><td>50.0</td><td>26.5</td></tr><tr><td>2026-07-27</td><td>24.1</td><td>50.0</td><td>26.6</td></tr><tr><td>2026-08-03</td><td>24.5</td><td>50.0</td><td>27.8</td></tr><tr><td>2026-08-10</td><td>25.5</td><td>50.0</td><td>27.9</td></tr><tr><td>2026-08-17</td><td>25.8</td><td>50.0</td><td>29.1</td></tr><tr><td>2026-08-24</td><td>26.3</td><td>50.0</td><td>26.1</td></tr><tr><td>2026-08-31</td><td>26.4</td><td>50.0</td><td>26.6</td></tr><tr><td>2026-09-07</td><td>27.6</td><td>50.0</td><td>25.7</td></tr><tr><td>2026-09-14</td><td>26.6</td><td>50.0</td><td>25.7</td></tr><tr><td>2026-09-21</td><td>26.3</td><td>50.0</td><td>27.1</td></tr></tbody></table></details>
+  </figure></div>
+</section>
+<section>
+  <h2>Biggest movers, per product</h2>
+  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored and compared with the commit scored before it. The five largest per product are listed. A commit outside the product that changes its inbound imports is attributed to the next commit inside it.</p>
+  <table class="movers">
+    <thead><tr><th>Product</th><th>Δ composite</th><th>× band</th><th>Date</th><th>Moved most</th><th>Change</th></tr></thead>
+    <tbody><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:4%"></span><b>+0.6</b></td>
+    <td>1.0× band</td>
+    <td>2026-06-07</td>
+    <td>architecture +1.6</td>
+    <td class="subject">refactor(frontend): remove defunct tabId from workflows scenes <a href="https://github.com/PostHog/posthog/pull/62026">#62026</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/58e8f530f8be560fc2e59210f1a790d11dbd4a62">58e8f53</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:4%"></span><b>+0.6</b></td>
+    <td>1.0× band</td>
+    <td>2026-06-29</td>
+    <td>architecture +1.3</td>
+    <td class="subject">feat(workflows): make the builder aware of edits from MCP/API <a href="https://github.com/PostHog/posthog/pull/64001">#64001</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/c617e72bbb8eb6b8d5b855592b099802f1736604">c617e72</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:3%"></span><b>+0.4</b></td>
+    <td>0.7× band</td>
+    <td>2026-06-01</td>
+    <td>smells +1.2</td>
+    <td class="subject">feat(workflows): add base MCP tools for workflows product <a href="https://github.com/PostHog/posthog/pull/60388">#60388</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/6970121e6400d8766641cb3a7d33ce3b6c661d85">6970121</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:2%"></span><b>+0.3</b></td>
+    <td>0.5× band</td>
+    <td>2026-06-01</td>
+    <td>smells +0.7</td>
+    <td class="subject">fix(admin): register moved hogflow and cdp admins via package init <a href="https://github.com/PostHog/posthog/pull/60652">#60652</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/cb5b59f6da85bbb6c568e335fa2e7521d96804d9">cb5b59f</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:2%"></span><b>+0.3</b></td>
+    <td>0.5× band</td>
+    <td>2026-06-09</td>
+    <td>tests +0.7</td>
+    <td class="subject">feat(workflows): add invocation debugging MCP tools and align names <a href="https://github.com/PostHog/posthog/pull/61655">#61655</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/64c5a4efdd391e86ef1157bfa93e3952f97b5519">64c5a4e</a></td>
+  </tr><tr>
+    <td>surveys</td>
+    <td class="delta-cell"><span class="bar down" style="width:100%"></span><b>−13.7</b></td>
+    <td>3.5× band</td>
+    <td>2026-03-23</td>
+    <td>complexity −41.5</td>
+    <td class="subject">chore(surveys): move survey models and API to products app <a href="https://github.com/PostHog/posthog/pull/51611">#51611</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/731051cb6951587692dc1c86eaba65a70add4fbf">731051c</a></td>
+  </tr><tr>
+    <td>surveys</td>
+    <td class="delta-cell"><span class="bar down" style="width:61%"></span><b>−8.3</b></td>
+    <td>2.1× band</td>
+    <td>2026-04-23</td>
+    <td>smells −26.3</td>
+    <td class="subject">feat(devex): generate Zod validation schemas from OpenAPI spec <a href="https://github.com/PostHog/posthog/pull/54698">#54698</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/fbfbfb7a12985fa0d9a252646378be42eea548b2">fbfbfb7</a></td>
+  </tr><tr>
+    <td>surveys</td>
+    <td class="delta-cell"><span class="bar up" style="width:39%"></span><b>+5.4</b></td>
+    <td>1.4× band</td>
+    <td>2026-05-20</td>
+    <td>smells +27.3</td>
+    <td class="subject">refactor(onboarding): compose flow from per-product step providers <a href="https://github.com/PostHog/posthog/pull/57579">#57579</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/706db7c3d5ee4ab321334a717d365fc6d43d5616">706db7c</a></td>
+  </tr><tr>
+    <td>surveys</td>
+    <td class="delta-cell"><span class="bar down" style="width:11%"></span><b>−1.5</b></td>
+    <td>0.4× band</td>
+    <td>2026-05-21</td>
+    <td>complexity −4.6</td>
+    <td class="subject">feat(surveys): replace 'Default' translation with explicit base_language <a href="https://github.com/PostHog/posthog/pull/58628">#58628</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/1095361a044ac7586ab30fc033b035f7b624d322">1095361</a></td>
+  </tr><tr>
+    <td>surveys</td>
+    <td class="delta-cell"><span class="bar up" style="width:1%"></span><b>+0.2</b></td>
+    <td>0.1× band</td>
+    <td>2026-04-23</td>
+    <td>smells +0.8</td>
+    <td class="subject">chore(devex): enforce type annotations in product backend code <a href="https://github.com/PostHog/posthog/pull/55443">#55443</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/7d69f056cc748e537af13ff15e997e1b5c552b98">7d69f05</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:76%"></span><b>+10.4</b></td>
+    <td>26.0× band</td>
+    <td>2026-04-15</td>
+    <td>tests +50.1</td>
+    <td class="subject">feat(error_tracking): add issue facade kickoff <a href="https://github.com/PostHog/posthog/pull/54718">#54718</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/4c6495dec83ced70b5efc763f027ab0189952ea3">4c6495d</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar down" style="width:34%"></span><b>−4.6</b></td>
+    <td>11.5× band</td>
+    <td>2026-04-16</td>
+    <td>tests −24.9</td>
+    <td class="subject">feat(error_tracking): migrate digest and task callers to facade <a href="https://github.com/PostHog/posthog/pull/54749">#54749</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/9a84ad66f544fd737550396c036df2280a6c4c1c">9a84ad6</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:12%"></span><b>+1.6</b></td>
+    <td>4.0× band</td>
+    <td>2026-07-06</td>
+    <td>architecture +4.6</td>
+    <td class="subject">chore(error-tracking): seal external boundary and enable contract-check <a href="https://github.com/PostHog/posthog/pull/65456">#65456</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/c5f763e280d5209a4f243608902c263b51529e6c">c5f763e</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:11%"></span><b>+1.5</b></td>
+    <td>3.8× band</td>
+    <td>2026-04-16</td>
+    <td>architecture +4.4</td>
+    <td class="subject">feat(error_tracking): migrate issue readers to facade <a href="https://github.com/PostHog/posthog/pull/54724">#54724</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/cf7a56580c53092b9a2364bfbbb2357e749df153">cf7a565</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:7%"></span><b>+0.9</b></td>
+    <td>2.3× band</td>
+    <td>2026-07-14</td>
+    <td>tests +4.5</td>
+    <td class="subject">perf(error-tracking): cut weekly digest clickhouse query load <a href="https://github.com/PostHog/posthog/pull/70471">#70471</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/35a43af6cf0b01c7acb7f9acd7adc7583cba048e">35a43af</a></td>
+  </tr></tbody>
+  </table>
+</section>
+<section>
+  <h2>workflows modules at <code>c25b27f874a1</code>, worst first</h2>
+  <p class="note">Each directory of the scope is scored as its own scope with the same index, at the repository head. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Parents and their children are both listed, so a large parent such as <code>backend</code> summarises the rows beneath it. Modules with fewer than 3 production files are not listed.</p>
+  <table class="modules">
+    <thead><tr>
+      <th>Module</th><th>Files</th><th>Code</th>
+      <th>Architecture<small>propagation cost · files on cycles · facade share</small></th>
+      <th>Complexity<small>p90 CCN · functions over CCN 10 · p90 NLOC · p90 file lines</small></th>
+      <th>Smells<small>ruff / KLOC · oxlint / KLOC · duplicated lines · markers / KLOC · type escapes / KLOC</small></th>
+    </tr></thead>
+    <tbody><tr>
+    <td class="module"><b>backend/providers</b><small>922 lines</small></td>
+    <td>4</td>
+    <td><b>46.1</b></td>
+    <td><b>45.8</b><small>0.250 · 0 · 0%</small></td>
+    <td><b>23.0</b><small>11 · 10.7% · 45 · 822</small></td>
+    <td><b>75.6</b><small>1.1 · — · 0.0% · 0.0 · 17.4</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/api</b><small>7,246 lines</small></td>
+    <td>10</td>
+    <td><b>52.4</b></td>
+    <td><b>62.8</b><small>0.156 · 0 · 27%</small></td>
+    <td><b>22.2</b><small>15 · 15.0% · 51 · 322</small></td>
+    <td><b>72.1</b><small>4.7 · — · 3.5% · 0.1 · 4.6</small></td>
+  </tr><tr>
+    <td class="module"><b>backend</b><small>13,165 lines</small></td>
+    <td>70</td>
+    <td><b>56.1</b></td>
+    <td><b>62.9</b><small>0.088 · 2 · 20%</small></td>
+    <td><b>30.6</b><small>12 · 12.7% · 45 · 231</small></td>
+    <td><b>75.9</b><small>3.2 · — · 2.3% · 0.1 · 7.6</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/management/commands</b><small>942 lines</small></td>
+    <td>7</td>
+    <td><b>56.5</b></td>
+    <td><b>66.7</b><small>0.000 · 0 · 0%</small></td>
+    <td><b>29.7</b><small>14 · 25.8% · 44 · 231</small></td>
+    <td><b>72.3</b><small>0.0 · — · 1.1% · 0.0 · 22.3</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/services</b><small>2,089 lines</small></td>
+    <td>13</td>
+    <td><b>60.3</b></td>
+    <td><b>70.6</b><small>0.019 · 0 · 17%</small></td>
+    <td><b>24.5</b><small>12 · 13.1% · 45 · 427</small></td>
+    <td><b>87.1</b><small>1.9 · — · 0.8% · 0.0 · 4.8</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/react_flow_utils</b><small>394 lines</small></td>
+    <td>3</td>
+    <td><b>66.2</b></td>
+    <td><b>72.2</b><small>0.333 · 0 · no crossings</small></td>
+    <td><b>77.9</b><small>6 · 0.0% · 34 · 259</small></td>
+    <td><b>41.2</b><small>— · 5.1 · 3.5% · 2.5 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/models/hog_flow</b><small>254 lines</small></td>
+    <td>3</td>
+    <td><b>67.0</b></td>
+    <td><b>38.9</b><small>0.333 · 0 · 0%</small></td>
+    <td><b>95.0</b><small>3 · 0.0% · 4 · 205</small></td>
+    <td><b>81.0</b><small>0.0 · — · 7.6% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/panel/testing</b><small>1,766 lines</small></td>
+    <td>4</td>
+    <td><b>68.4</b></td>
+    <td><b>72.2</b><small>0.333 · 0 · no crossings</small></td>
+    <td><b>68.0</b><small>5 · 3.1% · 26 · 678</small></td>
+    <td><b>62.3</b><small>— · 0.0 · 16.3% · 0.6 · 4.5</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows</b><small>18,824 lines</small></td>
+    <td>105</td>
+    <td><b>71.1</b></td>
+    <td><b>59.0</b><small>0.276 · 17 · no crossings</small></td>
+    <td><b>80.2</b><small>5 · 2.1% · 18 · 373</small></td>
+    <td><b>80.9</b><small>— · 0.3 · 4.0% · 0.2 · 4.7</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/tasks</b><small>250 lines</small></td>
+    <td>6</td>
+    <td><b>72.3</b></td>
+    <td><b>58.3</b><small>0.100 · 0 · 0%</small></td>
+    <td><b>69.6</b><small>7 · 0.0% · 61 · 114</small></td>
+    <td><b>100.0</b><small>0.0 · — · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/models</b><small>548 lines</small></td>
+    <td>11</td>
+    <td><b>76.3</b></td>
+    <td><b>57.6</b><small>0.109 · 0 · 0%</small></td>
+    <td><b>98.0</b><small>3 · 0.0% · 4 · 96</small></td>
+    <td><b>81.9</b><small>0.0 · — · 3.6% · 0.0 · 7.3</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows</b><small>28,592 lines</small></td>
+    <td>158</td>
+    <td><b>76.7</b></td>
+    <td><b>72.1</b><small>0.191 · 17 · no crossings</small></td>
+    <td><b>79.3</b><small>5 · 2.0% · 18 · 382</small></td>
+    <td><b>81.4</b><small>— · 0.3 · 3.7% · 0.2 · 4.3</small></td>
+  </tr></tbody>
+    <tbody class="more" hidden><tr>
+    <td class="module"><b>mcp/apps</b><small>389 lines</small></td>
+    <td>7</td>
+    <td><b>78.2</b></td>
+    <td><b>66.7</b><small>0.405 · 0 · no crossings</small></td>
+    <td><b>76.9</b><small>6 · 8.3% · 27 · 98</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/registry/triggers</b><small>2,569 lines</small></td>
+    <td>14</td>
+    <td><b>78.3</b></td>
+    <td><b>88.6</b><small>0.137 · 0 · no crossings</small></td>
+    <td><b>82.1</b><small>5 · 1.1% · 18 · 366</small></td>
+    <td><b>55.5</b><small>— · 0.0 · 7.8% · 0.0 · 20.2</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/utils</b><small>262 lines</small></td>
+    <td>4</td>
+    <td><b>78.5</b></td>
+    <td><b>59.7</b><small>0.083 · 0 · 0%</small></td>
+    <td><b>87.5</b><small>5 · 0.0% · 25 · 118</small></td>
+    <td><b>100.0</b><small>0.0 · — · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/registry</b><small>2,779 lines</small></td>
+    <td>19</td>
+    <td><b>78.9</b></td>
+    <td><b>88.3</b><small>0.140 · 0 · no crossings</small></td>
+    <td><b>82.2</b><small>5 · 1.0% · 18 · 366</small></td>
+    <td><b>58.5</b><small>— · 0.0 · 7.3% · 0.0 · 18.7</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/panel</b><small>4,083 lines</small></td>
+    <td>15</td>
+    <td><b>79.3</b></td>
+    <td><b>85.3</b><small>0.176 · 0 · no crossings</small></td>
+    <td><b>78.5</b><small>5 · 2.5% · 17 · 458</small></td>
+    <td><b>69.9</b><small>— · 0.0 · 9.0% · 0.2 · 3.7</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/Reputation</b><small>804 lines</small></td>
+    <td>3</td>
+    <td><b>79.6</b></td>
+    <td><b>66.7</b><small>0.500 · 0 · no crossings</small></td>
+    <td><b>81.2</b><small>3 · 0.0% · 19 · 562</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/filters</b><small>267 lines</small></td>
+    <td>3</td>
+    <td><b>79.8</b></td>
+    <td><b>86.1</b><small>0.167 · 0 · no crossings</small></td>
+    <td><b>82.4</b><small>8 · 0.0% · 17 · 199</small></td>
+    <td><b>65.6</b><small>— · 0.0 · 0.0% · 3.7 · 7.5</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Channels</b><small>1,202 lines</small></td>
+    <td>14</td>
+    <td><b>80.7</b></td>
+    <td><b>69.0</b><small>0.181 · 2 · no crossings</small></td>
+    <td><b>94.0</b><small>3 · 0.0% · 14 · 184</small></td>
+    <td><b>84.4</b><small>— · 0.0 · 5.0% · 0.0 · 2.5</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend</b><small>37,039 lines</small></td>
+    <td>226</td>
+    <td><b>81.6</b></td>
+    <td><b>81.6</b><small>0.109 · 19 · no crossings</small></td>
+    <td><b>80.7</b><small>5 · 1.8% · 17 · 366</small></td>
+    <td><b>82.8</b><small>— · 0.2 · 3.6% · 0.2 · 3.9</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/registry/actions</b><small>208 lines</small></td>
+    <td>4</td>
+    <td><b>82.0</b></td>
+    <td><b>66.7</b><small>0.417 · 0 · no crossings</small></td>
+    <td><b>89.0</b><small>5 · 0.0% · 18 · 164</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Suppression</b><small>359 lines</small></td>
+    <td>3</td>
+    <td><b>82.7</b></td>
+    <td><b>66.7</b><small>0.500 · 0 · no crossings</small></td>
+    <td><b>91.2</b><small>4 · 0.0% · 15 · 197</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/OptOuts</b><small>2,579 lines</small></td>
+    <td>14</td>
+    <td><b>84.4</b></td>
+    <td><b>84.0</b><small>0.192 · 0 · no crossings</small></td>
+    <td><b>78.9</b><small>4 · 2.1% · 19 · 500</small></td>
+    <td><b>92.1</b><small>— · 0.0 · 1.2% · 0.0 · 3.9</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/tree</b><small>2,748 lines</small></td>
+    <td>12</td>
+    <td><b>84.7</b></td>
+    <td><b>79.8</b><small>0.242 · 0 · no crossings</small></td>
+    <td><b>81.5</b><small>5 · 1.5% · 19 · 358</small></td>
+    <td><b>97.3</b><small>— · 0.4 · 0.0% · 0.0 · 0.7</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/templates</b><small>1,121 lines</small></td>
+    <td>12</td>
+    <td><b>85.5</b></td>
+    <td><b>86.7</b><small>0.159 · 0 · no crossings</small></td>
+    <td><b>81.2</b><small>5 · 2.4% · 16 · 216</small></td>
+    <td><b>88.9</b><small>— · 0.9 · 0.0% · 0.0 · 5.4</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/emptyState</b><small>145 lines</small></td>
+    <td>3</td>
+    <td><b>87.2</b></td>
+    <td><b>72.2</b><small>0.333 · 0 · no crossings</small></td>
+    <td><b>98.0</b><small>3 · 0.0% · 6 · 89</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/steps</b><small>6,405 lines</small></td>
+    <td>43</td>
+    <td><b>88.1</b></td>
+    <td><b>91.6</b><small>0.101 · 0 · no crossings</small></td>
+    <td><b>81.2</b><small>5 · 2.7% · 17 · 289</small></td>
+    <td><b>90.6</b><small>— · 0.3 · 2.2% · 0.0 · 1.9</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Broadcasts</b><small>2,223 lines</small></td>
+    <td>17</td>
+    <td><b>88.2</b></td>
+    <td><b>83.8</b><small>0.195 · 0 · no crossings</small></td>
+    <td><b>88.9</b><small>5 · 0.8% · 15 · 184</small></td>
+    <td><b>95.0</b><small>— · 0.0 · 0.0% · 0.0 · 4.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/TemplateLibrary</b><small>1,186 lines</small></td>
+    <td>10</td>
+    <td><b>88.3</b></td>
+    <td><b>80.6</b><small>0.233 · 0 · no crossings</small></td>
+    <td><b>94.1</b><small>3 · 0.0% · 13 · 194</small></td>
+    <td><b>94.7</b><small>— · 0.8 · 0.0% · 0.0 · 0.8</small></td>
+  </tr><tr>
+    <td class="module"><b>backend/admin</b><small>269 lines</small></td>
+    <td>5</td>
+    <td><b>88.7</b></td>
+    <td><b>83.3</b><small>0.200 · 0 · no crossings</small></td>
+    <td><b>87.3</b><small>5 · 0.0% · 24 · 139</small></td>
+    <td><b>100.0</b><small>0.0 · — · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/steps/components</b><small>2,593 lines</small></td>
+    <td>19</td>
+    <td><b>89.2</b></td>
+    <td><b>96.3</b><small>0.044 · 0 · no crossings</small></td>
+    <td><b>74.9</b><small>6 · 4.2% · 22 · 384</small></td>
+    <td><b>94.7</b><small>— · 0.8 · 0.0% · 0.0 · 1.2</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Broadcasts/steps</b><small>385 lines</small></td>
+    <td>5</td>
+    <td><b>90.5</b></td>
+    <td><b>100.0</b><small>0.000 · 0 · no crossings</small></td>
+    <td><b>69.5</b><small>7 · 0.0% · 67 · 119</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/scenes/settings</b><small>195 lines</small></td>
+    <td>3</td>
+    <td><b>96.4</b></td>
+    <td><b>100.0</b><small>0.000 · 0 · no crossings</small></td>
+    <td><b>88.5</b><small>6 · 0.0% · 17 · 125</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
+  </tr></tbody>
+  </table>
+  <button type="button" class="show-more">Show all 34 modules</button>
+</section>
+
+<footer>
+  <h2>How to read this</h2>
+  <ul>
+    <li><b>Points.</b> One score per week: the first-parent <code>upstream/master</code> commit at each Monday 00:00 UTC boundary, measured by <code>coherence/index.ts</code> with pinned tools and fixed anchors, so the same commit always gives the same number.</li>
+    <li><b>Band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score: the size of an ordinary weekday of work, including the odd refactor. It is the yardstick for single commits; weekly steps are summarised separately as the typical and largest week.</li>
+    <li><b>Movers.</b> In the three weeks with the largest composite change per product, every first-parent commit that touched the product was scored, and each is compared with the previous scored commit.</li>
+    <li><b>Runtime.</b> 368 commits measured in 330.3 s across all backfill runs; the last run took 330.3 s with 368 measured and 0 reused from <code>coherence/data/</code>.</li>
+  </ul>
+</footer>
+</main>
+<script>
+const root = document.documentElement;
+const themes = ["system", "light", "dark"];
+const themeButton = document.getElementById("theme");
+themeButton.addEventListener("click", () => {
+  const next = themes[(themes.indexOf(root.dataset.theme || "system") + 1) % themes.length];
+  if (next === "system") delete root.dataset.theme; else root.dataset.theme = next;
+  themeButton.textContent = "Theme: " + next;
+});
+document.querySelector(".show-more")?.addEventListener("click", (event) => {
+  document.querySelector("tbody.more").hidden = false;
+  event.currentTarget.remove();
+});
+for (const figure of document.querySelectorAll("figure.chart")) {
+  const svg = figure.querySelector("svg");
+  const data = JSON.parse(figure.dataset.chart);
+  const [left, width] = svg.dataset.plot.split(",").map(Number);
+  const viewWidth = svg.viewBox.baseVal.width;
+  const crosshair = svg.querySelector(".crosshair");
+  const tooltip = figure.querySelector(".tooltip");
+  const count = data.weeks.length;
+  let current = -1;
+  const xOf = (index) => left + (count === 1 ? width / 2 : (index / (count - 1)) * width);
+  const show = (index) => {
+    current = Math.max(0, Math.min(count - 1, index));
+    const x = xOf(current);
+    crosshair.setAttribute("x1", x); crosshair.setAttribute("x2", x); crosshair.setAttribute("visibility", "visible");
+    const rows = data.series.map((series) => {
+      const row = document.createElement("div");
+      const key = document.createElement("span"); key.className = "key slot-" + series.slot;
+      const value = document.createElement("b"); value.textContent = series.values[current] === null ? "—" : series.values[current].toFixed(1);
+      const label = document.createElement("span"); label.textContent = series.label;
+      row.append(key, value, label);
+      return row;
+    });
+    const title = document.createElement("div"); title.className = "when"; title.textContent = data.weeks[current];
+    tooltip.replaceChildren(title, ...rows);
+    tooltip.hidden = false;
+    const rect = svg.getBoundingClientRect();
+    const px = (x / viewWidth) * rect.width;
+    tooltip.style.left = (px > rect.width * 0.7 ? px - tooltip.offsetWidth - 12 : px + 12) + "px";
+  };
+  const hide = () => { crosshair.setAttribute("visibility", "hidden"); tooltip.hidden = true; current = -1; };
+  svg.addEventListener("pointermove", (event) => {
+    const rect = svg.getBoundingClientRect();
+    const px = ((event.clientX - rect.left) / rect.width) * viewWidth;
+    show(Math.round(((px - left) / width) * (count - 1)));
+  });
+  svg.addEventListener("pointerleave", hide);
+  svg.tabIndex = 0;
+  svg.addEventListener("focus", () => show(count - 1));
+  svg.addEventListener("blur", hide);
+  svg.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") { show(current - 1); event.preventDefault(); }
+    if (event.key === "ArrowRight") { show(current + 1); event.preventDefault(); }
+  });
+}
+</script>
+</body>
+</html>

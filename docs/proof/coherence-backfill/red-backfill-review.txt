@@ -1,0 +1,22 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/backfill.test.ts:
+31 | 
+32 |   test("a second run reuses every stored result instead of measuring again", async () => {
+33 |     const again = await backfill(fixture.request);
+34 | 
+35 |     expect(again.runtime.measured).toBe(0);
+36 |     expect(manifest.runtime.reused).toBe(0);
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 3
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/test/coherence/backfill.test.ts:36:37)
+(fail) the weekly backfill > a second run reuses every stored result instead of measuring again [375.92ms]
+
+ 3 pass
+ 1 fail
+ 14 expect() calls
+Ran 4 tests across 1 file. [2.11s]

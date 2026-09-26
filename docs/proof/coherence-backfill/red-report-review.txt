@@ -1,0 +1,25 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/backfill-report.test.ts:
+61 |   return { ...breakdown, rows: breakdown.rows.filter((row) => !isPassThrough(row)) };
+62 | }
+63 | 
+64 | async function modulePaths(dataDir: string, scope: string, commit: string, date: string): Promise<string[]> {
+65 |   const point = join(dataDir, scope, `${date.slice(0, 10)}-${commit.slice(0, 12)}.json`);
+66 |   const { index } = CoherenceReportSchema.parse(JSON.parse(await readFile(point, "utf8")));
+                                                                      ^
+ENOENT: no such file or directory, open '/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-backfill-vTeSyd/products/a/2026-03-27-04f00f82557e.json'
+    path: "/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-backfill-vTeSyd/products/a/2026-03-27-04f00f82557e.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async modulePaths (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/coherence/report/modules.ts:66:66)
+      at async scoreModules (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/coherence/report/modules.ts:48:28)
+      at async buildReport (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/coherence/report/build.ts:15:25)
+      at async <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/test/coherence/backfill-report.test.ts:16:9)
+(fail) (unnamed) [1699.39ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [1.73s]

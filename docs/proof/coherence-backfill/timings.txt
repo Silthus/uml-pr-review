@@ -1,0 +1,11 @@
+# Backfill runtime on an M-series Mac, PostHog upstream/master c25b27f874a1, three scopes, 26 weeks
+
+One run from an empty coherence/data directory (index and tool caches warm from earlier runs):
+Backfilled 3 scopes over 26 weeks in 330.3 s (368 measured, 0 reused; 368 measured in 330.3 s across runs). Manifest: /Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/coherence/data/backfill.json
+
+368 commits = 3 x 27 weekly points + 66 Wednesday/Thursday noise pairs (23 + 17 + 26 pairs; each pair scores two commits, a few shared with the weekly points) + the commits inside the three biggest-moving weeks per product.
+Per commit: 0.9 s on average, 0.7 to 4.4 s (see backfill-run.log).
+
+Earlier runs before the review: 524.2 s for 318 commits (first noise design), then 302.2 s for 131 more; that data was discarded for this clean run.
+
+Report build with per-module scoring for products/workflows at head (34 modules kept, plus the scope itself): 63.3 s wall clock.

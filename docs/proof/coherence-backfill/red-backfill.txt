@@ -1,0 +1,14 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/backfill.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../coherence/backfill.ts' from '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-70/test/coherence/backfill.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [6.00ms]

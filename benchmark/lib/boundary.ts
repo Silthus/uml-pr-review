@@ -13,8 +13,8 @@ export type BoundaryHygiene = {
   newUnresolvedImports: UnresolvedImport[];
 };
 
-export function boundaryHygiene(base: IndexView, patched: IndexView, tach: TachConfig, changedFiles: string[]): BoundaryHygiene {
-  const bypasses = newImports(base, patched).filter(isFacadeBypass);
+export function boundaryHygiene(base: IndexView, patched: IndexView, tach: TachConfig, changedFiles: string[], renames: Map<string, string> = new Map()): BoundaryHygiene {
+  const bypasses = newImports(base, patched, renames).filter(isFacadeBypass);
   const baseGraph = tachGraph(base, tach);
   const patchedGraph = tachGraph(patched, tach);
   const newEdges = [...patchedGraph.edges.values()].filter((edge) => !baseGraph.edges.has(pairKey(edge.from, edge.to)));
@@ -22,13 +22,14 @@ export function boundaryHygiene(base: IndexView, patched: IndexView, tach: TachC
     facadeBypasses: bypasses.filter(({ fromTest }) => !fromTest).map(crossing),
     testFacadeBypasses: bypasses.filter(({ fromTest }) => fromTest).map(crossing),
     newCrossProductDependencies: newEdges.map((edge) => ({ ...edge, declared: tach.declares(edge.from, edge.to) })),
-    newCycles: newEdges.filter((edge) => onSharedCycle(edge, patchedGraph) && !onSharedCycle(edge, baseGraph)),
+    newCycles: oneEdgePerCycle(newEdges.filter((edge) => onSharedCycle(edge, patchedGraph) && !onSharedCycle(edge, baseGraph)), patchedGraph),
     newUnresolvedImports: newUnresolved(base, patched, new Set(changedFiles)),
   };
 }
 
-export function newImports(base: IndexView, patched: IndexView): FileImport[] {
-  const existing = new Set(base.imports.map(({ from, to }) => pairKey(from, to)));
+export function newImports(base: IndexView, patched: IndexView, renames: Map<string, string> = new Map()): FileImport[] {
+  const renamed = (path: string) => renames.get(path) ?? path;
+  const existing = new Set(base.imports.map(({ from, to }) => pairKey(renamed(from), renamed(to))));
   return patched.imports.filter(({ from, to }) => !existing.has(pairKey(from, to)));
 }
 
@@ -48,7 +49,7 @@ type Graph = { edges: Map<string, ModuleEdge>; successors: Map<string, Set<strin
 function tachGraph(view: IndexView, tach: TachConfig): Graph {
   const graph: Graph = { edges: new Map(), successors: new Map() };
   for (const { from, to, fromTest } of view.imports) {
-    if (fromTest) continue;
+    if (fromTest || !isPython(from) || !isPython(to)) continue;
     const edge = { from: tach.moduleOf(from), to: tach.moduleOf(to) };
     if (edge.from === edge.to) continue;
     graph.edges.set(pairKey(edge.from, edge.to), edge);
@@ -59,6 +60,24 @@ function tachGraph(view: IndexView, tach: TachConfig): Graph {
 
 function onSharedCycle({ from, to }: ModuleEdge, graph: Graph): boolean {
   return reaches(graph, from, to) && reaches(graph, to, from);
+}
+
+function oneEdgePerCycle(edges: ModuleEdge[], graph: Graph): ModuleEdge[] {
+  const cycles = new Map<string, ModuleEdge>();
+  for (const edge of edges) {
+    const cycle = cycleMembers(graph, edge.from).join("\0");
+    if (!cycles.has(cycle)) cycles.set(cycle, edge);
+  }
+  return [...cycles.values()];
+}
+
+function cycleMembers(graph: Graph, module: string): string[] {
+  const modules = new Set([...graph.successors.keys(), ...[...graph.successors.values()].flatMap((next) => [...next])]);
+  return [...modules].filter((other) => reaches(graph, module, other) && reaches(graph, other, module)).sort();
+}
+
+function isPython(path: string): boolean {
+  return path.endsWith(".py");
 }
 
 function reaches(graph: Graph, start: string, goal: string): boolean {

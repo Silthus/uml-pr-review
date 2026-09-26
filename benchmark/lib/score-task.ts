@@ -33,7 +33,8 @@ export async function scoreTaskRuns(taskDir: string, { repository, indexer = cre
     const meta = await readJson<RunMeta>(join(run.dir, "meta.json"));
     measured.push([run, await measureArm({ repository, base: meta?.diffFrom ?? task.baseCommit, patch, scratch, indexer }), meta]);
   }
-  const focuses = focusScores(Object.fromEntries(measured.flatMap(([run, measure]) => (measure.focus ? [[run.name, measure.focus]] : []))));
+  const finished = new Set(measured.filter(([, , meta]) => !meta || meta.exit.reason === "completed" || meta.exit.reason === "historical").map(([run]) => run.name));
+  const focuses = focusScores(Object.fromEntries(measured.flatMap(([run, measure]) => (measure.focus ? [[run.name, measure.focus]] : []))), (name) => finished.has(name));
   const original = measured.find(([run]) => run.arm === originalArm)?.[1];
   const arms: Record<string, ArmScore> = {};
   for (const [run, measure, meta] of measured) {

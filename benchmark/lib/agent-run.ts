@@ -12,11 +12,11 @@ export type AgentOutcome = {
   result: ResultEvent | null;
 };
 
-export type AgentRunRequest = { invocation: Invocation; arm: ReplayArm; cwd: string; transcriptPath: string; stderrPath: string; timeoutMs: number };
+export type AgentRunRequest = { invocation: Invocation; arm: ReplayArm; cwd: string; transcriptPath: string; stderrPath: string; timeoutMs: number; interruption?: AbortSignal };
 
 const killGraceMs = 10_000;
 
-export async function runAgent({ invocation, arm, cwd, transcriptPath, stderrPath, timeoutMs }: AgentRunRequest): Promise<AgentOutcome> {
+export async function runAgent({ invocation, arm, cwd, transcriptPath, stderrPath, timeoutMs, interruption }: AgentRunRequest): Promise<AgentOutcome> {
   const child = Bun.spawn(invocation.command, {
     cwd,
     env: invocation.env,
@@ -31,6 +31,9 @@ export async function runAgent({ invocation, arm, cwd, transcriptPath, stderrPat
     setTimeout(() => child.kill("SIGKILL"), killGraceMs).unref();
   };
   const timer = setTimeout(() => stop("timed-out", `killed after ${timeoutMs / 60_000} minutes`), timeoutMs);
+  const interrupted = () => stop("failed", "interrupted");
+  if (interruption?.aborted) interrupted();
+  interruption?.addEventListener("abort", interrupted);
   const events = { init: null as InitEvent | null, sessionId: null as string | null, result: null as ResultEvent | null };
   const transcript = Bun.file(transcriptPath).writer();
   try {
@@ -56,6 +59,7 @@ export async function runAgent({ invocation, arm, cwd, transcriptPath, stderrPat
     };
   } finally {
     clearTimeout(timer);
+    interruption?.removeEventListener("abort", interrupted);
     await transcript.end();
   }
 }

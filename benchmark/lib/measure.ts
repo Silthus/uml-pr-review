@@ -45,7 +45,11 @@ async function architectureOf(worktree: string, base: string, files: PatchedFile
   const baseIndex = indexViewOf(await indexer.index(worktree, { commit: base }));
   const patchedIndex = indexViewOf(await indexer.index(worktree, "working-tree"));
   const tach = parseTach(await Bun.file(join(worktree, "tach.toml")).text());
-  return { boundary: boundaryHygiene(baseIndex, patchedIndex, tach, present(files)), focus: focus(baseIndex, patchedIndex, tach, files) };
+  return { boundary: boundaryHygiene(baseIndex, patchedIndex, tach, present(files), renamedPaths(files)), focus: focus(baseIndex, patchedIndex, tach, files) };
+}
+
+function renamedPaths(files: PatchedFile[]): Map<string, string> {
+  return new Map(files.filter(({ status }) => status === "renamed").map(({ previousPath, path }) => [previousPath, path]));
 }
 
 function present(files: PatchedFile[]): string[] {

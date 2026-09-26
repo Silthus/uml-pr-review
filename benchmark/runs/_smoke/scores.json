@@ -1,7 +1,7 @@
 {
   "pr": "_smoke",
   "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
-  "scoredAt": "2026-09-26T15:11:03.841Z",
+  "scoredAt": "2026-09-26T15:25:15.645Z",
   "arms": {
     "B-1": {
       "arm": "B",
@@ -86,14 +86,14 @@
         "toolCalls": 2,
         "edits": 1,
         "toolCallsBeforeFirstEdit": 1,
-        "secondsBeforeFirstEdit": 5,
+        "secondsBeforeFirstEdit": 10,
         "architectureToolCalls": 0,
         "architectureExplorationBeforeEdit": 1,
         "architectureReasoningBeforeEdit": 0,
         "firstArchitectureThought": null,
         "turns": 3,
-        "wallSeconds": 13,
-        "costUsd": 0.0850352
+        "wallSeconds": 17,
+        "costUsd": 0.0571954
       }
     }
   },

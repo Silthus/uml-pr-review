@@ -35,7 +35,7 @@ export async function commonDir(repository: string): Promise<string> {
 
 export async function workingTreeDiff(worktree: string, base: string): Promise<string> {
   await git(worktree, ["add", "--all", "--intent-to-add"]);
-  return git(worktree, ["diff", "--binary", base]);
+  return git(worktree, ["-c", "core.quotePath=false", "diff", "--binary", base]);
 }
 
 async function applyPatch(worktree: string, patch: string): Promise<Applied> {

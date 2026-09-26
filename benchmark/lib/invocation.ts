@@ -7,7 +7,8 @@ export const architectureServer = { name: "uml-pr-review", url: "http://127.0.0.
 
 const implementInstruction = "Implement this in the working directory. Do not commit, push, or open a pull request.";
 const planningInstruction = "Use the planning-architecture skill. You have standing approval to lock your plan once it is drafted.";
-const strippedEnvironment = /^(ANTHROPIC_|CLAUDE_CODE_)/;
+const inheritedEnvironment = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "TERM", "LANG", "LC_ALL", "TMPDIR"];
+const isolatedEnvironment = { CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" };
 
 export type Invocation = { command: string[]; prompt: string; env: Record<string, string> };
 
@@ -44,14 +45,15 @@ export function invocationFor(task: Task, arm: ReplayArm, skill: string, environ
       ...(arm === "C" ? ["--append-system-prompt", skill] : []),
     ],
     prompt: promptFor(task, arm),
-    env: Object.fromEntries(Object.entries(environment).filter((entry): entry is [string, string] => entry[1] !== undefined && !strippedEnvironment.test(entry[0]))),
+    env: { ...Object.fromEntries(inheritedEnvironment.flatMap((name) => (environment[name] === undefined ? [] : [[name, environment[name]]]))), ...isolatedEnvironment },
   };
 }
 
-export type InitEvent = { model?: string; tools?: string[]; mcp_servers?: { name: string; status: string }[] };
+export type InitEvent = { model?: string; tools?: string[]; mcp_servers?: { name: string; status: string }[]; memory_paths?: Record<string, string> };
 
 export function initProblem(init: InitEvent, arm: ReplayArm): string | undefined {
   if (init.model !== replayModel) return `the session runs ${init.model ?? "an unknown model"}, not ${replayModel}`;
+  if (Object.keys(init.memory_paths ?? {}).length > 0) return "the session loads auto-memory from earlier sessions";
   const architectureTools = (init.tools ?? []).filter((tool) => tool.startsWith(`mcp__${architectureServer.name}__`));
   const connected = (init.mcp_servers ?? []).some(({ name, status }) => name === architectureServer.name && status === "connected");
   if (arm === "B" && (architectureTools.length > 0 || (init.mcp_servers ?? []).length > 0)) return "arm B can see an MCP server";

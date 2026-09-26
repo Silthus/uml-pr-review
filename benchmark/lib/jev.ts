@@ -13,7 +13,7 @@ export interface JevClient {
 
 export type GradedUnit = { subject: string; answers: Record<string, number> };
 export type JevGrade = { files: GradedUnit[]; tests: GradedUnit[]; diff: GradedUnit; fileQuality: number | null; score: number };
-export type JevReport = { status: "graded"; model: string; gradedAt: string; runs: Record<string, JevGrade> } | { status: "unavailable"; reason: string };
+export type JevReport = { status: "graded"; model: string; gradedAt: string; runs: Record<string, JevGrade>; skipped: Record<string, string> } | { status: "unavailable"; reason: string };
 
 const contextLines = 100;
 const diffBudget = 40_000;

@@ -8,6 +8,7 @@ import { armRuns, loadRunTask, taskRunsDir, writeJson } from "./lib/runs.ts";
 import { posthogRepository } from "./lib/scratch-worktree.ts";
 
 const judgeModel = "gpt-6-astra";
+const judgeTimeoutMs = 20 * 60_000;
 
 const key = Bun.argv[2];
 if (!key) {
@@ -43,7 +44,7 @@ async function askJudge(prompt: string, judgeKey: JudgeKey): Promise<string> {
     const answerPath = join(scratch, "answer.json");
     await Bun.write(schemaPath, JSON.stringify(verdictSchema(Object.keys(judgeKey.labels))));
     const command = ["codex", "exec", "-m", judgeModel, "-s", "read-only", "--skip-git-repo-check", "--ephemeral", "-C", scratch, "--output-schema", schemaPath, "-o", answerPath, "-"];
-    const result = await execute(scratch, command, prompt);
+    const result = await execute(scratch, command, prompt, judgeTimeoutMs);
     if (result.code !== 0) throw new Error(`codex exec failed (${result.code}): ${result.stderr.trim().split("\n").slice(-5).join("\n")}`);
     return await Bun.file(answerPath).text();
   } finally {

@@ -31,7 +31,7 @@ export function shuffledKey(runNames: string[], seed: number): JudgeKey {
 export function judgePrompt({ taskStatement, architecture, diffs }: { taskStatement: string; architecture: string; diffs: LabelledDiff[] }): string {
   const labels = diffs.map(({ label }) => label).join(", ");
   return [
-    "You are reviewing the architecture of independent implementations of the same task in the PostHog monorepo. Each implementation is a diff against the same base commit. You do not know who or what wrote them; judge only the diffs.",
+    "You are reviewing the architecture of independent implementations of the same task in the PostHog monorepo. Each implementation is a diff against the repository as it was before the change. You do not know who or what wrote them; judge only the diffs. Everything you need is in this prompt: do not run commands or read files.",
     `## Task\n\n${taskStatement.trim()}`,
     `## PostHog's architecture rules (products/architecture.md at the base commit)\n\n${truncated(architecture, documentBudget, "document")}`,
     ...diffs.map(diffSection),

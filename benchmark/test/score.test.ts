@@ -46,6 +46,12 @@ const armChanges: Record<string, Files> = {
   },
   "B-2": { "ee/hogai/context.py": "from products.workflows.backend.facade.api import search_workflows\n\ndef thing():\n    return search_workflows()\n" },
   "C-1": { "products/workflows/backend/logic.py": "from ee.hogai.context import thing\nfrom ee.hogai.missing import nope\n\ndef run():\n    return thing(), nope\n" },
+  "C-2": {
+    "posthog/usage.py": "from products.workflows.backend.facade.api import search_workflows\n",
+    "products/workflows/backend/usage.py": "from posthog.usage import search_workflows\n",
+    "products/workflows/frontend/list.ts": "import { thing } from '../../../ee/frontend/thing'\nexport const list = thing\n",
+    "ee/frontend/thing.ts": "export const thing = 1\n",
+  },
 };
 
 let repository: CommittedRepository;
@@ -86,6 +92,15 @@ describe("scoring arm diffs against the base tree", () => {
     expect(scores.arms["C-1"]!.hygiene).toBe(40);
   });
 
+  test("two new edges that close one cycle count as one cycle, and frontend imports are not tach dependencies", () => {
+    const boundary = scores.arms["C-2"]!.boundary!;
+    expect(boundary.newCrossProductDependencies).toEqual([
+      { from: "posthog", to: "products.workflows", declared: false },
+      { from: "products.workflows", to: "posthog", declared: true },
+    ]);
+    expect(boundary.newCycles).toHaveLength(1);
+  });
+
   test("focus counts the change's files, lines, and added tests", () => {
     expect(scores.arms["B-1"]!.focus).toMatchObject({ filesChanged: 2, linesAdded: 11, linesRemoved: 1, testsAdded: 2 });
   });
@@ -93,7 +108,7 @@ describe("scoring arm diffs against the base tree", () => {
   test("intent alignment compares each replay's modules and files with the original PR, and consistency compares repeats", () => {
     expect(scores.arms["B-1"]!.alignment).toEqual({ modules: 0.5, files: 0.5 });
     expect(scores.arms.A!.alignment).toBeNull();
-    expect(scores.consistency).toEqual({ B: { modules: 0.5, files: 0.5 }, C: null });
+    expect(scores.consistency).toEqual({ B: { modules: 0.5, files: 0.5 }, C: { modules: 0.25, files: 0 } });
   });
 
   test("the scores are written next to the runs", async () => {

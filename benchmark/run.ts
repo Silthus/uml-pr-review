@@ -24,8 +24,11 @@ const task = await loadTask(taskPath);
 const taskDir = taskRunsDir(String(task.pr));
 await snapshotTask(taskDir, task);
 if (arm === "C") await assertArchitectureServer();
+const interruption = new AbortController();
+process.on("SIGINT", () => interruption.abort());
+process.on("SIGTERM", () => interruption.abort());
 let failures = 0;
-for (let run = 0; run < repeat; run++) {
+for (let run = 0; run < repeat && !interruption.signal.aborted; run++) {
   const meta = await replay(task, arm, await nextRunIndex(taskDir, arm));
   console.log(`${meta.arm}: ${meta.exit.reason}${meta.exit.detail ? ` (${meta.exit.detail})` : ""}, ${meta.turns ?? "?"} turns, ${meta.wallSeconds} s, $${meta.costUsd ?? "?"}`);
   if (meta.exit.reason !== "completed") failures++;
@@ -38,16 +41,17 @@ async function replay(task: Task, arm: ReplayArm, index: number): Promise<RunMet
   const plans = await plansDirectory(posthogRepository);
   const plansBefore = await planFiles(plans);
   await mkdir(runDir, { recursive: true });
-  await addScratchWorktree(posthogRepository, worktree, task.baseCommit);
   const startedAt = new Date();
-  const outcome = await agentInWorktree(task, arm, runDir, worktree);
-  const planIds = await removeRunPlans(plans, plansBefore, await Bun.file(join(runDir, "transcript.jsonl")).text());
+  const outcome = await agentInWorktree(task, arm, runDir, worktree).catch((error: unknown) => failedOutcome(error));
+  const transcript = Bun.file(join(runDir, "transcript.jsonl"));
+  const planIds = await removeRunPlans(plans, plansBefore, (await transcript.exists()) ? await transcript.text() : "");
   const meta = metaOf(task, `${arm}-${index}`, outcome, startedAt, planIds);
   await writeJson(join(runDir, "meta.json"), meta);
   return meta;
 }
 
 async function agentInWorktree(task: Task, arm: ReplayArm, runDir: string, worktree: string): Promise<AgentOutcome> {
+  await addScratchWorktree(posthogRepository, worktree, task.baseCommit);
   try {
     const outcome = await runAgent({
       invocation: invocationFor(task, arm, await Bun.file(skillPath).text(), process.env),
@@ -56,12 +60,17 @@ async function agentInWorktree(task: Task, arm: ReplayArm, runDir: string, workt
       transcriptPath: join(runDir, "transcript.jsonl"),
       stderrPath: join(runDir, "stderr.log"),
       timeoutMs: wallTimeCapMs,
+      interruption: interruption.signal,
     });
     await Bun.write(join(runDir, "diff.patch"), await workingTreeDiff(worktree, task.baseCommit));
     return outcome;
   } finally {
     await removeScratchWorktree(posthogRepository, worktree);
   }
+}
+
+function failedOutcome(error: unknown): AgentOutcome {
+  return { reason: "failed", code: null, detail: error instanceof Error ? error.message : String(error), model: null, sessionId: null, result: null };
 }
 
 function metaOf(task: Task, arm: string, outcome: AgentOutcome, startedAt: Date, planIds: string[]): RunMeta {

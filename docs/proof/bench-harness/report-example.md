@@ -100,7 +100,7 @@ Process detail:
 
 | Run | Tool calls before first edit | Seconds before first edit | Architecture exploration before edit | Architecture reasoning before edit | Arch. tool calls | Turns | Wall (s) | Cost ($) |
 |---|---|---|---|---|---|---|---|---|
-| B-1 | 1 | 5 | 1 | 0 | 0 | 3 | 13 | 0.09 |
+| B-1 | 1 | 10 | 1 | 0 | 0 | 3 | 17 | 0.06 |
 
 How the thinking differed before the first edit:
 - **B-1** made 1 tool calls (1 architecture exploration) before its first edit; no architecture reasoning before it
@@ -108,7 +108,8 @@ How the thinking differed before the first edit:
 ## Honesty caveats
 - Arm A had a human steering it over many turns, with review feedback; arms B and C get the task statement only. A–B differences conflate the model, the time, and the steering. B–C is the controlled comparison.
 - Replays are stochastic. Where the budget allowed, B and C ran more than once, and the spread above shows how far one run can be from another. With few tasks and few repeats, small differences are noise.
-- The Astra judge and Jev are models. The judge is one blind call per task; Jev is deterministic for the same input but still a model's opinion. Neither is ground truth.
+- The Astra judge and Jev are models. The judge is one call per task; Jev is deterministic for the same input but still a model's opinion. Neither is ground truth.
+- The judge sees shuffled labels and runs from an empty directory, and its label key is written only after it answers, but its read-only sandbox can still read the disk; it is told the prompt holds everything it needs.
 - Boundary hygiene sees imports only. It does not see model access through `apps.get_model`, ORM traversal, or HTTP coupling, which `products/architecture.md` also governs.
 - Focus and intent alignment reward staying close to the smallest change and to the human's PR. Neither is always the right change.
 - Static quality and reference coverage are proxies: complexity is not design, and a test that names a function does not prove it tests it. `pytest` only runs where PostHog's services and Python environment exist.

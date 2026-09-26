@@ -26,6 +26,7 @@ async function grade(): Promise<JevReport> {
   const cache = new Map(Object.entries((await readJson<Record<string, Record<string, JevAnswer>>>(cachePath)) ?? {}));
   const client = cachedClient(gatewayJev(), cache);
   const runs: Record<string, JevGrade> = {};
+  const skipped: Record<string, string> = {};
   try {
     for (const run of await armRuns(taskDir)) {
       const patch = await Bun.file(join(run.dir, "diff.patch")).text();
@@ -33,13 +34,14 @@ async function grade(): Promise<JevReport> {
       if (files.length === 0) continue;
       const base = (await readJson<RunMeta>(join(run.dir, "meta.json")))?.diffFrom ?? task.baseCommit;
       const scratch = join(tmpdir(), `bench-jev-${key}-${run.name}-${crypto.randomUUID().slice(0, 8)}`);
-      runs[run.name] = await withPatchedWorktree(posthogRepository, scratch, base, patch, async (worktree, applied) => {
-        if (applied.application === "failed") throw new Error(`${run.name}'s diff does not apply: ${applied.applyError}`);
-        return gradeDiff(client, task.taskStatement, patch, files, (path) => Bun.file(join(worktree, path)).text());
-      });
+      const grade = await withPatchedWorktree(posthogRepository, scratch, base, patch, async (worktree, applied) =>
+        applied.application === "failed" ? undefined : gradeDiff(client, task.taskStatement, patch, files, (path) => Bun.file(join(worktree, path)).text()),
+      );
+      if (grade) runs[run.name] = grade;
+      else skipped[run.name] = "the diff does not apply to its base";
     }
   } finally {
     await writeJson(cachePath, Object.fromEntries(cache));
   }
-  return { status: "graded", model: jevModel, gradedAt: new Date().toISOString(), runs };
+  return { status: "graded", model: jevModel, gradedAt: new Date().toISOString(), runs, skipped };
 }

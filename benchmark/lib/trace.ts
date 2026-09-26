@@ -5,7 +5,8 @@ export type TraceEvent = { at?: number } & ({ kind: "tool"; name: string; input:
 type Json = Record<string, unknown>;
 
 const editTools = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit", "apply_patch"]);
-const shellWrite = /apply_patch|\bsed\s+-i\b|\bperl\s+-p?i\b|\btee\s+(?!\/tmp|\/dev)["']?[\w.]|(?:^|[^>&\d=-])>>?\s*(?!\/tmp|\/dev|&)["']?[\w.][\w./-]*/;
+const shellWrite = /apply_patch|\bsed\s+(?:-\w+\s+)*-\w*i|\bperl\s+(?:-\w+\s+)*-\w*i|\btee\s+(?:-a\s+)?(?!\/dev\/)[\w./~-]|(?:^|[^>&\d=-])>>?\s*(?!\/dev\/|&)[\w./~-]/;
+const quoted = /'[^']*'|"(?:[^"\\]|\\.)*"/g;
 
 export function parseJsonLines(text: string): Json[] {
   return text.split("\n").flatMap((line) => {
@@ -22,7 +23,7 @@ export function claudeTrace(records: Json[]): TraceEvent[] {
   return records.flatMap((record) => {
     const at = timeOf(record.timestamp);
     const content = (record.message as Json | undefined)?.content;
-    if (record.type === "user") return typeof content === "string" ? [{ at, kind: "prompt" as const }] : [];
+    if (record.type === "user") return isHumanPrompt(record, content) ? [{ at, kind: "prompt" as const }] : [];
     if (record.type !== "assistant" || !Array.isArray(content)) return [];
     return (content as Json[]).flatMap((block): TraceEvent[] => {
       if (block.type === "tool_use") return [toolEvent(at, String(block.name), block.input)];
@@ -72,8 +73,16 @@ function t3MessageEvent({ role, text, created_at }: { role: string; text: string
   return role === "user" ? { at, kind: "prompt" } : { at, kind: "text", text };
 }
 
+function isHumanPrompt(record: Json, content: unknown): boolean {
+  if (record.isMeta === true) return false;
+  const blocks = typeof content === "string" ? [{ type: "text", text: content }] : Array.isArray(content) ? (content as Json[]) : [];
+  if (blocks.length === 0 || blocks.some((block) => block.type === "tool_result")) return false;
+  const text = blocks.find((block) => block.type === "text")?.text;
+  return typeof text !== "string" || !text.trimStart().startsWith("<");
+}
+
 function toolEvent(at: number | undefined, name: string, input: unknown, fileChange = false): TraceEvent {
-  return { at, kind: "tool", name, input, edit: fileChange || editTools.has(name) || shellWrite.test(commandOf(input)) };
+  return { at, kind: "tool", name, input, edit: fileChange || editTools.has(name) || shellWrite.test(commandOf(input).replace(quoted, "''")) };
 }
 
 function commandOf(input: unknown): string {

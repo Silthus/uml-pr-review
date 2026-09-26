@@ -27,10 +27,11 @@ export function hygieneScore(boundary: BoundaryHygiene): number {
   return Math.max(0, 100 - penalty);
 }
 
-export function focusScores(focuses: Record<string, Focus>): Record<string, number> {
+export function focusScores(focuses: Record<string, Focus>, comparable: (name: string) => boolean = () => true): Record<string, number> {
   const samples = Object.entries(focuses).map(([name, focus]) => [name, focusSample(focus)] as const);
-  const best = Object.fromEntries(focusMetrics.map((metric) => [metric, Math.min(...samples.map(([, sample]) => sample[metric]))])) as FocusSample;
-  return Object.fromEntries(samples.map(([name, sample]) => [name, round(100 * mean(focusMetrics.map((metric) => (best[metric] + 1) / (sample[metric] + 1))))]));
+  const references = samples.filter(([name]) => comparable(name));
+  const best = Object.fromEntries(focusMetrics.map((metric) => [metric, Math.min(...(references.length > 0 ? references : samples).map(([, sample]) => sample[metric]))])) as FocusSample;
+  return Object.fromEntries(samples.map(([name, sample]) => [name, round(100 * mean(focusMetrics.map((metric) => Math.min(1, (best[metric] + 1) / (sample[metric] + 1)))))]));
 }
 
 export function judgeScore(verdict: JudgeVerdict): number {

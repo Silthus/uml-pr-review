@@ -70,8 +70,8 @@ describe("grading a run from several angles", () => {
   test("the composite rescales the weights over the angles a run has", () => {
     const angles = anglesOf(inputs);
 
-    expect(compositeOf(angles)).toBe(Math.round(((25 * 70 + 20 * 70 + 10 * 61 + 15 * 50 + 10 * 37.5 + 5 * 75) / 85) * 10) / 10);
-    expect(compositeOf({ ...angles, jev: 90 })).toBe(Math.round(((25 * 70 + 20 * 70 + 15 * 90 + 10 * 61 + 15 * 50 + 10 * 37.5 + 5 * 75) / 100) * 10) / 10);
+    expect(compositeOf(angles)).toBe(61.9);
+    expect(compositeOf({ ...angles, jev: 90 })).toBe(66.1);
     expect(compositeOf({ architecture: null, astra: null, jev: null, staticQuality: null, tests: null, alignment: null, process: null })).toBeNull();
   });
 });

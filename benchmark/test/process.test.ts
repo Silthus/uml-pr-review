@@ -34,6 +34,21 @@ describe("process metrics from a Claude Code transcript", () => {
     });
   });
 
+  test("tell shell commands that write files from ones that only compare or print", () => {
+    const edits = [
+      "cat > /tmp/bench-103523-B-1/ee/x.py <<'EOF'\nprint()\nEOF",
+      "perl -0pi -e 's/a/b/' ee/x.py",
+      "sed -i '' 's/a/b/' ee/x.py",
+      "echo x | tee -a ee/x.py",
+    ];
+    const reads = [`python -c "print(1 if 3 > 2 else 0)"`, "jq 'select(.count > 3)' data.json", 'grep -rn "def search() -> str" ee/ 2>/dev/null', "ls >&2"];
+
+    const editFlags = (commands: string[]) => claudeTrace([assistant(1, ...commands.map((command) => tool("Bash", { command })))]).map((event) => event.kind === "tool" && event.edit);
+
+    expect(editFlags(edits)).toEqual([true, true, true, true]);
+    expect(editFlags(reads)).toEqual([false, false, false, false]);
+  });
+
   test("count a shell redirect into a source file as the first edit", () => {
     const trace = claudeTrace([assistant(3, tool("Bash", { command: "printf 'x' >> products/workflows/backend/facade/api.py" }))]);
 

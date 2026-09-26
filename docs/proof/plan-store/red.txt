@@ -1,0 +1,31 @@
+bun test v1.4.2 (50a8a8387)
+
+test/architecture/plan/plan-store.test.ts:
+14 |   apply(id: string, change: PlanChange, base: ArchitectureModel): Promise<ApplyOutcome>;
+15 |   setLock(id: string, change: { locked: boolean; actor: Actor; client?: string; note?: string; expectedRevision?: number }): Promise<ApplyOutcome>;
+16 | };
+17 | 
+18 | export function openPlanStore(_directory: string, _clock?: () => Date): PlanStore {
+19 |   throw new Error("not implemented");
+                 ^
+error: not implemented
+      at openPlanStore (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/src/architecture/plan/index.ts:19:13)
+      at freshStore (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/store-fixture.ts:45:19)
+      at async <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/plan-store.test.ts:10:29)
+(fail) create > starts a draft at revision 1 with an id from the title [0.81ms]
+14 |   apply(id: string, change: PlanChange, base: ArchitectureModel): Promise<ApplyOutcome>;
+15 |   setLock(id: string, change: { locked: boolean; actor: Actor; client?: string; note?: string; expectedRevision?: number }): Promise<ApplyOutcome>;
+16 | };
+17 | 
+18 | export function openPlanStore(_directory: string, _clock?: () => Date): PlanStore {
+19 |   throw new Error("not implemented");
+                 ^
+error: not implemented
+      at openPlanStore (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/src/architecture/plan/index.ts:19:13)
+      at freshStore (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/store-fixture.ts:45:19)
+      at async <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/plan-store.test.ts:35:40)
+(fail) apply > applies a batch as one revision and keeps the file canonical across a reload [0.32ms]
+
+ 0 pass
+ 2 fail
+Ran 2 tests across 1 file. [23.00ms]

@@ -146,7 +146,7 @@ async function submitComment(view: ReturnType<typeof render>, body: string) {
 }
 
 useHappyDom();
-configure({ asyncUtilTimeout: 5000 });
+configure({ asyncUtilTimeout: 3000 });
 
 beforeEach(() => {
   document.body.innerHTML = "";

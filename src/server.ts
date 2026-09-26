@@ -1,10 +1,17 @@
 #!/usr/bin/env bun
+import { createEventBus } from "./architecture/events/index.ts";
+import { createArchitectureRoutes, rejectForeignRequest } from "./architecture/http/index.ts";
+import { createMcpRoute } from "./architecture/mcp/index.ts";
+import { createArchitectureService } from "./architecture/service.ts";
+import explorer from "./explorer/index.html";
 import { CommandError, repositoryRoot, run } from "./git.ts";
 import { githubRepository, listOpenPullRequests, type PullRequestScope } from "./github.ts";
 import { buildGraph, currentPullRequest, renderGraph } from "./review.ts";
-import app from "./web/index.html";
+import pulls from "./web/index.html";
 
 const port = Number(process.env.PORT ?? 4477);
+const bus = createEventBus();
+const architecture = createArchitectureService({ bus, explorerOrigin: `http://127.0.0.1:${port}` });
 const artifacts = new Map<string, Promise<string>>();
 
 class BadRequest extends Error {}
@@ -46,8 +53,8 @@ function failure(error: unknown): Response {
   return Response.json({ error: message }, { status });
 }
 
-const handle = (handler: (url: URL, request: Request) => Promise<Response>) => (request: Request) =>
-  handler(new URL(request.url), request).catch(failure);
+const handle = (handler: (url: URL, request: Request) => Promise<Response>) => async (request: Request) =>
+  rejectForeignRequest(request) ?? handler(new URL(request.url), request).catch(failure);
 
 const server = Bun.serve({
   port,
@@ -55,7 +62,10 @@ const server = Bun.serve({
   idleTimeout: 255,
   development: process.env.NODE_ENV !== "production",
   routes: {
-    "/": app,
+    "/": explorer,
+    "/pulls": pulls,
+    "/mcp": createMcpRoute({ service: architecture, bus }),
+    ...createArchitectureRoutes({ service: architecture, bus }),
     "/api/repository": handle(async (url) => Response.json(await openRepository(url.searchParams.get("path")))),
     "/api/choose-folder": { POST: handle(async () => Response.json(await chooseFolder())) },
     "/api/pulls": handle(async (url) => {

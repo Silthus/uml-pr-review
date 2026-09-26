@@ -1,0 +1,5 @@
+GET /api/repository?path=/Users/mreichenbach/dev/uml-pr-review with Host: evil.example -> 403
+GET /api/pulls?path=/Users/mreichenbach/dev/uml-pr-review with Host: evil.example -> 403
+GET /review/34?path=/Users/mreichenbach/dev/uml-pr-review with Host: evil.example -> 403
+POST /api/choose-folder with Origin: http://evil.example -> 403
+GET /api/repository?path=/Users/mreichenbach/dev/uml-pr-review (local) -> {"root":"/Users/mreichenbach/dev/uml-pr-review","repo":"Silthus/uml-pr-review"} 200

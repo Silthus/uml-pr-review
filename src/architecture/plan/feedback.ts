@@ -77,8 +77,12 @@ export function unreadablePlan(file: string, reason: string): string {
   return `The plan file ${file} cannot be read as a plan (${reason}). Restore or delete that file, or start a new plan with create_plan.`;
 }
 
+export function noPlansYet(): string {
+  return "There is no plan in this repository yet. Call create_plan.";
+}
+
 export function unknownPlan(id: string, ids: string[]): string {
-  if (ids.length === 0) return "There is no plan in this repository yet. Call create_plan.";
+  if (ids.length === 0) return noPlansYet();
   return `No plan \`${id}\` in this repository. Plans here: ${codeList(ids)}. Call get_plan without planId for the latest.`;
 }
 

@@ -1,0 +1,2371 @@
+{
+  "pr": 103843,
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "scoredAt": "2026-09-26T17:37:28.597Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "products/workflows/packages/workflows/.gitignore",
+        "products/workflows/packages/workflows/README.md",
+        "products/workflows/packages/workflows/package.json",
+        "products/workflows/packages/workflows/src/definition.ts",
+        "products/workflows/packages/workflows/src/emit.ts",
+        "products/workflows/packages/workflows/src/errors.ts",
+        "products/workflows/packages/workflows/src/index.ts",
+        "products/workflows/packages/workflows/src/steps.ts",
+        "products/workflows/packages/workflows/src/triggers.ts",
+        "products/workflows/packages/workflows/src/workflow.ts",
+        "products/workflows/packages/workflows/tests/emit.test.ts",
+        "products/workflows/packages/workflows/tests/types.test-d.ts",
+        "products/workflows/packages/workflows/tsconfig.base.json",
+        "products/workflows/packages/workflows/tsconfig.build.json",
+        "products/workflows/packages/workflows/tsconfig.json",
+        "products/workflows/packages/workflows/tsconfig.test.json"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 18,
+        "linesAdded": 1344,
+        "linesRemoved": 3,
+        "modulesTouched": 2,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 14
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 58,
+          "maxCcn": 11,
+          "meanCcn": 1.8,
+          "overTen": 1,
+          "ccnDelta": 107
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "next",
+            "signature": "next ( step Step )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 1,
+            "tokens": 61
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "slug",
+            "signature": "slug ( name )",
+            "ccn": 6,
+            "nloc": 44,
+            "params": 1,
+            "tokens": 308
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "checkDuration",
+            "signature": "checkDuration ( duration Duration , step Step )",
+            "ccn": 2,
+            "nloc": 12,
+            "params": 2,
+            "tokens": 65
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "escape",
+            "signature": "escape ( value )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "serializedSize",
+            "signature": "serializedSize ( variable WorkflowVariable )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 68
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "checkVariables",
+            "signature": "checkVariables ( variables readonly WorkflowVariable )",
+            "ccn": 4,
+            "nloc": 31,
+            "params": 1,
+            "tokens": 183
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "resolveInputs",
+            "signature": "resolveInputs ( step Step kind , actionId , context Context )",
+            "ccn": 5,
+            "nloc": 23,
+            "params": 3,
+            "tokens": 191
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "refuseNestedSecret",
+            "signature": "refuseNestedSecret ( value , key , step Step )",
+            "ccn": 5,
+            "nloc": 12,
+            "params": 3,
+            "tokens": 79
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 24
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 37
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 34,
+            "params": 0,
+            "tokens": 316
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "compilePath",
+            "signature": "compilePath ( steps readonly Step , continuation , context Context )",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "compile",
+            "signature": "compile ( options CompileOptions , emitOptions EmitOptions )",
+            "ccn": 11,
+            "nloc": 28,
+            "params": 2,
+            "tokens": 228
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "constructor",
+            "signature": "constructor ( fields WorkflowErrorFields )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 23
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "print",
+            "signature": "print ( )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 42
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "secret",
+            "signature": "secret ( envName )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "isSecretRef",
+            "signature": "isSecretRef ( value )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 32
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "delay",
+            "signature": "delay ( duration Duration , options name id )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 43
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "fn",
+            "signature": "fn ( options name id templateId inputs Readonly )",
+            "ccn": 1,
+            "nloc": 14,
+            "params": 1,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "webhook",
+            "signature": "webhook ( options name id url method body Record headers Record signingSecret SecretRef )",
+            "ccn": 7,
+            "nloc": 28,
+            "params": 1,
+            "tokens": 141
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "email",
+            "signature": "email ( options name id to subject text html preheader fromIntegrationId )",
+            "ccn": 2,
+            "nloc": 21,
+            "params": 1,
+            "tokens": 114
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "branch",
+            "signature": "branch ( options name id branches readonly BranchSpec , BranchSpec )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 55
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "path",
+            "signature": "path ( steps Path )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 13
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 24
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "condition",
+            "signature": "condition ( type PropertyType )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 1,
+            "tokens": 33
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/triggers.ts",
+            "name": "onEvent",
+            "signature": "onEvent ( options event properties readonly PropertyCondition )",
+            "ccn": 3,
+            "nloc": 18,
+            "params": 1,
+            "tokens": 79
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/triggers.ts",
+            "name": "onSchedule",
+            "signature": "onSchedule ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit ( emitOptions )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 5
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "workflow",
+            "signature": "workflow ( options WorkflowOptions )",
+            "ccn": 1,
+            "nloc": 14,
+            "params": 1,
+            "tokens": 50
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "refusal",
+            "signature": "refusal ( run ( )",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 1,
+            "tokens": 8
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "webhookAction",
+            "signature": "webhookAction ( id )",
+            "ccn": 1,
+            "nloc": 17,
+            "params": 1,
+            "tokens": 73
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 46,
+            "params": 0,
+            "tokens": 208
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 64
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 49
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 71
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 32
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 16,
+            "params": 0,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 18,
+            "params": 0,
+            "tokens": 89
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 12,
+            "params": 0,
+            "tokens": 82
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 15,
+            "params": 0,
+            "tokens": 95
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 0,
+            "tokens": 65
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 72
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 0,
+            "tokens": 67
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 14,
+            "params": 0,
+            "tokens": 117
+          },
+          {
+            "file": "products/workflows/packages/workflows/tests/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 24,
+            "params": 0,
+            "tokens": 129
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 461,
+        "productionLinesAdded": 883,
+        "testRatio": 0.52,
+        "subjects": [
+          "Ids",
+          "WorkflowError",
+          "branch",
+          "checkDuration",
+          "checkVariables",
+          "compile",
+          "compilePath",
+          "condition",
+          "delay",
+          "email",
+          "emit",
+          "escape",
+          "fn",
+          "isSecretRef",
+          "next",
+          "onEvent",
+          "onSchedule",
+          "path",
+          "print",
+          "refuseNestedSecret",
+          "resolveInputs",
+          "secret",
+          "serializedSize",
+          "slug",
+          "webhook",
+          "workflow"
+        ],
+        "unreferenced": [
+          "Ids",
+          "checkDuration",
+          "checkVariables",
+          "compilePath",
+          "condition",
+          "isSecretRef",
+          "next",
+          "print",
+          "refuseNestedSecret",
+          "resolveInputs",
+          "serializedSize"
+        ],
+        "referenceCoverage": 0.58,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 75.2,
+      "alignment": null,
+      "process": null
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "products/workflows/packages/workflows/.gitignore",
+        "products/workflows/packages/workflows/README.md",
+        "products/workflows/packages/workflows/package.json",
+        "products/workflows/packages/workflows/src/definition.ts",
+        "products/workflows/packages/workflows/src/errors.ts",
+        "products/workflows/packages/workflows/src/index.ts",
+        "products/workflows/packages/workflows/src/steps.ts",
+        "products/workflows/packages/workflows/src/workflow.ts",
+        "products/workflows/packages/workflows/test/emit.ts",
+        "products/workflows/packages/workflows/test/type-rules.ts",
+        "products/workflows/packages/workflows/tsconfig.build.json",
+        "products/workflows/packages/workflows/tsconfig.json"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 14,
+        "linesAdded": 795,
+        "linesRemoved": 0,
+        "modulesTouched": 2,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 4
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 34,
+          "maxCcn": 8,
+          "meanCcn": 1.6,
+          "overTen": 0,
+          "ccnDelta": 56
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "constructor",
+            "signature": "constructor ( fields WorkflowErrorFields )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "invalid",
+            "signature": "invalid ( message , why , fix )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 3,
+            "tokens": 33
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "delay",
+            "signature": "delay ( options DelayOptions ) ( options FunctionOptions )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 51
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "email",
+            "signature": "email ( options EmailOptions )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 25
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "branch",
+            "signature": "branch ( options BranchOptions )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 25
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "path",
+            "signature": "path ( steps Path )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 13
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "event",
+            "signature": "event ( options readonly event readonly properties readonly PropertyCondition )",
+            "ccn": 3,
+            "nloc": 19,
+            "params": 1,
+            "tokens": 80
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "secret",
+            "signature": "secret ( envName )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 20
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "workflow",
+            "signature": "workflow ( options WorkflowOptions )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "slug",
+            "signature": "slug ( name )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "serializedLength",
+            "signature": "serializedLength ( variable Variable )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 47
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "checkVariables",
+            "signature": "checkVariables ( variables readonly Variable )",
+            "ccn": 4,
+            "nloc": 24,
+            "params": 1,
+            "tokens": 137
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 23
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "path",
+            "signature": "path ( steps Path , owner , continuation )",
+            "ccn": 2,
+            "nloc": 12,
+            "params": 3,
+            "tokens": 70
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "id",
+            "signature": "id ( step Step )",
+            "ccn": 5,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 52
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 24
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 49
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit ( options WorkflowOptions )",
+            "ccn": 8,
+            "nloc": 25,
+            "params": 1,
+            "tokens": 185
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "refusal",
+            "signature": "refusal ( options WorkflowOptions )",
+            "ccn": 2,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 43
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "delay",
+            "signature": "delay ( name )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "variable",
+            "signature": "variable ( key , value )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 26
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 45,
+            "params": 0,
+            "tokens": 203
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 13,
+            "params": 0,
+            "tokens": 57
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 35,
+            "params": 0,
+            "tokens": 223
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 49
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 44
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 60
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 230,
+        "productionLinesAdded": 565,
+        "testRatio": 0.41,
+        "subjects": [
+          "Compiler",
+          "WorkflowError",
+          "branch",
+          "checkVariables",
+          "delay",
+          "email",
+          "emit",
+          "event",
+          "id",
+          "invalid",
+          "path",
+          "secret",
+          "serializedLength",
+          "slug",
+          "workflow"
+        ],
+        "unreferenced": [
+          "Compiler",
+          "checkVariables",
+          "invalid",
+          "serializedLength",
+          "slug"
+        ],
+        "referenceCoverage": 0.67,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 88.9,
+      "alignment": {
+        "modules": 1,
+        "files": 0.6
+      },
+      "process": {
+        "toolCalls": 75,
+        "edits": 19,
+        "toolCallsBeforeFirstEdit": 30,
+        "secondsBeforeFirstEdit": 293,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 76,
+        "wallSeconds": 1394,
+        "costUsd": 4.0741718
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "pnpm-workspace.yaml",
+        "products/workflows/packages/workflows/.gitignore",
+        "products/workflows/packages/workflows/README.md",
+        "products/workflows/packages/workflows/package.json",
+        "products/workflows/packages/workflows/src/definition.ts",
+        "products/workflows/packages/workflows/src/errors.ts",
+        "products/workflows/packages/workflows/src/index.ts",
+        "products/workflows/packages/workflows/src/steps.ts",
+        "products/workflows/packages/workflows/src/workflow.ts",
+        "products/workflows/packages/workflows/test/type-rules.ts",
+        "products/workflows/packages/workflows/test/workflow.test.ts",
+        "products/workflows/packages/workflows/tsconfig.build.json",
+        "products/workflows/packages/workflows/tsconfig.json"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 13,
+        "linesAdded": 896,
+        "linesRemoved": 0,
+        "modulesTouched": 2,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 2
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 32,
+          "maxCcn": 11,
+          "meanCcn": 1.9,
+          "overTen": 1,
+          "ccnDelta": 60
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "constructor",
+            "signature": "constructor ( fields WorkflowErrorFields )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "delay",
+            "signature": "delay ( options StepBase readonly duration Duration )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 32
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "delay",
+            "signature": "delay ( options StepBase readonly template_id readonly inputs Readonly )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "email",
+            "signature": "email ( options EmailOptions )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 25
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "branch",
+            "signature": "branch ( options StepBase readonly branches readonly Branch , Branch )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 40
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "event",
+            "signature": "event ( options readonly event readonly properties readonly PropertyCondition )",
+            "ccn": 3,
+            "nloc": 15,
+            "params": 1,
+            "tokens": 71
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "path",
+            "signature": "path ( steps Path )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 13
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "secret",
+            "signature": "secret ( envName )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 20
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "workflow",
+            "signature": "workflow ( options WorkflowOptions )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 24
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit ( options WorkflowOptions )",
+            "ccn": 8,
+            "nloc": 40,
+            "params": 1,
+            "tokens": 267
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "slug",
+            "signature": "slug ( name )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "claimId",
+            "signature": "claimId ( step Step , graph Graph )",
+            "ccn": 5,
+            "nloc": 23,
+            "params": 2,
+            "tokens": 147
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 33
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 11,
+            "nloc": 65,
+            "params": 0,
+            "tokens": 389
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "compilePath",
+            "signature": "compilePath ( steps readonly Step , continuation , graph Graph )",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "checkVariables",
+            "signature": "checkVariables ( variables readonly Variable )",
+            "ccn": 4,
+            "nloc": 24,
+            "params": 1,
+            "tokens": 143
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "quote",
+            "signature": "quote ( text )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "pythonJsonLength",
+            "signature": "pythonJsonLength ( variable Variable )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 90
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "wait",
+            "signature": "wait ( name , id )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 26,
+            "params": 0,
+            "tokens": 91
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 16,
+            "params": 0,
+            "tokens": 88
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "padded",
+            "signature": "padded ( padding )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 73
+          },
+          {
+            "file": "products/workflows/packages/workflows/test/workflow.test.ts",
+            "name": "captureError",
+            "signature": "captureError ( run ( )",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 1,
+            "tokens": 8
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 267,
+        "productionLinesAdded": 629,
+        "testRatio": 0.42,
+        "subjects": [
+          "WorkflowError",
+          "branch",
+          "checkVariables",
+          "claimId",
+          "compilePath",
+          "delay",
+          "email",
+          "emit",
+          "event",
+          "path",
+          "pythonJsonLength",
+          "quote",
+          "secret",
+          "slug",
+          "workflow"
+        ],
+        "unreferenced": [
+          "checkVariables",
+          "claimId",
+          "compilePath",
+          "pythonJsonLength",
+          "quote"
+        ],
+        "referenceCoverage": 0.67,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 85.1,
+      "alignment": {
+        "modules": 1,
+        "files": 0.55
+      },
+      "process": {
+        "toolCalls": 66,
+        "edits": 12,
+        "toolCallsBeforeFirstEdit": 34,
+        "secondsBeforeFirstEdit": 302,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 67,
+        "wallSeconds": 578,
+        "costUsd": 3.9881812000000014
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "pnpm-workspace.yaml",
+        "products/workflows/packages/workflows/.gitignore",
+        "products/workflows/packages/workflows/README.md",
+        "products/workflows/packages/workflows/package.json",
+        "products/workflows/packages/workflows/scripts/write-cjs-entry.mjs",
+        "products/workflows/packages/workflows/src/authoring.test-d.ts",
+        "products/workflows/packages/workflows/src/definition.ts",
+        "products/workflows/packages/workflows/src/errors.ts",
+        "products/workflows/packages/workflows/src/index.ts",
+        "products/workflows/packages/workflows/src/steps.ts",
+        "products/workflows/packages/workflows/src/workflow.test.ts",
+        "products/workflows/packages/workflows/src/workflow.ts",
+        "products/workflows/packages/workflows/tsconfig.build.json",
+        "products/workflows/packages/workflows/tsconfig.cjs.json",
+        "products/workflows/packages/workflows/tsconfig.json"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 15,
+        "linesAdded": 994,
+        "linesRemoved": 0,
+        "modulesTouched": 2,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 4
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 34,
+          "maxCcn": 9,
+          "meanCcn": 1.9,
+          "overTen": 0,
+          "ccnDelta": 66
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "constructor",
+            "signature": "constructor ( fields WorkflowErrorFields )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "secret",
+            "signature": "secret ( envName )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "isSecretRef",
+            "signature": "isSecretRef ( value )",
+            "ccn": 3,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 44
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "path",
+            "signature": "path ( steps Path )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 20
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "delay",
+            "signature": "delay ( options StepBase readonly duration Duration )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 30
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "delay",
+            "signature": "delay ( options StepBase readonly template_id readonly inputs Readonly )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 43
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "email",
+            "signature": "email ( options EmailOptions )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 1,
+            "tokens": 87
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "branch",
+            "signature": "branch ( options StepBase readonly branches readonly Branch , Branch )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 38
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/steps.ts",
+            "name": "event",
+            "signature": "event ( options readonly event readonly properties readonly PropertyCondition )",
+            "ccn": 3,
+            "nloc": 17,
+            "params": 1,
+            "tokens": 80
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "refusal",
+            "signature": "refusal ( options WorkflowOptions , emitEnv Record env )",
+            "ccn": 2,
+            "nloc": 11,
+            "params": 2,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "delay",
+            "signature": "delay ( name , duration )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 45,
+            "params": 0,
+            "tokens": 207
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 58,
+            "params": 0,
+            "tokens": 298
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 66
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 37
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 26
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit ( emitOptions readonly env Environment )",
+            "ccn": 3,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 26
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "workflow",
+            "signature": "workflow ( options WorkflowOptions )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 1,
+            "tokens": 26
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "slug",
+            "signature": "slug ( name )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "next",
+            "signature": "next ( step Step )",
+            "ccn": 5,
+            "nloc": 11,
+            "params": 1,
+            "tokens": 72
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "resolveInputs",
+            "signature": "resolveInputs ( step FunctionStep , id , env Environment )",
+            "ccn": 5,
+            "nloc": 27,
+            "params": 3,
+            "tokens": 179
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 37
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 9,
+            "nloc": 50,
+            "params": 0,
+            "tokens": 323
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emitPath",
+            "signature": "emitPath ( steps Path , continuation , graph Graph )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 48
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "encode",
+            "signature": "encode ( text )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "serializedSize",
+            "signature": "serializedSize ( variable Variable )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 1,
+            "tokens": 59
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "checkVariables",
+            "signature": "checkVariables ( variables readonly Variable )",
+            "ccn": 4,
+            "nloc": 24,
+            "params": 1,
+            "tokens": 149
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 23
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "emit",
+            "signature": "emit ( options WorkflowOptions , env Environment )",
+            "ccn": 5,
+            "nloc": 19,
+            "params": 2,
+            "tokens": 178
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 244,
+        "productionLinesAdded": 750,
+        "testRatio": 0.33,
+        "subjects": [
+          "Ids",
+          "WorkflowError",
+          "branch",
+          "checkVariables",
+          "delay",
+          "email",
+          "emit",
+          "emitPath",
+          "encode",
+          "event",
+          "isSecretRef",
+          "next",
+          "path",
+          "resolveInputs",
+          "secret",
+          "serializedSize",
+          "slug",
+          "workflow"
+        ],
+        "unreferenced": [
+          "Ids",
+          "checkVariables",
+          "emitPath",
+          "encode",
+          "isSecretRef",
+          "next",
+          "resolveInputs",
+          "serializedSize"
+        ],
+        "referenceCoverage": 0.56,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 82.2,
+      "alignment": {
+        "modules": 1,
+        "files": 0.5
+      },
+      "process": {
+        "toolCalls": 58,
+        "edits": 15,
+        "toolCallsBeforeFirstEdit": 26,
+        "secondsBeforeFirstEdit": 251,
+        "architectureToolCalls": 6,
+        "architectureExplorationBeforeEdit": 4,
+        "architectureReasoningBeforeEdit": 2,
+        "firstArchitectureThought": "Now the prototype SDK (shape B) and the as-code error contract.",
+        "turns": 59,
+        "wallSeconds": 489,
+        "costUsd": 3.486142600000001
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "products/workflows/packages/workflows/.gitignore",
+        "products/workflows/packages/workflows/README.md",
+        "products/workflows/packages/workflows/package.json",
+        "products/workflows/packages/workflows/src/definition.ts",
+        "products/workflows/packages/workflows/src/emit.test.ts",
+        "products/workflows/packages/workflows/src/emit.ts",
+        "products/workflows/packages/workflows/src/errors.ts",
+        "products/workflows/packages/workflows/src/index.ts",
+        "products/workflows/packages/workflows/src/type-rules.test-d.ts",
+        "products/workflows/packages/workflows/src/validate.ts",
+        "products/workflows/packages/workflows/src/workflow.ts",
+        "products/workflows/packages/workflows/tsconfig.build.json",
+        "products/workflows/packages/workflows/tsconfig.json"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 15,
+        "linesAdded": 822,
+        "linesRemoved": 0,
+        "modulesTouched": 1,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 3
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 36,
+          "maxCcn": 8,
+          "meanCcn": 1.9,
+          "overTen": 0,
+          "ccnDelta": 70
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "onboarding",
+            "signature": "onboarding ( steps Path , variables readonly Variable )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 2,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "refusal",
+            "signature": "refusal ( run ( )",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 1,
+            "tokens": 8
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 45,
+            "params": 0,
+            "tokens": 315
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 48
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 36,
+            "params": 0,
+            "tokens": 311
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "slugify",
+            "signature": "slugify ( name )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "isSecret",
+            "signature": "isSecret ( value )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 32
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "next",
+            "signature": "next ( step Step )",
+            "ccn": 5,
+            "nloc": 11,
+            "params": 1,
+            "tokens": 66
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "resolveInputs",
+            "signature": "resolveInputs ( step Extract , env Context )",
+            "ccn": 5,
+            "nloc": 23,
+            "params": 2,
+            "tokens": 167
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 24
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "toAction",
+            "signature": "toAction ( step Step , id , env Context )",
+            "ccn": 5,
+            "nloc": 44,
+            "params": 3,
+            "tokens": 207
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 33
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 9,
+            "params": 0,
+            "tokens": 83
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "place",
+            "signature": "place ( path Path , continuation , context Context )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 48
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/emit.ts",
+            "name": "emit",
+            "signature": "emit ( workflow Workflow , options EmitOptions )",
+            "ccn": 7,
+            "nloc": 18,
+            "params": 2,
+            "tokens": 186
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/errors.ts",
+            "name": "constructor",
+            "signature": "constructor ( fields WorkflowErrorFields )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/validate.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/validate.ts",
+            "name": "pythonJsonLength",
+            "signature": "pythonJsonLength ( variable Variable )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 52
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/validate.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/validate.ts",
+            "name": "validate",
+            "signature": "validate ( definition WorkflowDefinition )",
+            "ccn": 8,
+            "nloc": 41,
+            "params": 1,
+            "tokens": 260
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "secret",
+            "signature": "secret ( envName )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "delay",
+            "signature": "delay ( options Options ) ( options Options )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "email",
+            "signature": "email ( options Options )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 26
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "branch",
+            "signature": "branch ( options Options )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 26
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "event",
+            "signature": "event ( options event properties readonly PropertyCondition )",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 1,
+            "tokens": 68
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/packages/workflows/src/workflow.ts",
+            "name": "workflow",
+            "signature": "workflow ( options WorkflowOptions )",
+            "ccn": 3,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 28
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 147,
+        "productionLinesAdded": 675,
+        "testRatio": 0.22,
+        "subjects": [
+          "Ids",
+          "WorkflowError",
+          "branch",
+          "delay",
+          "email",
+          "emit",
+          "event",
+          "isSecret",
+          "next",
+          "place",
+          "pythonJsonLength",
+          "resolveInputs",
+          "secret",
+          "slugify",
+          "toAction",
+          "validate",
+          "workflow"
+        ],
+        "unreferenced": [
+          "Ids",
+          "isSecret",
+          "place",
+          "pythonJsonLength",
+          "resolveInputs",
+          "slugify",
+          "toAction",
+          "validate"
+        ],
+        "referenceCoverage": 0.53,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 98.9,
+      "alignment": {
+        "modules": 1,
+        "files": 0.57
+      },
+      "process": {
+        "toolCalls": 72,
+        "edits": 15,
+        "toolCallsBeforeFirstEdit": 28,
+        "secondsBeforeFirstEdit": 179,
+        "architectureToolCalls": 7,
+        "architectureExplorationBeforeEdit": 5,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 73,
+        "wallSeconds": 992,
+        "costUsd": 3.2553101999999994
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 1,
+      "files": 0.8
+    },
+    "C": {
+      "modules": 1,
+      "files": 0.5
+    }
+  }
+}

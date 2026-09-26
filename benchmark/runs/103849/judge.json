@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T17:40:04.725Z",
+  "verdicts": {
+    "C-2": {
+      "seams": {
+        "score": 8,
+        "justification": "The serializer, list filter, and generated API types expose a narrow key interface while preserving UUID addressing. In api/hog_flow.py, the context-based instance fallback accommodates nested invocation serialization but introduces an implicit calling convention."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "Persistence belongs in the HogFlow model and migration, while field errors and update restrictions stay beside existing serializer behavior. The savepoint and IntegrityError translation form a coherent write boundary in HogFlowSerializer.create."
+      },
+      "coupling": {
+        "score": 8,
+        "justification": "The change adds no sibling-product dependencies and uses the shared posthog.migration_helpers utility. Generated frontend and MCP types carry the API contract; constraint-name string matching and context['instance'] are the main implicit dependencies."
+      },
+      "fit": {
+        "score": 7,
+        "justification": "The change respects workflow ownership and stays within the existing backend/api layout. Tenant queries and immutability rules remain in serializers rather than behind a facade, preserving the legacy architecture without advancing the documented isolation model."
+      },
+      "overall": {
+        "score": 8,
+        "justification": "A focused extension with a narrow public surface and a well-contained database error boundary. The main architectural limitations are implicit serializer context and the migration's representation of a database index as a Django constraint."
+      }
+    },
+    "C-1": {
+      "seams": {
+        "score": 7,
+        "justification": "api/hog_flow.py cleanly distinguishes create input from read-only update output and keeps resolution in the list filter. However, validate_key assumes every validation is a new claim, making the shared serializer less suitable for nested configurations of existing workflows."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "The model, migration, filter, and serializer each receive closely related changes without introducing additional layers. The atomic create block keeps database failure recovery beside field-error translation."
+      },
+      "coupling": {
+        "score": 8,
+        "justification": "Dependencies remain within workflows plus Django and posthog.migration_helpers. The database constraint name is duplicated in exception handling, but no new cross-product implementation dependency appears."
+      },
+      "fit": {
+        "score": 7,
+        "justification": "The implementation follows the existing product layout and introduces no external model crossings. Like the surrounding code, HogFlowSerializer directly queries models and owns domain rules, so it does not meet the documented facade-based presentation boundary."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The structure is small and understandable, with sensible persistence and error-handling placement. The shared serializer's create-only uniqueness assumption weakens its interface across existing uses."
+      }
+    },
+    "B-2": {
+      "seams": {
+        "score": 7,
+        "justification": "The list filter and update serializer preserve the intended addressing boundary. Adding key to HogFlowMinimalSerializer broadens the shared response surface, while validate_key recognizes self.instance but leaves the context-based invocation convention unhandled."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "The immutable-field loop keeps related update rules together without adding a framework. Migration-specific SQL stays in 0026_hogflow_key.py, and promoting the index to a constraint aligns the database catalog with Django's declared state."
+      },
+      "coupling": {
+        "score": 7,
+        "justification": "There are no new sibling-product imports. The migration adds direct dependencies on PostgreSQL catalog structure, lock configuration, and procedural SQL beyond the shared CreateIndexConcurrently helper."
+      },
+      "fit": {
+        "score": 7,
+        "justification": "Changes remain owned by workflows and preserve the existing routing arrangement. Domain checks still live in backend/api/hog_flow.py rather than behind a facade, and the custom migration machinery adds maintenance beyond the shared helper."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The change has coherent ownership and deliberately aligns database and migration state. Its broader serializer surface and custom catalog-handling SQL make it more complex than the other focused implementations."
+      }
+    },
+    "B-1": {
+      "seams": {
+        "score": 8,
+        "justification": "Separate validate_key implementations give create and update distinct behavior, and the create validator accommodates nested invocation configuration. The inherited writable update field does not express immutability in the schema as clearly as an explicitly read-only field."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "Key behavior is grouped in a dedicated in-product test module, with persistence in the model and migration. The savepoint and error translation are colocated in create, and update immutability is localized to the update serializer."
+      },
+      "coupling": {
+        "score": 8,
+        "justification": "The implementation uses existing workflow models and the shared migration helper without adding product crossings. The context instance convention and constraint-name matching remain implicit dependencies, but their use is localized."
+      },
+      "fit": {
+        "score": 7,
+        "justification": "The change respects product ownership and keeps behavior tests inside workflows. It follows the legacy backend/api structure rather than the documented presentation-to-facade path, leaving tenant and domain validation in DRF."
+      },
+      "overall": {
+        "score": 8,
+        "justification": "A cohesive, restrained implementation with clear create/update responsibilities and contained transaction recovery. Its main interface weakness is that the update schema still presents key as writable despite enforcing immutability at runtime."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 6,
+        "justification": "The serializer and generated types expose a clear create-only identity, but services/mcp/src/tools/generated/workflows.ts also forwards key through executable MCP tools, expanding the requested interface boundary. The shared validator also assumes every key-bearing configuration represents a new claim."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "Separating column creation from concurrent index construction gives each migration a clear transactional responsibility. In api/hog_flow.py, catching IntegrityError without a local savepoint leaves transaction recovery dependent on the caller."
+      },
+      "coupling": {
+        "score": 7,
+        "justification": "No cross-product model imports are introduced, and MCP communicates through generated HTTP contracts. However, changes to both MCP schemas and tool handlers expand the number of consumers participating in the key feature."
+      },
+      "fit": {
+        "score": 7,
+        "justification": "Model changes, migrations, and behavior tests remain inside workflows, while MCP uses an API boundary. The implementation retains domain validation in the legacy serializer layer and expands MCP behavior beyond the specified generated type file."
+      },
+      "overall": {
+        "score": 6,
+        "justification": "The migration split is well structured, but the change broadens the MCP surface and leaves database error recovery dependent on surrounding transaction management. The shared serializer's create-only uniqueness assumption further weakens the boundary."
+      }
+    }
+  }
+}

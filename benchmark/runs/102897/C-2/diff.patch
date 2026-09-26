@@ -1,0 +1,281 @@
+diff --git a/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx b/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx
+index e8f9aa2182db..3b5c8bfd2fa0 100644
+--- a/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx
++++ b/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx
+@@ -97,6 +97,11 @@ const INPUT_TYPE_LABELS: Partial<Record<CyclotronJobInputSchemaType['type'], str
+     non_failure_status_codes: 'Non-failure codes',
+ }
+ 
++// The email editor's preview grows to fill whatever height its host gives it, so its input and the
++// list around it pass flex growth down instead of sizing to content.
++const isGrowingInput = (schema: CyclotronJobInputSchemaType): boolean =>
++    schema.type === 'email' || schema.type === 'native_email'
++
+ const INPUT_TYPE_DEFAULT_DESCRIPTIONS: Partial<Record<CyclotronJobInputSchemaType['type'], string>> = {
+     non_failure_status_codes:
+         'HTTP response codes that should NOT mark the invocation as failed. Accepts specific codes (e.g. 409, 422) or the wildcards 4xx and 5xx. Useful when an API returns 4xx for expected non-error states.',
+@@ -149,6 +154,7 @@ export function CyclotronJobInputs({
+ 
+     const inputSchemas = configuration.inputs_schema
+     const inputSchemaIds = inputSchemas.map((schema: CyclotronJobInputSchemaType) => schema.key)
++    const visibleInputSchemas = inputSchemas.filter((schema: CyclotronJobInputSchemaType) => !schema.hidden)
+ 
+     return (
+         <>
+@@ -164,28 +170,26 @@ export function CyclotronJobInputs({
+                 }}
+             >
+                 <SortableContext disabled={!showSource} items={inputSchemaIds} strategy={verticalListSortingStrategy}>
+-                    <div className="flex flex-col gap-3">
+-                        {configuration.inputs_schema
+-                            ?.filter((i: CyclotronJobInputSchemaType) => !i.hidden)
+-                            .map((schema: CyclotronJobInputSchemaType) => {
+-                                return (
+-                                    <CyclotronJobInputWithSchema
+-                                        key={schema.key}
+-                                        schema={schema}
+-                                        configuration={configuration}
+-                                        parentConfiguration={parentConfiguration}
+-                                        onInputSchemaChange={onInputSchemaChange}
+-                                        onInputChange={onInputChange}
+-                                        showSource={showSource}
+-                                        sampleGlobalsWithInputs={sampleGlobalsWithInputs}
+-                                        errors={errors}
+-                                        warnings={warnings}
+-                                        emailFieldErrors={emailFieldErrors}
+-                                        emailLiveChanges={emailLiveChanges}
+-                                        emailSaveIndicator={emailSaveIndicator}
+-                                    />
+-                                )
+-                            })}
++                    <div className={clsx('flex flex-col gap-3', visibleInputSchemas.some(isGrowingInput) && 'flex-1')}>
++                        {visibleInputSchemas.map((schema: CyclotronJobInputSchemaType) => {
++                            return (
++                                <CyclotronJobInputWithSchema
++                                    key={schema.key}
++                                    schema={schema}
++                                    configuration={configuration}
++                                    parentConfiguration={parentConfiguration}
++                                    onInputSchemaChange={onInputSchemaChange}
++                                    onInputChange={onInputChange}
++                                    showSource={showSource}
++                                    sampleGlobalsWithInputs={sampleGlobalsWithInputs}
++                                    errors={errors}
++                                    warnings={warnings}
++                                    emailFieldErrors={emailFieldErrors}
++                                    emailLiveChanges={emailLiveChanges}
++                                    emailSaveIndicator={emailSaveIndicator}
++                                />
++                            )
++                        })}
+                     </div>
+                 </SortableContext>
+             </DndContext>
+@@ -974,9 +978,12 @@ function CyclotronJobInputWithSchema({
+         })
+     }
+ 
++    const growing = isGrowingInput(schema)
++
+     return (
+         <div
+             ref={setNodeRef}
++            className={growing ? 'flex flex-col flex-1' : undefined}
+             // eslint-disable-next-line react/forbid-dom-props
+             style={{
+                 transform: CSS.Transform.toString(transform),
+@@ -985,7 +992,7 @@ function CyclotronJobInputWithSchema({
+         >
+             {!editing ? (
+                 <LemonField.Pure
+-                    className="gap-1"
++                    className={clsx('gap-1', growing && 'flex-1')}
+                     error={error}
+                     help={
+                         <>
+diff --git a/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx b/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx
+index 37cbb13d6970..d3d343728c48 100644
+--- a/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx
++++ b/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx
+@@ -216,7 +216,7 @@ function DestinationEmailTemplaterForm({
+                         </div>
+                     </>
+                 ) : (
+-                    <LemonField name="html" className="flex relative flex-col">
++                    <LemonField name="html" className="flex relative flex-col flex-1">
+                         {({ value }: ChildFunctionProps) => (
+                             <>
+                                 <div
+@@ -233,7 +233,13 @@ function DestinationEmailTemplaterForm({
+                                     />
+                                 </div>
+ 
+-                                <iframe srcDoc={value} sandbox="" title="Email template preview" className="flex-1" />
++                                {/* Fills the host's height; the floor keeps it readable when the host has none to give */}
++                                <iframe
++                                    srcDoc={value}
++                                    sandbox=""
++                                    title="Email template preview"
++                                    className="flex-1 min-h-60"
++                                />
+                             </>
+                         )}
+                     </LemonField>
+@@ -735,7 +741,7 @@ function NativeEmailTemplaterForm({
+                         </div>
+                     </>
+                 ) : (
+-                    <LemonField name="html" className="flex relative flex-col">
++                    <LemonField name="html" className="flex relative flex-col flex-1">
+                         {({ value }: ChildFunctionProps) => (
+                             <>
+                                 <div
+@@ -752,7 +758,13 @@ function NativeEmailTemplaterForm({
+                                     />
+                                 </div>
+ 
+-                                <iframe srcDoc={value} sandbox="" title="Email template preview" className="flex-1" />
++                                {/* Fills the host's height; the floor keeps it readable when the host has none to give */}
++                                <iframe
++                                    srcDoc={value}
++                                    sandbox=""
++                                    title="Email template preview"
++                                    className="flex-1 min-h-60"
++                                />
+                             </>
+                         )}
+                     </LemonField>
+diff --git a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx
+index 58ee4a581299..e04a6d4b2a91 100644
+--- a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx
++++ b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx
+@@ -6,6 +6,7 @@ import { useEffect } from 'react'
+ import { FEATURE_FLAGS } from 'lib/constants'
+ 
+ import { mswDecorator } from '~/mocks/browser'
++import _hogFunctionTemplatesDestinations from '~/mocks/fixtures/_hogFunctionTemplatesDestinations.json'
+ 
+ import { NEW_WORKFLOW, WorkflowLogicProps, workflowLogic } from '../../workflowLogic'
+ import { hogFlowEditorLogic, HogFlowEditorMode } from '../hogFlowEditorLogic'
+@@ -14,6 +15,38 @@ import { HogFlowEditorPanel } from './HogFlowEditorPanel'
+ 
+ const LOGIC_PROPS: WorkflowLogicProps = { id: 'storybook-configuration-panel' }
+ 
++const EMAIL_PREVIEW_HTML = `<html><body style="margin:0;font-family:sans-serif;background:#f3f4f0">
++<div style="max-width:560px;margin:0 auto;background:#fff">
++<div style="background:#1d1f27;color:#fff;padding:24px;font-size:24px;font-weight:bold;text-align:center">PostHog</div>
++<div style="padding:24px"><h1>Welcome aboard</h1>
++${'<p>Your account is ready. Here is everything you need to get started with product analytics, session replay, and feature flags.</p>'.repeat(8)}
++</div></div></body></html>`
++
++const EMAIL_TEMPLATE = {
++    id: 'template-email',
++    type: 'destination',
++    status: 'hidden',
++    free: false,
++    name: 'Email',
++    description: 'Sends an email via PostHog email service',
++    icon_url: '/static/posthog-icon.svg',
++    category: ['Custom'],
++    code: '',
++    code_language: 'hog',
++    inputs_schema: [
++        {
++            type: 'native_email',
++            key: 'email',
++            label: 'Email message',
++            integration: 'email',
++            required: true,
++            secret: false,
++            description: 'The email message to send. Configure the recipient, sender, subject, and content.',
++            templating: 'liquid',
++        },
++    ],
++}
++
+ const PANEL_WORKFLOW: HogFlow = {
+     ...NEW_WORKFLOW,
+     id: LOGIC_PROPS.id!,
+@@ -60,6 +93,28 @@ const PANEL_WORKFLOW: HogFlow = {
+                 },
+             },
+         },
++        {
++            id: 'email',
++            type: 'function_email',
++            name: 'Send welcome email',
++            description: 'Welcome the new account.',
++            config: {
++                template_id: 'template-email',
++                inputs: {
++                    email: {
++                        value: {
++                            to: { email: '{{ person.properties.email }}', name: '' },
++                            from: {},
++                            subject: 'Welcome aboard',
++                            preheader: '',
++                            text: '',
++                            html: EMAIL_PREVIEW_HTML,
++                        },
++                        templating: 'liquid',
++                    },
++                },
++            },
++        },
+         {
+             id: 'conditional',
+             type: 'conditional_branch',
+@@ -100,7 +155,8 @@ const PANEL_WORKFLOW: HogFlow = {
+     edges: [
+         { from: 'trigger', to: 'delay', type: 'continue' },
+         { from: 'delay', to: 'webhook', type: 'continue' },
+-        { from: 'webhook', to: 'conditional', type: 'continue' },
++        { from: 'webhook', to: 'email', type: 'continue' },
++        { from: 'email', to: 'conditional', type: 'continue' },
+         { from: 'conditional', to: 'cohort', type: 'branch', index: 0 },
+         { from: 'conditional', to: 'exit', type: 'branch', index: 1 },
+         { from: 'conditional', to: 'exit', type: 'continue' },
+@@ -127,6 +183,10 @@ const meta: Meta<typeof HogFlowEditorPanel> = {
+             get: {
+                 '/api/environments/:team_id/hog_flows/:id/': PANEL_WORKFLOW,
+                 '/api/environments/:team_id/messaging_categories': { count: 0, results: [] },
++                '/api/projects/:team_id/hog_function_templates': {
++                    ..._hogFunctionTemplatesDestinations,
++                    results: [..._hogFunctionTemplatesDestinations.results, EMAIL_TEMPLATE],
++                },
+             },
+             patch: {
+                 '/api/environments/:team_id/hog_flows/:id/': async ({ request }) => [
+@@ -180,7 +240,7 @@ function PanelStory({ mode, selectedNodeId }: PanelStoryProps): JSX.Element {
+         <ReactFlowProvider>
+             <BindLogic logic={workflowLogic} props={LOGIC_PROPS}>
+                 <BindLogic logic={hogFlowEditorLogic} props={LOGIC_PROPS}>
+-                    <div className="relative h-screen w-[37rem] overflow-hidden bg-surface-primary">
++                    <div className="relative h-screen w-full max-w-[37rem] overflow-hidden bg-surface-primary">
+                         <HogFlowEditorPanel />
+                     </div>
+                 </BindLogic>
+@@ -197,6 +257,9 @@ Build.args = { mode: 'build', selectedNodeId: 'delay' }
+ export const BuildPalette: StoryFn<PanelStoryProps> = Template.bind({})
+ BuildPalette.args = { mode: 'build', selectedNodeId: null }
+ 
++export const Email: StoryFn<PanelStoryProps> = Template.bind({})
++Email.args = { mode: 'build', selectedNodeId: 'email' }
++
+ export const Trigger: StoryFn<PanelStoryProps> = Template.bind({})
+ Trigger.args = { mode: 'build', selectedNodeId: 'trigger' }
+ 
+diff --git a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx
+index e934d0f8cee8..7522b601d05b 100644
+--- a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx
++++ b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx
+@@ -90,6 +90,9 @@ export function HogFlowEditorPanelBuildDetail(): JSX.Element | null {
+                 direction="vertical"
+                 className="flex-1 min-h-0"
+                 innerClassName="flex flex-col gap-2 p-3"
++                // A full-height column lets step configuration grow into the free space, e.g. the
++                // email preview filling the panel instead of stopping at a fixed height
++                contentClassName="flex flex-col flex-1"
+                 styledScrollbars
+             >
+                 <ErrorBoundary exceptionProps={{ feature: 'workflow-step-config' }}>

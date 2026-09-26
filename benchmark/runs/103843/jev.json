@@ -1,0 +1,819 @@
+{
+  "status": "graded",
+  "model": "typesafe-ai/jev",
+  "gradedAt": "2026-09-26T19:12:06.558Z",
+  "runs": {
+    "A": {
+      "files": [
+        {
+          "subject": "pnpm-lock.yaml",
+          "answers": {
+            "readability": 0.91,
+            "singleResponsibility": 0.89,
+            "namingClarity": 0.98,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "pnpm-workspace.yaml",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/.gitignore",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.9,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/README.md",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.96,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/package.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.99,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/definition.ts",
+          "answers": {
+            "readability": 0.93,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.96,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/emit.ts",
+          "answers": {
+            "readability": 0.76,
+            "singleResponsibility": 0.57,
+            "namingClarity": 0.91,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/errors.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.86,
+            "namingClarity": 0.96,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.86
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/index.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.94,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/steps.ts",
+          "answers": {
+            "readability": 0.93,
+            "singleResponsibility": 0.86,
+            "namingClarity": 0.93,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/triggers.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.96,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.88
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/workflow.ts",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.96,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.base.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.build.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.test.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.99,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.92
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/packages/workflows/tests/emit.test.ts",
+          "answers": {
+            "assertsBehaviour": 0.75,
+            "edgeCases": 1
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tests/types.test-d.ts",
+          "answers": {
+            "assertsBehaviour": 0.28,
+            "edgeCases": 0.78
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.42,
+          "staysOnTask": 0.78,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 94,
+      "score": 92.1
+    },
+    "B-1": {
+      "files": [
+        {
+          "subject": "pnpm-lock.yaml",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.99,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "pnpm-workspace.yaml",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.98
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/.gitignore",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.98,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/README.md",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.97,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/package.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.98,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.87
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/definition.ts",
+          "answers": {
+            "readability": 0.92,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.94,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.89
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/errors.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.9,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.82
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/index.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.96,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/steps.ts",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.89,
+            "namingClarity": 0.93,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/workflow.ts",
+          "answers": {
+            "readability": 0.68,
+            "singleResponsibility": 0.58,
+            "namingClarity": 0.89,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.build.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.9
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/packages/workflows/test/emit.ts",
+          "answers": {
+            "assertsBehaviour": 0.58,
+            "edgeCases": 0.98
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/test/type-rules.ts",
+          "answers": {
+            "assertsBehaviour": 0.15,
+            "edgeCases": 0.71
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.56,
+          "staysOnTask": 0.86,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 93.8,
+      "score": 91.1
+    },
+    "B-2": {
+      "files": [
+        {
+          "subject": "pnpm-workspace.yaml",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/.gitignore",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.98,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/README.md",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.96,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/package.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.87
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/definition.ts",
+          "answers": {
+            "readability": 0.9,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.93,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.89
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/errors.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.97,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.84
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/index.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.97,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/steps.ts",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.94,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/workflow.ts",
+          "answers": {
+            "readability": 0.74,
+            "singleResponsibility": 0.59,
+            "namingClarity": 0.91,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.build.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.99,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.9
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/packages/workflows/test/type-rules.ts",
+          "answers": {
+            "assertsBehaviour": 0.28,
+            "edgeCases": 0.79
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/test/workflow.test.ts",
+          "answers": {
+            "assertsBehaviour": 0.71,
+            "edgeCases": 0.99
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.36,
+          "staysOnTask": 0.92,
+          "explicitInterfaces": 0.97
+        }
+      },
+      "skipped": [],
+      "fileQuality": 93.9,
+      "score": 91.4
+    },
+    "C-1": {
+      "files": [
+        {
+          "subject": "pnpm-workspace.yaml",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.98
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/.gitignore",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.98,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/README.md",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.96,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.89
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/package.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.98,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.89
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/scripts/write-cjs-entry.mjs",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.98,
+            "errorHandling": 0.83,
+            "idiomaticFit": 0.89
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/authoring.test-d.ts",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.89,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/definition.ts",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.96,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/errors.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.98,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.86
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/index.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.96,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/steps.ts",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.86,
+            "namingClarity": 0.92,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/workflow.ts",
+          "answers": {
+            "readability": 0.68,
+            "singleResponsibility": 0.59,
+            "namingClarity": 0.88,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.build.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.cjs.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.89
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/packages/workflows/src/workflow.test.ts",
+          "answers": {
+            "assertsBehaviour": 0.74,
+            "edgeCases": 0.99
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.65,
+          "staysOnTask": 0.91,
+          "explicitInterfaces": 0.95
+        }
+      },
+      "skipped": [],
+      "fileQuality": 93.8,
+      "score": 93.2
+    },
+    "C-2": {
+      "files": [
+        {
+          "subject": "pnpm-lock.yaml",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.98,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.88
+          }
+        },
+        {
+          "subject": "pnpm-workspace.yaml",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/.gitignore",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.98,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/README.md",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.98,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/package.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.87
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/definition.ts",
+          "answers": {
+            "readability": 0.91,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.97,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/emit.ts",
+          "answers": {
+            "readability": 0.73,
+            "singleResponsibility": 0.63,
+            "namingClarity": 0.86,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/errors.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.95,
+            "namingClarity": 0.93,
+            "errorHandling": 0.9,
+            "idiomaticFit": 0.83
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/index.ts",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.98,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/type-rules.test-d.ts",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.89,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/validate.ts",
+          "answers": {
+            "readability": 0.8,
+            "singleResponsibility": 0.62,
+            "namingClarity": 0.89,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/src/workflow.ts",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.95,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.build.json",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.99,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/packages/workflows/tsconfig.json",
+          "answers": {
+            "readability": 0.99,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.9
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/packages/workflows/src/emit.test.ts",
+          "answers": {
+            "assertsBehaviour": 0.72,
+            "edgeCases": 1
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.94,
+          "staysOnTask": 0.91,
+          "explicitInterfaces": 0.97
+        }
+      },
+      "skipped": [],
+      "fileQuality": 93.2,
+      "score": 93.1
+    }
+  },
+  "skipped": {}
+}

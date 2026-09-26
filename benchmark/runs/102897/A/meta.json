@@ -1,0 +1,17 @@
+{
+  "pr": 102897,
+  "arm": "A",
+  "model": "claude-fable-5-1",
+  "sessionId": "e5eabba4-9489-48fb-bb5a-65561a67cd08",
+  "sessionSource": "t3code (claudeAgent provider; transcript is the Claude Code JSONL)",
+  "turns": 2,
+  "costUsd": null,
+  "wallSeconds": 9390,
+  "startedAt": "2026-09-18T10:55:11.031Z",
+  "exit": {
+    "reason": "historical",
+    "code": null
+  },
+  "baseCommit": "3b30c939a7aedfd89eb3285ffb0e02410c954377",
+  "diffFrom": "3b30c939a7aedfd89eb3285ffb0e02410c954377"
+}

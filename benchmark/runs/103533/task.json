@@ -1,0 +1,82 @@
+{
+  "pr": 103533,
+  "title": "feat(workflows): link the sending allowance card to the tier docs",
+  "url": "https://github.com/PostHog/posthog/pull/103533",
+  "session": {
+    "source": "t3code (claudeAgent provider; transcript is the Claude Code JSONL)",
+    "threadId": "5c821336-ea89-4b6d-9b5b-b9cdf4ad2d5a",
+    "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-b2177d59/9a433f34-b328-4b4e-99eb-a93f7d111954.jsonl",
+    "title": "Document sending allowance tiers",
+    "originalModel": "claude-fable-5-1",
+    "t3Database": "/Users/mreichenbach/.t3/userdata/state.sqlite",
+    "worktree": "/Users/mreichenbach/.t3/worktrees/posthog/t3code-b2177d59"
+  },
+  "baseCommit": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+  "finalHead": "7babd9e978e7fe866d2b527b43b318fbbefb4db5",
+  "firstPushHead": "f57d6f1010196a3e87e0aec9e1218f8d1cd977f2",
+  "taskStatement": "![image.png](t3-context://v1/image/image_5446a446-d842-43fd-9d07-7e9142f3fe9c) \nCan you check if there are docs for the actual sending tiers? The allowance tier is set to tier 07, but I can't find any link here that explains these tiers. They're only in code or internal docs.\nGive me a quick link to PostHog.com. Pull it down. I think the docs should live there. Clone it in my dev dir, then add a description of the tiers and a link here in the actual UI that says what the tiers are.\n\nAdditionally, in the actual product, add a question mark icon behind the tier badge in line, and then add a styled hover there for the actual tiers with a link in the hover. Additionally, that goes to the docs, so users can quickly look up the tiers on the actual page.\n\nThe tooltip seems not well formatted. Make sure it uses the card design system and tokens and so on. At least in the screenshot, it's black against white. Doesn't seem correct",
+  "taskStatementNotes": "Message 0 defines the feature (explain the sending allowance tiers and link them from the UI). Kept its first paragraph with the screenshot and the next four sentences verbatim, joined with a newline; dropped its last sentence ('Then, of course, file a pull request in both, ...'), which is PR process. Kept messages 2 and 5 whole: message 2 adds the inline question-mark icon with a styled hover listing the tiers and linking to the docs; message 5 requires the hover to use the card design system and tokens. Message 0 also asks to clone PostHog.com and write the docs there. That half landed in PostHog/posthog.com#20316 and is outside this task's diff. A replay inside PostHog/posthog cannot write it or know its URL, so taskContext gives the docs URL the product PR links to; it is context for the runner, not part of Michael's words. Dropped message 1 ($unslop pass on the docs), message 3 (asks the posthog.com docs page to end with advice on sending good emails; it changes only the docs PR), message 4 (screenshot on the PR and a Slack message), message 6 (babysit), message 7 (asks the agent to confirm the documented limits match the code: a verification request, no new requirement) and message 8 ('Can try again').",
+  "attachments": [
+    "/Users/mreichenbach/.t3/userdata/attachments/5c821336-ea89-4b6d-9b5b-b9cdf4ad2d5a-9846b8d5-de3f-41e9-af1b-a3da7f485b53.png"
+  ],
+  "diffStat": {
+    "final": {
+      "base": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+      "head": "7babd9e978e7fe866d2b527b43b318fbbefb4db5",
+      "files": 6,
+      "additions": 186,
+      "deletions": 5,
+      "modules": [
+        "products/workflows/backend",
+        "products/workflows/frontend",
+        "services/mcp/src"
+      ]
+    },
+    "firstPush": {
+      "base": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+      "head": "f57d6f1010196a3e87e0aec9e1218f8d1cd977f2",
+      "files": 1,
+      "additions": 8,
+      "deletions": 1,
+      "modules": [
+        "products/workflows/frontend"
+      ]
+    }
+  },
+  "whyChosen": "A full-stack slice inside the workflows product that must choose where tier data lives: the backend serializer exposes every tier's caps, the generated API types and MCP client follow, and the UI renders a popover card.",
+  "state": "CLOSED",
+  "baseCheck": {
+    "command": "git diff --stat cea129a217b5267ac1fec3d14db26c9a742968ee 7babd9e978e7fe866d2b527b43b318fbbefb4db5",
+    "files": 6,
+    "prChangedFiles": 6,
+    "matches": true
+  },
+  "taskStatementSources": [
+    {
+      "messageId": "db0bf76a-1b89-4f4b-87d8-aee6201e9054",
+      "createdAt": "2026-09-21T06:01:35.684Z",
+      "excerpts": [
+        "![image.png](t3-context://v1/image/image_5446a446-d842-43fd-9d07-7e9142f3fe9c) \nCan you check if there are docs for the actual sending tiers? The allowance tier is set to tier 07, but I can't find any link here that explains these tiers. They're only in code or internal docs.",
+        "Give me a quick link to PostHog.com. Pull it down. I think the docs should live there. Clone it in my dev dir, then add a description of the tiers and a link here in the actual UI that says what the tiers are."
+      ]
+    },
+    {
+      "messageId": "99b2c7bc-d09c-4e13-9847-d9a760f4c706",
+      "createdAt": "2026-09-21T06:47:41.912Z",
+      "excerpts": "whole message"
+    },
+    {
+      "messageId": "04196431-7e71-49e6-b7d6-69f80b93a2b4",
+      "createdAt": "2026-09-21T07:09:46.835Z",
+      "excerpts": "whole message"
+    }
+  ],
+  "imageTokens": {
+    "t3-context://v1/image/image_5446a446-d842-43fd-9d07-7e9142f3fe9c": "/Users/mreichenbach/.t3/userdata/attachments/5c821336-ea89-4b6d-9b5b-b9cdf4ad2d5a-9846b8d5-de3f-41e9-af1b-a3da7f485b53.png"
+  },
+  "notes": "baseCommit cea129a is the first commit's parent and its merge-base with upstream master; they agree. The T3 worktree started on the fork's master f637db9, and the agent branched from upstream master before its first commit. The PR was closed unmerged by Silthus on 2026-09-25, nine seconds after he cross-referenced it from #106508 (which turns the reputation tab into an action list) and after a reviewer asked whether it 'feels redundant'. It has a real five-commit diff. No force-pushes: firstPushHead f57d6f1 is the commit the PR was opened with (06:07Z). services/mcp/src/api/generated.ts and products/workflows/frontend/generated/api.schemas.ts are generated from the serializer change.",
+  "taskContext": {
+    "docsUrl": "https://posthog.com/docs/workflows/sending-reputation#sending-allowance-tiers",
+    "why": "The tier docs were written in PostHog/posthog.com#20316, outside this repository. The historical diff links to this URL."
+  }
+}

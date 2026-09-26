@@ -1,0 +1,1782 @@
+{
+  "pr": 103849,
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "scoredAt": "2026-09-26T17:38:42.391Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_key.py",
+        "products/workflows/backend/migrations/0026_hogflow_key.py",
+        "products/workflows/backend/migrations/0027_hogflow_unique_key_for_team.py",
+        "products/workflows/backend/migrations/max_migration.txt",
+        "products/workflows/backend/models/hog_flow/hog_flow.py",
+        "products/workflows/frontend/generated/api.schemas.ts",
+        "products/workflows/frontend/generated/api.zod.ts",
+        "services/mcp/src/api/generated.ts",
+        "services/mcp/src/generated/workflows/api.ts",
+        "services/mcp/src/tools/generated/workflows.ts"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 11,
+        "linesAdded": 343,
+        "linesRemoved": 4,
+        "modulesTouched": 8,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 12
+      },
+      "build": {
+        "pythonFiles": 5,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 47,
+          "maxCcn": 123,
+          "meanCcn": 6,
+          "overTen": 3,
+          "ccnDelta": 35
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate_key",
+            "signature": "validate_key( self , value : str | None )",
+            "ccn": 4,
+            "nloc": 11,
+            "params": 2,
+            "tokens": 84
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 3,
+            "nloc": 14,
+            "params": 4,
+            "tokens": 104
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 7,
+            "nloc": 13,
+            "params": 2,
+            "tokens": 123
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "_payload",
+            "signature": "_payload( self , ** overrides )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "_create",
+            "signature": "_create( self , ** overrides )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 32
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_echoes_the_key_back",
+            "signature": "test_create_echoes_the_key_back( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_without_a_key_leaves_it_null_and_never_collides",
+            "signature": "test_create_without_a_key_leaves_it_null_and_never_collides( self )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 65
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_with_an_invalid_charset_key_is_refused",
+            "signature": "test_create_with_an_invalid_charset_key_is_refused( self , key )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 2,
+            "tokens": 64
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_with_a_key_already_taken_in_the_team_is_refused",
+            "signature": "test_create_with_a_key_already_taken_in_the_team_is_refused( self )",
+            "ccn": 1,
+            "nloc": 12,
+            "params": 1,
+            "tokens": 91
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_translates_a_concurrent_duplicate_key_into_the_same_field_error",
+            "signature": "test_create_translates_a_concurrent_duplicate_key_into_the_same_field_error( self )",
+            "ccn": 1,
+            "nloc": 13,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_a_key_taken_in_another_team_does_not_block_a_create",
+            "signature": "test_a_key_taken_in_another_team_does_not_block_a_create( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_patch_that_changes_the_key_is_refused",
+            "signature": "test_patch_that_changes_the_key_is_refused( self )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_patch_that_clears_the_key_is_refused",
+            "signature": "test_patch_that_clears_the_key_is_refused( self )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_patch_that_sets_a_key_on_a_key_less_workflow_is_refused",
+            "signature": "test_patch_that_sets_a_key_on_a_key_less_workflow_is_refused( self )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 78
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_patch_that_repeats_the_stored_key_or_omits_it_is_allowed",
+            "signature": "test_patch_that_repeats_the_stored_key_or_omits_it_is_allowed( self )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_list_filter_by_key_resolves_one_row_scoped_to_the_team",
+            "signature": "test_list_filter_by_key_resolves_one_row_scoped_to_the_team( self )",
+            "ccn": 2,
+            "nloc": 9,
+            "params": 1,
+            "tokens": 161
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_list_filter_by_an_unknown_key_returns_nothing",
+            "signature": "test_list_filter_by_an_unknown_key_returns_nothing( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 72
+          },
+          {
+            "file": "services/mcp/src/generated/workflows/api.ts",
+            "name": "HogFlowsListQueryParams",
+            "signature": "HogFlowsListQueryParams ( )",
+            "ccn": 1,
+            "nloc": 36,
+            "params": 0,
+            "tokens": 226
+          },
+          {
+            "file": "services/mcp/src/generated/workflows/api.ts",
+            "name": "HogFlowsCreateBody",
+            "signature": "HogFlowsCreateBody ( )",
+            "ccn": 1,
+            "nloc": 390,
+            "params": 0,
+            "tokens": 1864
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 13,
+            "nloc": 46,
+            "params": 2,
+            "tokens": 310
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 70
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 84
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 74
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 74
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 12,
+            "params": 2,
+            "tokens": 93
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 22,
+            "params": 2,
+            "tokens": 151
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 80
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 16,
+            "params": 2,
+            "tokens": 121
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 12,
+            "params": 2,
+            "tokens": 95
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 16,
+            "params": 2,
+            "tokens": 109
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 2,
+            "tokens": 98
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 2,
+            "tokens": 92
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 3,
+            "nloc": 16,
+            "params": 2,
+            "tokens": 120
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 3,
+            "nloc": 16,
+            "params": 2,
+            "tokens": 124
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 1,
+            "nloc": 17,
+            "params": 2,
+            "tokens": 117
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 5,
+            "nloc": 22,
+            "params": 2,
+            "tokens": 154
+          },
+          {
+            "file": "services/mcp/src/tools/generated/workflows.ts",
+            "name": "handler",
+            "signature": "handler ( context Context , params z infer )",
+            "ccn": 8,
+            "nloc": 31,
+            "params": 2,
+            "tokens": 224
+          }
+        ],
+        "duplication": {
+          "clones": 101,
+          "duplicatedLines": 2870,
+          "percentage": 20.9
+        }
+      },
+      "tests": {
+        "testLinesAdded": 163,
+        "productionLinesAdded": 180,
+        "testRatio": 0.91,
+        "subjects": [
+          "HogFlowsCreateBody",
+          "HogFlowsListQueryParams",
+          "Migration",
+          "create",
+          "handler",
+          "to_internal_value",
+          "update",
+          "validate",
+          "validate_key"
+        ],
+        "unreferenced": [
+          "HogFlowsCreateBody",
+          "HogFlowsListQueryParams",
+          "Migration",
+          "handler",
+          "to_internal_value",
+          "update",
+          "validate",
+          "validate_key"
+        ],
+        "referenceCoverage": 0.11,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 65.3,
+      "alignment": null,
+      "process": null
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_key.py",
+        "products/workflows/backend/migrations/0026_hogflow_key.py",
+        "products/workflows/backend/migrations/max_migration.txt",
+        "products/workflows/backend/models/hog_flow/hog_flow.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 205,
+        "linesRemoved": 4,
+        "modulesTouched": 4,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 8
+      },
+      "build": {
+        "pythonFiles": 4,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 22,
+          "maxCcn": 123,
+          "meanCcn": 10.4,
+          "overTen": 2,
+          "ccnDelta": 76
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate_key",
+            "signature": "validate_key( self , value : Optional [ str ] )",
+            "ccn": 6,
+            "nloc": 14,
+            "params": 2,
+            "tokens": 128
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 3,
+            "nloc": 15,
+            "params": 4,
+            "tokens": 111
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate_key",
+            "signature": "validate_key( self , value : Optional [ str ] )",
+            "ccn": 2,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 44
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "_create",
+            "signature": "_create( self , ** extra )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_with_key_echoes_the_key",
+            "signature": "test_create_with_key_echoes_the_key( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 62
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_create_refuses_bad_key",
+            "signature": "test_create_refuses_bad_key( self , _name , key , code )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 4,
+            "tokens": 77
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_key_taken_in_another_team_is_free",
+            "signature": "test_key_taken_in_another_team_is_free( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 65
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_duplicate_key_that_races_past_the_pre_check_is_a_field_error",
+            "signature": "test_duplicate_key_that_races_past_the_pre_check_is_a_field_error( self )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 111
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_patch_that_changes_the_key_is_refused",
+            "signature": "test_patch_that_changes_the_key_is_refused( self , _name , original , submitted )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 101
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_patch_that_resends_the_same_key_is_accepted",
+            "signature": "test_patch_that_resends_the_same_key_is_accepted( self )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 88
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_key_filter_resolves_exactly_one_row_in_the_team",
+            "signature": "test_key_filter_resolves_exactly_one_row_in_the_team( self )",
+            "ccn": 2,
+            "nloc": 9,
+            "params": 1,
+            "tokens": 157
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_key.py",
+            "name": "test_test_invocation_that_resends_the_flows_own_key_is_accepted",
+            "signature": "test_test_invocation_that_resends_the_flows_own_key_is_accepted( self )",
+            "ccn": 1,
+            "nloc": 13,
+            "params": 1,
+            "tokens": 140
+          }
+        ],
+        "duplication": {
+          "clones": 10,
+          "duplicatedLines": 103,
+          "percentage": 1.5
+        }
+      },
+      "tests": {
+        "testLinesAdded": 123,
+        "productionLinesAdded": 82,
+        "testRatio": 1.5,
+        "subjects": [
+          "Migration",
+          "create",
+          "to_internal_value",
+          "update",
+          "validate",
+          "validate_key"
+        ],
+        "unreferenced": [
+          "Migration",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "referenceCoverage": 0.33,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 88.9,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.45
+      },
+      "process": {
+        "toolCalls": 61,
+        "edits": 2,
+        "toolCallsBeforeFirstEdit": 14,
+        "secondsBeforeFirstEdit": 79,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Writing the test module.",
+        "turns": 8,
+        "wallSeconds": 984,
+        "costUsd": 2.3893838
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow.py",
+        "products/workflows/backend/migrations/0026_hogflow_key.py",
+        "products/workflows/backend/migrations/max_migration.txt",
+        "products/workflows/backend/models/hog_flow/hog_flow.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 174,
+        "linesRemoved": 11,
+        "modulesTouched": 4,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 4
+      },
+      "build": {
+        "pythonFiles": 4,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": [
+            {
+              "file": "/privateproducts/workflows/backend/api/test/test_hog_flow.py",
+              "message": "F821: Undefined name `HogFlowSerializer`"
+            },
+            {
+              "file": "/privateproducts/workflows/backend/api/test/test_hog_flow.py",
+              "message": "F821: Undefined name `nullcontext`"
+            }
+          ]
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 22,
+          "maxCcn": 123,
+          "meanCcn": 10.6,
+          "overTen": 2,
+          "ccnDelta": 72
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate_key",
+            "signature": "validate_key( self , value : str | None )",
+            "ccn": 7,
+            "nloc": 15,
+            "params": 2,
+            "tokens": 128
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 3,
+            "nloc": 15,
+            "params": 4,
+            "tokens": 111
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 5,
+            "nloc": 7,
+            "params": 2,
+            "tokens": 91
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 20
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_key_is_set_on_create_and_echoed",
+            "signature": "test_key_is_set_on_create_and_echoed( self )",
+            "ccn": 1,
+            "nloc": 13,
+            "params": 1,
+            "tokens": 141
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_create_refuses_bad_key",
+            "signature": "test_create_refuses_bad_key( self , _name , key , expected_code , race_past_pre_check )",
+            "ccn": 2,
+            "nloc": 12,
+            "params": 5,
+            "tokens": 164
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_update_refuses_key_change",
+            "signature": "test_update_refuses_key_change( self , _name , initial_key , new_key )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 93
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_list_filter_by_key_resolves_one_row_in_team",
+            "signature": "test_list_filter_by_key_resolves_one_row_in_team( self )",
+            "ccn": 2,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 172
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 52
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          }
+        ],
+        "duplication": {
+          "clones": 105,
+          "duplicatedLines": 1177,
+          "percentage": 9.2
+        }
+      },
+      "tests": {
+        "testLinesAdded": 69,
+        "productionLinesAdded": 105,
+        "testRatio": 0.66,
+        "subjects": [
+          "Migration",
+          "create",
+          "to_internal_value",
+          "update",
+          "validate",
+          "validate_key"
+        ],
+        "unreferenced": [
+          "Migration"
+        ],
+        "referenceCoverage": 0.83,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 91.8,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.33
+      },
+      "process": {
+        "toolCalls": 38,
+        "edits": 5,
+        "toolCallsBeforeFirstEdit": 19,
+        "secondsBeforeFirstEdit": 106,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 39,
+        "wallSeconds": 231,
+        "costUsd": 1.4438343999999996
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow.py",
+        "products/workflows/backend/migrations/0026_hogflow_key.py",
+        "products/workflows/backend/migrations/max_migration.txt",
+        "products/workflows/backend/models/hog_flow/hog_flow.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 135,
+        "linesRemoved": 4,
+        "modulesTouched": 4,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 5
+      },
+      "build": {
+        "pythonFiles": 4,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 24,
+          "maxCcn": 123,
+          "meanCcn": 9.9,
+          "overTen": 2,
+          "ccnDelta": 75
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate_key",
+            "signature": "validate_key( self , value : str | None )",
+            "ccn": 4,
+            "nloc": 10,
+            "params": 2,
+            "tokens": 83
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 3,
+            "nloc": 15,
+            "params": 4,
+            "tokens": 111
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 7,
+            "nloc": 13,
+            "params": 2,
+            "tokens": 123
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 20
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "_create_keyed_flow",
+            "signature": "_create_keyed_flow( self , key : Any )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 64
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_key_is_echoed_on_create",
+            "signature": "test_key_is_echoed_on_create( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 36
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_key_outside_charset_is_rejected",
+            "signature": "test_key_outside_charset_is_rejected( self , _name , key )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 3,
+            "tokens": 51
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_key_taken_in_team_is_rejected",
+            "signature": "test_key_taken_in_team_is_rejected( self , _name , skip_pre_check )",
+            "ccn": 2,
+            "nloc": 8,
+            "params": 3,
+            "tokens": 103
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_patch_that_changes_key_is_refused",
+            "signature": "test_patch_that_changes_key_is_refused( self , name , new_key )",
+            "ccn": 3,
+            "nloc": 10,
+            "params": 3,
+            "tokens": 119
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_list_filter_by_key_resolves_one_row_in_team",
+            "signature": "test_list_filter_by_key_resolves_one_row_in_team( self )",
+            "ccn": 2,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 149
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 52
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          }
+        ],
+        "duplication": {
+          "clones": 105,
+          "duplicatedLines": 1177,
+          "percentage": 9.2
+        }
+      },
+      "tests": {
+        "testLinesAdded": 54,
+        "productionLinesAdded": 81,
+        "testRatio": 0.67,
+        "subjects": [
+          "Migration",
+          "create",
+          "to_internal_value",
+          "update",
+          "validate",
+          "validate_key"
+        ],
+        "unreferenced": [
+          "Migration"
+        ],
+        "referenceCoverage": 0.83,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.33
+      },
+      "process": {
+        "toolCalls": 50,
+        "edits": 3,
+        "toolCallsBeforeFirstEdit": 27,
+        "secondsBeforeFirstEdit": 115,
+        "architectureToolCalls": 9,
+        "architectureExplorationBeforeEdit": 8,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Now the API layer.",
+        "turns": 51,
+        "wallSeconds": 238,
+        "costUsd": 1.8705752000000002
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow.py",
+        "products/workflows/backend/migrations/0026_hogflow_key.py",
+        "products/workflows/backend/migrations/max_migration.txt",
+        "products/workflows/backend/models/hog_flow/hog_flow.py",
+        "products/workflows/frontend/generated/api.schemas.ts",
+        "products/workflows/frontend/generated/api.zod.ts",
+        "services/mcp/src/api/generated.ts"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 8,
+        "linesAdded": 244,
+        "linesRemoved": 4,
+        "modulesTouched": 6,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 7
+      },
+      "build": {
+        "pythonFiles": 4,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 26,
+          "maxCcn": 123,
+          "meanCcn": 9.2,
+          "overTen": 2,
+          "ccnDelta": 76
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate_key",
+            "signature": "validate_key( self , value : Optional [ str ] )",
+            "ccn": 6,
+            "nloc": 14,
+            "params": 2,
+            "tokens": 120
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 3,
+            "nloc": 15,
+            "params": 4,
+            "tokens": 111
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 7,
+            "nloc": 13,
+            "params": 2,
+            "tokens": 123
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 20
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "_create_payload_with_key",
+            "signature": "_create_payload_with_key( self , key : Any )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 46
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_key_is_set_on_create_scoped_to_team",
+            "signature": "test_key_is_set_on_create_scoped_to_team( self )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 84
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_create_rejects_key",
+            "signature": "test_create_rejects_key( self , _name : str , key : str , code : str )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 4,
+            "tokens": 95
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_create_key_race_on_constraint_is_the_same_field_error",
+            "signature": "test_create_key_race_on_constraint_is_the_same_field_error( self )",
+            "ccn": 1,
+            "nloc": 9,
+            "params": 1,
+            "tokens": 123
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_patch_refuses_key_change",
+            "signature": "test_patch_refuses_key_change( self , _name : str , new_key : Optional [ str ] )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 3,
+            "tokens": 98
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_patch_accepts_unchanged_key",
+            "signature": "test_patch_accepts_unchanged_key( self )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 80
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_test_invocation_accepts_the_workflows_own_key_in_configuration",
+            "signature": "test_test_invocation_accepts_the_workflows_own_key_in_configuration( self )",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 1,
+            "tokens": 138
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "test_list_filter_by_key_resolves_one_row_in_team",
+            "signature": "test_list_filter_by_key_resolves_one_row_in_team( self )",
+            "ccn": 2,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 135
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 52
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 18
+          }
+        ],
+        "duplication": {
+          "clones": 187,
+          "duplicatedLines": 3134,
+          "percentage": 17.4
+        }
+      },
+      "tests": {
+        "testLinesAdded": 84,
+        "productionLinesAdded": 160,
+        "testRatio": 0.53,
+        "subjects": [
+          "Migration",
+          "create",
+          "to_internal_value",
+          "update",
+          "validate",
+          "validate_key"
+        ],
+        "unreferenced": [
+          "Migration"
+        ],
+        "referenceCoverage": 0.83,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 75.9,
+      "alignment": {
+        "modules": 1,
+        "files": 0.58
+      },
+      "process": {
+        "toolCalls": 88,
+        "edits": 5,
+        "toolCallsBeforeFirstEdit": 22,
+        "secondsBeforeFirstEdit": 104,
+        "architectureToolCalls": 8,
+        "architectureExplorationBeforeEdit": 5,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 89,
+        "wallSeconds": 520,
+        "costUsd": 3.5214642000000005
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 1,
+      "files": 0.67
+    },
+    "C": {
+      "modules": 0.33,
+      "files": 0.63
+    }
+  }
+}

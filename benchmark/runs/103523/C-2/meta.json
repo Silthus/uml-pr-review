@@ -1,0 +1,18 @@
+{
+  "pr": 103523,
+  "arm": "C-2",
+  "model": "claude-opus-5-5",
+  "sessionId": "36bee03c-1cc3-4afb-b542-c3c3b4ec3764",
+  "turns": 19,
+  "costUsd": 0.5427922,
+  "wallSeconds": 87,
+  "startedAt": "2026-09-26T16:27:06.526Z",
+  "exit": {
+    "reason": "completed",
+    "code": 0
+  },
+  "baseCommit": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+  "planIds": [
+    "workflows-quick-button-on-the-home-scree-96f9"
+  ]
+}

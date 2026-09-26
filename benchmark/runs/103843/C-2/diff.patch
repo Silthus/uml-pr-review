@@ -1,0 +1,922 @@
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 688810f9bc8..aebbb3b8f93 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -5222,6 +5222,18 @@ importers:
+         specifier: 'catalog:'
+         version: 0.2.4(kea@4.0.0-pre.6(patch_hash=139b8d1f1304f9d9da452a9a1244c94ea679dbcb85687d8999563146879fb6f5)(react@18.3.1))
+ 
++  products/workflows/packages/workflows:
++    devDependencies:
++      '@types/node':
++        specifier: ^24.0.0
++        version: 24.13.3
++      typescript:
++        specifier: 6.0.3
++        version: 6.0.3
++      vitest:
++        specifier: ^4.1.0
++        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(happy-dom@20.9.0)(jsdom@20.0.3)(msw@2.14.6(@types/node@24.13.3)(typescript@6.0.3))(vite@8.1.3(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(less@4.2.2)(sass-embedded@1.70.0)(terser@5.46.0)(tsx@4.20.5)(yaml@2.9.0))
++
+   rust/common/hogvm/node: {}
+ 
+   rust/replay-anonymizer-node:
+diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+index 73322eb3b23..d037a33e73c 100644
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -16,6 +16,8 @@ packages:
+     - nodejs
+     - nodejs/src/scripts
+     - products/*
++    # products/* matches direct children only, so a package nested inside a product is listed by hand.
++    - products/workflows/packages/workflows
+     # products/desktop is a nested standalone workspace (own lockfile, catalog,
+     # overrides, Node version); the root install must not absorb it.
+     - '!products/desktop'
+diff --git a/products/workflows/packages/workflows/.gitignore b/products/workflows/packages/workflows/.gitignore
+new file mode 100644
+index 00000000000..849ddff3b7e
+--- /dev/null
++++ b/products/workflows/packages/workflows/.gitignore
+@@ -0,0 +1 @@
++dist/
+diff --git a/products/workflows/packages/workflows/README.md b/products/workflows/packages/workflows/README.md
+new file mode 100644
+index 00000000000..cc2811d446a
+--- /dev/null
++++ b/products/workflows/packages/workflows/README.md
+@@ -0,0 +1,67 @@
++# @posthog/workflows
++
++Write a PostHog workflow in TypeScript and turn it into the workflow definition the PostHog API accepts.
++
++This package is private and is not published to npm.
++
++## Write a workflow
++
++```ts
++import { emit, secret, step, trigger, workflow } from '@posthog/workflows'
++
++const notifyCrm = step.function({
++    name: 'Tell the CRM',
++    template_id: 'template-webhook',
++    inputs: { url: 'https://example.com/hooks/onboarding', signing_secret: secret('CRM_TOKEN') },
++})
++
++export const onboarding = workflow({
++    key: 'onboarding',
++    name: 'Onboarding',
++    on: trigger.event({ event: 'user signed up' }),
++    steps: [
++        step.delay({ name: 'Wait a day', duration: '1d' }),
++        step.branch({
++            name: 'Which plan?',
++            branches: [
++                {
++                    name: 'Paid plan',
++                    when: [{ key: 'plan', type: 'person', operator: 'exact', value: ['pro'] }],
++                    then: [
++                        step.email({
++                            name: 'Welcome email',
++                            to: '{person.properties.email}',
++                            subject: 'Welcome',
++                            text: 'Thanks for upgrading.',
++                            html: '<p>Thanks for upgrading.</p>',
++                        }),
++                        notifyCrm,
++                    ],
++                },
++            ],
++        }),
++        notifyCrm,
++    ],
++    exit: { reason: 'Onboarding finished' },
++    variables: [{ key: 'coupon', type: 'string', default: 'WELCOME10' }],
++})
++
++const definition = emit(onboarding)
++```
++
++- **Steps:** `step.delay`, `step.function`, `step.email` and `step.branch`. Every step needs a `name`.
++- **Triggers:** `trigger.event` and `trigger.schedule`. You set the schedule itself in PostHog.
++- **Status:** a workflow is a `draft` unless you set `status` to `active` or `archived`.
++- **Secrets:** `secret('CRM_TOKEN')` reads the value from that environment variable when you call `emit`. The value is never in your source.
++
++## Step ids
++
++Each step's id comes from its name: `Wait a day` becomes `wait_a_day`. To rename a step and keep its id, set `id` to the old one.
++
++A step is a value, so you can place the same step more than once. The second placement gets the id `tell_the_crm_2`.
++
++Two different steps can't share an id. `emit` stops with an error that names both steps.
++
++## Errors
++
++`emit` throws a `WorkflowError` when a workflow can't be sent to PostHog. Each error has a `status`, a `message`, a `why` and a `fix`.
+diff --git a/products/workflows/packages/workflows/package.json b/products/workflows/packages/workflows/package.json
+new file mode 100644
+index 00000000000..123fa0a56b2
+--- /dev/null
++++ b/products/workflows/packages/workflows/package.json
+@@ -0,0 +1,44 @@
++{
++    "name": "@posthog/workflows",
++    "version": "0.0.0",
++    "private": true,
++    "description": "Write PostHog workflows as TypeScript and emit the workflow definition the PostHog API accepts",
++    "license": "MIT",
++    "repository": {
++        "type": "git",
++        "url": "https://github.com/PostHog/posthog.git",
++        "directory": "products/workflows/packages/workflows"
++    },
++    "files": [
++        "dist"
++    ],
++    "type": "module",
++    "main": "./dist/index.js",
++    "module": "./dist/index.js",
++    "types": "./dist/index.d.ts",
++    "exports": {
++        ".": {
++            "types": "./dist/index.d.ts",
++            "import": "./dist/index.js",
++            "require": "./dist/index.js",
++            "default": "./dist/index.js"
++        },
++        "./package.json": "./package.json"
++    },
++    "bin": {
++        "posthog-workflows": "./dist/cli/index.js"
++    },
++    "scripts": {
++        "build": "tsc -p tsconfig.build.json",
++        "test": "tsc --noEmit && vitest run",
++        "typecheck": "tsc --noEmit"
++    },
++    "devDependencies": {
++        "@types/node": "^24.0.0",
++        "typescript": "^6.0.3",
++        "vitest": "^4.1.0"
++    },
++    "engines": {
++        "node": ">=22.12"
++    }
++}
+diff --git a/products/workflows/packages/workflows/src/definition.ts b/products/workflows/packages/workflows/src/definition.ts
+new file mode 100644
+index 00000000000..9da54025cf2
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/definition.ts
+@@ -0,0 +1,103 @@
++// The workflow definition: the create and update body that HogFlowSerializer accepts
++// (products/workflows/backend/api/hog_flow.py). The backend is Python, so this mirrors
++// the serializer by reading it. Keep the two in step when the serializer changes.
++
++/** The duration grammar of `backend/utils/durations.py`, as far as a template literal can hold it. */
++export type Duration = `${number}${'d' | 'h' | 'm' | 's'}`
++
++export type PropertyOperator =
++    | 'exact'
++    | 'is_not'
++    | 'icontains'
++    | 'not_icontains'
++    | 'is_set'
++    | 'is_not_set'
++    | 'gt'
++    | 'lt'
++
++/** One property condition. The server compiles its bytecode, so the definition never carries it. */
++export interface PropertyCondition {
++    readonly key: string
++    readonly type: 'event' | 'person' | 'group'
++    readonly operator: PropertyOperator
++    readonly value?: readonly (string | number | boolean)[]
++}
++
++export interface EventFilter {
++    readonly id: string
++    readonly name: string
++    readonly type: 'events'
++    readonly order: number
++    readonly properties: readonly PropertyCondition[]
++}
++
++export type TriggerConfig =
++    | { readonly type: 'event'; readonly filters: { readonly events: readonly EventFilter[] } }
++    | { readonly type: 'schedule' }
++
++export interface EmailMessage {
++    readonly from: Readonly<Record<string, never>>
++    readonly to: { readonly email: string }
++    readonly subject: string
++    readonly text: string
++    readonly html: string
++    readonly preheader?: string
++}
++
++interface ActionBase {
++    readonly id: string
++    readonly name: string
++}
++
++export type Action =
++    | (ActionBase & { readonly type: 'trigger'; readonly config: TriggerConfig })
++    | (ActionBase & { readonly type: 'delay'; readonly config: { readonly delay_duration: Duration } })
++    | (ActionBase & {
++          readonly type: 'conditional_branch'
++          readonly config: {
++              readonly conditions: readonly {
++                  readonly name: string
++                  readonly filters: { readonly properties: readonly PropertyCondition[] }
++              }[]
++          }
++      })
++    | (ActionBase & {
++          readonly type: 'function'
++          readonly config: {
++              readonly template_id: string
++              readonly inputs: Readonly<Record<string, { readonly value: unknown }>>
++          }
++      })
++    | (ActionBase & {
++          readonly type: 'function_email'
++          // The server coerces template_id to template-email whatever is sent. A template_uuid would make
++          // the server copy a library template into the stored action, so the stored definition would
++          // no longer match the one sent, and the SDK never sends one.
++          readonly config: {
++              readonly template_id: 'template-email'
++              readonly inputs: { readonly email: { readonly value: EmailMessage } }
++          }
++      })
++    | (ActionBase & { readonly type: 'exit'; readonly config: { readonly reason: string } })
++
++export type Edge =
++    | { readonly from: string; readonly to: string; readonly type: 'continue' }
++    | { readonly from: string; readonly to: string; readonly type: 'branch'; readonly index: number }
++
++/** The serializer holds every field of a variable as a string. */
++export interface Variable {
++    readonly key: string
++    readonly type: 'string' | 'number' | 'boolean'
++    readonly default: string
++}
++
++export type WorkflowStatus = 'draft' | 'active' | 'archived'
++
++export interface WorkflowDefinition {
++    readonly name: string
++    readonly description: string
++    readonly status: WorkflowStatus
++    readonly actions: readonly Action[]
++    readonly edges: readonly Edge[]
++    readonly variables: readonly Variable[]
++}
+diff --git a/products/workflows/packages/workflows/src/emit.test.ts b/products/workflows/packages/workflows/src/emit.test.ts
+new file mode 100644
+index 00000000000..4d04bda8ed4
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/emit.test.ts
+@@ -0,0 +1,147 @@
++import { describe, expect, it } from 'vitest'
++
++import { emit, secret, step, trigger, workflow, WorkflowError, type Path, type Step, type Variable } from './index.js'
++
++const notifyCrm = step.function({
++    name: 'Tell the CRM',
++    template_id: 'template-webhook',
++    inputs: { url: 'https://example.com/hooks/onboarding', signing_secret: secret('CRM_TOKEN') },
++})
++
++const welcome = step.email({
++    name: 'Welcome email',
++    to: '{person.properties.email}',
++    subject: 'Welcome to Example',
++    text: 'Thanks for signing up.',
++    html: '<p>Thanks for signing up.</p>',
++})
++
++function onboarding(steps: Path, variables?: readonly Variable[]) {
++    return workflow({
++        key: 'onboarding',
++        name: 'Onboarding',
++        on: trigger.event({ event: 'user signed up' }),
++        steps,
++        exit: { reason: 'Onboarding finished' },
++        ...(variables === undefined ? {} : { variables }),
++    })
++}
++
++const env = { CRM_TOKEN: 'test-token' }
++
++// 5120 bytes as Python's json.dumps measures the variable: 45 bytes around the default, and 6 bytes for
++// each "é", which Python escapes as \u00e9. Counting UTF-16 or UTF-8 instead gives a different total.
++const AT_CAP = 'é'.repeat(845) + 'aaaaa'
++
++function refusal(run: () => unknown): WorkflowError {
++    try {
++        run()
++    } catch (error) {
++        expect(error).toBeInstanceOf(WorkflowError)
++        const refused = error as WorkflowError
++        for (const field of [refused.status, refused.message, refused.why, refused.fix]) {
++            expect(field).not.toBe('')
++        }
++        return refused
++    }
++    throw new Error('expected a WorkflowError')
++}
++
++describe('emit', () => {
++    it('places a reused step twice, wires branches to the next step, and survives a JSON round trip', () => {
++        const definition = emit(
++            onboarding(
++                [
++                    step.delay({ name: 'Wait a day', duration: '1d' }),
++                    step.branch({
++                        name: 'Which plan?',
++                        branches: [
++                            {
++                                name: 'Paid',
++                                when: [{ key: 'plan', type: 'person', operator: 'exact', value: ['pro'] }],
++                                then: [welcome, notifyCrm],
++                            },
++                        ],
++                    }),
++                    notifyCrm,
++                ],
++                [{ key: 'coupon', type: 'string', default: 'WELCOME10' }]
++            ),
++            { env }
++        )
++
++        expect(definition.actions.map((action) => action.id)).toEqual([
++            'trigger_node',
++            'wait_a_day',
++            'which_plan',
++            'welcome_email',
++            'tell_the_crm_2',
++            'tell_the_crm',
++            'exit_node',
++        ])
++        expect(definition.edges).toEqual([
++            { from: 'trigger_node', to: 'wait_a_day', type: 'continue' },
++            { from: 'wait_a_day', to: 'which_plan', type: 'continue' },
++            { from: 'which_plan', to: 'tell_the_crm', type: 'continue' },
++            { from: 'welcome_email', to: 'tell_the_crm_2', type: 'continue' },
++            { from: 'tell_the_crm_2', to: 'tell_the_crm', type: 'continue' },
++            { from: 'which_plan', to: 'welcome_email', type: 'branch', index: 0 },
++            { from: 'tell_the_crm', to: 'exit_node', type: 'continue' },
++        ])
++        expect(definition.status).toBe('draft')
++        expect(definition.actions[5]).toMatchObject({
++            config: { inputs: { signing_secret: { value: 'test-token' } } },
++        })
++        expect(JSON.parse(JSON.stringify(definition))).toStrictEqual(definition)
++    })
++
++    it('keeps an id override when the step is renamed', () => {
++        const renamed = step.delay({ name: 'Wait two days', id: 'wait_a_day', duration: '2d' })
++        expect(emit(onboarding([renamed])).actions[1]!.id).toBe('wait_a_day')
++    })
++
++    it.each<[string, Path]>([
++        [
++            'two steps with the same slug',
++            [step.delay({ name: 'Wait', duration: '1d' }), step.delay({ name: 'wait!', duration: '2d' })],
++        ],
++        ['a step that slugs to a fixed id', [step.delay({ name: 'Exit node', duration: '1d' })]],
++        [
++            'a reused step whose suffix hits another slug',
++            [welcome, welcome, step.delay({ name: 'Welcome email 2', duration: '1d' })],
++        ],
++    ])('refuses %s', (_, steps) => {
++        expect(refusal(() => emit(onboarding(steps), { env })).status).toBe('slug_collision')
++    })
++
++    it.each<[string, Step, string]>([
++        ['a missing secret', notifyCrm, 'missing_secret'],
++        ['a duration the template literal lets through', step.delay({ name: 'Wait', duration: '-1d' }), 'invalid_duration'],
++        ['a name with no letters or digits', step.delay({ name: '???', duration: '1d' }), 'invalid_step_name'],
++    ])('refuses %s', (_, only, status) => {
++        expect(refusal(() => emit(onboarding([only]), { env: {} })).status).toBe(status)
++    })
++
++    it.each<[string, Variable[], string]>([
++        [
++            'duplicate variable keys',
++            [
++                { key: 'coupon', type: 'string', default: 'A' },
++                { key: 'coupon', type: 'string', default: 'B' },
++            ],
++            'duplicate_variable_key',
++        ],
++        [
++            'variables over the size cap',
++            [{ key: 'k', type: 'string', default: AT_CAP + 'a' }],
++            'variables_too_large',
++        ],
++    ])('refuses %s', (_, variables, status) => {
++        expect(refusal(() => emit(onboarding([welcome], variables))).status).toBe(status)
++    })
++
++    it('accepts variables at exactly the size cap', () => {
++        const variables: Variable[] = [{ key: 'k', type: 'string', default: AT_CAP }]
++        expect(emit(onboarding([welcome], variables)).variables).toEqual(variables)
++    })
++})
+diff --git a/products/workflows/packages/workflows/src/emit.ts b/products/workflows/packages/workflows/src/emit.ts
+new file mode 100644
+index 00000000000..de997a2b839
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/emit.ts
+@@ -0,0 +1,178 @@
++import type { Action, Edge, WorkflowDefinition } from './definition.js'
++import { WorkflowError } from './errors.js'
++import { validate } from './validate.js'
++import type { Path, Secret, Step, Workflow } from './workflow.js'
++
++const TRIGGER_ID = 'trigger_node'
++const EXIT_ID = 'exit_node'
++
++export interface EmitOptions {
++    /** Where `secret()` names are read. Defaults to `process.env`. */
++    readonly env?: Readonly<Record<string, string | undefined>>
++}
++
++function slugify(name: string): string {
++    return name
++        .toLowerCase()
++        .replace(/[^a-z0-9]+/g, '_')
++        .replace(/^_+|_+$/g, '')
++}
++
++function isSecret(value: unknown): value is Secret {
++    return typeof value === 'object' && value !== null && typeof (value as Secret).secret === 'string'
++}
++
++class Ids {
++    // Seeded so that a step named "Exit node" cannot take the id of the fixed exit action.
++    private readonly owners = new Map<string, Step | null>([
++        [TRIGGER_ID, null],
++        [EXIT_ID, null],
++    ])
++    private readonly placements = new Map<Step, number>()
++
++    /** A step value placed a second time gets `_2`, so reuse makes a second node with its own id. */
++    next(step: Step): string {
++        const base = step.id ?? slugify(step.name)
++        if (base === '') {
++            throw new WorkflowError({
++                status: 'invalid_step_name',
++                message: `The step name "${step.name}" has no letters or digits.`,
++                why: 'An action id is made from the letters and digits of the step name, so this step would have an empty id.',
++                fix: 'Give the step a name with at least one letter or digit, or set its id.',
++            })
++        }
++        const count = (this.placements.get(step) ?? 0) + 1
++        this.placements.set(step, count)
++        const id = count === 1 ? base : `${base}_${count}`
++
++        const owner = this.owners.get(id)
++        if (owner !== undefined && owner !== step) {
++            const other = owner === null ? `the workflow's own ${id === TRIGGER_ID ? 'trigger' : 'exit'}` : `step "${owner.name}"`
++            throw new WorkflowError({
++                status: 'slug_collision',
++                message: `Step "${step.name}" and ${other} both get the id "${id}".`,
++                why: 'Each action in a workflow needs its own id, and the id comes from the step name.',
++                fix: `Rename one of the two steps, or give one of them its own id with id: '...'.`,
++            })
++        }
++        this.owners.set(id, step)
++        return id
++    }
++}
++
++interface Context {
++    readonly ids: Ids
++    readonly actions: Action[]
++    readonly edges: Edge[]
++    readonly env: Readonly<Record<string, string | undefined>>
++}
++
++function resolveInputs(
++    step: Extract<Step, { kind: 'function' }>,
++    env: Context['env']
++): Record<string, { value: unknown }> {
++    const inputs: Record<string, { value: unknown }> = {}
++    for (const [key, raw] of Object.entries(step.inputs)) {
++        if (!isSecret(raw)) {
++            inputs[key] = { value: raw }
++            continue
++        }
++        const value = env[raw.secret]
++        if (value === undefined || value === '') {
++            throw new WorkflowError({
++                status: 'missing_secret',
++                message: `The environment variable ${raw.secret} is not set.`,
++                why: `Step "${step.name}" reads the input "${key}" from it, and the value is sent with the workflow.`,
++                fix: `Set ${raw.secret} in the environment, then run again.`,
++            })
++        }
++        inputs[key] = { value }
++    }
++    return inputs
++}
++
++function toAction(step: Step, id: string, env: Context['env']): Action {
++    switch (step.kind) {
++        case 'delay':
++            return { id, name: step.name, type: 'delay', config: { delay_duration: step.duration } }
++        case 'function':
++            return {
++                id,
++                name: step.name,
++                type: 'function',
++                config: { template_id: step.template_id, inputs: resolveInputs(step, env) },
++            }
++        case 'email':
++            return {
++                id,
++                name: step.name,
++                type: 'function_email',
++                config: {
++                    template_id: 'template-email',
++                    inputs: {
++                        email: {
++                            value: {
++                                from: {},
++                                to: { email: step.to },
++                                subject: step.subject,
++                                text: step.text,
++                                html: step.html,
++                                ...(step.preheader === undefined ? {} : { preheader: step.preheader }),
++                            },
++                        },
++                    },
++                },
++            }
++        case 'branch':
++            return {
++                id,
++                name: step.name,
++                type: 'conditional_branch',
++                config: {
++                    conditions: step.branches.map((branch) => ({
++                        name: branch.name,
++                        filters: { properties: [...branch.when] },
++                    })),
++                },
++            }
++    }
++}
++
++/** Places a path in front of `continuation` and returns the id of its first action. */
++function place(path: Path, continuation: string, context: Context): string {
++    const ids = path.map((step) => context.ids.next(step))
++    path.forEach((step, position) => {
++        const id = ids[position]!
++        const next = ids[position + 1] ?? continuation
++        context.actions.push(toAction(step, id, context.env))
++        // For a branch, this continue edge is the path taken when no condition matches.
++        context.edges.push({ from: id, to: next, type: 'continue' })
++        if (step.kind === 'branch') {
++            step.branches.forEach((branch, index) => {
++                context.edges.push({ from: id, to: place(branch.then, next, context), type: 'branch', index })
++            })
++        }
++    })
++    return ids[0]!
++}
++
++/** Turns a workflow into the definition the PostHog API accepts, and throws a `WorkflowError` if it is not valid. */
++export function emit(workflow: Workflow, options: EmitOptions = {}): WorkflowDefinition {
++    const context: Context = { ids: new Ids(), actions: [], edges: [], env: options.env ?? process.env }
++    const entry = place(workflow.steps, EXIT_ID, context)
++
++    const definition: WorkflowDefinition = {
++        name: workflow.name,
++        description: workflow.description ?? '',
++        status: workflow.status,
++        actions: [
++            { id: TRIGGER_ID, name: 'Trigger', type: 'trigger', config: workflow.on },
++            ...context.actions,
++            { id: EXIT_ID, name: 'Exit', type: 'exit', config: { reason: workflow.exit.reason } },
++        ],
++        edges: [{ from: TRIGGER_ID, to: entry, type: 'continue' }, ...context.edges],
++        variables: workflow.variables ?? [],
++    }
++    validate(definition)
++    return definition
++}
+diff --git a/products/workflows/packages/workflows/src/errors.ts b/products/workflows/packages/workflows/src/errors.ts
+new file mode 100644
+index 00000000000..48e6642170a
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/errors.ts
+@@ -0,0 +1,20 @@
++export interface WorkflowErrorFields {
++    readonly status: string
++    readonly message: string
++    readonly why: string
++    readonly fix: string
++}
++
++export class WorkflowError extends Error {
++    readonly status: string
++    readonly why: string
++    readonly fix: string
++
++    constructor(fields: WorkflowErrorFields) {
++        super(fields.message)
++        this.name = 'WorkflowError'
++        this.status = fields.status
++        this.why = fields.why
++        this.fix = fields.fix
++    }
++}
+diff --git a/products/workflows/packages/workflows/src/index.ts b/products/workflows/packages/workflows/src/index.ts
+new file mode 100644
+index 00000000000..7a1c96814e7
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/index.ts
+@@ -0,0 +1,28 @@
++export type {
++    Action,
++    Duration,
++    Edge,
++    EmailMessage,
++    PropertyCondition,
++    PropertyOperator,
++    TriggerConfig,
++    Variable,
++    WorkflowDefinition,
++    WorkflowStatus,
++} from './definition.js'
++export { emit, type EmitOptions } from './emit.js'
++export { WorkflowError, type WorkflowErrorFields } from './errors.js'
++export { validate } from './validate.js'
++export {
++    secret,
++    step,
++    trigger,
++    workflow,
++    type Branch,
++    type Conditions,
++    type Path,
++    type Secret,
++    type Step,
++    type Workflow,
++    type WorkflowOptions,
++} from './workflow.js'
+diff --git a/products/workflows/packages/workflows/src/type-rules.test-d.ts b/products/workflows/packages/workflows/src/type-rules.test-d.ts
+new file mode 100644
+index 00000000000..7c56f460eda
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/type-rules.test-d.ts
+@@ -0,0 +1,36 @@
++// Checked by `tsc --noEmit`, never run. Each `@ts-expect-error` fails the check if the line under it
++// compiles, so every rule here stays a compile error.
++
++import { step, trigger, workflow, type Path } from './index.js'
++
++const paid = [{ key: 'plan', type: 'person', operator: 'exact', value: ['pro'] }] as const
++
++// @ts-expect-error A sub-path cannot be empty.
++export const emptyPath: Path = []
++
++export const emptyBranch = step.branch({
++    name: 'Which plan?',
++    // @ts-expect-error A branch path cannot be empty.
++    branches: [{ name: 'Paid', when: paid, then: [] }],
++})
++
++export const noSteps = workflow({
++    key: 'k',
++    name: 'n',
++    on: trigger.schedule(),
++    // @ts-expect-error A workflow needs at least one step.
++    steps: [],
++    exit: { reason: 'Done' },
++})
++
++// @ts-expect-error A delay takes a duration, not any string, even when the step is held in a const.
++export const soon = step.delay({ name: 'Wait', duration: 'soon' })
++
++// @ts-expect-error The email step has inline content only.
++export const libraryEmail = step.email({ name: 'Hi', to: 'a', subject: 's', text: 't', html: 'h', template_uuid: 'x' })
++
++// @ts-expect-error Every step needs a name, because its id is made from the name.
++export const unnamed = step.delay({ duration: '1d' })
++
++// @ts-expect-error A workflow needs a key.
++export const noKey = workflow({ name: 'n', on: trigger.schedule(), steps: [soon], exit: { reason: 'Done' } })
+diff --git a/products/workflows/packages/workflows/src/validate.ts b/products/workflows/packages/workflows/src/validate.ts
+new file mode 100644
+index 00000000000..6b7b4ee7b52
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/validate.ts
+@@ -0,0 +1,65 @@
++// Checks a definition against the serializer rules that the types cannot hold. Mirrors
++// HogFlowActionSerializer, HogFlowVariableSerializer and backend/utils/durations.py.
++
++import type { Variable, WorkflowDefinition } from './definition.js'
++import { WorkflowError } from './errors.js'
++
++const DURATION = /^(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)[dhms]$/
++const MAX_ACTION_ID_LENGTH = 200
++export const MAX_VARIABLES_BYTES = 5120
++
++/**
++ * The length of Python's `json.dumps(variable)`, which is what the serializer measures. Python puts a
++ * space after `:` and `,`, and escapes every character outside printable ASCII (0x7f too) as `\uXXXX`,
++ * where JSON.stringify does neither.
++ */
++function pythonJsonLength(variable: Variable): number {
++    const body = Object.entries(variable)
++        .map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`)
++        .join(', ')
++    return `{${body}}`.replace(/[\u007f-￿]/g, '\\uXXXX').length
++}
++
++export function validate(definition: WorkflowDefinition): void {
++    for (const action of definition.actions) {
++        if (action.id.length > MAX_ACTION_ID_LENGTH) {
++            throw new WorkflowError({
++                status: 'invalid_action_id',
++                message: `The id of step "${action.name}" is ${action.id.length} characters long.`,
++                why: `PostHog accepts an action id of at most ${MAX_ACTION_ID_LENGTH} characters, and the id comes from the step name.`,
++                fix: 'Give the step a shorter name, or a shorter id with id: \'...\'.',
++            })
++        }
++        if (action.type === 'delay' && !DURATION.test(action.config.delay_duration)) {
++            throw new WorkflowError({
++                status: 'invalid_duration',
++                message: `Step "${action.name}" waits for "${action.config.delay_duration}", which is not a duration.`,
++                why: 'PostHog reads a duration as a positive number followed by d, h, m or s.',
++                fix: 'Write the duration as a number and a unit, for example "30m", "1.5h" or "2d".',
++            })
++        }
++    }
++
++    const keys = new Set<string>()
++    for (const variable of definition.variables) {
++        if (keys.has(variable.key)) {
++            throw new WorkflowError({
++                status: 'duplicate_variable_key',
++                message: `The variable "${variable.key}" is defined more than once.`,
++                why: 'Steps read a variable by its key, so each key can name only one variable.',
++                fix: `Remove one of the variables named "${variable.key}", or rename it.`,
++            })
++        }
++        keys.add(variable.key)
++    }
++
++    const size = definition.variables.reduce((total, variable) => total + pythonJsonLength(variable), 0)
++    if (size > MAX_VARIABLES_BYTES) {
++        throw new WorkflowError({
++            status: 'variables_too_large',
++            message: `The variables take ${size} bytes, and the limit is ${MAX_VARIABLES_BYTES}.`,
++            why: 'PostHog limits the total size of the variable keys, types and default values of one workflow.',
++            fix: 'Shorten the default values, or remove variables the workflow does not use.',
++        })
++    }
++}
+diff --git a/products/workflows/packages/workflows/src/workflow.ts b/products/workflows/packages/workflows/src/workflow.ts
+new file mode 100644
+index 00000000000..5caad5f7ef8
+--- /dev/null
++++ b/products/workflows/packages/workflows/src/workflow.ts
+@@ -0,0 +1,93 @@
++// The authoring surface. A step is a frozen value with a name and no id or position, so the same
++// value can be placed at two points in one workflow. `emit()` derives every id and edge.
++
++import type { Duration, PropertyCondition, TriggerConfig, Variable, WorkflowStatus } from './definition.js'
++
++/** Names an environment variable that `emit()` reads. The source holds the name and never the value. */
++export interface Secret {
++    readonly secret: string
++}
++
++export function secret(envName: string): Secret {
++    return Object.freeze({ secret: envName })
++}
++
++/** At least one condition, so a branch with nothing to test does not compile. */
++export type Conditions = readonly [PropertyCondition, ...PropertyCondition[]]
++
++/**
++ * A non-empty tuple. `readonly Step[]` would accept `[]`, and an empty branch path emits a branch edge
++ * straight to the step after the branch, which is a valid graph that does nothing.
++ */
++export type Path = readonly [Step, ...Step[]]
++
++export interface Branch {
++    readonly name: string
++    readonly when: Conditions
++    readonly then: Path
++}
++
++interface StepBase {
++    readonly name: string
++    /** Overrides the id derived from `name`, so a step can be renamed and keep its id. */
++    readonly id?: string
++}
++
++export type Step =
++    | (StepBase & { readonly kind: 'delay'; readonly duration: Duration })
++    | (StepBase & {
++          readonly kind: 'function'
++          readonly template_id: string
++          readonly inputs: Readonly<Record<string, unknown>>
++      })
++    | (StepBase & {
++          readonly kind: 'email'
++          readonly to: string
++          readonly subject: string
++          readonly text: string
++          readonly html: string
++          readonly preheader?: string
++      })
++    | (StepBase & { readonly kind: 'branch'; readonly branches: readonly [Branch, ...Branch[]] })
++
++type Options<K extends Step['kind']> = Omit<Extract<Step, { kind: K }>, 'kind'>
++
++export const step = {
++    delay: (options: Options<'delay'>): Step => Object.freeze({ ...options, kind: 'delay' }),
++    /** Any function template by id. The server checks `inputs` against the template, the compiler does not. */
++    function: (options: Options<'function'>): Step => Object.freeze({ ...options, kind: 'function' }),
++    /** Inline content only. There is no `template_uuid`. */
++    email: (options: Options<'email'>): Step => Object.freeze({ ...options, kind: 'email' }),
++    branch: (options: Options<'branch'>): Step => Object.freeze({ ...options, kind: 'branch' }),
++}
++
++export const trigger = {
++    event: (options: { event: string; properties?: readonly PropertyCondition[] }): TriggerConfig => ({
++        type: 'event',
++        filters: {
++            events: [{ id: options.event, name: options.event, type: 'events', order: 0, properties: options.properties ?? [] }],
++        },
++    }),
++    /** The cadence lives on a separate schedule the API attaches to the workflow, not in the definition. */
++    schedule: (): TriggerConfig => ({ type: 'schedule' }),
++}
++
++export interface WorkflowOptions {
++    /** Identifies the workflow across renames. */
++    readonly key: string
++    readonly name: string
++    readonly description?: string
++    readonly status?: WorkflowStatus
++    readonly on: TriggerConfig
++    readonly steps: Path
++    readonly exit: { readonly reason: string }
++    readonly variables?: readonly Variable[]
++}
++
++export interface Workflow extends WorkflowOptions {
++    readonly status: WorkflowStatus
++}
++
++export function workflow(options: WorkflowOptions): Workflow {
++    return Object.freeze({ ...options, status: options.status ?? 'draft' })
++}
+diff --git a/products/workflows/packages/workflows/tsconfig.build.json b/products/workflows/packages/workflows/tsconfig.build.json
+new file mode 100644
+index 00000000000..491c7243946
+--- /dev/null
++++ b/products/workflows/packages/workflows/tsconfig.build.json
+@@ -0,0 +1,10 @@
++{
++    "extends": "./tsconfig.json",
++    "compilerOptions": {
++        "noEmit": false,
++        "declaration": true,
++        "rootDir": "src",
++        "outDir": "dist"
++    },
++    "exclude": ["src/**/*.test.ts", "src/**/*.test-d.ts"]
++}
+diff --git a/products/workflows/packages/workflows/tsconfig.json b/products/workflows/packages/workflows/tsconfig.json
+new file mode 100644
+index 00000000000..d0fdf476de8
+--- /dev/null
++++ b/products/workflows/packages/workflows/tsconfig.json
+@@ -0,0 +1,16 @@
++{
++    "compilerOptions": {
++        "target": "es2022",
++        "module": "nodenext",
++        "moduleResolution": "nodenext",
++        "verbatimModuleSyntax": true,
++        "noEmit": true,
++        "strict": true,
++        "noImplicitReturns": true,
++        "noUncheckedIndexedAccess": true,
++        "exactOptionalPropertyTypes": true,
++        "skipLibCheck": true,
++        "types": ["node"]
++    },
++    "include": ["src/**/*.ts"]
++}

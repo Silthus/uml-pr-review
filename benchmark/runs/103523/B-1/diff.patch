@@ -1,0 +1,39 @@
+diff --git a/frontend/src/scenes/max/suggestionTopics.tsx b/frontend/src/scenes/max/suggestionTopics.tsx
+index f732cf76d2de..347736c44562 100644
+--- a/frontend/src/scenes/max/suggestionTopics.tsx
++++ b/frontend/src/scenes/max/suggestionTopics.tsx
+@@ -293,5 +293,34 @@ export const HOMEPAGE_SUGGESTION_TOPICS: SuggestionTopic[] = [
+             },
+         ],
+     },
++    {
++        key: 'workflows',
++        label: 'Workflows',
++        iconType: 'workflows',
++        suggestions: [
++            {
++                title: 'See your workflows',
++                description: "What's live, what's in draft, and what each one does",
++                content: 'List my workflows and summarize what each one does',
++            },
++            {
++                title: 'Review recent email runs',
++                description: 'Sends and failures from the last 7 days',
++                content: 'How did my workflows and their emails perform over the last 7 days? Flag any that are failing',
++            },
++            {
++                title: 'Create a workflow',
++                description: 'Automate messages triggered by user behavior',
++                content: 'Create a workflow that',
++                requiresUserInput: true,
++                hint: 'describe who it should reach and what it should send',
++            },
++            {
++                title: 'Send a welcome email',
++                description: 'Onboard new users the moment they sign up',
++                content: 'Create a draft workflow that sends a welcome email to new users when they sign up',
++            },
++        ],
++    },
+     LEARN_TOPIC,
+ ]

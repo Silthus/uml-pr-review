@@ -1,0 +1,77 @@
+diff --git a/frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts b/frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts
+index af9aefe4ce4..670df5cee78 100644
+--- a/frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts
++++ b/frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts
+@@ -2,12 +2,8 @@ import { MakeLogicType, actions, connect, kea, listeners, path, reducers, select
+ import { subscriptions } from 'kea-subscriptions'
+ import { match } from 'ts-pattern'
+ 
+-import {
+-    GitMetadataParser,
+-    supportedProviders,
+-} from '@posthog/products-error-tracking/frontend/components/ReleasesPreview/gitMetadataParser'
+-
+ import api from 'lib/api'
++import { GitMetadataParser, supportedProviders } from 'lib/components/Git/gitMetadataParser'
+ 
+ import { stackFrameLogic } from './stackFrameLogic'
+ import type { KeyedStackFrameRecords } from './stackFrameLogic'
+diff --git a/products/error_tracking/frontend/components/ReleasesPreview/gitMetadataParser.spec.ts b/frontend/src/lib/components/Git/gitMetadataParser.spec.ts
+similarity index 100%
+rename from products/error_tracking/frontend/components/ReleasesPreview/gitMetadataParser.spec.ts
+rename to frontend/src/lib/components/Git/gitMetadataParser.spec.ts
+diff --git a/products/error_tracking/frontend/components/ReleasesPreview/gitMetadataParser.ts b/frontend/src/lib/components/Git/gitMetadataParser.ts
+similarity index 100%
+rename from products/error_tracking/frontend/components/ReleasesPreview/gitMetadataParser.ts
+rename to frontend/src/lib/components/Git/gitMetadataParser.ts
+diff --git a/products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx b/products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx
+index bef86f0775a..af4554c904b 100644
+--- a/products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx
++++ b/products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx
+@@ -6,11 +6,11 @@ import { IconCode, IconInfo, IconWrench } from '@posthog/icons'
+ import { AgentPromptButton } from 'lib/components/AgentPromptButton'
+ import { errorPropertiesLogic } from 'lib/components/Errors/errorPropertiesLogic'
+ import { ErrorTrackingRelease } from 'lib/components/Errors/types'
++import { GitMetadataParser } from 'lib/components/Git/gitMetadataParser'
+ 
+ import { ErrorTrackingRelationalIssue } from '~/queries/schema/schema-general'
+ 
+ import { useStacktraceDisplay } from '../../../../hooks/use-stacktrace-display'
+-import { GitMetadataParser } from '../../../ReleasesPreview/gitMetadataParser'
+ import { buildExplainPrompt, buildFixPrompt } from '../../aiPrompts'
+ 
+ export interface StackTraceActionsProps {
+diff --git a/products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx b/products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx
+index 5a552d35b6e..500e52e1548 100644
+--- a/products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx
++++ b/products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx
+@@ -12,12 +12,11 @@ import {
+ import { LemonTag, LemonTagProps, Link, Tooltip } from '@posthog/lemon-ui'
+ 
+ import { ErrorTrackingRelease, ReleaseGitMetadata } from 'lib/components/Errors/types'
++import { GitMetadataParser } from 'lib/components/Git/gitMetadataParser'
+ import { ButtonPrimitive } from 'lib/ui/Button/ButtonPrimitives'
+ import { copyToClipboard } from 'lib/utils/copyToClipboard'
+ import { cn } from 'lib/utils/css-classes'
+ 
+-import { GitMetadataParser } from './gitMetadataParser'
+-
+ export interface ReleasesPopoverContentProps {
+     release: ErrorTrackingRelease
+ }
+diff --git a/products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx b/products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx
+index 00943e99ce2..114fe38b08d 100644
+--- a/products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx
++++ b/products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx
+@@ -5,10 +5,9 @@ import { IconExternal } from '@posthog/icons'
+ import { LemonTable, LemonTableColumns, Link } from '@posthog/lemon-ui'
+ 
+ import { ErrorTrackingRelease } from 'lib/components/Errors/types'
++import { GitMetadataParser } from 'lib/components/Git/gitMetadataParser'
+ import { humanFriendlyDetailedTime } from 'lib/utils/datetime'
+ 
+-import { GitMetadataParser } from 'products/error_tracking/frontend/components/ReleasesPreview/gitMetadataParser'
+-
+ import { releasesLogic } from './releasesLogic'
+ 
+ export function Releases(): JSX.Element {

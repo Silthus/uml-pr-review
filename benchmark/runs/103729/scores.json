@@ -1,0 +1,1227 @@
+{
+  "pr": 103729,
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "scoredAt": "2026-09-26T17:36:25.114Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.ts",
+        "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+        "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+        "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 4,
+        "linesRemoved": 10,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 4,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 17,
+          "maxCcn": 15,
+          "meanCcn": 2.9,
+          "overTen": 1,
+          "ccnDelta": 19
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 15,
+            "nloc": 38,
+            "params": 0,
+            "tokens": 238
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 29,
+            "params": 0,
+            "tokens": 97
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 67
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 23,
+            "params": 0,
+            "tokens": 82
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 7,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 10,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 58
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "render"
+        ],
+        "unreferenced": [
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": null,
+      "process": null
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.ts",
+        "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+        "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+        "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 4,
+        "linesRemoved": 10,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 4,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 17,
+          "maxCcn": 15,
+          "meanCcn": 2.9,
+          "overTen": 1,
+          "ccnDelta": 19
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 15,
+            "nloc": 38,
+            "params": 0,
+            "tokens": 238
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 29,
+            "params": 0,
+            "tokens": 97
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 67
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 23,
+            "params": 0,
+            "tokens": 82
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 7,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 10,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 58
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "render"
+        ],
+        "unreferenced": [
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 18,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 4,
+        "secondsBeforeFirstEdit": 28,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Pure module with no imports — a clean `git mv`.",
+        "turns": 19,
+        "wallSeconds": 684,
+        "costUsd": 0.43626560000000003
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.ts",
+        "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+        "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+        "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 4,
+        "linesRemoved": 10,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 4,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 17,
+          "maxCcn": 15,
+          "meanCcn": 2.9,
+          "overTen": 1,
+          "ccnDelta": 19
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 15,
+            "nloc": 38,
+            "params": 0,
+            "tokens": 238
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 29,
+            "params": 0,
+            "tokens": 97
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 67
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 23,
+            "params": 0,
+            "tokens": 82
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 7,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 10,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 58
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "render"
+        ],
+        "unreferenced": [
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 26,
+        "edits": 0,
+        "toolCallsBeforeFirstEdit": 26,
+        "secondsBeforeFirstEdit": null,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 2,
+        "firstArchitectureThought": "Placement checks out: `lib/components/` is the app-shared layer the ladder names, and the move also removes a `lib → products` back-edge from `framesCodeSourceLogic.ts`.",
+        "turns": 27,
+        "wallSeconds": 730,
+        "costUsd": 0.6274772
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.ts",
+        "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+        "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+        "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 4,
+        "linesRemoved": 10,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 4,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 17,
+          "maxCcn": 15,
+          "meanCcn": 2.9,
+          "overTen": 1,
+          "ccnDelta": 19
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 15,
+            "nloc": 38,
+            "params": 0,
+            "tokens": 238
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 29,
+            "params": 0,
+            "tokens": 97
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 67
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 23,
+            "params": 0,
+            "tokens": 82
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 7,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 10,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 58
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "render"
+        ],
+        "unreferenced": [
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 22,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 11,
+        "secondsBeforeFirstEdit": 54,
+        "architectureToolCalls": 8,
+        "architectureExplorationBeforeEdit": 6,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "The one warning is expected: the Git module is new, so its interface file can't exist yet.",
+        "turns": 23,
+        "wallSeconds": 705,
+        "costUsd": 0.8378822
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+        "frontend/src/lib/components/Git/gitMetadataParser.ts",
+        "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+        "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+        "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 4,
+        "linesRemoved": 10,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 4,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 17,
+          "maxCcn": 15,
+          "meanCcn": 2.9,
+          "overTen": 1,
+          "ccnDelta": 19
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 15
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 15,
+            "nloc": 38,
+            "params": 0,
+            "tokens": 238
+          },
+          {
+            "file": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 29,
+            "params": 0,
+            "tokens": 97
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/Git/gitMetadataParser.spec.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 67
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 23,
+            "params": 0,
+            "tokens": 82
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 7,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 60
+          },
+          {
+            "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+            "name": "render",
+            "signature": "render ( , metadata )",
+            "ccn": 10,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 58
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "render"
+        ],
+        "unreferenced": [
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 22,
+        "edits": 0,
+        "toolCallsBeforeFirstEdit": 22,
+        "secondsBeforeFirstEdit": null,
+        "architectureToolCalls": 6,
+        "architectureExplorationBeforeEdit": 6,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "The only warning is expected: the interface file gets created by the move.",
+        "turns": 23,
+        "wallSeconds": 701,
+        "costUsd": 0.7456341999999999
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 1,
+      "files": 1
+    },
+    "C": {
+      "modules": 1,
+      "files": 1
+    }
+  }
+}

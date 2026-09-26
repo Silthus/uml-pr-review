@@ -1,0 +1,17 @@
+{
+  "pr": 103729,
+  "arm": "A",
+  "model": "claude-opus-5",
+  "sessionId": null,
+  "sessionSource": "wayfinder-ticket",
+  "turns": null,
+  "costUsd": null,
+  "wallSeconds": null,
+  "startedAt": null,
+  "exit": {
+    "reason": "historical",
+    "code": null
+  },
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "diffFrom": "754fa69e9d80a13418543ede38875b6f084ab534"
+}

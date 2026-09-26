@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T17:39:53.030Z",
+  "verdicts": {
+    "C-2": {
+      "seams": {
+        "score": 10,
+        "justification": "All four consumers import directly from lib/components/Git/gitMetadataParser, preserving the existing interface without a re-export shim."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "The parser and its unchanged spec move together into frontend/src/lib/components/Git, giving shared Git link composition a coherent home."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "framesCodeSourceLogic.ts drops its dependency on error tracking internals. Product consumers now use the same shared module without additional dependencies or indirection."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "Moving gitMetadataParser.ts into shared frontend code improves product boundaries and matches the ticket's prescribed location. The documented backend facade rules do not require a facade for this frontend utility."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The unchanged parser and spec relocations plus four import updates are a minimal architectural improvement within the specified scope. All five supplied diffs are identical and merit equal scores."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 10,
+        "justification": "All four consumers import directly from lib/components/Git/gitMetadataParser, preserving the existing interface without a re-export shim."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "The parser and its unchanged spec move together into frontend/src/lib/components/Git, giving shared Git link composition a coherent home."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "framesCodeSourceLogic.ts drops its dependency on error tracking internals. Product consumers now use the same shared module without additional dependencies or indirection."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "Moving gitMetadataParser.ts into shared frontend code improves product boundaries and matches the ticket's prescribed location. The documented backend facade rules do not require a facade for this frontend utility."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The unchanged parser and spec relocations plus four import updates are a minimal architectural improvement within the specified scope. All five supplied diffs are identical and merit equal scores."
+      }
+    },
+    "B-2": {
+      "seams": {
+        "score": 10,
+        "justification": "All four consumers import directly from lib/components/Git/gitMetadataParser, preserving the existing interface without a re-export shim."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "The parser and its unchanged spec move together into frontend/src/lib/components/Git, giving shared Git link composition a coherent home."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "framesCodeSourceLogic.ts drops its dependency on error tracking internals. Product consumers now use the same shared module without additional dependencies or indirection."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "Moving gitMetadataParser.ts into shared frontend code improves product boundaries and matches the ticket's prescribed location. The documented backend facade rules do not require a facade for this frontend utility."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The unchanged parser and spec relocations plus four import updates are a minimal architectural improvement within the specified scope. All five supplied diffs are identical and merit equal scores."
+      }
+    },
+    "B-1": {
+      "seams": {
+        "score": 10,
+        "justification": "All four consumers import directly from lib/components/Git/gitMetadataParser, preserving the existing interface without a re-export shim."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "The parser and its unchanged spec move together into frontend/src/lib/components/Git, giving shared Git link composition a coherent home."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "framesCodeSourceLogic.ts drops its dependency on error tracking internals. Product consumers now use the same shared module without additional dependencies or indirection."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "Moving gitMetadataParser.ts into shared frontend code improves product boundaries and matches the ticket's prescribed location. The documented backend facade rules do not require a facade for this frontend utility."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The unchanged parser and spec relocations plus four import updates are a minimal architectural improvement within the specified scope. All five supplied diffs are identical and merit equal scores."
+      }
+    },
+    "C-1": {
+      "seams": {
+        "score": 10,
+        "justification": "All four consumers import directly from lib/components/Git/gitMetadataParser, preserving the existing interface without a re-export shim."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "The parser and its unchanged spec move together into frontend/src/lib/components/Git, giving shared Git link composition a coherent home."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "framesCodeSourceLogic.ts drops its dependency on error tracking internals. Product consumers now use the same shared module without additional dependencies or indirection."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "Moving gitMetadataParser.ts into shared frontend code improves product boundaries and matches the ticket's prescribed location. The documented backend facade rules do not require a facade for this frontend utility."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The unchanged parser and spec relocations plus four import updates are a minimal architectural improvement within the specified scope. All five supplied diffs are identical and merit equal scores."
+      }
+    }
+  }
+}

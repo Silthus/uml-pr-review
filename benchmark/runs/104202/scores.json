@@ -1,0 +1,2470 @@
+{
+  "pr": 104202,
+  "baseCommit": "17a27588b77bd7789d7fa6d6e99dcb7246e15e54",
+  "scoredAt": "2026-09-26T17:45:18.405Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/scopes.tsx",
+        "posthog/scopes.py",
+        "products/workflows/CONTRIBUTING.md",
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_psak_auth.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [
+          {
+            "from": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "to": "products/cdp/backend/api/test/test_hog_function_templates.py"
+          }
+        ],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 322,
+        "linesRemoved": 8,
+        "modulesTouched": 4,
+        "tachModulesTouched": 3,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 7
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 43,
+          "maxCcn": 123,
+          "meanCcn": 7.2,
+          "overTen": 3,
+          "ccnDelta": 66
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 3
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 303,
+            "params": 2,
+            "tokens": 2167
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 65
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_actor",
+            "signature": "_actor( request : Request )",
+            "ccn": 2,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_log_activity",
+            "signature": "_log_activity( self , instance : HogFlow , * , activity : Optional [ str ] = None , previous : Optional [ HogFlow ] = None , detail_type : Optional [ str ] = None , )",
+            "ccn": 4,
+            "nloc": 32,
+            "params": 5,
+            "tokens": 208
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_create",
+            "signature": "perform_create( self , serializer )",
+            "ccn": 5,
+            "nloc": 17,
+            "params": 2,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_update",
+            "signature": "perform_update( self , serializer )",
+            "ccn": 49,
+            "nloc": 100,
+            "params": 2,
+            "tokens": 691
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_destroy",
+            "signature": "perform_destroy( self , instance : HogFlow )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 2,
+            "tokens": 57
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_append_revisions",
+            "signature": "_append_revisions( self , instance : HogFlow , before : HogFlow )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 3,
+            "tokens": 105
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_workflow",
+            "signature": "_workflow( name : str = 'Pushed from CI' , url : str = 'https://example.com/hook' )",
+            "ccn": 1,
+            "nloc": 22,
+            "params": 2,
+            "tokens": 132
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 1,
+            "tokens": 48
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_mint_psak",
+            "signature": "_mint_psak( self , team : Team , scopes : list [ str ] , label : str | None = None )",
+            "ccn": 2,
+            "nloc": 10,
+            "params": 4,
+            "tokens": 84
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_bearer",
+            "signature": "_bearer( self , token : str )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 19
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_url",
+            "signature": "_url( self , suffix : str = '' , team : Team | None = None )",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 3,
+            "tokens": 35
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_create_with_session",
+            "signature": "_create_with_session( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 48
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_psak_audit_detail",
+            "signature": "_psak_audit_detail( self , flow_id : str , activity : str )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 3,
+            "tokens": 70
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_create_writes_the_row_and_the_audit_row_without_a_user",
+            "signature": "test_psak_create_writes_the_row_and_the_audit_row_without_a_user( self )",
+            "ccn": 1,
+            "nloc": 9,
+            "params": 1,
+            "tokens": 127
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_update_bumps_the_version_and_writes_the_revision_without_a_user",
+            "signature": "test_psak_update_bumps_the_version_and_writes_the_revision_without_a_user( self )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 1,
+            "tokens": 157
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_lists_and_retrieves_the_projects_workflows",
+            "signature": "test_psak_lists_and_retrieves_the_projects_workflows( self )",
+            "ccn": 2,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 124
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_scope_decides_what_the_key_may_do",
+            "signature": "test_psak_scope_decides_what_the_key_may_do( self , _name , scopes , expected_list , expected_create )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 5,
+            "tokens": 113
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_is_refused_outside_the_push_actions",
+            "signature": "test_psak_is_refused_outside_the_push_actions( self , _name , method , path )",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 4,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_of_another_project_cannot_read_or_write_this_projects_workflows",
+            "signature": "test_psak_of_another_project_cannot_read_or_write_this_projects_workflows( self )",
+            "ccn": 1,
+            "nloc": 17,
+            "params": 1,
+            "tokens": 245
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_requests_are_throttled",
+            "signature": "test_psak_requests_are_throttled( self , _name , throttle , second_request_uses_a_new_key , _enabled )",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 5,
+            "tokens": 121
+          }
+        ],
+        "duplication": {
+          "clones": 10,
+          "duplicatedLines": 103,
+          "percentage": 1.3
+        }
+      },
+      "tests": {
+        "testLinesAdded": 211,
+        "productionLinesAdded": 111,
+        "testRatio": 1.9,
+        "subjects": [
+          "HogFlowBurstRateThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_actor",
+          "_append_revisions",
+          "_log_activity",
+          "create",
+          "perform_create",
+          "perform_destroy",
+          "perform_update",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_actor",
+          "_append_revisions",
+          "_log_activity",
+          "perform_create",
+          "perform_destroy",
+          "perform_update",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "referenceCoverage": 0.21,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 94.5,
+      "alignment": null,
+      "process": null
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/scopes.tsx",
+        "posthog/scopes.py",
+        "products/workflows/CONTRIBUTING.md",
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_psak_auth.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [
+          {
+            "from": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "to": "products/cdp/backend/api/test/test_hog_function_templates.py"
+          }
+        ],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 308,
+        "linesRemoved": 7,
+        "modulesTouched": 4,
+        "tachModulesTouched": 3,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 7
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 40,
+          "maxCcn": 123,
+          "meanCcn": 7.9,
+          "overTen": 3,
+          "ccnDelta": 71
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 3
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 303,
+            "params": 2,
+            "tokens": 2167
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 75
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_log_write_activity",
+            "signature": "_log_write_activity( self , instance : HogFlow , * , previous : Optional [ HogFlow ] = None , detail_type : Optional [ str ] = None )",
+            "ccn": 4,
+            "nloc": 33,
+            "params": 4,
+            "tokens": 219
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_create",
+            "signature": "perform_create( self , serializer )",
+            "ccn": 5,
+            "nloc": 17,
+            "params": 2,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_update",
+            "signature": "perform_update( self , serializer )",
+            "ccn": 49,
+            "nloc": 100,
+            "params": 2,
+            "tokens": 691
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_append_revisions",
+            "signature": "_append_revisions( self , instance : HogFlow , before : HogFlow )",
+            "ccn": 4,
+            "nloc": 20,
+            "params": 3,
+            "tokens": 128
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_actions",
+            "signature": "_actions( url : str = 'https://example.com' )",
+            "ccn": 1,
+            "nloc": 18,
+            "params": 1,
+            "tokens": 102
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 44
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_make_psak",
+            "signature": "_make_psak( self , team : Team , scopes : list [ str ] , label : str = 'ci push' )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 4,
+            "tokens": 82
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_psak_client",
+            "signature": "_psak_client( self , token : str | None = None )",
+            "ccn": 2,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 36
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_url",
+            "signature": "_url( self , suffix : str = '' , team : Team | None = None )",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 3,
+            "tokens": 35
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_session_flow",
+            "signature": "_session_flow( self , team : Team | None = None )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 80
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_push_creates_and_resolves_a_workflow_without_a_creator",
+            "signature": "test_psak_push_creates_and_resolves_a_workflow_without_a_creator( self )",
+            "ccn": 4,
+            "nloc": 24,
+            "params": 1,
+            "tokens": 303
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_live_edit_writes_a_revision_and_activity_without_a_creator",
+            "signature": "test_psak_live_edit_writes_a_revision_and_activity_without_a_creator( self , method : str )",
+            "ccn": 5,
+            "nloc": 21,
+            "params": 2,
+            "tokens": 254
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_is_refused_on_actions_outside_the_push",
+            "signature": "test_psak_is_refused_on_actions_outside_the_push( self , _name , method , suffix )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 93
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_needs_the_hog_flow_scope_for_the_action",
+            "signature": "test_psak_needs_the_hog_flow_scope_for_the_action( self , _name , scopes , method , expected )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 5,
+            "tokens": 77
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_cannot_reach_another_projects_workflow",
+            "signature": "test_psak_cannot_reach_another_projects_workflow( self , method )",
+            "ccn": 1,
+            "nloc": 9,
+            "params": 2,
+            "tokens": 96
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_session_auth_still_creates_with_the_user_as_creator",
+            "signature": "test_session_auth_still_creates_with_the_user_as_creator( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 73
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_requests_are_throttled",
+            "signature": "test_psak_requests_are_throttled( self , _name , throttle_class , second_key , _enabled )",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 5,
+            "tokens": 107
+          }
+        ],
+        "duplication": {
+          "clones": 10,
+          "duplicatedLines": 103,
+          "percentage": 1.3
+        }
+      },
+      "tests": {
+        "testLinesAdded": 207,
+        "productionLinesAdded": 101,
+        "testRatio": 2.05,
+        "subjects": [
+          "HogFlowBurstRateThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_append_revisions",
+          "_log_write_activity",
+          "create",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_append_revisions",
+          "_log_write_activity",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "validate"
+        ],
+        "referenceCoverage": 0.33,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 95.8,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 106,
+        "edits": 3,
+        "toolCallsBeforeFirstEdit": 46,
+        "secondsBeforeFirstEdit": 253,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 3,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "I'm checking whether the access-control mixin and the notifications facade already handle a synthetic user.",
+        "turns": 107,
+        "wallSeconds": 478,
+        "costUsd": 3.8691284000000006
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/scopes.tsx",
+        "posthog/scopes.py",
+        "products/workflows/CONTRIBUTING.md",
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_psak_auth.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [
+          {
+            "from": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "to": "products/cdp/backend/api/test/test_hog_function_templates.py"
+          }
+        ],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 299,
+        "linesRemoved": 9,
+        "modulesTouched": 4,
+        "tachModulesTouched": 3,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 7
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 43,
+          "maxCcn": 123,
+          "meanCcn": 7.3,
+          "overTen": 3,
+          "ccnDelta": 71
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 3
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_acting_user",
+            "signature": "_acting_user( request : Request )",
+            "ccn": 3,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 303,
+            "params": 2,
+            "tokens": 2167
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 65
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_log_write_activity",
+            "signature": "_log_write_activity( self , instance : HogFlow , * , previous : Optional [ HogFlow ] = None , detail_type : Optional [ str ] = None )",
+            "ccn": 4,
+            "nloc": 31,
+            "params": 4,
+            "tokens": 217
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_create",
+            "signature": "perform_create( self , serializer )",
+            "ccn": 5,
+            "nloc": 17,
+            "params": 2,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_update",
+            "signature": "perform_update( self , serializer )",
+            "ccn": 49,
+            "nloc": 100,
+            "params": 2,
+            "tokens": 691
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_append_revisions",
+            "signature": "_append_revisions( self , instance : HogFlow , before : HogFlow )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 3,
+            "tokens": 105
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_make_psak",
+            "signature": "_make_psak( team : Team , label : str , scopes : list [ str ] )",
+            "ccn": 3,
+            "nloc": 11,
+            "params": 3,
+            "tokens": 96
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_flow_payload",
+            "signature": "_flow_payload( url : str = 'https://example.com' )",
+            "ccn": 1,
+            "nloc": 21,
+            "params": 1,
+            "tokens": 108
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 36
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_session_flow",
+            "signature": "_session_flow( self , team : Team | None = None )",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 68
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_psak_request",
+            "signature": "_psak_request( self , method : str , path : str , data : dict | None = None , token : str | None = None )",
+            "ccn": 3,
+            "nloc": 7,
+            "params": 5,
+            "tokens": 86
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_create_stores_no_creator_and_attributes_the_key_in_activity",
+            "signature": "test_psak_create_stores_no_creator_and_attributes_the_key_in_activity( self )",
+            "ccn": 1,
+            "nloc": 14,
+            "params": 1,
+            "tokens": 150
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_can_list_and_retrieve_flows",
+            "signature": "test_psak_can_list_and_retrieve_flows( self )",
+            "ccn": 2,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 108
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_update_writes_a_revision_and_activity_without_a_user",
+            "signature": "test_psak_update_writes_a_revision_and_activity_without_a_user( self , method )",
+            "ccn": 1,
+            "nloc": 13,
+            "params": 2,
+            "tokens": 133
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_is_refused",
+            "signature": "test_psak_is_refused( self , _name , method , path , sends_ids , scopes )",
+            "ccn": 2,
+            "nloc": 10,
+            "params": 6,
+            "tokens": 149
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_cannot_reach_another_projects_flow",
+            "signature": "test_psak_cannot_reach_another_projects_flow( self , method , data )",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 80
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 24
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "tearDown",
+            "signature": "tearDown( self )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 1,
+            "tokens": 17
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_list",
+            "signature": "_list( self , token : str )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 31
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_requests_are_throttled_per_key",
+            "signature": "test_psak_requests_are_throttled_per_key( self , * _args )",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 2,
+            "tokens": 87
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_keys_share_a_project_budget",
+            "signature": "test_psak_keys_share_a_project_budget( self , * _args )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 2,
+            "tokens": 92
+          }
+        ],
+        "duplication": {
+          "clones": 10,
+          "duplicatedLines": 103,
+          "percentage": 1.3
+        }
+      },
+      "tests": {
+        "testLinesAdded": 192,
+        "productionLinesAdded": 107,
+        "testRatio": 1.79,
+        "subjects": [
+          "HogFlowBurstRateThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_acting_user",
+          "_append_revisions",
+          "_log_write_activity",
+          "create",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_acting_user",
+          "_append_revisions",
+          "_log_write_activity",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "validate"
+        ],
+        "referenceCoverage": 0.31,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 96.4,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 99,
+        "edits": 3,
+        "toolCallsBeforeFirstEdit": 33,
+        "secondsBeforeFirstEdit": 182,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 100,
+        "wallSeconds": 551,
+        "costUsd": 4.6045668
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/scopes.tsx",
+        "posthog/scopes.py",
+        "products/workflows/CONTRIBUTING.md",
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_psak_auth.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [
+          {
+            "from": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "to": "products/cdp/backend/api/test/test_hog_function_templates.py"
+          }
+        ],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 299,
+        "linesRemoved": 11,
+        "modulesTouched": 4,
+        "tachModulesTouched": 3,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 6
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 43,
+          "maxCcn": 123,
+          "meanCcn": 8.4,
+          "overTen": 4,
+          "ccnDelta": 72
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 3
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_real_user",
+            "signature": "_real_user( user : Any )",
+            "ccn": 4,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 30
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 303,
+            "params": 2,
+            "tokens": 2167
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 43,
+            "nloc": 49,
+            "params": 2,
+            "tokens": 494
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 67
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "get_throttles",
+            "signature": "get_throttles( self )",
+            "ccn": 2,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_report_workflow_action",
+            "signature": "_report_workflow_action( self , event : str , instance : HogFlow , extra_properties : Optional [ dict ] = None )",
+            "ccn": 4,
+            "nloc": 20,
+            "params": 4,
+            "tokens": 130
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_log_write_activity",
+            "signature": "_log_write_activity( self , instance : HogFlow , previous : Optional [ HogFlow ] = None , ** kwargs : Any )",
+            "ccn": 4,
+            "nloc": 27,
+            "params": 4,
+            "tokens": 194
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_create",
+            "signature": "perform_create( self , serializer )",
+            "ccn": 5,
+            "nloc": 17,
+            "params": 2,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_update",
+            "signature": "perform_update( self , serializer )",
+            "ccn": 49,
+            "nloc": 100,
+            "params": 2,
+            "tokens": 691
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_append_revisions",
+            "signature": "_append_revisions( self , instance : HogFlow , before : HogFlow )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 3,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_make_psak",
+            "signature": "_make_psak( team : Team , label : str , scopes : list [ str ] = HOG_FLOW_SCOPES )",
+            "ccn": 3,
+            "nloc": 11,
+            "params": 3,
+            "tokens": 98
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_trigger_action",
+            "signature": "_trigger_action( )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 0,
+            "tokens": 56
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_webhook_action",
+            "signature": "_webhook_action( url : str = 'https://example.com' )",
+            "ccn": 1,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 46
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 1,
+            "tokens": 76
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_psak",
+            "signature": "_psak( self , token : str | None = None )",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 2,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_url",
+            "signature": "_url( self , team : Team | None = None , suffix : str = '' )",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 3,
+            "tokens": 35
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_lists_and_retrieves_workflows",
+            "signature": "test_psak_lists_and_retrieves_workflows( self )",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 1,
+            "tokens": 120
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_create_stores_no_user_and_says_so_in_the_activity_log",
+            "signature": "test_psak_create_stores_no_user_and_says_so_in_the_activity_log( self , mock_capture )",
+            "ccn": 3,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 247
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_update_writes_revision_without_user",
+            "signature": "test_psak_update_writes_revision_without_user( self , method : str )",
+            "ccn": 2,
+            "nloc": 23,
+            "params": 2,
+            "tokens": 239
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_refused_on_actions_outside_the_push",
+            "signature": "test_psak_refused_on_actions_outside_the_push( self , _name , method , suffix , body )",
+            "ccn": 2,
+            "nloc": 9,
+            "params": 5,
+            "tokens": 132
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_without_write_scope_cannot_create",
+            "signature": "test_psak_without_write_scope_cannot_create( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 67
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_psak_cannot_reach_another_teams_workflows",
+            "signature": "test_psak_cannot_reach_another_teams_workflows( self )",
+            "ccn": 2,
+            "nloc": 26,
+            "params": 1,
+            "tokens": 266
+          }
+        ],
+        "duplication": {
+          "clones": 10,
+          "duplicatedLines": 103,
+          "percentage": 1.3
+        }
+      },
+      "tests": {
+        "testLinesAdded": 194,
+        "productionLinesAdded": 105,
+        "testRatio": 1.85,
+        "subjects": [
+          "HogFlowProjectSecretApiKeyBurstThrottle",
+          "HogFlowProjectSecretApiKeySustainedThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "_append_revisions",
+          "_log_write_activity",
+          "_real_user",
+          "_report_workflow_action",
+          "create",
+          "get_throttles",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "HogFlowProjectSecretApiKeyBurstThrottle",
+          "HogFlowProjectSecretApiKeySustainedThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "_append_revisions",
+          "_log_write_activity",
+          "_real_user",
+          "_report_workflow_action",
+          "get_throttles",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "validate"
+        ],
+        "referenceCoverage": 0.13,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 96.2,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 85,
+        "edits": 4,
+        "toolCallsBeforeFirstEdit": 35,
+        "secondsBeforeFirstEdit": 161,
+        "architectureToolCalls": 10,
+        "architectureExplorationBeforeEdit": 7,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Mapping the modules for the plan.",
+        "turns": 86,
+        "wallSeconds": 461,
+        "costUsd": 3.6472279999999997
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/scopes.tsx",
+        "posthog/scopes.py",
+        "products/workflows/CONTRIBUTING.md",
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_hog_flow_psak_auth.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [
+          {
+            "from": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "to": "products/cdp/backend/api/test/test_hog_function_templates.py"
+          }
+        ],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 267,
+        "linesRemoved": 8,
+        "modulesTouched": 4,
+        "tachModulesTouched": 3,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 6
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 40,
+          "maxCcn": 123,
+          "meanCcn": 9,
+          "overTen": 4,
+          "ccnDelta": 70
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 2
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 3
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "frontend/src/lib/scopes.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 29
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 303,
+            "params": 2,
+            "tokens": 2167
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 46,
+            "nloc": 52,
+            "params": 2,
+            "tokens": 520
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "create",
+            "signature": "create( self , validated_data : dict , * args , ** kwargs )",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 4,
+            "tokens": 75
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_log_workflow_activity",
+            "signature": "_log_workflow_activity( self , instance : HogFlow , * , previous : Optional [ HogFlow ] = None , detail_type : Optional [ str ] = None )",
+            "ccn": 3,
+            "nloc": 26,
+            "params": 4,
+            "tokens": 180
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_create",
+            "signature": "perform_create( self , serializer )",
+            "ccn": 5,
+            "nloc": 17,
+            "params": 2,
+            "tokens": 107
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "perform_update",
+            "signature": "perform_update( self , serializer )",
+            "ccn": 49,
+            "nloc": 100,
+            "params": 2,
+            "tokens": 691
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_append_revisions",
+            "signature": "_append_revisions( self , instance : HogFlow , before : HogFlow )",
+            "ccn": 4,
+            "nloc": 18,
+            "params": 3,
+            "tokens": 122
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_actions",
+            "signature": "_actions( url : str = 'https://example.com' )",
+            "ccn": 1,
+            "nloc": 18,
+            "params": 1,
+            "tokens": 102
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "setUp",
+            "signature": "setUp( self )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 39
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_psak",
+            "signature": "_psak( self , team : Team , scopes : list [ str ] )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 3,
+            "tokens": 76
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_psak_client",
+            "signature": "_psak_client( self , token : str | None = None )",
+            "ccn": 2,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 36
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_flow",
+            "signature": "_flow( self , team : Team | None = None )",
+            "ccn": 2,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 50
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "_url",
+            "signature": "_url( self , team : Team | None = None , flow_id : str | None = None )",
+            "ccn": 3,
+            "nloc": 3,
+            "params": 3,
+            "tokens": 46
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_create_stores_no_creator_and_attributes_activity_to_the_key",
+            "signature": "test_create_stores_no_creator_and_attributes_activity_to_the_key( self )",
+            "ccn": 3,
+            "nloc": 22,
+            "params": 1,
+            "tokens": 230
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_push_actions_accept_the_key",
+            "signature": "test_push_actions_accept_the_key( self , _name , method , detail , query , payload )",
+            "ccn": 3,
+            "nloc": 10,
+            "params": 6,
+            "tokens": 123
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_update_writes_a_revision_with_no_creator",
+            "signature": "test_update_writes_a_revision_with_no_creator( self )",
+            "ccn": 1,
+            "nloc": 10,
+            "params": 1,
+            "tokens": 101
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_actions_outside_a_push_refuse_the_key",
+            "signature": "test_actions_outside_a_push_refuse_the_key( self , _name , method , path , sends_ids )",
+            "ccn": 2,
+            "nloc": 10,
+            "params": 5,
+            "tokens": 115
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_key_cannot_reach_another_teams_workflows",
+            "signature": "test_key_cannot_reach_another_teams_workflows( self , _name , method , detail , payload )",
+            "ccn": 2,
+            "nloc": 9,
+            "params": 5,
+            "tokens": 119
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+            "name": "test_key_without_the_hog_flow_scope_is_refused",
+            "signature": "test_key_without_the_hog_flow_scope_is_refused( self )",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 1,
+            "tokens": 82
+          }
+        ],
+        "duplication": {
+          "clones": 10,
+          "duplicatedLines": 103,
+          "percentage": 1.3
+        }
+      },
+      "tests": {
+        "testLinesAdded": 178,
+        "productionLinesAdded": 89,
+        "testRatio": 2,
+        "subjects": [
+          "HogFlowBurstRateThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_append_revisions",
+          "_log_workflow_activity",
+          "create",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "HogFlowBurstRateThrottle",
+          "HogFlowProjectSecretApiKeyTeamBurstThrottle",
+          "HogFlowProjectSecretApiKeyTeamSustainedThrottle",
+          "HogFlowSustainedRateThrottle",
+          "_append_revisions",
+          "_log_workflow_activity",
+          "perform_create",
+          "perform_update",
+          "to_internal_value",
+          "validate"
+        ],
+        "referenceCoverage": 0.17,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 1,
+        "files": 1
+      },
+      "process": {
+        "toolCalls": 106,
+        "edits": 4,
+        "toolCallsBeforeFirstEdit": 40,
+        "secondsBeforeFirstEdit": 197,
+        "architectureToolCalls": 11,
+        "architectureExplorationBeforeEdit": 8,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Getting module paths for the plan.",
+        "turns": 107,
+        "wallSeconds": 581,
+        "costUsd": 4.400885200000001
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 1,
+      "files": 1
+    },
+    "C": {
+      "modules": 1,
+      "files": 1
+    }
+  }
+}

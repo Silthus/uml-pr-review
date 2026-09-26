@@ -1,0 +1,197 @@
+diff --git a/ee/hogai/context/entity_search/context.py b/ee/hogai/context/entity_search/context.py
+index be22d05c21f3..3d1f8656d509 100644
+--- a/ee/hogai/context/entity_search/context.py
++++ b/ee/hogai/context/entity_search/context.py
+@@ -38,6 +38,7 @@ from products.feature_flags.backend.models.feature_flag import FeatureFlag
+ from products.notebooks.backend.models import Notebook
+ from products.product_analytics.backend.facade.models import Insight
+ from products.surveys.backend.models import Survey
++from products.workflows.backend.models import HogFlow
+ 
+ from ee.hogai.artifacts.handlers.base import get_handler_for_content_type
+ from ee.hogai.context.context import AssistantContextManager
+@@ -54,6 +55,7 @@ class EntityKind(StrEnum):
+     SURVEYS = "surveys"
+     ALERTS = "alerts"
+     ACCOUNTS = "accounts"
++    WORKFLOWS = "workflows"
+     ALL = "all"
+ 
+ 
+@@ -68,6 +70,7 @@ SEARCH_KIND_TO_DATABASE_ENTITY_TYPE: dict[EntityKind, str] = {
+     EntityKind.SURVEYS: "survey",
+     EntityKind.ALERTS: "alert_configuration",
+     EntityKind.ACCOUNTS: "account",
++    EntityKind.WORKFLOWS: "hog_flow",
+ }
+ 
+ ENTITY_MAP: dict[str, EntityConfig] = {
+@@ -120,6 +123,13 @@ ENTITY_MAP: dict[str, EntityConfig] = {
+         "extra_fields": ["title", "text_content"],
+         "filters": {"deleted": False},
+     },
++    "hog_flow": {
++        "klass": HogFlow,
++        "search_fields": {"name": "A", "description": "C"},
++        "extra_fields": ["name", "description", "status"],
++        # Archived is the workflow equivalent of deleted; drafts stay visible so the agent can tell them apart
++        "filters": {"status__in": [HogFlow.State.DRAFT, HogFlow.State.ACTIVE]},
++    },
+ }
+ """
+ Map of entity names to their class, search_fields and extra_fields.
+@@ -546,6 +556,8 @@ class EntitySearchContext:
+                 return f"{base_url}/error_tracking/{result_id}"
+             case "alert_configuration":
+                 return f"{base_url}/alerts?alert_id={result_id}"
++            case "hog_flow":
++                return f"{base_url}/workflows/{result_id}/workflow"
+             case "account":
+                 # Deep-link to the specific account (filtered + expanded) rather than the bare list.
+                 return f"{base_url}{build_account_deeplink(account_id=result_id)}"
+diff --git a/ee/hogai/context/entity_search/test/test_context.py b/ee/hogai/context/entity_search/test/test_context.py
+index 630a337ebaff..3cdb4fe8b388 100644
+--- a/ee/hogai/context/entity_search/test/test_context.py
++++ b/ee/hogai/context/entity_search/test/test_context.py
+@@ -24,6 +24,7 @@ from products.feature_flags.backend.models.feature_flag import FeatureFlag
+ from products.product_analytics.backend.facade.api import record_insight_views
+ from products.product_analytics.backend.facade.models import Insight
+ from products.surveys.backend.models import Survey
++from products.workflows.backend.models import HogFlow
+ 
+ from ee.hogai.context import AssistantContextManager
+ from ee.hogai.context.entity_search import EntitySearchContext
+@@ -59,6 +60,7 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+             ("notebook", "test_notebook_id", "/project/{team_id}/notebooks/test_notebook_id"),
+             ("alert_configuration", "test_alert_id", "/project/{team_id}/alerts?alert_id=test_alert_id"),
+             ("account", "test_account_id", "/project/{team_id}/customer_analytics/accounts/test_account_id"),
++            ("hog_flow", "test_flow_id", "/project/{team_id}/workflows/test_flow_id/workflow"),
+         ]
+     )
+     def test_build_url(self, entity_type, result_id, expected_path):
+@@ -332,6 +334,9 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+             created_by=self.user,
+             type=Survey.SurveyType.POPOVER,
+         )
++        await HogFlow.objects.acreate(
++            team=self.team, name="deleted workflow", status=HogFlow.State.ARCHIVED, created_by=self.user
++        )
+ 
+         results, _ = await self.context.search_entities("all", "deleted")
+ 
+@@ -341,6 +346,7 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+         assert "deleted action" not in result_names
+         assert "deleted cohort" not in result_names
+         assert "archived survey" not in result_names
++        assert "deleted workflow" not in result_names
+ 
+     async def test_list_entities_insight(self):
+         insight1 = await Insight.objects.acreate(
+@@ -403,6 +409,25 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+         assert total == 1
+         assert entities[0]["extra_fields"]["name"] == "List Dashboard"
+ 
++    async def test_list_entities_workflow_surfaces_status_and_hides_archived(self):
++        await HogFlow.objects.acreate(
++            team=self.team, name="welcome email", status=HogFlow.State.ACTIVE, created_by=self.user
++        )
++        await HogFlow.objects.acreate(
++            team=self.team, name="win-back draft", status=HogFlow.State.DRAFT, created_by=self.user
++        )
++        await HogFlow.objects.acreate(
++            team=self.team, name="old campaign", status=HogFlow.State.ARCHIVED, created_by=self.user
++        )
++
++        results, total_count = await self.context.list_entities("hog_flow")
++
++        assert total_count == 2
++        assert {(r["extra_fields"]["name"], r["extra_fields"]["status"]) for r in results} == {
++            ("welcome email", "active"),
++            ("win-back draft", "draft"),
++        }
++
+     async def test_list_entities_account(self):
+         account = await Account.objects.unscoped().acreate(team=self.team, name="Acme Corp", external_id="acme-1")
+ 
+diff --git a/ee/hogai/tools/search.py b/ee/hogai/tools/search.py
+index b1aa8b51a840..0058b3c22c72 100644
+--- a/ee/hogai/tools/search.py
++++ b/ee/hogai/tools/search.py
+@@ -26,7 +26,7 @@ from ee.hogai.utils.helpers import sanitize_for_system_reminder
+ logger = structlog.get_logger(__name__)
+ 
+ SEARCH_TOOL_PROMPT = """
+-Use this tool to search docs, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, and surveys in PostHog.
++Use this tool to search docs, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, surveys, and workflows in PostHog.
+ 
+ If the user's question mentions multiple topics, search for each topic separately and combine the results.
+ 
+@@ -118,7 +118,7 @@ class InkeepResponse(BaseModel):
+ class SearchTool(MaxTool):
+     name: Literal["search"] = "search"
+     description: str = SEARCH_TOOL_PROMPT
+-    context_prompt_template: str = "Searches documentation, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, and surveys in PostHog"
++    context_prompt_template: str = "Searches documentation, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, surveys, and workflows in PostHog"
+     args_schema: type[BaseModel] = SearchToolArgs
+ 
+     _has_business_knowledge: bool = False
+diff --git a/frontend/src/scenes/max/suggestionTopics.test.ts b/frontend/src/scenes/max/suggestionTopics.test.ts
+new file mode 100644
+index 000000000000..030b05f15efd
+--- /dev/null
++++ b/frontend/src/scenes/max/suggestionTopics.test.ts
+@@ -0,0 +1,17 @@
++import { HOMEPAGE_SUGGESTION_TOPICS } from './suggestionTopics'
++
++describe('HOMEPAGE_SUGGESTION_TOPICS', () => {
++    const cardTopics = HOMEPAGE_SUGGESTION_TOPICS.filter((topic) => (topic.variant ?? 'cards') === 'cards')
++
++    // Every card topic renders the same number of cards, so toggling a badge never changes the grid height
++    it.each(cardTopics.map((topic) => [topic.key, topic]))('%s has exactly 4 card suggestions', (_, topic) => {
++        expect(topic.suggestions).toHaveLength(4)
++    })
++
++    it('pairs every fill-in prompt with a hint and gives every complete prompt none', () => {
++        const suggestions = HOMEPAGE_SUGGESTION_TOPICS.flatMap((topic) => topic.suggestions)
++        for (const suggestion of suggestions) {
++            expect(!!suggestion.requiresUserInput).toBe(!!suggestion.hint)
++        }
++    })
++})
+diff --git a/frontend/src/scenes/max/suggestionTopics.tsx b/frontend/src/scenes/max/suggestionTopics.tsx
+index f732cf76d2de..707bd8030fc9 100644
+--- a/frontend/src/scenes/max/suggestionTopics.tsx
++++ b/frontend/src/scenes/max/suggestionTopics.tsx
+@@ -293,5 +293,32 @@ export const HOMEPAGE_SUGGESTION_TOPICS: SuggestionTopic[] = [
+             },
+         ],
+     },
++    {
++        key: 'workflows',
++        label: 'Workflows',
++        iconType: 'workflows',
++        suggestions: [
++            {
++                title: 'Build your first workflow',
++                description: 'What workflows do and how to set one up',
++                content: 'How do I create my first workflow in PostHog?',
++            },
++            {
++                title: 'Review your workflows',
++                description: 'What each active and draft workflow does',
++                content: 'List my workflows and summarize what each active one does',
++            },
++            {
++                title: 'Send an email from a workflow',
++                description: 'Add an email step and a template',
++                content: 'How do I send an email from a PostHog workflow?',
++            },
++            {
++                title: 'Test before you publish',
++                description: 'Run a workflow against a test event first',
++                content: 'How do I test a workflow before publishing it?',
++            },
++        ],
++    },
+     LEARN_TOPIC,
+ ]

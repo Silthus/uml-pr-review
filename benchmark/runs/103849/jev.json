@@ -1,0 +1,418 @@
+{
+  "status": "graded",
+  "model": "typesafe-ai/jev",
+  "gradedAt": "2026-09-26T19:23:05.032Z",
+  "runs": {
+    "A": {
+      "files": [
+        {
+          "subject": "products/workflows/backend/api/hog_flow.py",
+          "answers": {
+            "readability": 0.75,
+            "singleResponsibility": 0.65,
+            "namingClarity": 0.9,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.87
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/0026_hogflow_key.py",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.96,
+            "namingClarity": 0.89,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/0027_hogflow_unique_key_for_team.py",
+          "answers": {
+            "readability": 0.88,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.98,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/max_migration.txt",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.93,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.99
+          }
+        },
+        {
+          "subject": "products/workflows/backend/models/hog_flow/hog_flow.py",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.82,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/generated/api.schemas.ts",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.97,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/generated/api.zod.ts",
+          "answers": {
+            "readability": 0.89,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.89,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "services/mcp/src/api/generated.ts",
+          "answers": {
+            "readability": 0.91,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.87,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "services/mcp/src/generated/workflows/api.ts",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.91,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "services/mcp/src/tools/generated/workflows.ts",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.97,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.94
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/backend/api/test/test_hog_flow_key.py",
+          "answers": {
+            "assertsBehaviour": 0.89,
+            "edgeCases": 1
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.98,
+          "staysOnTask": 0.83,
+          "explicitInterfaces": 0.68
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.3,
+      "score": 91.9
+    },
+    "B-1": {
+      "files": [
+        {
+          "subject": "products/workflows/backend/api/hog_flow.py",
+          "answers": {
+            "readability": 0.72,
+            "singleResponsibility": 0.66,
+            "namingClarity": 0.89,
+            "errorHandling": 0.89,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/0026_hogflow_key.py",
+          "answers": {
+            "readability": 0.93,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.77,
+            "errorHandling": 0.9,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/max_migration.txt",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.41,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/backend/models/hog_flow/hog_flow.py",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.8,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.98
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/backend/api/test/test_hog_flow_key.py",
+          "answers": {
+            "assertsBehaviour": 0.87,
+            "edgeCases": 1
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.94,
+          "staysOnTask": 0.84,
+          "explicitInterfaces": 0.66
+        }
+      },
+      "skipped": [],
+      "fileQuality": 86.7,
+      "score": 86.6
+    },
+    "B-2": {
+      "files": [
+        {
+          "subject": "products/workflows/backend/api/hog_flow.py",
+          "answers": {
+            "readability": 0.73,
+            "singleResponsibility": 0.56,
+            "namingClarity": 0.92,
+            "errorHandling": 0.85,
+            "idiomaticFit": 0.89
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/0026_hogflow_key.py",
+          "answers": {
+            "readability": 0.71,
+            "singleResponsibility": 0.8,
+            "namingClarity": 0.92,
+            "errorHandling": 0.79,
+            "idiomaticFit": 0.93
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/max_migration.txt",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.41,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/backend/models/hog_flow/hog_flow.py",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.94,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.94
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/backend/api/test/test_hog_flow.py",
+          "answers": {
+            "assertsBehaviour": 0.89,
+            "edgeCases": 1
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.94,
+          "staysOnTask": 0.79,
+          "explicitInterfaces": 0.69
+        }
+      },
+      "skipped": [],
+      "fileQuality": 85,
+      "score": 85.2
+    },
+    "C-1": {
+      "files": [
+        {
+          "subject": "products/workflows/backend/api/hog_flow.py",
+          "answers": {
+            "readability": 0.75,
+            "singleResponsibility": 0.65,
+            "namingClarity": 0.91,
+            "errorHandling": 0.87,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/0026_hogflow_key.py",
+          "answers": {
+            "readability": 0.91,
+            "singleResponsibility": 0.89,
+            "namingClarity": 0.88,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/max_migration.txt",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.41,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/backend/models/hog_flow/hog_flow.py",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.8,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.98
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/backend/api/test/test_hog_flow.py",
+          "answers": {
+            "assertsBehaviour": 0.9,
+            "edgeCases": 0.99
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.93,
+          "staysOnTask": 0.85,
+          "explicitInterfaces": 0.67
+        }
+      },
+      "skipped": [],
+      "fileQuality": 87.3,
+      "score": 87.2
+    },
+    "C-2": {
+      "files": [
+        {
+          "subject": "products/workflows/backend/api/hog_flow.py",
+          "answers": {
+            "readability": 0.74,
+            "singleResponsibility": 0.6,
+            "namingClarity": 0.9,
+            "errorHandling": 0.86,
+            "idiomaticFit": 0.87
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/0026_hogflow_key.py",
+          "answers": {
+            "readability": 0.9,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.95,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/workflows/backend/migrations/max_migration.txt",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.41,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/workflows/backend/models/hog_flow/hog_flow.py",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.77,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/generated/api.schemas.ts",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.97,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/generated/api.zod.ts",
+          "answers": {
+            "readability": 0.84,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.97,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "services/mcp/src/api/generated.ts",
+          "answers": {
+            "readability": 0.92,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.92,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.94
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "products/workflows/backend/api/test/test_hog_flow.py",
+          "answers": {
+            "assertsBehaviour": 0.89,
+            "edgeCases": 0.97
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.96,
+          "staysOnTask": 0.89,
+          "explicitInterfaces": 0.72
+        }
+      },
+      "skipped": [],
+      "fileQuality": 89.1,
+      "score": 89
+    }
+  },
+  "skipped": {}
+}

@@ -1,0 +1,288 @@
+{
+  "status": "graded",
+  "model": "typesafe-ai/jev",
+  "gradedAt": "2026-09-26T18:53:37.856Z",
+  "runs": {
+    "A": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.97,
+            "errorHandling": 0.87,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.98,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+          "answers": {
+            "readability": 0.87,
+            "singleResponsibility": 0.83,
+            "namingClarity": 0.97,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.98,
+            "errorHandling": 0.86,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.13,
+          "staysOnTask": 0.96,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.5,
+      "score": 89.3
+    },
+    "B-1": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.97,
+            "errorHandling": 0.87,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.98,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+          "answers": {
+            "readability": 0.87,
+            "singleResponsibility": 0.83,
+            "namingClarity": 0.97,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.98,
+            "errorHandling": 0.86,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.13,
+          "staysOnTask": 0.96,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.5,
+      "score": 89.3
+    },
+    "B-2": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.97,
+            "errorHandling": 0.87,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.98,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+          "answers": {
+            "readability": 0.87,
+            "singleResponsibility": 0.83,
+            "namingClarity": 0.97,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.98,
+            "errorHandling": 0.86,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.13,
+          "staysOnTask": 0.96,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.5,
+      "score": 89.3
+    },
+    "C-1": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.97,
+            "errorHandling": 0.87,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.98,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+          "answers": {
+            "readability": 0.87,
+            "singleResponsibility": 0.83,
+            "namingClarity": 0.97,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.98,
+            "errorHandling": 0.86,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.13,
+          "staysOnTask": 0.96,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.5,
+      "score": 89.3
+    },
+    "C-2": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts",
+          "answers": {
+            "readability": 0.94,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.97,
+            "errorHandling": 0.87,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.98,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/components/ReleasesPreview/ReleasesPopoverContent.tsx",
+          "answers": {
+            "readability": 0.87,
+            "singleResponsibility": 0.83,
+            "namingClarity": 0.97,
+            "errorHandling": 0.91,
+            "idiomaticFit": 0.91
+          }
+        },
+        {
+          "subject": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx",
+          "answers": {
+            "readability": 0.95,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.98,
+            "errorHandling": 0.86,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.13,
+          "staysOnTask": 0.96,
+          "explicitInterfaces": 0.96
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.5,
+      "score": 89.3
+    }
+  },
+  "skipped": {}
+}

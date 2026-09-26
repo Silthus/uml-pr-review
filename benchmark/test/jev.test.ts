@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cachedClient, diffQuestions, gradeDiff, productionFileQuestions, testFileQuestions, type JevAnswer, type JevClient, type Questions } from "../lib/jev.ts";
+import { cachedClient, retryingClient, diffQuestions, gradeDiff, productionFileQuestions, testFileQuestions, type JevAnswer, type JevClient, type Questions } from "../lib/jev.ts";
 import { parsePatch } from "../lib/patch.ts";
 
 const patch = [
@@ -59,5 +59,34 @@ describe("grading a diff with Jev", () => {
     expect(second).toEqual(first);
     expect(jev.states).toHaveLength(2);
     expect(cache.size).toBe(2);
+  });
+
+  test("retries transient gateway errors with backoff and gives up on anything else", async () => {
+    const failures = [new Error("GatewayInternalServerError: Service temporarily unavailable."), new Error("GatewayRateLimitError: high demand")];
+    const flaky: JevClient = { evaluate: async (state, questions) => { const failure = failures.shift(); if (failure) throw failure; return new FakeJev().evaluate(state, questions); } };
+    const waits: number[] = [];
+    const policy = { attempts: 3, delayMs: (attempt: number) => 100 * (attempt + 1), sleep: async (ms: number) => void waits.push(ms) };
+
+    await expect(retryingClient(flaky, policy).evaluate({}, testFileQuestions)).resolves.toBeDefined();
+    expect(waits).toEqual([100, 200]);
+
+    const broken: JevClient = { evaluate: async () => { throw new Error("Invalid question schema"); } };
+    await expect(retryingClient(broken, policy).evaluate({}, testFileQuestions)).rejects.toThrow("Invalid question schema");
+  });
+
+  test("skips a file Jev refuses as too large and still grades the rest of the diff", async () => {
+    const refusing: JevClient = {
+      evaluate: async (state, questions) => {
+        if ((state as { path?: string }).path === "products/workflows/backend/facade/api.py") throw new Error('{"error_type":"max_tokens_exceeded"}');
+        return new FakeJev().evaluate(state, questions);
+      },
+    };
+
+    const grade = await gradeDiff(refusing, "Search workflows.", patch, parsePatch(patch), async (path) => contents[path]!);
+
+    expect(grade.files).toEqual([]);
+    expect(grade.skipped).toEqual([{ subject: "products/workflows/backend/facade/api.py", reason: '{"error_type":"max_tokens_exceeded"}' }]);
+    expect(grade.tests).toHaveLength(1);
+    expect(grade.fileQuality).toBeNull();
   });
 });

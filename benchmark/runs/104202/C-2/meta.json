@@ -1,0 +1,18 @@
+{
+  "pr": 104202,
+  "arm": "C-2",
+  "model": "claude-opus-5-5",
+  "sessionId": "39ca49e7-e337-49f4-b242-cdf2a74ba3c8",
+  "turns": 107,
+  "costUsd": 4.400885200000001,
+  "wallSeconds": 581,
+  "startedAt": "2026-09-26T17:34:03.594Z",
+  "exit": {
+    "reason": "completed",
+    "code": 0
+  },
+  "baseCommit": "17a27588b77bd7789d7fa6d6e99dcb7246e15e54",
+  "planIds": [
+    "workflows-project-secret-api-key-auth-fo-918b"
+  ]
+}

@@ -1,0 +1,251 @@
+diff --git a/products/workflows/backend/api/hog_flow.py b/products/workflows/backend/api/hog_flow.py
+index bc7c11c3fbf..5b0a5edba2e 100644
+--- a/products/workflows/backend/api/hog_flow.py
++++ b/products/workflows/backend/api/hog_flow.py
+@@ -13,7 +13,7 @@ from django.conf import settings
+ from django.core.cache import cache
+ from django.core.exceptions import ValidationError as DjangoValidationError
+ from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+-from django.db import models, transaction
++from django.db import IntegrityError, models, transaction
+ from django.db.models import Q, QuerySet
+ from django.db.models.expressions import RawSQL
+ from django.http import Http404, HttpResponse
+@@ -2858,6 +2858,13 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+         help_text="Product surface that owns this workflow (e.g. `loops` for Desktop loops). Set only when "
+         "creating a workflow. Filter the list with `?origin_product=`.",
+     )
++    key = serializers.CharField(
++        max_length=400,
++        required=False,
++        allow_null=True,
++        help_text="Client-chosen identifier, unique within the project. Letters, numbers, hyphens (-) and "
++        "underscores (_) only. Set only when creating a workflow. Find a workflow by it with `?key=`.",
++    )
+     name = serializers.CharField(
+         max_length=400, required=False, allow_null=True, allow_blank=True, help_text="Workflow name."
+     )
+@@ -3100,6 +3107,7 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+             "version",
+             "status",
+             "origin_product",
++            "key",
+             "created_at",
+             "created_by",
+             "updated_at",
+@@ -3295,6 +3303,17 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+ 
+         return data
+ 
++    def validate_key(self, value: str | None) -> str | None:
++        if value is None:
++            return value
++        if not re.match(r"^[a-zA-Z0-9_-]+$", value):
++            raise serializers.ValidationError(
++                "Only letters, numbers, hyphens (-) & underscores (_) are allowed.", code="invalid_key"
++            )
++        if HogFlow.objects.filter(team_id=self.context["team_id"], key=value).exists():
++            raise serializers.ValidationError("There is already a workflow with this key.", code="unique")
++        return value
++
+     def _strip_secret_inputs(self, validated_data: dict) -> None:
+         # Move secret function inputs out of the live `actions` (and the derived `trigger`) into the
+         # encrypted_inputs column before persisting. Only runs when this write carries actions - a
+@@ -3311,7 +3330,16 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+         validated_data["team_id"] = team_id
+         self._strip_secret_inputs(validated_data)
+ 
+-        return super().create(validated_data=validated_data)
++        try:
++            with transaction.atomic():
++                return super().create(validated_data=validated_data)
++        except IntegrityError as e:
++            # A concurrent create can take the key between validate_key and the insert.
++            if "unique_key_for_team" in str(e):
++                raise serializers.ValidationError(
++                    {"key": [exceptions.ErrorDetail("There is already a workflow with this key.", code="unique")]}
++                ) from e
++            raise
+ 
+     def update(self, instance, validated_data):
+         self._strip_secret_inputs(validated_data)
+@@ -3325,6 +3353,11 @@ class HogFlowUpdateSerializer(HogFlowSerializer):
+         allow_null=True,
+         help_text="Product surface that owns this workflow. This value cannot change after creation.",
+     )
++    key = serializers.CharField(
++        read_only=True,
++        allow_null=True,
++        help_text="Client-chosen identifier, unique within the project. This value cannot change after creation.",
++    )
+ 
+     def validate(self, data: dict) -> dict:
+         instance = cast(Optional[HogFlow], self.instance)
+@@ -3335,6 +3368,10 @@ class HogFlowUpdateSerializer(HogFlowSerializer):
+             and submitted_origin_product != instance.origin_product
+         ):
+             raise serializers.ValidationError({"origin_product": "origin_product is set on create and cannot change."})
++        # Changing a key would let a client adopt a workflow it did not create.
++        submitted_key = self.initial_data.get("key", serializers.empty)
++        if instance is not None and submitted_key is not serializers.empty and submitted_key != instance.key:
++            raise serializers.ValidationError({"key": "key is set on create and cannot change."})
+         return super().validate(data)
+ 
+ 
+@@ -3751,7 +3788,7 @@ class HogFlowFilterSet(FilterSet):
+         model = HogFlow
+         # `created_by` is filtered by uuid in safely_get_queryset (the list UI's member picker keys on
+         # uuid, not pk), so it's deliberately not an exact-match field here.
+-        fields = ["id", "created_at", "updated_at", "status"]
++        fields = ["id", "key", "created_at", "updated_at", "status"]
+ 
+ 
+ class HogFlowPagination(LimitOffsetPagination):
+diff --git a/products/workflows/backend/api/test/test_hog_flow.py b/products/workflows/backend/api/test/test_hog_flow.py
+index 273339df41e..73f3ac4109d 100644
+--- a/products/workflows/backend/api/test/test_hog_flow.py
++++ b/products/workflows/backend/api/test/test_hog_flow.py
+@@ -1,4 +1,5 @@
+ import json
++from contextlib import nullcontext
+ from copy import deepcopy
+ from datetime import UTC, datetime, timedelta
+ from io import StringIO
+@@ -34,6 +35,7 @@ from products.cohorts.backend.models.cohort import Cohort
+ from products.skills.backend.models.skills import LLMSkill
+ from products.workflows.backend.api.hog_flow import (
+     HogFlowActionSerializer,
++    HogFlowSerializer,
+     _should_validate_strictly,
+     mint_audience_confirm_token,
+ )
+@@ -459,6 +461,58 @@ class TestHogFlowAPI(APIBaseTest):
+         assert response.status_code == 200, response.json()
+         assert response.json()["origin_product"] == "loops"
+ 
++    def _create_keyed_flow(self, key: Any):
++        hog_flow, _ = self._create_hog_flow_with_action(
++            {"template_id": "template-webhook", "inputs": {"url": {"value": "https://example.com"}}}
++        )
++        return self.client.post(f"/api/projects/{self.team.id}/hog_flows", {**hog_flow, "key": key}, format="json")
++
++    def test_key_is_echoed_on_create(self):
++        response = self._create_keyed_flow("onboarding_drip-v2")
++        assert response.status_code == 201, response.json()
++        assert response.json()["key"] == "onboarding_drip-v2"
++
++    @parameterized.expand([("space", "has space"), ("slash", "a/b"), ("dot", "a.b")])
++    def test_key_outside_charset_is_rejected(self, _name, key):
++        response = self._create_keyed_flow(key)
++        assert response.status_code == 400, response.json()
++        assert response.json()["attr"] == "key"
++        assert response.json()["code"] == "invalid_key"
++
++    @parameterized.expand([("pre_check", False), ("database_race", True)])
++    def test_key_taken_in_team_is_rejected(self, _name, skip_pre_check):
++        HogFlow.objects.create(team=self.team, name="Owner", created_by=self.user, key="taken")
++        # Skipping the pre-check makes the constraint the only guard, as when a concurrent create wins.
++        bypass = patch.object(HogFlowSerializer, "validate_key", side_effect=lambda value: value)
++        with bypass if skip_pre_check else nullcontext():
++            response = self._create_keyed_flow("taken")
++        assert response.status_code == 400, response.json()
++        assert response.json()["attr"] == "key"
++        assert response.json()["code"] == "unique"
++
++    @parameterized.expand([("change", "other"), ("clear", None), ("set_on_unkeyed", "late")])
++    def test_patch_that_changes_key_is_refused(self, name, new_key):
++        response = self._create_keyed_flow(None if name == "set_on_unkeyed" else "original")
++        assert response.status_code == 201, response.json()
++        flow_id = response.json()["id"]
++
++        response = self.client.patch(
++            f"/api/projects/{self.team.id}/hog_flows/{flow_id}", {"key": new_key}, format="json"
++        )
++        assert response.status_code == 400, response.json()
++        assert response.json()["attr"] == "key"
++        assert HogFlow.objects.get(id=flow_id).key == (None if name == "set_on_unkeyed" else "original")
++
++    def test_list_filter_by_key_resolves_one_row_in_team(self):
++        other_team = Team.objects.create(organization=self.organization)
++        HogFlow.objects.create(team=other_team, name="Other team", created_by=self.user, key="shared")
++        HogFlow.objects.create(team=self.team, name="Unkeyed", created_by=self.user)
++        mine = HogFlow.objects.create(team=self.team, name="Mine", created_by=self.user, key="shared")
++
++        response = self.client.get(f"/api/projects/{self.team.id}/hog_flows?key=shared")
++        assert response.status_code == 200, response.json()
++        assert [flow["id"] for flow in response.json()["results"]] == [str(mine.id)]
++
+     def test_mcp_list_is_metadata_only_and_hides_action_secrets(self):
+         # A webhook action whose headers carry a bearer token — the kind of credential-like value
+         # that must not leak from a workflow *listing*.
+diff --git a/products/workflows/backend/migrations/0026_hogflow_key.py b/products/workflows/backend/migrations/0026_hogflow_key.py
+new file mode 100644
+index 00000000000..a3db50163b2
+--- /dev/null
++++ b/products/workflows/backend/migrations/0026_hogflow_key.py
+@@ -0,0 +1,37 @@
++from django.db import migrations, models
++
++from posthog.migration_helpers import CreateIndexConcurrently
++
++
++class Migration(migrations.Migration):
++    # Concurrent index builds cannot run inside a transaction.
++    atomic = False
++
++    dependencies = [
++        ("workflows", "0025_hogflow_email_sending_paused_by"),
++    ]
++
++    operations = [
++        migrations.AddField(
++            model_name="hogflow",
++            name="key",
++            field=models.CharField(blank=True, max_length=400, null=True),
++        ),
++        # Build the unique index concurrently so the table keeps taking writes while it builds.
++        migrations.SeparateDatabaseAndState(
++            state_operations=[
++                migrations.AddConstraint(
++                    model_name="hogflow",
++                    constraint=models.UniqueConstraint(fields=["team", "key"], name="unique_key_for_team"),
++                ),
++            ],
++            database_operations=[
++                CreateIndexConcurrently(
++                    index_name="unique_key_for_team",
++                    table_name="posthog_hogflow",
++                    columns='(team_id, "key")',
++                    unique=True,
++                ),
++            ],
++        ),
++    ]
+diff --git a/products/workflows/backend/migrations/max_migration.txt b/products/workflows/backend/migrations/max_migration.txt
+index 4aa215fa754..bca6f52294d 100644
+--- a/products/workflows/backend/migrations/max_migration.txt
++++ b/products/workflows/backend/migrations/max_migration.txt
+@@ -1 +1 @@
+-0025_hogflow_email_sending_paused_by
++0026_hogflow_key
+diff --git a/products/workflows/backend/models/hog_flow/hog_flow.py b/products/workflows/backend/models/hog_flow/hog_flow.py
+index 9c47602a2d4..7e333aec9fe 100644
+--- a/products/workflows/backend/models/hog_flow/hog_flow.py
++++ b/products/workflows/backend/models/hog_flow/hog_flow.py
+@@ -121,6 +121,7 @@ class HogFlow(UUIDTModel):
+ 
+         constraints = [
+             models.UniqueConstraint(fields=["team", "version", "id"], name="unique_version_per_flow"),
++            models.UniqueConstraint(fields=["team", "key"], name="unique_key_for_team"),
+         ]
+ 
+     class State(models.TextChoices):
+@@ -138,6 +139,8 @@ class HogFlow(UUIDTModel):
+         LOOPS = "loops", "Loops"
+ 
+     name = models.CharField(max_length=400, null=True, blank=True)
++    # Client-chosen handle, unique per team, so a CLI can find the workflow it owns.
++    key = models.CharField(max_length=400, null=True, blank=True)
+     description = models.TextField(blank=True, default="")
+     version = models.IntegerField(default=1)
+     team = models.ForeignKey("posthog.Team", on_delete=models.CASCADE)

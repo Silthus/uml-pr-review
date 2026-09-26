@@ -1,0 +1,18 @@
+{
+  "pr": 103843,
+  "arm": "C-1",
+  "model": "claude-opus-5-5",
+  "sessionId": "2ff10105-3689-46b4-9071-b93c87b66fbf",
+  "turns": 59,
+  "costUsd": 3.486142600000001,
+  "wallSeconds": 489,
+  "startedAt": "2026-09-26T16:52:07.573Z",
+  "exit": {
+    "reason": "completed",
+    "code": 0
+  },
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "planIds": [
+    "posthog-workflows-package-and-typed-auth-d6da"
+  ]
+}

@@ -1,0 +1,297 @@
+diff --git a/products/workflows/backend/api/hog_flow.py b/products/workflows/backend/api/hog_flow.py
+index bc7c11c3fbf..d3c58da2e2a 100644
+--- a/products/workflows/backend/api/hog_flow.py
++++ b/products/workflows/backend/api/hog_flow.py
+@@ -13,7 +13,7 @@ from django.conf import settings
+ from django.core.cache import cache
+ from django.core.exceptions import ValidationError as DjangoValidationError
+ from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+-from django.db import models, transaction
++from django.db import IntegrityError, models, transaction
+ from django.db.models import Q, QuerySet
+ from django.db.models.expressions import RawSQL
+ from django.http import Http404, HttpResponse
+@@ -2858,6 +2858,13 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+         help_text="Product surface that owns this workflow (e.g. `loops` for Desktop loops). Set only when "
+         "creating a workflow. Filter the list with `?origin_product=`.",
+     )
++    key = serializers.CharField(
++        max_length=400,
++        required=False,
++        allow_null=True,
++        help_text="Client-chosen identifier, unique within the project. Letters, numbers, hyphens (-) and "
++        "underscores (_) only. Set only when creating a workflow. Find a workflow by it with `?key=`.",
++    )
+     name = serializers.CharField(
+         max_length=400, required=False, allow_null=True, allow_blank=True, help_text="Workflow name."
+     )
+@@ -3100,6 +3107,7 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+             "version",
+             "status",
+             "origin_product",
++            "key",
+             "created_at",
+             "created_by",
+             "updated_at",
+@@ -3147,6 +3155,22 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+             "email_sending_resumed_at",
+         ]
+ 
++    def validate_key(self, value: Optional[str]) -> Optional[str]:
++        if value is None:
++            return value
++        if not re.match(r"^[a-zA-Z0-9_-]+$", value):
++            raise serializers.ValidationError(
++                "Only letters, numbers, hyphens (-) & underscores (_) are allowed.", code="invalid_key"
++            )
++        unique_qs = HogFlow.objects.filter(team_id=self.context["team_id"], key=value)
++        # A test invocation's nested `configuration` resends the flow's own key, with the flow in context.
++        instance = cast(Optional[HogFlow], self.instance) or self.context.get("instance")
++        if instance is not None:
++            unique_qs = unique_qs.exclude(pk=instance.pk)
++        if unique_qs.exists():
++            raise serializers.ValidationError("There is already a workflow with this key.", code="unique")
++        return value
++
+     def validate(self, data):
+         instance = cast(Optional[HogFlow], self.instance)
+         is_draft = self.context.get("is_draft")
+@@ -3311,7 +3335,17 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+         validated_data["team_id"] = team_id
+         self._strip_secret_inputs(validated_data)
+ 
+-        return super().create(validated_data=validated_data)
++        try:
++            # Savepoint so a lost race on the key doesn't poison the request's transaction.
++            with transaction.atomic():
++                return super().create(validated_data=validated_data)
++        except IntegrityError as e:
++            # A concurrent create can slip past validate_key's unlocked read; the unique index decides.
++            if "unique_key_for_team" in str(e):
++                raise serializers.ValidationError(
++                    {"key": [exceptions.ErrorDetail("There is already a workflow with this key.", code="unique")]}
++                ) from e
++            raise
+ 
+     def update(self, instance, validated_data):
+         self._strip_secret_inputs(validated_data)
+@@ -3337,6 +3371,12 @@ class HogFlowUpdateSerializer(HogFlowSerializer):
+             raise serializers.ValidationError({"origin_product": "origin_product is set on create and cannot change."})
+         return super().validate(data)
+ 
++    def validate_key(self, value: Optional[str]) -> Optional[str]:
++        # Changing a key would adopt another workflow's identity, so it is fixed at create.
++        if value != cast(HogFlow, self.instance).key:
++            raise serializers.ValidationError("key is set on create and cannot change.", code="immutable")
++        return value
++
+ 
+ GRAPH_OPERATION_TYPES = [
+     "update_action",
+@@ -3751,7 +3791,7 @@ class HogFlowFilterSet(FilterSet):
+         model = HogFlow
+         # `created_by` is filtered by uuid in safely_get_queryset (the list UI's member picker keys on
+         # uuid, not pk), so it's deliberately not an exact-match field here.
+-        fields = ["id", "created_at", "updated_at", "status"]
++        fields = ["id", "created_at", "updated_at", "status", "key"]
+ 
+ 
+ class HogFlowPagination(LimitOffsetPagination):
+diff --git a/products/workflows/backend/api/test/test_hog_flow_key.py b/products/workflows/backend/api/test/test_hog_flow_key.py
+new file mode 100644
+index 00000000000..8e809bf305c
+--- /dev/null
++++ b/products/workflows/backend/api/test/test_hog_flow_key.py
+@@ -0,0 +1,123 @@
++from posthog.test.base import APIBaseTest
++from unittest.mock import MagicMock, patch
++
++from parameterized import parameterized
++from rest_framework import status
++
++from posthog.models import Team
++
++from products.workflows.backend.api.hog_flow import HogFlowSerializer
++from products.workflows.backend.models.hog_flow.hog_flow import HogFlow
++
++TRIGGER_ACTION = {
++    "id": "trigger_node",
++    "name": "trigger_1",
++    "type": "trigger",
++    "config": {"type": "event", "filters": {"events": [{"id": "$pageview", "name": "$pageview", "type": "events"}]}},
++}
++
++
++class TestHogFlowKey(APIBaseTest):
++    def _create(self, **extra):
++        return self.client.post(
++            f"/api/projects/{self.team.id}/hog_flows", {"name": "Flow", "actions": [TRIGGER_ACTION], **extra}
++        )
++
++    def test_create_with_key_echoes_the_key(self):
++        response = self._create(key="onboarding-drip_v2")
++
++        assert response.status_code == status.HTTP_201_CREATED, response.json()
++        assert response.json()["key"] == "onboarding-drip_v2"
++        assert HogFlow.objects.get(id=response.json()["id"]).key == "onboarding-drip_v2"
++
++    @parameterized.expand(
++        [
++            ("space", "has space", "invalid_key"),
++            ("dot", "dotted.key", "invalid_key"),
++            ("slash", "a/b", "invalid_key"),
++            ("taken", "taken", "unique"),
++        ]
++    )
++    def test_create_refuses_bad_key(self, _name, key, code):
++        HogFlow.objects.create(team=self.team, name="Owner", key="taken")
++
++        response = self._create(key=key)
++
++        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
++        assert response.json()["attr"] == "key"
++        assert response.json()["code"] == code
++
++    def test_key_taken_in_another_team_is_free(self):
++        other_team = Team.objects.create(organization=self.organization, name="Other")
++        HogFlow.objects.create(team=other_team, name="Theirs", key="shared")
++
++        response = self._create(key="shared")
++
++        assert response.status_code == status.HTTP_201_CREATED, response.json()
++
++    def test_duplicate_key_that_races_past_the_pre_check_is_a_field_error(self):
++        HogFlow.objects.create(team=self.team, name="Owner", key="taken")
++
++        # Skip the pre-check so the real unique index is what refuses the write.
++        with patch.object(HogFlowSerializer, "validate_key", lambda self, value: value):
++            response = self._create(key="taken")
++
++        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
++        assert response.json()["attr"] == "key"
++        assert response.json()["code"] == "unique"
++        assert HogFlow.objects.filter(team=self.team, key="taken").count() == 1
++
++    @parameterized.expand(
++        [
++            ("rename", "owned", "renamed"),
++            ("clear", "owned", None),
++            ("adopt", None, "adopted"),
++        ]
++    )
++    def test_patch_that_changes_the_key_is_refused(self, _name, original, submitted):
++        flow = HogFlow.objects.create(team=self.team, name="Flow", key=original, actions=[TRIGGER_ACTION])
++
++        response = self.client.patch(f"/api/projects/{self.team.id}/hog_flows/{flow.id}", {"key": submitted})
++
++        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
++        assert response.json()["attr"] == "key"
++        flow.refresh_from_db()
++        assert flow.key == original
++
++    def test_patch_that_resends_the_same_key_is_accepted(self):
++        flow = HogFlow.objects.create(team=self.team, name="Flow", key="owned", actions=[TRIGGER_ACTION])
++
++        response = self.client.patch(
++            f"/api/projects/{self.team.id}/hog_flows/{flow.id}", {"key": "owned", "name": "Renamed"}
++        )
++
++        assert response.status_code == status.HTTP_200_OK, response.json()
++        assert response.json()["key"] == "owned"
++
++    def test_key_filter_resolves_exactly_one_row_in_the_team(self):
++        other_team = Team.objects.create(organization=self.organization, name="Other")
++        mine = HogFlow.objects.create(team=self.team, name="Mine", key="shared")
++        HogFlow.objects.create(team=self.team, name="Unkeyed")
++        HogFlow.objects.create(team=self.team, name="Sibling", key="shared-2")
++        HogFlow.objects.create(team=other_team, name="Theirs", key="shared")
++
++        response = self.client.get(f"/api/projects/{self.team.id}/hog_flows?key=shared")
++
++        assert response.status_code == status.HTTP_200_OK, response.json()
++        assert [flow["id"] for flow in response.json()["results"]] == [str(mine.id)]
++
++    def test_test_invocation_that_resends_the_flows_own_key_is_accepted(self):
++        flow = HogFlow.objects.create(team=self.team, name="Flow", key="owned", actions=[TRIGGER_ACTION])
++
++        with patch("products.workflows.backend.api.hog_flow.create_hog_flow_invocation_test") as mock_invoke:
++            mock_invoke.return_value = MagicMock(status_code=200, json=lambda: {"status": "success"})
++            response = self.client.post(
++                f"/api/projects/{self.team.id}/hog_flows/{flow.id}/invocations/",
++                data={
++                    "globals": {"event": {"event": "$pageview", "distinct_id": "d"}},
++                    "configuration": {"name": "Flow", "key": "owned", "actions": [TRIGGER_ACTION]},
++                },
++                format="json",
++            )
++
++        assert response.status_code == status.HTTP_200_OK, response.json()
+diff --git a/products/workflows/backend/migrations/0026_hogflow_key.py b/products/workflows/backend/migrations/0026_hogflow_key.py
+new file mode 100644
+index 00000000000..a984ce92c2c
+--- /dev/null
++++ b/products/workflows/backend/migrations/0026_hogflow_key.py
+@@ -0,0 +1,35 @@
++from django.db import migrations, models
++
++from posthog.migration_helpers import CreateIndexConcurrently
++
++
++class Migration(migrations.Migration):
++    atomic = False
++
++    dependencies = [
++        ("workflows", "0025_hogflow_email_sending_paused_by"),
++    ]
++
++    operations = [
++        migrations.AddField(
++            model_name="hogflow",
++            name="key",
++            field=models.CharField(blank=True, max_length=400, null=True),
++        ),
++        migrations.SeparateDatabaseAndState(
++            database_operations=[
++                CreateIndexConcurrently(
++                    index_name="unique_key_for_team",
++                    table_name="posthog_hogflow",
++                    columns="(team_id, key)",
++                    unique=True,
++                ),
++            ],
++            state_operations=[
++                migrations.AddConstraint(
++                    model_name="hogflow",
++                    constraint=models.UniqueConstraint(fields=["team", "key"], name="unique_key_for_team"),
++                ),
++            ],
++        ),
++    ]
+diff --git a/products/workflows/backend/migrations/max_migration.txt b/products/workflows/backend/migrations/max_migration.txt
+index 4aa215fa754..bca6f52294d 100644
+--- a/products/workflows/backend/migrations/max_migration.txt
++++ b/products/workflows/backend/migrations/max_migration.txt
+@@ -1 +1 @@
+-0025_hogflow_email_sending_paused_by
++0026_hogflow_key
+diff --git a/products/workflows/backend/models/hog_flow/hog_flow.py b/products/workflows/backend/models/hog_flow/hog_flow.py
+index 9c47602a2d4..7e333aec9fe 100644
+--- a/products/workflows/backend/models/hog_flow/hog_flow.py
++++ b/products/workflows/backend/models/hog_flow/hog_flow.py
+@@ -121,6 +121,7 @@ class HogFlow(UUIDTModel):
+ 
+         constraints = [
+             models.UniqueConstraint(fields=["team", "version", "id"], name="unique_version_per_flow"),
++            models.UniqueConstraint(fields=["team", "key"], name="unique_key_for_team"),
+         ]
+ 
+     class State(models.TextChoices):
+@@ -138,6 +139,8 @@ class HogFlow(UUIDTModel):
+         LOOPS = "loops", "Loops"
+ 
+     name = models.CharField(max_length=400, null=True, blank=True)
++    # Client-chosen handle, unique per team, so a CLI can find the workflow it owns.
++    key = models.CharField(max_length=400, null=True, blank=True)
+     description = models.TextField(blank=True, default="")
+     version = models.IntegerField(default=1)
+     team = models.ForeignKey("posthog.Team", on_delete=models.CASCADE)

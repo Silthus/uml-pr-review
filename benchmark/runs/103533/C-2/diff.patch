@@ -1,0 +1,87 @@
+diff --git a/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx b/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx
+index fbf2922c55e..3f3ea3e859d 100644
+--- a/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx
++++ b/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx
+@@ -1,8 +1,10 @@
+ import { useActions, useValues } from 'kea'
+ 
++import { IconQuestion } from '@posthog/icons'
+ import { LemonBanner, LemonInput, LemonTable, LemonTag, LemonTagType, Link, Tooltip } from '@posthog/lemon-ui'
+ 
+ import { LemonProgress } from 'lib/lemon-ui/LemonProgress'
++import { HoverCard, HoverCardContent, HoverCardTrigger } from 'lib/ui/HoverCard/HoverCard'
+ import { humanFriendlyNumber, percentage } from 'lib/utils/numbers'
+ import { urls } from 'scenes/urls'
+ 
+@@ -414,6 +416,47 @@ function TeamRatesCard({
+     )
+ }
+ 
++const SENDING_TIERS_DOCS_URL = 'https://posthog.com/docs/workflows/sending-reputation#sending-allowance-tiers'
++
++function SendingTiersHoverCard({ maxTier }: { maxTier: number }): JSX.Element {
++    return (
++        <HoverCard openDelay={100} closeDelay={150}>
++            <HoverCardTrigger asChild>
++                <button
++                    type="button"
++                    aria-label="What are sending tiers?"
++                    className="inline-flex items-center text-secondary hover:text-primary cursor-help"
++                    data-attr="workflows-sending-tiers-help"
++                >
++                    <IconQuestion className="text-base" />
++                </button>
++            </HoverCardTrigger>
++            <HoverCardContent align="start" className="w-80 text-sm" data-attr="workflows-sending-tiers-hovercard">
++                <div className="font-semibold">Sending tiers</div>
++                <p className="text-secondary mt-1 mb-0">
++                    Every project holds a tier from 0 to {maxTier}. Each tier caps emails per hour, emails per day, and
++                    the largest batch audience. The caps grow with every tier.
++                </p>
++                <ul className="text-secondary list-disc pl-4 mt-2 mb-0 space-y-1">
++                    <li>New projects start at tier 0.</li>
++                    <li>
++                        PostHog reviews tiers daily. A project moves up one tier after a few days of using its allowance
++                        with low bounce and spam complaint rates.
++                    </li>
++                    <li>High rates, a long stretch without sending, or a suspension move a project down.</li>
++                </ul>
++                <p className="text-secondary mt-2 mb-0">
++                    All projects share PostHog's sending infrastructure, so allowances start small and grow with a clean
++                    record.
++                </p>
++                <Link to={SENDING_TIERS_DOCS_URL} target="_blank" className="mt-3 inline-block">
++                    See the caps for every tier
++                </Link>
++            </HoverCardContent>
++        </HoverCard>
++    )
++}
++
+ function SendingAllowanceCard({ allowance }: { allowance: EmailSendingAllowanceApi }): JSX.Element {
+     const hourlyPercent = Math.min(100, (allowance.emails_sent_last_hour / allowance.emails_per_hour) * 100)
+     const dailyPercent = Math.min(100, (allowance.emails_sent_last_day / allowance.emails_per_day) * 100)
+@@ -421,15 +464,17 @@ function SendingAllowanceCard({ allowance }: { allowance: EmailSendingAllowanceA
+         <div className="border rounded p-4 bg-surface-primary" data-attr="workflows-sending-allowance">
+             <div className="flex items-center gap-2">
+                 <h3 className="mb-0">Sending allowance</h3>
+-                <Tooltip title="Every project shares PostHog's sending infrastructure, so allowances start small and grow with a clean sending record.">
+-                    <LemonTag type="muted">
+-                        Tier {allowance.tier} of {allowance.max_tier}
+-                    </LemonTag>
+-                </Tooltip>
++                <LemonTag type="muted">
++                    Tier {allowance.tier} of {allowance.max_tier}
++                </LemonTag>
++                <SendingTiersHoverCard maxTier={allowance.max_tier} />
+             </div>
+             <p className="text-secondary mt-2 mb-0">
+                 Your allowance grows as your workflows keep sending with low bounce and spam complaint rates. Emails
+-                above the allowance are not dropped, they are sent later.
++                above the allowance are not dropped, they are sent later.{' '}
++                <Link to={SENDING_TIERS_DOCS_URL} target="_blank">
++                    How sending tiers work
++                </Link>
+             </p>
+             <div className="flex flex-wrap gap-8 mt-3">
+                 <div className="min-w-48">

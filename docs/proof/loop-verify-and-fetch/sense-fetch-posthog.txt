@@ -1,0 +1,22 @@
+# sense --fetch on ~/dev/posthog, headless: no SSH agent, SSH disabled outright
+
+$ env -u SSH_AUTH_SOCK GIT_SSH_COMMAND=false GIT_TRACE=<trace> \
+    bun coherence/loop/sense.ts --repo ~/dev/posthog --scope products/workflows --fetch --runs /tmp/wf85-runs
+exit 0
+base: {"ref":"upstream/master","commit":"57ca357730843205c2d659098ac8e4c5e07a6698"}
+
+The fetch git ran (from GIT_TRACE):
+trace: built-in: git fetch --quiet https://github.com/PostHog/posthog.git +refs/heads/master:refs/remotes/upstream/master
+
+Lines in the trace that mention ssh: 0
+
+The remote is git@github.com:PostHog/posthog.git and ~/.gitconfig rewrites https://github.com/ to SSH
+and sets protocol.https.allow=never. The fetch overrides both for this one command only, with the
+repository's own URL as a longer insteadOf key and gh auth git-credential as the credential helper.
+upstream/master stayed at 57ca357 because GitHub's master was still there:
+
+$ git ls-remote https://github.com/PostHog/posthog.git refs/heads/master   (same overrides)
+57ca357730843205c2d659098ac8e4c5e07a6698	refs/heads/master
+
+The same overrides with gh credentials read a private repository headless (Silthus/fleet, ls-remote HEAD, exit 0),
+while an x-access-token@ URL fails there because gh refuses a username that is not its own.

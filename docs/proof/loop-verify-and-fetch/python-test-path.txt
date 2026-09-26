@@ -1,0 +1,36 @@
+# runTests on a scratch worktree of PostHog upstream/master 57ca357 (the base from #73)
+
+The workspace has uv.lock, so runTests now runs
+  env -u VIRTUAL_ENV UV_PROJECT_ENVIRONMENT=<workspace>/.venv GIT_CONFIG_GLOBAL=/dev/null <flox uv> run --quiet --frozen pytest -q -p no:cacheprovider <files>
+instead of borrowing ~/dev/posthog/.flox/cache/venv. ~/dev/posthog's venv is never touched.
+
+$ bun pytest-path.ts products/workflows/backend/test/test_github_trigger_filters.py
+runner: pytest   status: not run   reason: pytest ran no test (exit 1): hint: `pytest-split` was included because `posthog:dev` (v0.0.0) depends on `pytest-split`   seconds: 0
+× Failed to download and build `pytest-split @
+  │ git+https://github.com/PostHog/pytest-split@17ee53be4aaa2f27012da31b69656b4b45881cd5`
+  ├─▶ Failed to parse metadata from built wheel
+  ╰─▶ Trailing `|| >=6` is not allowed
+      pytest (>=5,<6 || >=6,<7 || >=7,<8 || >=8,<9 || >=9,<10)
+                  ^^^^^^^^^
+
+hint: `pytest-split` was included because `posthog:dev` (v0.0.0) depends on `pytest-split`
+
+Before GIT_CONFIG_GLOBAL=/dev/null, uv's git fetch of pytest-split hit the same SSH rewrite as #86
+(sign_and_send_pubkey: signing failed ... Permission denied (publickey)). Now it fetches, and the build
+of PostHog's pytest-split fork at v0.11.0-posthog.7 fails: uv 0.12.13 (the version PostHog's flox env and CI pin)
+rejects the wheel's metadata. That is an upstream environment problem, and the run is reported as not run.
+
+## By hand: does a venv synced from the base's lock get past the protobuf crash?
+
+$ uv sync --quiet --frozen --no-install-package pytest-split      (UV_PROJECT_ENVIRONMENT=<workspace>/.venv)
+exit 0
+$ <workspace>/.venv/bin/python -c 'import google.protobuf as p; print(p.__version__)'
+6.31.1
+$ <workspace>/.venv/bin/pytest -q -p no:cacheprovider products/workflows/backend/test/test_github_trigger_filters.py
+exit 1
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'sqlx'
+13 errors in 16.94s
+
+The conftest loads now. Every test errors in setup because sqlx (a flox tool) is not on PATH outside flox.
+pytest exits 1 for this too, so the runner now counts only a summary with "N failed" as a failure:
+this run is "not run: pytest ran no test (exit 1): 13 errors in 16.94s", not "failed".

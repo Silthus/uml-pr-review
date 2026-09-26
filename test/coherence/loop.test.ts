@@ -396,7 +396,7 @@ describe("verification checks", () => {
         const refused = 'psycopg.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused';
 
         const unreachable = await step<Verification>("verify.ts", ["--iteration", change.iteration], { ...gh.env, FAKE_PYTEST_OUTPUT: refused });
-        const failing = await step<Verification>("verify.ts", ["--iteration", change.iteration], { ...gh.env, FAKE_PYTEST_OUTPUT: "1 failed, 1 passed" });
+        const failing = await step<Verification>("verify.ts", ["--iteration", change.iteration], { ...gh.env, FAKE_PYTEST_OUTPUT: "1 failed, 1 passed in 0.12s" });
 
         expect(unreachable.json.tests).toEqual([expect.objectContaining({ status: "not run", reason: expect.stringContaining("not reachable locally") })]);
         expect(unreachable.json.verdict).toBe("pass");

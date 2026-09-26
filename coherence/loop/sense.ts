@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { git } from "../../src/git.ts";
+import { CommandError, git } from "../../src/git.ts";
 import { listQuestions } from "../inbox.ts";
 import { githubOpenPullRequests } from "../signals/pull-requests.ts";
 import { activePullRequestDays, rankTargets } from "../signals/rank.ts";
@@ -14,6 +14,7 @@ const usage =
 
 const baseCandidates = ["upstream/master", "upstream/main", "origin/master", "origin/main", "HEAD"];
 const targetsShown = 10;
+const githubRemote = /^(?:git@github\.com:|ssh:\/\/git@github\.com\/|https:\/\/github\.com\/)([^/]+\/[^/]+?)(?:\.git)?\/?$/;
 
 const { values } = parseArgs({
   options: {
@@ -80,9 +81,28 @@ async function defaultBase(repository: string): Promise<string> {
 }
 
 async function fetchBase(repository: string, ref: string): Promise<void> {
-  const [remote, ...branch] = ref.split("/");
-  if (branch.length === 0) throw new Error(`--fetch needs a remote-tracking base such as upstream/master, not ${ref}`);
-  await git(repository, ["fetch", "--quiet", remote!, branch.join("/")]);
+  const [remote, ...path] = ref.split("/");
+  if (path.length === 0) throw new Error(`--fetch needs a remote-tracking base such as upstream/master, not ${ref}`);
+  const branch = path.join("/");
+  const url = (await git(repository, ["config", "--get", `remote.${remote}.url`]).catch(() => "")).trim();
+  if (url === "") throw new Error(`--fetch cannot find the remote ${remote} of ${ref}`);
+  const https = githubHttpsUrl(url);
+  const [transport, fetch] =
+    https === null
+      ? ["SSH", ["fetch", "--quiet", remote!, branch]]
+      : ["HTTPS", [...githubHttpsOnly(https), "fetch", "--quiet", https, `+refs/heads/${branch}:refs/remotes/${ref}`]];
+  await git(repository, fetch).catch((error: unknown) => {
+    throw new Error(`could not fetch ${ref} from ${https ?? url} over ${transport}: ${error instanceof CommandError ? error.stderr.trim() : String(error)}`);
+  });
+}
+
+function githubHttpsUrl(url: string): string | null {
+  const repository = githubRemote.exec(url)?.[1];
+  return repository === undefined ? null : `https://github.com/${repository}.git`;
+}
+
+function githubHttpsOnly(url: string): string[] {
+  return ["-c", "protocol.https.allow=always", "-c", `url.${url}.insteadOf=${url}`, "-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential"];
 }
 
 function summary(path: string, { id, base, budget, questions, report }: Sense) {

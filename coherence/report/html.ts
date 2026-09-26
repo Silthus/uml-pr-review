@@ -1,5 +1,6 @@
 import { scoreKeys, type Scores } from "../backfill.ts";
 import { escape, lineChart, sparkline, type ChartSeries } from "./charts.ts";
+import { score, signed } from "./format.ts";
 import { dimensions, labelOf, type MoverView, type ReportModel, type ScopeView } from "./model.ts";
 import type { ModuleRow } from "./modules.ts";
 import { style } from "./style.ts";
@@ -39,23 +40,28 @@ ${method(model)}
 }
 
 function verdict(model: ReportModel): string {
-  const [treated] = model.scopes;
+  const [treated, ...controls] = model.scopes;
   return `<section>
-  <h2>Is the index trustworthy?</h2>
-  ${treated ? `<p class="lead">${escape(verdictSentence(treated, model))}</p>` : ""}
+  <h2>Is the index trustworthy, and where does ${escape(treated?.label ?? "the product")} stand?</h2>
+  ${treated ? `<p class="lead">${escape(trustSentence(treated))}</p><p class="lead">${escape(standingSentence(treated, controls, model.weeks.length - 1))}</p>` : ""}
   <div class="tiles">${model.scopes.map(tile).join("")}</div>
-  <p class="note">Noise is measured, not assumed: for every week in which a product changed, the commits at Wednesday and Thursday 00:00 UTC were scored too. The band is the 90th percentile of those one-weekday movements, drawn as a shaded band around every line below. A weekly step inside the band is not evidence of anything.</p>
+  <p class="note">The index has no measurement noise: the same commit always gives the same number. The band is background movement. For every week in which a product changed, the commits at Wednesday and Thursday 00:00 UTC were scored too, and the band is the 90th percentile of that one-weekday movement, drawn as a shaded band around every line below. A single commit inside the band is the size of ordinary work; the biggest movers below are the commits that exceed it.</p>
 </section>`;
 }
 
-function verdictSentence(treated: ScopeView, model: ReportModel): string {
-  const largest = model.movers.find(({ scope }) => scope === treated.scope);
-  const pairs = treated.noise.pairs.length;
-  const largestMove = Math.max(0, ...treated.noise.pairs.map(({ delta }) => Math.abs(delta.composite)));
-  const stability = `Re-scoring Wednesday and Thursday of each week in which ${treated.label} changed (${pairs} day pairs) moved its composite by a median of ${treated.noise.median.composite.toFixed(1)} points and at most ${largestMove.toFixed(1)}, so the band is ±${treated.noise.band.composite.toFixed(1)}. ${treated.stepsBeyondBand} of ${treated.steps} weekly steps moved beyond it; the largest was ${signed(treated.largestStep.delta)} in the week of ${treated.largestStep.week}.`;
-  if (!largest) return stability;
-  const times = largest.timesBand === null ? "" : `, ${largest.timesBand.toFixed(1)}× the band,`;
-  return `${stability} The largest single change${times} was ${signed(largest.delta.composite)} on ${largest.date.slice(0, 10)}: ${largest.subject}.`;
+function trustSentence(treated: ScopeView): string {
+  const { noise, label } = treated;
+  const largest = Math.max(0, ...noise.pairs.map(({ delta }) => Math.abs(delta.composite)));
+  return `One weekday of ordinary commits moves the ${label} composite by ${noise.median.composite.toFixed(1)} points typically and ${noise.band.composite.toFixed(1)} at the 90th percentile (${noise.pairs.length} day pairs, largest ${largest.toFixed(1)}), so a change beyond ±${noise.band.composite.toFixed(1)} is a real change.`;
+}
+
+function standingSentence(treated: ScopeView, controls: ScopeView[], weeks: number): string {
+  const { label, latest, change, weekly, topMovers } = treated;
+  const weakest = [...dimensions].sort((a, b) => latest[a] - latest[b]).slice(0, 2);
+  const neighbours = controls.map((control) => `${control.label} ${control.latest.composite.toFixed(1)}`).join(" and ");
+  const biggest = topMovers[0];
+  const biggestText = biggest ? ` Its largest single change was ${signed(biggest.delta.composite)}${biggest.timesBand === null ? "" : `, ${biggest.timesBand.toFixed(1)}× the band`}: ${biggest.subject}.` : "";
+  return `${label} stands at ${latest.composite.toFixed(1)}, ${signed(change.composite)} over ${weeks} weeks against ${neighbours}. A typical week moves it ${weekly.median.toFixed(1)}; the largest week moved it ${signed(weekly.largest.delta)} (ending ${weekly.largest.week}). Its weakest dimensions are ${weakest.map((dimension) => `${dimension} ${latest[dimension].toFixed(1)}`).join(" and ")}.${biggestText}`;
 }
 
 function tile(scope: ScopeView): string {
@@ -63,7 +69,8 @@ function tile(scope: ScopeView): string {
   return `<article class="tile">
     <p class="label"><span class="swatch slot-${scope.slot}"></span>${escape(scope.label)}</p>
     <p class="value">${scope.latest.composite.toFixed(1)}</p>
-    <p class="delta ${change > 0 ? "up" : change < 0 ? "down" : ""}">${change > 0 ? "▲" : change < 0 ? "▼" : "▬"} ${signed(change)} over ${scope.steps} weeks · noise ±${scope.noise.band.composite.toFixed(1)}</p>
+    <p class="delta ${change > 0 ? "up" : change < 0 ? "down" : ""}">${change > 0 ? "▲" : change < 0 ? "▼" : "▬"} ${signed(change)} over ${scope.weekly.steps} weeks</p>
+    <p class="detail">weekday band ±${scope.noise.band.composite.toFixed(1)} · typical week ${scope.weekly.median.toFixed(1)} · largest week ${signed(scope.weekly.largest.delta)}</p>
     ${sparkline(scope.points.map(({ scores }) => scores.composite))}
   </article>`;
 }
@@ -104,13 +111,14 @@ function tableView(model: ReportModel, key: keyof Scores): string {
 }
 
 function moversSection(model: ReportModel): string {
-  const largest = Math.max(1, ...model.movers.map(({ delta }) => Math.abs(delta.composite)));
+  const movers = model.scopes.flatMap(({ topMovers }) => topMovers);
+  const largest = Math.max(1, ...movers.map(({ delta }) => Math.abs(delta.composite)));
   return `<section>
-  <h2>Biggest movers</h2>
-  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored. These are the commits with the largest composite change, compared with the commit scored before them.</p>
+  <h2>Biggest movers, per product</h2>
+  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored and compared with the commit scored before it. The five largest per product are listed. A commit outside the product that changes its inbound imports is attributed to the next commit inside it.</p>
   <table class="movers">
-    <thead><tr><th>Δ composite</th><th>× band</th><th>Product</th><th>Date</th><th>Moved most</th><th>Change</th></tr></thead>
-    <tbody>${model.movers.map((mover) => moverRow(mover, largest, model.github)).join("")}</tbody>
+    <thead><tr><th>Product</th><th>Δ composite</th><th>× band</th><th>Date</th><th>Moved most</th><th>Change</th></tr></thead>
+    <tbody>${movers.map((mover) => moverRow(mover, largest, model.github)).join("")}</tbody>
   </table>
 </section>`;
 }
@@ -118,12 +126,12 @@ function moversSection(model: ReportModel): string {
 function moverRow(mover: MoverView, largest: number, github: string | null): string {
   const change = mover.delta.composite;
   const width = Math.round((Math.abs(change) / largest) * 100);
-  const pr = mover.pr === null ? "" : github ? ` <a href="https://github.com/${github}/pull/${mover.pr}">#${mover.pr}</a>` : ` #${mover.pr}`;
-  const sha = github ? `<a class="sha" href="https://github.com/${github}/commit/${mover.commit}">${mover.commit.slice(0, 7)}</a>` : `<span class="sha">${mover.commit.slice(0, 7)}</span>`;
+  const pr = mover.pr === null ? "" : github ? ` <a href="https://github.com/${escape(github)}/pull/${mover.pr}">#${mover.pr}</a>` : ` #${mover.pr}`;
+  const sha = github ? `<a class="sha" href="https://github.com/${escape(github)}/commit/${mover.commit}">${mover.commit.slice(0, 7)}</a>` : `<span class="sha">${mover.commit.slice(0, 7)}</span>`;
   return `<tr>
+    <td>${escape(mover.label)}</td>
     <td class="delta-cell"><span class="bar ${change > 0 ? "up" : "down"}" style="width:${width}%"></span><b>${signed(change)}</b></td>
     <td>${mover.timesBand === null ? "—" : `${mover.timesBand.toFixed(1)}× band`}</td>
-    <td>${escape(mover.label)}</td>
     <td>${mover.date.slice(0, 10)}</td>
     <td>${mover.dimension} ${signed(mover.delta[mover.dimension])}</td>
     <td class="subject">${escape(mover.subject.replace(/\s*\(#\d+\)\s*$/, ""))}${pr} ${sha}</td>
@@ -137,7 +145,7 @@ function modulesSection(model: ReportModel): string {
   const row = (module: ModuleRow) => moduleRow(module, modules.scope);
   return `<section>
   <h2>${escape(labelOf(modules.scope))} modules at <code>${modules.commit.slice(0, 12)}</code>, worst first</h2>
-  <p class="note">Each module is scored as its own scope with the same index. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Modules with fewer than 3 production files are not listed.</p>
+  <p class="note">Each directory of the scope is scored as its own scope with the same index, at the repository head. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Parents and their children are both listed, so a large parent such as <code>backend</code> summarises the rows beneath it. Modules with fewer than 3 production files are not listed.</p>
   <table class="modules">
     <thead><tr>
       <th>Module</th><th>Files</th><th>Code</th>
@@ -160,9 +168,9 @@ function moduleRow(module: ModuleRow, scope: string): string {
     <td class="module"><b>${escape(module.path.slice(scope.length + 1))}</b><small>${module.lines.toLocaleString("en-US")} lines</small></td>
     <td>${module.files}</td>
     <td><b>${module.code.toFixed(1)}</b></td>
-    <td><b>${scores.architecture.toFixed(1)}</b><small>${raw.propagationCost.toFixed(3)} · ${raw.cycleFiles} · ${share(raw.facadeShare)}</small></td>
-    <td><b>${scores.complexity.toFixed(1)}</b><small>${raw.p90Ccn} · ${raw.shareOverTen === null ? "—" : `${(raw.shareOverTen * 100).toFixed(1)}%`} · ${raw.p90Nloc} · ${raw.p90FileLines}</small></td>
-    <td><b>${scores.smells.toFixed(1)}</b><small>${perKloc(raw.ruffPerKloc)} · ${perKloc(raw.oxlintPerKloc)} · ${raw.duplication.toFixed(1)}% · ${perKloc(raw.markersPerKloc)} · ${perKloc(raw.typeEscapesPerKloc)}</small></td>
+    <td><b>${score(scores.architecture)}</b><small>${raw.propagationCost.toFixed(3)} · ${raw.cycleFiles} · ${share(raw.facadeShare)}</small></td>
+    <td><b>${score(scores.complexity)}</b><small>${raw.p90Ccn} · ${raw.shareOverTen === null ? "—" : `${(raw.shareOverTen * 100).toFixed(1)}%`} · ${raw.p90Nloc} · ${raw.p90FileLines}</small></td>
+    <td><b>${score(scores.smells)}</b><small>${perKloc(raw.ruffPerKloc)} · ${perKloc(raw.oxlintPerKloc)} · ${raw.duplication.toFixed(1)}% · ${perKloc(raw.markersPerKloc)} · ${perKloc(raw.typeEscapesPerKloc)}</small></td>
   </tr>`;
 }
 
@@ -185,19 +193,15 @@ function method(model: ReportModel): string {
   <h2>How to read this</h2>
   <ul>
     <li><b>Points.</b> One score per week: the first-parent <code>${escape(model.ref)}</code> commit at each Monday 00:00 UTC boundary, measured by <code>coherence/index.ts</code> with pinned tools and fixed anchors, so the same commit always gives the same number.</li>
-    <li><b>Noise band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score, so it reflects how much the index moves on an ordinary weekday of commits.</li>
+    <li><b>Band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score: the size of an ordinary weekday of work, including the odd refactor. It is the yardstick for single commits; weekly steps are summarised separately as the typical and largest week.</li>
     <li><b>Movers.</b> In the three weeks with the largest composite change per product, every first-parent commit that touched the product was scored, and each is compared with the previous scored commit.</li>
-    <li><b>Runtime.</b> The last backfill run took ${model.runtime.seconds.toLocaleString("en-US")} s: ${model.runtime.measured} commits measured, ${model.runtime.reused} reused from <code>coherence/data/</code>.</li>
+    <li><b>Runtime.</b> ${model.runtime.total.measured} commits measured in ${model.runtime.total.seconds.toLocaleString("en-US")} s across all backfill runs; the last run took ${model.runtime.seconds.toLocaleString("en-US")} s with ${model.runtime.measured} measured and ${model.runtime.reused} reused from <code>coherence/data/</code>.</li>
   </ul>
 </footer>`;
 }
 
 function capitalise(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-export function signed(value: number): string {
-  return value > 0 ? `+${value.toFixed(1)}` : value < 0 ? `−${Math.abs(value).toFixed(1)}` : "0.0";
 }
 
 const script = `

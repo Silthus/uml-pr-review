@@ -3,7 +3,7 @@
   "repository": "posthog",
   "ref": "upstream/master",
   "head": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
-  "until": "2026-09-26T20:21:20.939Z",
+  "until": "2026-09-26T20:39:41.603Z",
   "weeks": 26,
   "scopes": {
     "products/workflows": {
@@ -4595,8 +4595,12 @@
     }
   },
   "runtime": {
-    "seconds": 302.2,
-    "measured": 131,
-    "reused": 238
+    "seconds": 9.2,
+    "measured": 0,
+    "reused": 368,
+    "total": {
+      "seconds": 9.2,
+      "measured": 0
+    }
   }
 }

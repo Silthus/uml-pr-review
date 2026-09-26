@@ -42,7 +42,7 @@ section, footer { background: var(--surface); border: 1px solid var(--border); b
 footer { font-size: 13px; color: var(--ink-2); }
 footer ul { padding-left: 18px; margin: 0; }
 footer li { margin-bottom: 4px; }
-button { font: inherit; font-size: 13px; color: var(--ink-2); background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+button { font: inherit; font-size: 13px; white-space: nowrap; color: var(--ink-2); background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
 button:hover { color: var(--ink); border-color: var(--axis); }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0 12px; }
 .tile { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
@@ -51,6 +51,7 @@ button:hover { color: var(--ink); border-color: var(--axis); }
 .tile .delta { font-size: 13px; color: var(--ink-2); }
 .tile .delta.up { color: var(--good); }
 .tile .delta.down { color: var(--bad); }
+.tile .detail { font-size: 12px; color: var(--muted); }
 .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
 .sparkline { display: block; width: 120px; height: 32px; margin-top: 8px; }
 .sparkline path { fill: none; stroke: var(--axis); stroke-width: 1.5; }
@@ -67,7 +68,7 @@ figure.chart figcaption { font-size: 13px; color: var(--ink-2); margin-bottom: 4
 .grid { stroke: var(--grid); stroke-width: 1; }
 .axis { stroke: var(--axis); stroke-width: 1; }
 .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
-.noise-band { fill: var(--series); fill-opacity: 0.12; stroke: none; }
+.noise-band { fill: var(--series); fill-opacity: 0.18; stroke: none; }
 .line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .end-dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
 .leader { stroke: var(--axis); stroke-width: 1; }
@@ -109,25 +110,28 @@ td.module b { font-weight: 600; }
   <button type="button" id="theme" aria-label="Switch colour theme">Theme: system</button>
 </header>
 <section>
-  <h2>Is the index trustworthy?</h2>
-  <p class="lead">Re-scoring Wednesday and Thursday of each week in which workflows changed (23 day pairs) moved its composite by a median of 0.1 points and at most 1.6, so the band is ±0.6. 6 of 26 weekly steps moved beyond it; the largest was +1.6 in the week of 2026-06-08. The largest single change, 1.0× the band, was +0.6 on 2026-06-07: refactor(frontend): remove defunct tabId from workflows scenes (#62026).</p>
+  <h2>Is the index trustworthy, and where does workflows stand?</h2>
+  <p class="lead">One weekday of ordinary commits moves the workflows composite by 0.1 points typically and 0.6 at the 90th percentile (23 day pairs, largest 1.6), so a change beyond ±0.6 is a real change.</p><p class="lead">workflows stands at 59.7, +7.1 over 26 weeks against surveys 46.2 and error_tracking 71.5. A typical week moves it 0.2; the largest week moved it +1.6 (ending 2026-06-08). Its weakest dimensions are tests 26.3 and architecture 59.3. Its largest single change was +0.6, 1.0× the band: refactor(frontend): remove defunct tabId from workflows scenes (#62026).</p>
   <div class="tiles"><article class="tile">
     <p class="label"><span class="swatch slot-1"></span>workflows</p>
     <p class="value">59.7</p>
-    <p class="delta up">▲ +7.1 over 26 weeks · noise ±0.6</p>
+    <p class="delta up">▲ +7.1 over 26 weeks</p>
+    <p class="detail">weekday band ±0.6 · typical week 0.2 · largest week +1.6</p>
     <svg class="sparkline" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0,23.6L3.7,26.0L7.4,25.4L11.1,24.5L14.8,23.3L18.5,22.7L22.2,23.0L25.8,22.7L29.5,22.7L33.2,21.1L36.9,21.7L40.6,16.9L44.3,14.2L48.0,13.5L51.7,12.9L55.4,10.2L59.1,9.9L62.8,8.7L66.5,7.8L70.2,7.5L73.8,7.8L77.5,7.5L81.2,8.1L84.9,5.9L88.6,3.5L92.3,3.2L96.0,2.0"/><circle cx="96.0" cy="2.0" r="3"/></svg>
   </article><article class="tile">
     <p class="label"><span class="swatch slot-2"></span>surveys</p>
     <p class="value">46.2</p>
-    <p class="delta down">▼ −12.3 over 26 weeks · noise ±3.9</p>
+    <p class="delta down">▼ −12.3 over 26 weeks</p>
+    <p class="detail">weekday band ±3.9 · typical week 0.3 · largest week −13.8</p>
     <svg class="sparkline" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0,2.0L3.7,18.1L7.4,15.0L11.1,15.2L14.8,15.0L18.5,24.5L22.2,23.6L25.8,23.6L29.5,23.6L33.2,18.7L36.9,18.7L40.6,23.2L44.3,23.0L48.0,22.9L51.7,22.9L55.4,22.4L59.1,22.4L62.8,22.7L66.5,22.9L70.2,22.4L73.8,25.4L77.5,26.0L81.2,25.7L84.9,25.7L88.6,21.1L92.3,19.1L96.0,16.3"/><circle cx="96.0" cy="16.3" r="3"/></svg>
   </article><article class="tile">
     <p class="label"><span class="swatch slot-3"></span>error_tracking</p>
     <p class="value">71.5</p>
-    <p class="delta up">▲ +11.9 over 26 weeks · noise ±0.4</p>
+    <p class="delta up">▲ +11.9 over 26 weeks</p>
+    <p class="detail">weekday band ±0.4 · typical week 0.4 · largest week +7.5</p>
     <svg class="sparkline" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0,25.0L3.7,24.3L7.4,24.1L11.1,26.0L14.8,11.6L18.5,13.1L22.2,13.1L25.8,12.2L29.5,12.4L33.2,12.9L36.9,12.9L40.6,12.0L44.3,10.1L48.0,8.3L51.7,10.3L55.4,10.1L59.1,6.4L62.8,3.9L66.5,3.5L70.2,2.6L73.8,2.4L77.5,2.0L81.2,3.3L84.9,2.8L88.6,3.5L92.3,3.2L96.0,2.2"/><circle cx="96.0" cy="2.2" r="3"/></svg>
   </article></div>
-  <p class="note">Noise is measured, not assumed: for every week in which a product changed, the commits at Wednesday and Thursday 00:00 UTC were scored too. The band is the 90th percentile of those one-weekday movements, drawn as a shaded band around every line below. A weekly step inside the band is not evidence of anything.</p>
+  <p class="note">The index has no measurement noise: the same commit always gives the same number. The band is background movement. For every week in which a product changed, the commits at Wednesday and Thursday 00:00 UTC were scored too, and the band is the 90th percentile of that one-weekday movement, drawn as a shaded band around every line below. A single commit inside the band is the size of ordinary work; the biggest movers below are the commits that exceed it.</p>
 </section>
 <section>
   <h2>Composite, week by week</h2>
@@ -164,86 +168,121 @@ td.module b { font-weight: 600; }
   </figure></div>
 </section>
 <section>
-  <h2>Biggest movers</h2>
-  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored. These are the commits with the largest composite change, compared with the commit scored before them.</p>
+  <h2>Biggest movers, per product</h2>
+  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored and compared with the commit scored before it. The five largest per product are listed. A commit outside the product that changes its inbound imports is attributed to the next commit inside it.</p>
   <table class="movers">
-    <thead><tr><th>Δ composite</th><th>× band</th><th>Product</th><th>Date</th><th>Moved most</th><th>Change</th></tr></thead>
+    <thead><tr><th>Product</th><th>Δ composite</th><th>× band</th><th>Date</th><th>Moved most</th><th>Change</th></tr></thead>
     <tbody><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:4%"></span><b>+0.6</b></td>
+    <td>1.0× band</td>
+    <td>2026-06-07</td>
+    <td>architecture +1.6</td>
+    <td class="subject">refactor(frontend): remove defunct tabId from workflows scenes <a href="https://github.com/PostHog/posthog/pull/62026">#62026</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/58e8f530f8be560fc2e59210f1a790d11dbd4a62">58e8f53</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:4%"></span><b>+0.6</b></td>
+    <td>1.0× band</td>
+    <td>2026-06-29</td>
+    <td>architecture +1.3</td>
+    <td class="subject">feat(workflows): make the builder aware of edits from MCP/API <a href="https://github.com/PostHog/posthog/pull/64001">#64001</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/c617e72bbb8eb6b8d5b855592b099802f1736604">c617e72</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:3%"></span><b>+0.4</b></td>
+    <td>0.7× band</td>
+    <td>2026-06-01</td>
+    <td>smells +1.2</td>
+    <td class="subject">feat(workflows): add base MCP tools for workflows product <a href="https://github.com/PostHog/posthog/pull/60388">#60388</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/6970121e6400d8766641cb3a7d33ce3b6c661d85">6970121</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:2%"></span><b>+0.3</b></td>
+    <td>0.5× band</td>
+    <td>2026-06-01</td>
+    <td>smells +0.7</td>
+    <td class="subject">fix(admin): register moved hogflow and cdp admins via package init <a href="https://github.com/PostHog/posthog/pull/60652">#60652</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/cb5b59f6da85bbb6c568e335fa2e7521d96804d9">cb5b59f</a></td>
+  </tr><tr>
+    <td>workflows</td>
+    <td class="delta-cell"><span class="bar up" style="width:2%"></span><b>+0.3</b></td>
+    <td>0.5× band</td>
+    <td>2026-06-09</td>
+    <td>tests +0.7</td>
+    <td class="subject">feat(workflows): add invocation debugging MCP tools and align names <a href="https://github.com/PostHog/posthog/pull/61655">#61655</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/64c5a4efdd391e86ef1157bfa93e3952f97b5519">64c5a4e</a></td>
+  </tr><tr>
+    <td>surveys</td>
     <td class="delta-cell"><span class="bar down" style="width:100%"></span><b>−13.7</b></td>
     <td>3.5× band</td>
-    <td>surveys</td>
     <td>2026-03-23</td>
     <td>complexity −41.5</td>
     <td class="subject">chore(surveys): move survey models and API to products app <a href="https://github.com/PostHog/posthog/pull/51611">#51611</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/731051cb6951587692dc1c86eaba65a70add4fbf">731051c</a></td>
   </tr><tr>
-    <td class="delta-cell"><span class="bar up" style="width:76%"></span><b>+10.4</b></td>
-    <td>26.0× band</td>
-    <td>error_tracking</td>
-    <td>2026-04-15</td>
-    <td>tests +50.1</td>
-    <td class="subject">feat(error_tracking): add issue facade kickoff <a href="https://github.com/PostHog/posthog/pull/54718">#54718</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/4c6495dec83ced70b5efc763f027ab0189952ea3">4c6495d</a></td>
-  </tr><tr>
+    <td>surveys</td>
     <td class="delta-cell"><span class="bar down" style="width:61%"></span><b>−8.3</b></td>
     <td>2.1× band</td>
-    <td>surveys</td>
     <td>2026-04-23</td>
     <td>smells −26.3</td>
     <td class="subject">feat(devex): generate Zod validation schemas from OpenAPI spec <a href="https://github.com/PostHog/posthog/pull/54698">#54698</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/fbfbfb7a12985fa0d9a252646378be42eea548b2">fbfbfb7</a></td>
   </tr><tr>
+    <td>surveys</td>
     <td class="delta-cell"><span class="bar up" style="width:39%"></span><b>+5.4</b></td>
     <td>1.4× band</td>
-    <td>surveys</td>
     <td>2026-05-20</td>
     <td>smells +27.3</td>
     <td class="subject">refactor(onboarding): compose flow from per-product step providers <a href="https://github.com/PostHog/posthog/pull/57579">#57579</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/706db7c3d5ee4ab321334a717d365fc6d43d5616">706db7c</a></td>
   </tr><tr>
-    <td class="delta-cell"><span class="bar down" style="width:34%"></span><b>−4.6</b></td>
-    <td>11.5× band</td>
-    <td>error_tracking</td>
-    <td>2026-04-16</td>
-    <td>tests −24.9</td>
-    <td class="subject">feat(error_tracking): migrate digest and task callers to facade <a href="https://github.com/PostHog/posthog/pull/54749">#54749</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/9a84ad66f544fd737550396c036df2280a6c4c1c">9a84ad6</a></td>
-  </tr><tr>
-    <td class="delta-cell"><span class="bar up" style="width:12%"></span><b>+1.6</b></td>
-    <td>4.0× band</td>
-    <td>error_tracking</td>
-    <td>2026-07-06</td>
-    <td>architecture +4.6</td>
-    <td class="subject">chore(error-tracking): seal external boundary and enable contract-check <a href="https://github.com/PostHog/posthog/pull/65456">#65456</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/c5f763e280d5209a4f243608902c263b51529e6c">c5f763e</a></td>
-  </tr><tr>
-    <td class="delta-cell"><span class="bar up" style="width:11%"></span><b>+1.5</b></td>
-    <td>3.8× band</td>
-    <td>error_tracking</td>
-    <td>2026-04-16</td>
-    <td>architecture +4.4</td>
-    <td class="subject">feat(error_tracking): migrate issue readers to facade <a href="https://github.com/PostHog/posthog/pull/54724">#54724</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/cf7a56580c53092b9a2364bfbbb2357e749df153">cf7a565</a></td>
-  </tr><tr>
+    <td>surveys</td>
     <td class="delta-cell"><span class="bar down" style="width:11%"></span><b>−1.5</b></td>
     <td>0.4× band</td>
-    <td>surveys</td>
     <td>2026-05-21</td>
     <td>complexity −4.6</td>
     <td class="subject">feat(surveys): replace 'Default' translation with explicit base_language <a href="https://github.com/PostHog/posthog/pull/58628">#58628</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/1095361a044ac7586ab30fc033b035f7b624d322">1095361</a></td>
   </tr><tr>
+    <td>surveys</td>
+    <td class="delta-cell"><span class="bar up" style="width:1%"></span><b>+0.2</b></td>
+    <td>0.1× band</td>
+    <td>2026-04-23</td>
+    <td>smells +0.8</td>
+    <td class="subject">chore(devex): enforce type annotations in product backend code <a href="https://github.com/PostHog/posthog/pull/55443">#55443</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/7d69f056cc748e537af13ff15e997e1b5c552b98">7d69f05</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:76%"></span><b>+10.4</b></td>
+    <td>26.0× band</td>
+    <td>2026-04-15</td>
+    <td>tests +50.1</td>
+    <td class="subject">feat(error_tracking): add issue facade kickoff <a href="https://github.com/PostHog/posthog/pull/54718">#54718</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/4c6495dec83ced70b5efc763f027ab0189952ea3">4c6495d</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar down" style="width:34%"></span><b>−4.6</b></td>
+    <td>11.5× band</td>
+    <td>2026-04-16</td>
+    <td>tests −24.9</td>
+    <td class="subject">feat(error_tracking): migrate digest and task callers to facade <a href="https://github.com/PostHog/posthog/pull/54749">#54749</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/9a84ad66f544fd737550396c036df2280a6c4c1c">9a84ad6</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:12%"></span><b>+1.6</b></td>
+    <td>4.0× band</td>
+    <td>2026-07-06</td>
+    <td>architecture +4.6</td>
+    <td class="subject">chore(error-tracking): seal external boundary and enable contract-check <a href="https://github.com/PostHog/posthog/pull/65456">#65456</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/c5f763e280d5209a4f243608902c263b51529e6c">c5f763e</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
+    <td class="delta-cell"><span class="bar up" style="width:11%"></span><b>+1.5</b></td>
+    <td>3.8× band</td>
+    <td>2026-04-16</td>
+    <td>architecture +4.4</td>
+    <td class="subject">feat(error_tracking): migrate issue readers to facade <a href="https://github.com/PostHog/posthog/pull/54724">#54724</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/cf7a56580c53092b9a2364bfbbb2357e749df153">cf7a565</a></td>
+  </tr><tr>
+    <td>error_tracking</td>
     <td class="delta-cell"><span class="bar up" style="width:7%"></span><b>+0.9</b></td>
     <td>2.3× band</td>
-    <td>error_tracking</td>
     <td>2026-07-14</td>
     <td>tests +4.5</td>
     <td class="subject">perf(error-tracking): cut weekly digest clickhouse query load <a href="https://github.com/PostHog/posthog/pull/70471">#70471</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/35a43af6cf0b01c7acb7f9acd7adc7583cba048e">35a43af</a></td>
-  </tr><tr>
-    <td class="delta-cell"><span class="bar up" style="width:4%"></span><b>+0.6</b></td>
-    <td>1.0× band</td>
-    <td>workflows</td>
-    <td>2026-06-07</td>
-    <td>architecture +1.6</td>
-    <td class="subject">refactor(frontend): remove defunct tabId from workflows scenes <a href="https://github.com/PostHog/posthog/pull/62026">#62026</a> <a class="sha" href="https://github.com/PostHog/posthog/commit/58e8f530f8be560fc2e59210f1a790d11dbd4a62">58e8f53</a></td>
   </tr></tbody>
   </table>
 </section>
 <section>
-  <h2>workflows modules at <code>6bbc94fa5128</code>, worst first</h2>
-  <p class="note">Each module is scored as its own scope with the same index. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Modules with fewer than 3 production files are not listed.</p>
+  <h2>workflows modules at <code>c25b27f874a1</code>, worst first</h2>
+  <p class="note">Each directory of the scope is scored as its own scope with the same index, at the repository head. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Parents and their children are both listed, so a large parent such as <code>backend</code> summarises the rows beneath it. Modules with fewer than 3 production files are not listed.</p>
   <table class="modules">
     <thead><tr>
       <th>Module</th><th>Files</th><th>Code</th>
@@ -259,19 +298,19 @@ td.module b { font-weight: 600; }
     <td><b>23.0</b><small>11 · 10.7% · 45 · 822</small></td>
     <td><b>75.6</b><small>1.1 · — · 0.0% · 0.0 · 17.4</small></td>
   </tr><tr>
-    <td class="module"><b>backend/api</b><small>7,274 lines</small></td>
-    <td>11</td>
-    <td><b>53.3</b></td>
-    <td><b>65.2</b><small>0.127 · 0 · 27%</small></td>
-    <td><b>22.2</b><small>14 · 15.5% · 50 · 322</small></td>
-    <td><b>71.3</b><small>4.7 · — · 3.7% · 0.1 · 4.9</small></td>
+    <td class="module"><b>backend/api</b><small>7,246 lines</small></td>
+    <td>10</td>
+    <td><b>52.4</b></td>
+    <td><b>62.8</b><small>0.156 · 0 · 27%</small></td>
+    <td><b>22.2</b><small>15 · 15.0% · 51 · 322</small></td>
+    <td><b>72.1</b><small>4.7 · — · 3.5% · 0.1 · 4.6</small></td>
   </tr><tr>
-    <td class="module"><b>backend</b><small>13,156 lines</small></td>
-    <td>69</td>
-    <td><b>55.2</b></td>
-    <td><b>62.5</b><small>0.077 · 2 · 16%</small></td>
-    <td><b>28.6</b><small>12 · 12.8% · 45 · 303</small></td>
-    <td><b>75.5</b><small>3.2 · — · 2.6% · 0.1 · 7.3</small></td>
+    <td class="module"><b>backend</b><small>13,165 lines</small></td>
+    <td>70</td>
+    <td><b>56.1</b></td>
+    <td><b>62.9</b><small>0.088 · 2 · 20%</small></td>
+    <td><b>30.6</b><small>12 · 12.7% · 45 · 231</small></td>
+    <td><b>75.9</b><small>3.2 · — · 2.3% · 0.1 · 7.6</small></td>
   </tr><tr>
     <td class="module"><b>backend/management/commands</b><small>942 lines</small></td>
     <td>7</td>
@@ -280,12 +319,12 @@ td.module b { font-weight: 600; }
     <td><b>29.7</b><small>14 · 25.8% · 44 · 231</small></td>
     <td><b>72.3</b><small>0.0 · — · 1.1% · 0.0 · 22.3</small></td>
   </tr><tr>
-    <td class="module"><b>backend/services</b><small>2,267 lines</small></td>
+    <td class="module"><b>backend/services</b><small>2,089 lines</small></td>
     <td>13</td>
-    <td><b>62.2</b></td>
-    <td><b>71.1</b><small>0.019 · 0 · 18%</small></td>
-    <td><b>30.7</b><small>11 · 11.7% · 43 · 427</small></td>
-    <td><b>85.9</b><small>1.8 · — · 2.1% · 0.0 · 3.5</small></td>
+    <td><b>60.3</b></td>
+    <td><b>70.6</b><small>0.019 · 0 · 17%</small></td>
+    <td><b>24.5</b><small>12 · 13.1% · 45 · 427</small></td>
+    <td><b>87.1</b><small>1.9 · — · 0.8% · 0.0 · 4.8</small></td>
   </tr><tr>
     <td class="module"><b>frontend/Workflows/hogflows/react_flow_utils</b><small>394 lines</small></td>
     <td>3</td>
@@ -294,26 +333,26 @@ td.module b { font-weight: 600; }
     <td><b>77.9</b><small>6 · 0.0% · 34 · 259</small></td>
     <td><b>41.2</b><small>— · 5.1 · 3.5% · 2.5 · 0.0</small></td>
   </tr><tr>
-    <td class="module"><b>backend/models/hog_flow</b><small>253 lines</small></td>
+    <td class="module"><b>backend/models/hog_flow</b><small>254 lines</small></td>
     <td>3</td>
-    <td><b>66.9</b></td>
+    <td><b>67.0</b></td>
     <td><b>38.9</b><small>0.333 · 0 · 0%</small></td>
-    <td><b>95.0</b><small>3 · 0.0% · 4 · 204</small></td>
-    <td><b>80.9</b><small>0.0 · — · 7.6% · 0.0 · 0.0</small></td>
+    <td><b>95.0</b><small>3 · 0.0% · 4 · 205</small></td>
+    <td><b>81.0</b><small>0.0 · — · 7.6% · 0.0 · 0.0</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/Workflows/hogflows/panel/testing</b><small>1,681 lines</small></td>
+    <td class="module"><b>frontend/Workflows/hogflows/panel/testing</b><small>1,766 lines</small></td>
     <td>4</td>
-    <td><b>67.6</b></td>
+    <td><b>68.4</b></td>
     <td><b>72.2</b><small>0.333 · 0 · no crossings</small></td>
-    <td><b>66.1</b><small>6 · 3.4% · 31 · 593</small></td>
-    <td><b>61.6</b><small>— · 0.0 · 17.8% · 0.6 · 4.8</small></td>
+    <td><b>68.0</b><small>5 · 3.1% · 26 · 678</small></td>
+    <td><b>62.3</b><small>— · 0.0 · 16.3% · 0.6 · 4.5</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/Workflows/hogflows</b><small>18,139 lines</small></td>
-    <td>98</td>
-    <td><b>71.8</b></td>
-    <td><b>61.0</b><small>0.277 · 14 · no crossings</small></td>
-    <td><b>80.1</b><small>5 · 2.2% · 18 · 373</small></td>
-    <td><b>80.3</b><small>— · 0.3 · 4.1% · 0.2 · 4.8</small></td>
+    <td class="module"><b>frontend/Workflows/hogflows</b><small>18,824 lines</small></td>
+    <td>105</td>
+    <td><b>71.1</b></td>
+    <td><b>59.0</b><small>0.276 · 17 · no crossings</small></td>
+    <td><b>80.2</b><small>5 · 2.1% · 18 · 373</small></td>
+    <td><b>80.9</b><small>— · 0.3 · 4.0% · 0.2 · 4.7</small></td>
   </tr><tr>
     <td class="module"><b>backend/tasks</b><small>250 lines</small></td>
     <td>6</td>
@@ -322,19 +361,19 @@ td.module b { font-weight: 600; }
     <td><b>69.6</b><small>7 · 0.0% · 61 · 114</small></td>
     <td><b>100.0</b><small>0.0 · — · 0.0% · 0.0 · 0.0</small></td>
   </tr><tr>
-    <td class="module"><b>backend/models</b><small>449 lines</small></td>
-    <td>10</td>
-    <td><b>76.2</b></td>
-    <td><b>56.5</b><small>0.122 · 0 · 0%</small></td>
-    <td><b>98.0</b><small>3 · 0.0% · 4 · 60</small></td>
-    <td><b>83.6</b><small>0.0 · — · 4.3% · 0.0 · 4.5</small></td>
+    <td class="module"><b>backend/models</b><small>548 lines</small></td>
+    <td>11</td>
+    <td><b>76.3</b></td>
+    <td><b>57.6</b><small>0.109 · 0 · 0%</small></td>
+    <td><b>98.0</b><small>3 · 0.0% · 4 · 96</small></td>
+    <td><b>81.9</b><small>0.0 · — · 3.6% · 0.0 · 7.3</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/Workflows</b><small>27,895 lines</small></td>
-    <td>151</td>
-    <td><b>77.5</b></td>
-    <td><b>74.0</b><small>0.188 · 14 · no crossings</small></td>
-    <td><b>79.4</b><small>5 · 2.0% · 18 · 376</small></td>
-    <td><b>81.1</b><small>— · 0.3 · 3.8% · 0.2 · 4.3</small></td>
+    <td class="module"><b>frontend/Workflows</b><small>28,592 lines</small></td>
+    <td>158</td>
+    <td><b>76.7</b></td>
+    <td><b>72.1</b><small>0.191 · 17 · no crossings</small></td>
+    <td><b>79.3</b><small>5 · 2.0% · 18 · 382</small></td>
+    <td><b>81.4</b><small>— · 0.3 · 3.7% · 0.2 · 4.3</small></td>
   </tr></tbody>
     <tbody class="more" hidden><tr>
     <td class="module"><b>mcp/apps</b><small>389 lines</small></td>
@@ -365,19 +404,12 @@ td.module b { font-weight: 600; }
     <td><b>82.2</b><small>5 · 1.0% · 18 · 366</small></td>
     <td><b>58.5</b><small>— · 0.0 · 7.3% · 0.0 · 18.7</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/Workflows/hogflows/panel</b><small>3,998 lines</small></td>
+    <td class="module"><b>frontend/Workflows/hogflows/panel</b><small>4,083 lines</small></td>
     <td>15</td>
-    <td><b>79.0</b></td>
+    <td><b>79.3</b></td>
     <td><b>85.3</b><small>0.176 · 0 · no crossings</small></td>
-    <td><b>78.4</b><small>5 · 2.6% · 17 · 458</small></td>
-    <td><b>68.7</b><small>— · 0.0 · 9.4% · 0.3 · 3.8</small></td>
-  </tr><tr>
-    <td class="module"><b>frontend/Workflows/hogflows/tree</b><small>2,313 lines</small></td>
-    <td>9</td>
-    <td><b>79.1</b></td>
-    <td><b>75.7</b><small>0.292 · 0 · no crossings</small></td>
-    <td><b>69.6</b><small>6 · 2.0% · 18 · 701</small></td>
-    <td><b>96.8</b><small>— · 0.4 · 0.0% · 0.0 · 0.9</small></td>
+    <td><b>78.5</b><small>5 · 2.5% · 17 · 458</small></td>
+    <td><b>69.9</b><small>— · 0.0 · 9.0% · 0.2 · 3.7</small></td>
   </tr><tr>
     <td class="module"><b>frontend/Workflows/Reputation</b><small>804 lines</small></td>
     <td>3</td>
@@ -386,6 +418,13 @@ td.module b { font-weight: 600; }
     <td><b>81.2</b><small>3 · 0.0% · 19 · 562</small></td>
     <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
   </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/filters</b><small>267 lines</small></td>
+    <td>3</td>
+    <td><b>79.8</b></td>
+    <td><b>86.1</b><small>0.167 · 0 · no crossings</small></td>
+    <td><b>82.4</b><small>8 · 0.0% · 17 · 199</small></td>
+    <td><b>65.6</b><small>— · 0.0 · 0.0% · 3.7 · 7.5</small></td>
+  </tr><tr>
     <td class="module"><b>frontend/Channels</b><small>1,202 lines</small></td>
     <td>14</td>
     <td><b>80.7</b></td>
@@ -393,12 +432,12 @@ td.module b { font-weight: 600; }
     <td><b>94.0</b><small>3 · 0.0% · 14 · 184</small></td>
     <td><b>84.4</b><small>— · 0.0 · 5.0% · 0.0 · 2.5</small></td>
   </tr><tr>
-    <td class="module"><b>frontend</b><small>34,093 lines</small></td>
-    <td>202</td>
-    <td><b>81.5</b></td>
-    <td><b>81.6</b><small>0.115 · 16 · no crossings</small></td>
-    <td><b>80.5</b><small>5 · 1.9% · 17 · 366</small></td>
-    <td><b>82.6</b><small>— · 0.3 · 3.6% · 0.2 · 3.9</small></td>
+    <td class="module"><b>frontend</b><small>37,039 lines</small></td>
+    <td>226</td>
+    <td><b>81.6</b></td>
+    <td><b>81.6</b><small>0.109 · 19 · no crossings</small></td>
+    <td><b>80.7</b><small>5 · 1.8% · 17 · 366</small></td>
+    <td><b>82.8</b><small>— · 0.2 · 3.6% · 0.2 · 3.9</small></td>
   </tr><tr>
     <td class="module"><b>frontend/Workflows/hogflows/registry/actions</b><small>208 lines</small></td>
     <td>4</td>
@@ -414,12 +453,19 @@ td.module b { font-weight: 600; }
     <td><b>91.2</b><small>4 · 0.0% · 15 · 197</small></td>
     <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/OptOuts</b><small>2,583 lines</small></td>
+    <td class="module"><b>frontend/OptOuts</b><small>2,579 lines</small></td>
     <td>14</td>
     <td><b>84.4</b></td>
     <td><b>84.0</b><small>0.192 · 0 · no crossings</small></td>
     <td><b>78.9</b><small>4 · 2.1% · 19 · 500</small></td>
     <td><b>92.1</b><small>— · 0.0 · 1.2% · 0.0 · 3.9</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Workflows/hogflows/tree</b><small>2,748 lines</small></td>
+    <td>12</td>
+    <td><b>84.7</b></td>
+    <td><b>79.8</b><small>0.242 · 0 · no crossings</small></td>
+    <td><b>81.5</b><small>5 · 1.5% · 19 · 358</small></td>
+    <td><b>97.3</b><small>— · 0.4 · 0.0% · 0.0 · 0.7</small></td>
   </tr><tr>
     <td class="module"><b>frontend/Workflows/templates</b><small>1,121 lines</small></td>
     <td>12</td>
@@ -435,12 +481,19 @@ td.module b { font-weight: 600; }
     <td><b>98.0</b><small>3 · 0.0% · 6 · 89</small></td>
     <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/Workflows/hogflows/steps</b><small>6,259 lines</small></td>
-    <td>40</td>
-    <td><b>88.0</b></td>
-    <td><b>91.3</b><small>0.104 · 0 · no crossings</small></td>
-    <td><b>81.2</b><small>5 · 2.5% · 17 · 289</small></td>
-    <td><b>90.7</b><small>— · 0.3 · 2.3% · 0.0 · 1.6</small></td>
+    <td class="module"><b>frontend/Workflows/hogflows/steps</b><small>6,405 lines</small></td>
+    <td>43</td>
+    <td><b>88.1</b></td>
+    <td><b>91.6</b><small>0.101 · 0 · no crossings</small></td>
+    <td><b>81.2</b><small>5 · 2.7% · 17 · 289</small></td>
+    <td><b>90.6</b><small>— · 0.3 · 2.2% · 0.0 · 1.9</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Broadcasts</b><small>2,223 lines</small></td>
+    <td>17</td>
+    <td><b>88.2</b></td>
+    <td><b>83.8</b><small>0.195 · 0 · no crossings</small></td>
+    <td><b>88.9</b><small>5 · 0.8% · 15 · 184</small></td>
+    <td><b>95.0</b><small>— · 0.0 · 0.0% · 0.0 · 4.0</small></td>
   </tr><tr>
     <td class="module"><b>frontend/TemplateLibrary</b><small>1,186 lines</small></td>
     <td>10</td>
@@ -456,12 +509,19 @@ td.module b { font-weight: 600; }
     <td><b>87.3</b><small>5 · 0.0% · 24 · 139</small></td>
     <td><b>100.0</b><small>0.0 · — · 0.0% · 0.0 · 0.0</small></td>
   </tr><tr>
-    <td class="module"><b>frontend/Workflows/hogflows/steps/components</b><small>2,368 lines</small></td>
-    <td>17</td>
-    <td><b>89.8</b></td>
-    <td><b>95.7</b><small>0.051 · 0 · no crossings</small></td>
-    <td><b>73.8</b><small>6 · 3.8% · 28 · 353</small></td>
-    <td><b>99.5</b><small>— · 0.0 · 0.0% · 0.0 · 0.4</small></td>
+    <td class="module"><b>frontend/Workflows/hogflows/steps/components</b><small>2,593 lines</small></td>
+    <td>19</td>
+    <td><b>89.2</b></td>
+    <td><b>96.3</b><small>0.044 · 0 · no crossings</small></td>
+    <td><b>74.9</b><small>6 · 4.2% · 22 · 384</small></td>
+    <td><b>94.7</b><small>— · 0.8 · 0.0% · 0.0 · 1.2</small></td>
+  </tr><tr>
+    <td class="module"><b>frontend/Broadcasts/steps</b><small>385 lines</small></td>
+    <td>5</td>
+    <td><b>90.5</b></td>
+    <td><b>100.0</b><small>0.000 · 0 · no crossings</small></td>
+    <td><b>69.5</b><small>7 · 0.0% · 67 · 119</small></td>
+    <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
   </tr><tr>
     <td class="module"><b>frontend/scenes/settings</b><small>195 lines</small></td>
     <td>3</td>
@@ -471,16 +531,16 @@ td.module b { font-weight: 600; }
     <td><b>100.0</b><small>— · 0.0 · 0.0% · 0.0 · 0.0</small></td>
   </tr></tbody>
   </table>
-  <button type="button" class="show-more">Show all 31 modules</button>
+  <button type="button" class="show-more">Show all 34 modules</button>
 </section>
 
 <footer>
   <h2>How to read this</h2>
   <ul>
     <li><b>Points.</b> One score per week: the first-parent <code>upstream/master</code> commit at each Monday 00:00 UTC boundary, measured by <code>coherence/index.ts</code> with pinned tools and fixed anchors, so the same commit always gives the same number.</li>
-    <li><b>Noise band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score, so it reflects how much the index moves on an ordinary weekday of commits.</li>
+    <li><b>Band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score: the size of an ordinary weekday of work, including the odd refactor. It is the yardstick for single commits; weekly steps are summarised separately as the typical and largest week.</li>
     <li><b>Movers.</b> In the three weeks with the largest composite change per product, every first-parent commit that touched the product was scored, and each is compared with the previous scored commit.</li>
-    <li><b>Runtime.</b> The last backfill run took 302.2 s: 131 commits measured, 238 reused from <code>coherence/data/</code>.</li>
+    <li><b>Runtime.</b> 0 commits measured in 9.2 s across all backfill runs; the last run took 9.2 s with 0 measured and 368 reused from <code>coherence/data/</code>.</li>
   </ul>
 </footer>
 </main>

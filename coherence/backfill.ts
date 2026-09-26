@@ -29,7 +29,7 @@ export const BackfillManifestSchema = z.object({
       movers: z.array(MoverSchema),
     }),
   ),
-  runtime: z.object({ seconds: z.number(), measured: z.number().int(), reused: z.number().int() }),
+  runtime: z.object({ seconds: z.number(), measured: z.number().int(), reused: z.number().int(), total: z.object({ seconds: z.number(), measured: z.number().int() }) }),
 });
 
 export type Scores = z.infer<typeof ScoresSchema>;
@@ -38,7 +38,7 @@ export type ScopeSeries = BackfillManifest["scopes"][string];
 export type BackfillRequest = { repository: string; ref: string; scopes: string[]; weeks: number; until: Date; dataDir: string; moverWeeks?: number };
 
 export const scoreKeys = ["composite", "architecture", "complexity", "smells", "tests"] as const satisfies readonly (keyof Scores)[];
-export const manifestFile = "backfill.json";
+const manifestFile = "backfill.json";
 const dayMs = 24 * 60 * 60 * 1000;
 const pullRequestNumber = /\(#(\d+)\)\s*$/;
 
@@ -47,6 +47,7 @@ type Log = (line: string) => void;
 
 export async function backfill(request: BackfillRequest, log: Log = () => {}): Promise<BackfillManifest> {
   const started = performance.now();
+  const previous = await readManifest(request.dataDir).catch(() => null);
   const store = new ScoreStore(request.repository, request.dataDir, log);
   const head = (await git(request.repository, ["rev-parse", request.ref])).trim();
   const scopes: BackfillManifest["scopes"] = {};
@@ -64,7 +65,7 @@ export async function backfill(request: BackfillRequest, log: Log = () => {}): P
     until: request.until.toISOString(),
     weeks: request.weeks,
     scopes,
-    runtime: { seconds: roundTo((performance.now() - started) / 1000, 1), measured: store.measured, reused: store.reused },
+    runtime: runtimeOf(started, store, previous),
   });
   await writeFile(join(request.dataDir, manifestFile), JSON.stringify(manifest, null, 2));
   return manifest;
@@ -74,7 +75,13 @@ export async function readManifest(dataDir: string): Promise<BackfillManifest> {
   return BackfillManifestSchema.parse(JSON.parse(await readFile(join(dataDir, manifestFile), "utf8")));
 }
 
-export function scoresOf(index: CoherenceIndex): Scores {
+function runtimeOf(started: number, store: ScoreStore, previous: BackfillManifest | null): BackfillManifest["runtime"] {
+  const seconds = roundTo((performance.now() - started) / 1000, 1);
+  const before = previous?.runtime.total ?? { seconds: 0, measured: 0 };
+  return { seconds, measured: store.measured, reused: store.reused, total: { seconds: roundTo(before.seconds + seconds, 1), measured: before.measured + store.measured } };
+}
+
+function scoresOf(index: CoherenceIndex): Scores {
   const { architecture, complexity, smells, tests } = index.dimensions;
   const required = (name: string, score: number | null) => {
     if (score === null) throw new Error(`${index.scope} at ${index.commit} has no ${name} score.`);
@@ -83,11 +90,11 @@ export function scoresOf(index: CoherenceIndex): Scores {
   return { composite: index.composite.score, architecture: required("architecture", architecture.score), complexity: required("complexity", complexity.score), smells: required("smells", smells.score), tests: required("tests", tests.score) };
 }
 
-export function delta(before: Scores, after: Scores): Scores {
+function delta(before: Scores, after: Scores): Scores {
   return mapScores((key) => roundTo(after[key] - before[key], 1));
 }
 
-export function weekBoundaries(until: Date, weeks: number): Date[] {
+function weekBoundaries(until: Date, weeks: number): Date[] {
   const latest = new Date(until);
   latest.setUTCHours(0, 0, 0, 0);
   latest.setUTCDate(latest.getUTCDate() - ((latest.getUTCDay() + 6) % 7));
@@ -175,8 +182,8 @@ function pullRequestOf(subject: string): number | null {
 }
 
 class ScoreStore {
-  measured = 0;
-  reused = 0;
+  private readonly measuredFiles = new Set<string>();
+  private readonly reusedFiles = new Set<string>();
 
   constructor(
     private readonly repository: string,
@@ -188,8 +195,16 @@ class ScoreStore {
     if (!(await this.scopeExists(scope, commit.commit))) return null;
     const file = join(scope, `${isoDate(new Date(commit.date))}-${commit.commit.slice(0, 12)}.json`);
     const report = await this.readStored(file);
-    if (report) this.reused += 1;
+    if (report && !this.measuredFiles.has(file)) this.reusedFiles.add(file);
     return { ...commit, file, scores: scoresOf((report ?? (await this.measure(scope, commit, file))).index) };
+  }
+
+  get measured(): number {
+    return this.measuredFiles.size;
+  }
+
+  get reused(): number {
+    return this.reusedFiles.size;
   }
 
   private async scopeExists(scope: string, commit: string): Promise<boolean> {
@@ -205,7 +220,7 @@ class ScoreStore {
     const report = await measureCoherence({ repository: this.repository, scope, commit: commit.commit });
     await mkdir(join(this.dataDir, scope), { recursive: true });
     await writeFile(join(this.dataDir, file), JSON.stringify(report, null, 2));
-    this.measured += 1;
+    this.measuredFiles.add(file);
     this.log(`${scope} ${commit.date.slice(0, 10)} ${commit.commit.slice(0, 12)} composite ${report.index.composite.score} in ${(report.timing.milliseconds / 1000).toFixed(1)} s`);
     return report;
   }
@@ -223,8 +238,19 @@ function isoDate(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
+const ArgumentsSchema = z.object({
+  repo: z.string().min(1),
+  scopes: z.string().transform((list) => list.split(",").map((scope) => scope.trim()).filter(Boolean)).pipe(z.array(z.string()).min(1)),
+  ref: z.string().min(1),
+  since: z.string().regex(/^\d+\s*weeks?$/).transform((since) => Number(/\d+/.exec(since)![0])),
+  every: z.literal("week"),
+  until: z.iso.datetime({ offset: true }).optional(),
+  data: z.string().min(1),
+  "mover-weeks": z.coerce.number().int().min(0),
+});
+
 if (import.meta.main) {
-  const usage = "Usage: bun coherence/backfill.ts --repo <path> --scopes <a,b> [--ref master] [--since '26 weeks'] [--every week] [--until <iso>] [--data coherence/data] [--mover-weeks 3]";
+  const usage = "Usage: bun coherence/backfill.ts --repo <path> --scopes <a,b> [--ref master] [--since '26 weeks'] [--every week] [--until <iso datetime>] [--data coherence/data] [--mover-weeks 3]";
   const { values } = parseArgs({
     options: {
       repo: { type: "string" },
@@ -237,23 +263,16 @@ if (import.meta.main) {
       "mover-weeks": { type: "string", default: "3" },
     },
   });
-  const weeks = /^(\d+)\s*weeks?$/.exec(values.since)?.[1];
-  if (!values.repo || !values.scopes || weeks === undefined || values.every !== "week") {
-    console.error(usage);
+  const parsed = ArgumentsSchema.safeParse(values);
+  if (!parsed.success) {
+    console.error(`${usage}\n${z.prettifyError(parsed.error)}`);
     process.exit(2);
   }
+  const { repo, scopes, ref, since, until, data } = parsed.data;
   const manifest = await backfill(
-    {
-      repository: resolve(values.repo),
-      ref: values.ref,
-      scopes: values.scopes.split(",").map((scope) => scope.trim()),
-      weeks: Number(weeks),
-      until: values.until ? new Date(values.until) : new Date(),
-      dataDir: resolve(values.data),
-      moverWeeks: Number(values["mover-weeks"]),
-    },
+    { repository: resolve(repo), ref, scopes, weeks: since, until: until ? new Date(until) : new Date(), dataDir: resolve(data), moverWeeks: parsed.data["mover-weeks"] },
     (line) => console.error(line),
   );
-  const { seconds, measured, reused } = manifest.runtime;
-  console.log(`Backfilled ${Object.keys(manifest.scopes).length} scopes over ${manifest.weeks} weeks in ${seconds} s (${measured} measured, ${reused} reused). Manifest: ${join(resolve(values.data), manifestFile)}`);
+  const { seconds, measured, reused, total } = manifest.runtime;
+  console.log(`Backfilled ${scopes.length} scopes over ${manifest.weeks} weeks in ${seconds} s (${measured} measured, ${reused} reused; ${total.measured} measured in ${total.seconds} s across runs). Manifest: ${join(resolve(data), manifestFile)}`);
 }

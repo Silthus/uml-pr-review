@@ -30,18 +30,24 @@ describe("the coherence report", () => {
     for (const scope of ["products/a", "products/b"]) expect(html).toContain(scope);
   });
 
-  test("links the biggest movers to their commit and pull request and says how far they exceed the noise band", () => {
+  test("links the biggest movers to their commit and pull request, escapes their subject, and sizes them against the noise band", () => {
     const merge = fixture.commits.merge!;
+    const band = fixture.manifest.scopes["products/a"]!.noise.band.composite;
+    const mergeRow = html.slice(html.indexOf(`https://github.com/example/repo/commit/${merge}`) - 600, html.indexOf(`https://github.com/example/repo/commit/${merge}`));
 
     expect(html).toContain(`https://github.com/example/repo/pull/42`);
-    expect(html).toContain(`https://github.com/example/repo/commit/${merge}`);
-    expect(html).toContain("Remove the busy function");
-    expect(html).toMatch(/×\s*band/);
+    expect(html).toContain("Remove the busy &lt;function&gt; &amp; friends");
+    expect(html).not.toContain("<function>");
+    expect(mergeRow).toContain(`${(Math.abs(fixture.manifest.scopes["products/a"]!.movers[1]!.delta.composite) / band).toFixed(1)}× band`);
   });
 
-  test("ranks the modules of the treated scope at the latest commit from worst to best with the raw numbers behind each sub-score", () => {
-    expect(html).toContain("a modules at <code>");
-    expect(html).toContain("<b>backend</b>");
+  test("ranks the modules of the treated scope at the repository head from worst to best with the raw numbers behind each sub-score", () => {
+    const frontend = html.indexOf("<b>frontend</b>");
+    const backend = html.indexOf("<b>backend</b>");
+
+    expect(html).toContain(`a modules at <code>${fixture.manifest.head.slice(0, 12)}</code>`);
+    expect(frontend).toBeGreaterThan(-1);
+    expect(frontend).toBeLessThan(backend);
     expect(html).toContain("p90 CCN");
     expect(html).toContain("ruff / KLOC");
   });

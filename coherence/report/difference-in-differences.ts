@@ -7,6 +7,7 @@ export type DifferenceInDifferences = { treated: Slopes; controls: Slopes; effec
 const weekMs = 7 * 24 * 60 * 60 * 1000;
 
 export function differenceInDifferences({ treated, controls, intervention }: { treated: Series; controls: Series[]; intervention: string }): DifferenceInDifferences {
+  if (controls.length === 0) throw new Error("Difference in differences needs at least one control series.");
   const treatedSlopes = slopesAround(treated, intervention);
   const controlSlopes = controls.map((control) => slopesAround(control, intervention));
   const controlsMean: Slopes = {

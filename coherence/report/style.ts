@@ -36,7 +36,7 @@ section, footer { background: var(--surface); border: 1px solid var(--border); b
 footer { font-size: 13px; color: var(--ink-2); }
 footer ul { padding-left: 18px; margin: 0; }
 footer li { margin-bottom: 4px; }
-button { font: inherit; font-size: 13px; color: var(--ink-2); background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+button { font: inherit; font-size: 13px; white-space: nowrap; color: var(--ink-2); background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
 button:hover { color: var(--ink); border-color: var(--axis); }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0 12px; }
 .tile { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
@@ -45,6 +45,7 @@ button:hover { color: var(--ink); border-color: var(--axis); }
 .tile .delta { font-size: 13px; color: var(--ink-2); }
 .tile .delta.up { color: var(--good); }
 .tile .delta.down { color: var(--bad); }
+.tile .detail { font-size: 12px; color: var(--muted); }
 .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
 .sparkline { display: block; width: 120px; height: 32px; margin-top: 8px; }
 .sparkline path { fill: none; stroke: var(--axis); stroke-width: 1.5; }
@@ -61,7 +62,7 @@ figure.chart figcaption { font-size: 13px; color: var(--ink-2); margin-bottom: 4
 .grid { stroke: var(--grid); stroke-width: 1; }
 .axis { stroke: var(--axis); stroke-width: 1; }
 .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
-.noise-band { fill: var(--series); fill-opacity: 0.12; stroke: none; }
+.noise-band { fill: var(--series); fill-opacity: 0.18; stroke: none; }
 .line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .end-dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
 .leader { stroke: var(--axis); stroke-width: 1; }

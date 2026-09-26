@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { backfill, type BackfillManifest } from "../../coherence/backfill.ts";
-import { backfillFixture, type BackfillFixture } from "./backfill-fixture.ts";
+import { backfillFixture, mergeSubject, type BackfillFixture } from "./backfill-fixture.ts";
 
 const toolTimeoutMs = 300_000;
 const zero = { composite: 0, architecture: 0, complexity: 0, smells: 0, tests: 0 };
@@ -24,8 +24,8 @@ describe("the weekly backfill", () => {
     const weekly = (scope: string) => manifest.scopes[scope]!.points.map(({ week, commit }) => `${week} ${commit.slice(0, 7)}`);
     const short = (name: string) => commits[name]!.slice(0, 7);
 
-    expect(weekly("products/a")).toEqual([`2026-03-16 ${short("addsB")}`, `2026-03-23 ${short("trivial")}`, `2026-03-30 ${short("merge")}`]);
-    expect(weekly("products/b")).toEqual([`2026-03-16 ${short("addsB")}`, `2026-03-23 ${short("trivial")}`, `2026-03-30 ${short("merge")}`]);
+    expect(weekly("products/a")).toEqual([`2026-03-16 ${short("base")}`, `2026-03-23 ${short("trivial")}`, `2026-03-30 ${short("merge")}`]);
+    expect(weekly("products/b")).toEqual([`2026-03-23 ${short("trivial")}`, `2026-03-30 ${short("merge")}`]);
     expect(await readdir(join(dataDir, "products/a"))).toContain(`2026-03-26-${commits.merge!.slice(0, 12)}.json`);
   });
 
@@ -33,7 +33,10 @@ describe("the weekly backfill", () => {
     const again = await backfill(fixture.request);
 
     expect(again.runtime.measured).toBe(0);
-    expect(again.runtime.reused).toBe(manifest.runtime.measured + manifest.runtime.reused);
+    expect(manifest.runtime.reused).toBe(0);
+    expect(again.runtime.reused).toBe(manifest.runtime.measured);
+    expect(again.runtime.total.measured).toBe(manifest.runtime.measured);
+    expect(again.runtime.total.seconds).toBeCloseTo(manifest.runtime.total.seconds + again.runtime.seconds, 5);
     expect(again.scopes).toEqual(manifest.scopes);
   });
 
@@ -57,6 +60,6 @@ describe("the weekly backfill", () => {
     ]);
     expect(movers[0]!.delta.composite).toBeLessThan(-5);
     expect(movers[1]!.delta.composite).toBeCloseTo(-movers[0]!.delta.composite, 5);
-    expect(movers[1]!.subject).toBe("Remove the busy function (#42)");
+    expect(movers[1]!.subject).toBe(mergeSubject);
   });
 });

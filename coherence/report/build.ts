@@ -2,6 +2,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 import { readManifest } from "../backfill.ts";
 import { renderHtml } from "./html.ts";
 import { renderMarkdown } from "./markdown.ts";
@@ -22,10 +23,18 @@ export async function buildReport(request: BuildRequest, log: (line: string) => 
 
 async function moduleBreakdown(manifest: Awaited<ReturnType<typeof readManifest>>, { modulesFor, repository, dataDir }: BuildRequest, log: (line: string) => void) {
   const scope = modulesFor ?? Object.keys(manifest.scopes)[0];
-  const latest = scope === undefined ? undefined : manifest.scopes[scope]?.points.at(-1);
-  if (scope === undefined || latest === undefined) return null;
-  return scoreModules({ repository, scope, commit: latest.commit, date: latest.date, dataDir }, log);
+  if (scope === undefined || !(scope in manifest.scopes)) return null;
+  return scoreModules({ repository, scope, commit: manifest.head, dataDir }, log);
 }
+
+const ArgumentsSchema = z.object({
+  data: z.string().min(1),
+  out: z.string().min(1),
+  repo: z.string().min(1).optional(),
+  modules: z.string().min(1).optional(),
+  github: z.string().regex(/^[\w.-]+\/[\w.-]+$/).optional(),
+  intervention: z.iso.date().optional(),
+});
 
 if (import.meta.main) {
   const { values } = parseArgs({
@@ -38,9 +47,12 @@ if (import.meta.main) {
       intervention: { type: "string" },
     },
   });
-  const model = await buildReport(
-    { dataDir: resolve(values.data), outDir: resolve(values.out), repository: values.repo ? resolve(values.repo) : undefined, modulesFor: values.modules, github: values.github, intervention: values.intervention },
-    (line) => console.error(line),
-  );
-  console.log(`Report for ${model.scopes.length} scopes over ${model.weeks.length} weeks written to ${resolve(values.out)}/index-report.{html,md}`);
+  const parsed = ArgumentsSchema.safeParse(values);
+  if (!parsed.success) {
+    console.error(`Usage: bun coherence/report/build.ts [--data coherence/data] [--out docs/coherence] [--repo <path>] [--modules <scope>] [--github owner/repo] [--intervention YYYY-MM-DD]\n${z.prettifyError(parsed.error)}`);
+    process.exit(2);
+  }
+  const { data, out, repo, modules, github, intervention } = parsed.data;
+  const model = await buildReport({ dataDir: resolve(data), outDir: resolve(out), repository: repo ? resolve(repo) : undefined, modulesFor: modules, github, intervention }, (line) => console.error(line));
+  console.log(`Report for ${model.scopes.length} scopes over ${model.weeks.length} weeks written to ${resolve(out)}/index-report.{html,md}`);
 }

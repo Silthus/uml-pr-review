@@ -1,0 +1,1779 @@
+# red: new tests against origin/main (b0008ee) before any src change
+# bun test test/explorer/explorer.dom.test.tsx test/explorer/layout.test.ts
+# The plan picker test (#44.1) already passes: #47 fixed the picker; the max-width is CSS only.
+
+bun test v1.4.2 (50a8a8387)
+
+test/explorer/explorer.dom.test.tsx:
+An update to ExplorerApp inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to ExplorerApp inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to ExplorerApp inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+341 | 
+342 |     const view = renderExplorer(`?path=${encodeURIComponent(root)}&expanded=products`);
+343 |     const showAll = await view.findByRole("button", { name: "show all modules in products" });
+344 | 
+345 |     expect(view.getAllByRole("button", { name: /^products\/product_\d+ package$/ })).toHaveLength(12);
+346 |     expect(showAll.closest(".react-flow__node")?.style.pointerEvents).not.toBe("none");
+                                                                                ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "none"
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/explorer.dom.test.tsx:346:75)
+(fail) ExplorerApp > show all reveals the children folded behind the more cell [73.05ms]
+32 |   // throw errors w/ suggestions for better queries. Opt in so off by default.
+33 |   throwSuggestions: false,
+34 |   // called when getBy* queries fail. (message, container) => Error
+35 |   getElementError(message, container) {
+36 |     const prettifiedDOM = (0, _prettyDom.prettyDOM)(container);
+37 |     const error = new Error([message, `Ignored nodes: comments, ${config.defaultIgnore}\n${prettifiedDOM}`].filter(Boolean).join('\n\n'));
+                           ^
+TestingLibraryElementError: Unable to find an accessible element with the role "list" and name "Interface files"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "/repo":
+  [36m<button[39m
+    [33mclass[39m=[32m"link eyebrow"[39m
+    [33mtitle[39m=[32m"Choose another repository"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Switch to dark theme":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Switch to dark theme"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Zoom In":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Zoom In"[39m
+    [33mclass[39m=[32m"react-flow__controls-button react-flow__controls-zoomin"[39m
+    [33mtitle[39m=[32m"Zoom In"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Zoom Out":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Zoom Out"[39m
+    [33mclass[39m=[32m"react-flow__controls-button react-flow__controls-zoomout"[39m
+    [33mtitle[39m=[32m"Zoom Out"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Fit View":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fit View"[39m
+    [33mclass[39m=[32m"react-flow__controls-button react-flow__controls-fitview"[39m
+    [33mtitle[39m=[32m"Fit View"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "products / error_tracking / backend / logic":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "products / feature_flags / backend / facade":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Remove seam":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "products / error_tracking / backend / logic / service.py:12 → products / feature_flags / backend / facade / api.py":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtitle[39m=[32m"products/error_tracking/backend/logic/service.py:12 imports products/feature_flags/backend/facade/api.py"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Add comment":
+  [36m<button[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  Name "Check":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Final check":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Lock plan":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "modify products / error_tracking / backend / logic":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "modify products / error_tracking / frontend":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "New module…":
+  [36m<button[39m
+    [33mclass[39m=[32m"subtle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / facade":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / models":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Add comment":
+  [36m<button[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "repo":
+  [36m<h1 />[39m
+
+  Name "Activity":
+  [36m<h3 />[39m
+
+  Name "products / error_tracking / backend / logic → products / feature_flags / backend / facade":
+  [36m<h2[39m
+    [33mclass[39m=[32m"seam-title"[39m
+  [36m/>[39m
+
+  Name "Imports today 1":
+  [36m<h3 />[39m
+
+  Name "Comments":
+  [36m<h3 />[39m
+
+  Name "Flags on issues":
+  [36m<h2 />[39m
+
+  Name "Modules 2":
+  [36m<h3 />[39m
+
+  Name "Seams 2":
+  [36m<h3 />[39m
+
+  Name "Plan comments":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "Find a module":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Find a module"[39m
+    [33mplaceholder[39m=[32m"Find a module…"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "View controls":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"View controls"[39m
+    [33mclass[39m=[32m"header-controls"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Plan":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Plan"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "No plan":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Flags on issues":
+  [36m<option[39m
+    [33mvalue[39m=[32m"flags-on-issues"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  switch:
+
+  Name "Plan overlay":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"Plan overlay"[39m
+    [33mclass[39m=[32m"switch on"[39m
+    [33mrole[39m=[32m"switch"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Follow agent":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"Follow agent"[39m
+    [33mclass[39m=[32m"switch on"[39m
+    [33mrole[39m=[32m"switch"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Show tests":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Show tests"[39m
+    [33mclass[39m=[32m"switch "[39m
+    [33mrole[39m=[32m"switch"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "All dependencies":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"All dependencies"[39m
+    [33mclass[39m=[32m"switch "[39m
+    [33mrole[39m=[32m"switch"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Pull requests":
+  [36m<a[39m
+    [33mhref[39m=[32m"/pulls?path=%2Frepo"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  application:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"react-flow light"[39m
+    [33mdata-testid[39m=[32m"rf__wrapper"[39m
+    [33mrole[39m=[32m"application"[39m
+    [33mstyle[39m=[32m"width: 100%; height: 100%; overflow: hidden; position: relative; z-index: 0;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Live activity":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Live activity"[39m
+    [33mclass[39m=[32m"activity"[39m
+  [36m/>[39m
+
+  Name "seam products/error_tracking/backend/logic → products/feature_flags/backend/facade":
+  [36m<section[39m
+    [33maria-label[39m=[32m"seam products/error_tracking/backend/logic → products/feature_flags/backend/facade"[39m
+    [33mclass[39m=[32m"comments"[39m
+  [36m/>[39m
+
+  Name "Architecture plan":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Architecture plan"[39m
+    [33mclass[39m=[32m"panel plan"[39m
+  [36m/>[39m
+
+  Name "the plan":
+  [36m<section[39m
+    [33maria-label[39m=[32m"the plan"[39m
+    [33mclass[39m=[32m"comments"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"muted"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"responsibility"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"goal"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"activity-list"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"evidence"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "Inspector":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"Inspector"[39m
+    [33mclass[39m=[32m"inspector"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  form:
+
+  Name "New comment on seam products/error_tracking/backend/logic → products/feature_flags/backend/facade":
+  [36m<form[39m
+    [33maria-label[39m=[32m"New comment on seam products/error_tracking/backend/logic → products/feature_flags/backend/facade"[39m
+    [33mclass[39m=[32m"comment-form"[39m
+  [36m/>[39m
+
+  Name "New comment on the plan":
+  [36m<form[39m
+    [33maria-label[39m=[32m"New comment on the plan"[39m
+    [33mclass[39m=[32m"comment-form"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Comment on seam products/error_tracking/backend/logic → products/feature_flags/backend/facade":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"Comment on seam products/error_tracking/backend/logic → products/feature_flags/backend/facade"[39m
+    [33mname[39m=[32m"body"[39m
+    [33mplaceholder[39m=[32m"Tell the agent what to change"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "Comment on the plan":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"Comment on the plan"[39m
+    [33mname[39m=[32m"body"[39m
+    [33mplaceholder[39m=[32m"Tell the agent what to change"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"explorer theme-light"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"header-repository"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"link eyebrow"[39m
+            [33mtitle[39m=[32m"Choose another repository"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m/repo[0m
+          [36m</button>[39m
+          [36m<h1>[39m
+            [0mrepo[0m
+          [36m</h1>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"search"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Find a module"[39m
+            [33mplaceholder[39m=[32m"Find a module…"[39m
+            [33mtype[39m=[32m"search"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"View controls"[39m
+          [33mclass[39m=[32m"header-controls"[39m
+        [36m>[39m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Plan"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mNo plan[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"flags-on-issues"[39m
+            [36m>[39m
+              [0mFlags on issues[0m
+            [36m</option>[39m
+          [36m</select>[39m
+          [36m<button[39m
+            [33maria-checked[39m=[32m"true"[39m
+            [33maria-label[39m=[32m"Plan overlay"[39m
+            [33mclass[39m=[32m"switch on"[39m
+            [33mrole[39m=[32m"switch"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"switch-knob"[39m
+            [36m/>[39m
+            [0mPlan overlay[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-checked[39m=[32m"true"[39m
+            [33maria-label[39m=[32m"Follow agent"[39m
+            [33mclass[39m=[32m"switch on"[39m
+            [33mrole[39m=[32m"switch"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"switch-knob"[39m
+            [36m/>[39m
+            [0mFollow agent[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-checked[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Show tests"[39m
+            [33mclass[39m=[32m"switch "[39m
+            [33mrole[39m=[32m"switch"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"switch-knob"[39m
+            [36m/>[39m
+            [0mShow tests[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"stream stream-connecting"[39m
+            [33mtitle[39m=[32m"Event stream connecting"[39m
+          [36m>[39m
+            [0mconnecting[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Switch to dark theme"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mDark[0m
+          [36m</button>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"/pulls?path=%2Frepo"[39m
+          [36m>[39m
+            [0mPull requests[0m
+          [36m</a>[39m
+        [36m</nav>[39m
+      [36m</header>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"workspace"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"canvas-column"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33maria-label[39m=[32m"Architecture canvas"[39m
+            [33mclass[39m=[32m"canvas"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"canvas-mode"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mode-label"[39m
+              [36m>[39m
+                [0mBackbone: each package's heaviest dependency[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33maria-checked[39m=[32m"false"[39m
+                [33maria-label[39m=[32m"All dependencies"[39m
+                [33mclass[39m=[32m"switch "[39m
+                [33mrole[39m=[32m"switch"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"switch-knob"[39m
+                [36m/>[39m
+                [0mAll dependencies[0m
+              [36m</button>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"canvas-status"[39m
+              [36m>[39m
+                [0mLaying out…[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"react-flow light"[39m
+              [33mdata-testid[39m=[32m"rf__wrapper"[39m
+              [33mrole[39m=[32m"application"[39m
+              [33mstyle[39m=[32m"width: 100%; height: 100%; overflow: hidden; position: relative; z-index: 0;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"react-flow__renderer"[39m
+                [33mstyle[39m=[32m"position: absolute; width: 100%; height: 100%; top: 0px; left: 0px;"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"react-flow__pane draggable"[39m
+                  [33mstyle[39m=[32m"position: absolute; width: 100%; height: 100%; top: 0px; left: 0px;"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"react-flow__viewport xyflow__viewport react-flow__container"[39m
+                    [33mstyle[39m=[32m"transform: translate(0px,0px) scale(1);"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"react-flow__edges"[39m
+                    [36m/>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"react-flow__edgelabel-renderer"[39m
+                    [36m/>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"react-flow__nodes"[39m
+                      [33mstyle[39m=[32m"position: absolute; width: 100%; height: 100%; top: 0px; left: 0px;"[39m
+                    [36m/>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"react-flow__viewport-portal"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+    ...
+      at getElementError (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/config.js:37:23)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:76:38)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:52:17)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/explorer.dom.test.tsx:367:31)
+(fail) ExplorerApp > a seam's interface lists one file per line [53.53ms]
+32 |   // throw errors w/ suggestions for better queries. Opt in so off by default.
+33 |   throwSuggestions: false,
+34 |   // called when getBy* queries fail. (message, container) => Error
+35 |   getElementError(message, container) {
+36 |     const prettifiedDOM = (0, _prettyDom.prettyDOM)(container);
+37 |     const error = new Error([message, `Ignored nodes: comments, ${config.defaultIgnore}\n${prettifiedDOM}`].filter(Boolean).join('\n\n'));
+                           ^
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name `/^bypasses-seam/`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Flags on issues":
+  [36m<h2 />[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"goal"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "Check":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Final check":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Lock plan":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Modules 2":
+  [36m<h3 />[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "modify products / error_tracking / backend / logic ◌ pending":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "modify products / error_tracking / frontend":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "New module…":
+  [36m<button[39m
+    [33mclass[39m=[32m"subtle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Seams 2":
+  [36m<h3 />[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / facade ✓ conforming":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / models ✕ violating":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Findings 1":
+  [36m<h3 />[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ol[39m
+    [33mclass[39m=[32m"findings"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"finding severity-violation"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "products / error_tracking / backend / logic / service.py:18":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"fix"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Plan comments":
+  [36m<h3 />[39m
+
+  --------------------------------------------------region:
+
+  Name "the plan":
+  [36m<section[39m
+    [33maria-label[39m=[32m"the plan"[39m
+    [33mclass[39m=[32m"comments"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  form:
+
+  Name "New comment on the plan":
+  [36m<form[39m
+    [33maria-label[39m=[32m"New comment on the plan"[39m
+    [33mclass[39m=[32m"comment-form"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Comment on the plan":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"Comment on the plan"[39m
+    [33mname[39m=[32m"body"[39m
+    [33mplaceholder[39m=[32m"Tell the agent what to change"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Add comment":
+  [36m<button[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"Architecture plan"[39m
+  [33mclass[39m=[32m"panel plan"[39m
+[36m>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m>[39m
+    [0mArchitecture plan · revision 2[0m
+  [36m</p>[39m
+  [36m<h2>[39m
+    [0mFlags on issues[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"goal"[39m
+  [36m>[39m
+    [0mShow feature flag usage on error tracking issues.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"plan-state"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"chip chip-lock draft"[39m
+    [36m>[39m
+      [0mDraft[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"chip chip-status status-violating"[39m
+    [36m>[39m
+      [0m✕ violating · progress[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"actions"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mCheck[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mFinal check[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"primary"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mLock plan[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<h3>[39m
+    [0mModules [0m
+    [36m<span[39m
+      [33mclass[39m=[32m"count"[39m
+    [36m>[39m
+      [0m2[0m
+    [36m</span>[39m
+  [36m</h3>[39m
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action action-modify"[39m
+        [36m>[39m
+          [0mmodify[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"module-path "[39m
+          [33mtitle[39m=[32m"products/error_tracking/backend/logic"[39m
+        [36m>[39m
+          [0mproducts[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0merror_tracking[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mbackend[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mlogic[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-status status-pending"[39m
+        [36m>[39m
+          [0m◌[0m
+          [0m [0m
+          [0mpending[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action action-modify"[39m
+        [36m>[39m
+          [0mmodify[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"module-path "[39m
+          [33mtitle[39m=[32m"products/error_tracking/frontend"[39m
+        [36m>[39m
+          [0mproducts[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0merror_tracking[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mfrontend[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"subtle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0mNew module…[0m
+  [36m</button>[39m
+  [36m<h3>[39m
+    [0mSeams [0m
+    [36m<span[39m
+      [33mclass[39m=[32m"count"[39m
+    [36m>[39m
+      [0m2[0m
+    [36m</span>[39m
+  [36m</h3>[39m
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action seam-add"[39m
+        [36m>[39m
+          [0madd[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"seam-ends"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path "[39m
+            [33mtitle[39m=[32m"products/error_tracking/backend/logic"[39m
+          [36m>[39m
+            [0mproducts[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0merror_tracking[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mbackend[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mlogic[0m
+          [36m</span>[39m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"arrow"[39m
+          [36m>[39m
+            [0m→[0m
+          [36m</span>[39m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path "[39m
+            [33mtitle[39m=[32m"products/feature_flags/backend/facade"[39m
+          [36m>[39m
+            [0mproducts[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mfeature_flags[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mbackend[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mfacade[0m
+          [36m</span>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-status status-conforming"[39m
+        [36m>[39m
+          [0m✓[0m
+          [0m [0m
+          [0mconforming[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action seam-add"[39m
+        [36m>[39m
+          [0madd[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"seam-ends"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path "[39m
+            [33mtitle[39m=[32m"products/error_tracking/backend/logic"[39m
+          [36m>[39m
+            [0mproducts[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0merror_tracking[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mbackend[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mlogic[0m
+          [36m</span>[39m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"arrow"[39m
+          [36m>[39m
+            [0m→[0m
+          [36m</span>[39m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path "[39m
+            [33mtitle[39m=[32m"products/feature_flags/backend/models"[39m
+          [36m>[39m
+            [0mproducts[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mfeature_flags[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mbackend[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mmodels[0m
+          [36m</span>[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-status status-violating"[39m
+        [36m>[39m
+          [0m✕[0m
+          [0m [0m
+          [0mviolating[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+  [36m<h3>[39m
+    [0mFindings [0m
+    [36m<span[39m
+      [33mclass[39m=[32m"count"[39m
+    [36m>[39m
+      [0m1[0m
+    [36m</span>[39m
+  [36m</h3>[39m
+  [36m<ol[39m
+    [33mclass[39m=[32m"findings"[39m
+  [36m>[39m
+    [36m<li[39m
+      [33mclass[39m=[32m"finding severity-violation"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"module-path "[39m
+          [33mtitle[39m=[32m"products/error_tracking/backend/logic/service.py:18"[39m
+        [36m>[39m
+          [0mproducts[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0merror_tracking[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mbackend[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mlogic[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mservice.py:18[0m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<p>[39m
+        [0m`products/error_tracking/backend/logic/service.py:18` imports `products/feature_flags/backend/models/flag.py` directly, but the plan routes `products/error_tracking/backend/logic` through `products/feature_flags/backend/facade`.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"fix"[39m
+      [36m>[39m
+        [0mImport through products/feature_flags/backend/facade/api.py instead.[0m
+      [36m</p>[39m
+    [36m</li>[39m
+  [36m</ol>[39m
+  [36m<h3>[39m
+    [0mPlan comments[0m
+  [36m</h3>[39m
+  [36m<section[39m
+    [33maria-label[39m=[32m"the plan"[39m
+    [33mclass[39m=[32m"comments"[39m
+  [36m>[39m
+    [36m<form[39m
+      [33maria-label[39m=[32m"New comment on the plan"[39m
+      [33mclass[39m=[32m"comment-form"[39m
+    [36m>[39m
+      [36m<textarea[39m
+        [33maria-label[39m=[32m"Comment on the plan"[39m
+        [33mname[39m=[32m"body"[39m
+        [33mplaceholder[39m=[32m"Tell the agent what to change"[39m
+        [33mrows[39m=[32m"2"[39m
+      [36m/>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mAdd comment[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</section>[39m
+[36m</section>[39m
+      at getElementError (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/config.js:37:23)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:76:38)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:52:17)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/explorer.dom.test.tsx:382:37)
+(fail) ExplorerApp > a finding renders its code spans as code [70.77ms]
+32 |   // throw errors w/ suggestions for better queries. Opt in so off by default.
+33 |   throwSuggestions: false,
+34 |   // called when getBy* queries fail. (message, container) => Error
+35 |   getElementError(message, container) {
+36 |     const prettifiedDOM = (0, _prettyDom.prettyDOM)(container);
+37 |     const error = new Error([message, `Ignored nodes: comments, ${config.defaultIgnore}\n${prettifiedDOM}`].filter(Boolean).join('\n\n'));
+                           ^
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "Comments on dropped seam products/error_tracking/backend/logic → products/feature_flags/backend/models"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Flags on issues":
+  [36m<h2 />[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"goal"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "Check":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Final check":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Lock plan":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Modules 2":
+  [36m<h3 />[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "modify products / error_tracking / backend / logic":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "modify products / error_tracking / frontend":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------button:
+
+  Name "New module…":
+  [36m<button[39m
+    [33mclass[39m=[32m"subtle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Seams 1":
+  [36m<h3 />[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / facade":
+  [36m<button[39m
+    [33mclass[39m=[32m"link"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------heading:
+
+  Name "Plan comments":
+  [36m<h3 />[39m
+
+  --------------------------------------------------region:
+
+  Name "the plan":
+  [36m<section[39m
+    [33maria-label[39m=[32m"the plan"[39m
+    [33mclass[39m=[32m"comments"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  form:
+
+  Name "New comment on the plan":
+  [36m<form[39m
+    [33maria-label[39m=[32m"New comment on the plan"[39m
+    [33mclass[39m=[32m"comment-form"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Comment on the plan":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"Comment on the plan"[39m
+    [33mname[39m=[32m"body"[39m
+    [33mplaceholder[39m=[32m"Tell the agent what to change"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Add comment":
+  [36m<button[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"Architecture plan"[39m
+  [33mclass[39m=[32m"panel plan"[39m
+[36m>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m>[39m
+    [0mArchitecture plan · revision 4[0m
+  [36m</p>[39m
+  [36m<h2>[39m
+    [0mFlags on issues[0m
+  [36m</h2>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"goal"[39m
+  [36m>[39m
+    [0mShow feature flag usage on error tracking issues.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"plan-state"[39m
+  [36m>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"chip chip-lock draft"[39m
+    [36m>[39m
+      [0mDraft[0m
+    [36m</span>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"muted"[39m
+    [36m>[39m
+      [0mNot checked yet[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"actions"[39m
+  [36m>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mCheck[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mFinal check[0m
+    [36m</button>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"primary"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mLock plan[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<h3>[39m
+    [0mModules [0m
+    [36m<span[39m
+      [33mclass[39m=[32m"count"[39m
+    [36m>[39m
+      [0m2[0m
+    [36m</span>[39m
+  [36m</h3>[39m
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action action-modify"[39m
+        [36m>[39m
+          [0mmodify[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"module-path "[39m
+          [33mtitle[39m=[32m"products/error_tracking/backend/logic"[39m
+        [36m>[39m
+          [0mproducts[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0merror_tracking[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mbackend[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mlogic[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action action-modify"[39m
+        [36m>[39m
+          [0mmodify[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"module-path "[39m
+          [33mtitle[39m=[32m"products/error_tracking/frontend"[39m
+        [36m>[39m
+          [0mproducts[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0merror_tracking[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path-slash"[39m
+          [36m>[39m
+            [0m/[0m
+            [36m<wbr />[39m
+          [36m</span>[39m
+          [0mfrontend[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"subtle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0mNew module…[0m
+  [36m</button>[39m
+  [36m<h3>[39m
+    [0mSeams [0m
+    [36m<span[39m
+      [33mclass[39m=[32m"count"[39m
+    [36m>[39m
+      [0m1[0m
+    [36m</span>[39m
+  [36m</h3>[39m
+  [36m<ul[39m
+    [33mclass[39m=[32m"plan-list"[39m
+  [36m>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"link"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"chip chip-action seam-add"[39m
+        [36m>[39m
+          [0madd[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"seam-ends"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path "[39m
+            [33mtitle[39m=[32m"products/error_tracking/backend/logic"[39m
+          [36m>[39m
+            [0mproducts[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0merror_tracking[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mbackend[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mlogic[0m
+          [36m</span>[39m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"arrow"[39m
+          [36m>[39m
+            [0m→[0m
+          [36m</span>[39m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"module-path "[39m
+            [33mtitle[39m=[32m"products/feature_flags/backend/facade"[39m
+          [36m>[39m
+            [0mproducts[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mfeature_flags[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mbackend[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"module-path-slash"[39m
+            [36m>[39m
+              [0m/[0m
+              [36m<wbr />[39m
+            [36m</span>[39m
+            [0mfacade[0m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+  [36m<h3>[39m
+    [0mPlan comments[0m
+  [36m</h3>[39m
+  [36m<section[39m
+    [33maria-label[39m=[32m"the plan"[39m
+    [33mclass[39m=[32m"comments"[39m
+  [36m>[39m
+    [36m<form[39m
+      [33maria-label[39m=[32m"New comment on the plan"[39m
+      [33mclass[39m=[32m"comment-form"[39m
+    [36m>[39m
+      [36m<textarea[39m
+        [33maria-label[39m=[32m"Comment on the plan"[39m
+        [33mname[39m=[32m"body"[39m
+        [33mplaceholder[39m=[32m"Tell the agent what to change"[39m
+        [33mrows[39m=[32m"2"[39m
+      [36m/>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mAdd comment[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</section>[39m
+[36m</section>[39m
+      at getElementError (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/config.js:37:23)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:76:38)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:52:17)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/explorer.dom.test.tsx:426:36)
+(fail) ExplorerApp > a comment on a seam the plan drops stays visible with its original target and the reply [58.25ms]
+
+test/explorer/layout.test.ts:
+111 |     const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan });
+112 | 
+113 |     const laidOut = await engine.layout(graph);
+114 | 
+115 |     const zoom = fitZoom(boundsOf(laidOut.nodes), canvasAt1440x900);
+116 |     expect(packageNameFontSize * zoom).toBeGreaterThanOrEqual(legibleNameSize);
+                                             ^
+error: expect(received).toBeGreaterThanOrEqual(expected)
+
+Expected: >= 11
+Received: 5.939901071723
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/layout.test.ts:116:40)
+(fail) plan focus on the real PostHog plan (10 modules, 8 seams) > the automatic fit at 1440×900 keeps package names at 11 px or more [46.26ms]
+118 |   });
+119 | 
+120 |   test("with nothing selected it draws only planned modules, seam ends, and the seams", () => {
+121 |     const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan });
+122 | 
+123 |     expect(graph.nodes.map((node) => node.id).sort()).toEqual(plannedAndSeamEnds);
+                                                            ^
+error: expect(received).toEqual(expected)
+
+@@ -1,2 +1,4 @@
+  [
++   "common",
++   "ee",
+    "frontend/src/lib",
+@@ -6,2 +8,3 @@
+    "posthog/hogql_queries",
++   "products/access_control",
+    "products/error_tracking/backend/facade",
+@@ -13,2 +16,3 @@
+    "products/feature_flags/backend/facade",
++   "products/posthog_ai",
+  ]
+
+- Expected  - 0
++ Received  + 4
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/layout.test.ts:123:55)
+(fail) plan focus on the real PostHog plan (10 modules, 8 seams) > with nothing selected it draws only planned modules, seam ends, and the seams [1.62ms]
+128 |     const selected = "products/error_tracking/backend/logic";
+129 |     const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan, selection: { kind: "module", path: selected } });
+130 | 
+131 |     const context = graph.edges.filter((edge) => edge.data.seam === null);
+132 |     expect(context.length).toBeGreaterThan(0);
+133 |     expect(context.every((edge) => edge.source === selected || edge.target === selected)).toBe(true);
+                                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/fable-41/test/explorer/layout.test.ts:133:91)
+(fail) plan focus on the real PostHog plan (10 modules, 8 seams) > selecting a planned module adds its direct dependencies and nothing else [1.32ms]
+
+ 14 pass
+ 7 fail
+ 92 expect() calls
+Ran 21 tests across 2 files. [2.78s]

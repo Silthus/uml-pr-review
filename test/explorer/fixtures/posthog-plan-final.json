@@ -1,0 +1,545 @@
+{
+  "version": 1,
+  "id": "feature-flag-usage-on-error-tracking-iss-7c5c",
+  "title": "Feature flag usage on error tracking issues",
+  "goal": "On an error tracking issue, show which feature flags (and variants) were active on the issue's $exception events, so engineers can spot a flag rollout causing the error. v1 mirrors the existing Releases tab: a new ErrorTrackingIssueFeatureFlagsQuery reads `$feature/<key>` properties off the issue's exceptions in ClickHouse, aggregates occurrences per flag and variant over the preview date range, and enriches the keys with flag id/name/active state through the feature_flags facade so the UI can link to each flag. A new \"Flags\" tab in the issue filter preview panel renders it, gated by a new ERROR_TRACKING_ISSUE_FEATURE_FLAGS frontend flag. Out of scope for v1: baseline comparison against $feature_flag_called traffic (lift), and flag filters in the issue list.",
+  "baseCommit": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "status": "locked",
+  "revision": 6,
+  "modules": [
+    {
+      "path": "frontend/src/lib",
+      "action": "modify",
+      "responsibility": "Add ERROR_TRACKING_ISSUE_FEATURE_FLAGS to FEATURE_FLAGS in constants.tsx.",
+      "origin": "agent"
+    },
+    {
+      "path": "frontend/src/queries/schema",
+      "action": "modify",
+      "responsibility": "Add NodeKind.ErrorTrackingIssueFeatureFlagsQuery, the query, response and row types; regenerate posthog/schema.py.",
+      "origin": "agent"
+    },
+    {
+      "path": "posthog/hogql_queries",
+      "action": "modify",
+      "responsibility": "Register the ErrorTrackingIssueFeatureFlagsQuery kind in get_query_runner via a lazy import from the error tracking facade.",
+      "origin": "agent"
+    },
+    {
+      "path": "products/error_tracking/backend/facade",
+      "action": "modify",
+      "responsibility": "Export the new runner from queries.py so core query dispatch can reach it, like the other error tracking runners.",
+      "origin": "agent"
+    },
+    {
+      "path": "products/error_tracking/backend/hogql_queries",
+      "action": "modify",
+      "responsibility": "New ErrorTrackingIssueFeatureFlagsQueryRunner: aggregates the issue's $exception events by `$feature/<key>` property into per-flag, per-variant counts (capped at N flags), then hands the keys to logic for enrichment. Imports no other product.",
+      "origin": "agent"
+    },
+    {
+      "path": "products/error_tracking/backend/logic",
+      "action": "modify",
+      "responsibility": "New feature_flags.py: resolve_issue_flags(team, keys) maps flag keys to error-tracking-owned IssueFlagInfo(id, name, active, deleted) via the feature_flags facade. Unknown/deleted keys stay unlinked.",
+      "origin": "agent"
+    },
+    {
+      "path": "products/error_tracking/frontend",
+      "action": "modify",
+      "responsibility": "queries.ts gains errorTrackingIssueFeatureFlagsQuery builder next to errorTrackingReleasesQuery; the new IssueFeatureFlags logic uses it.",
+      "origin": "agent"
+    },
+    {
+      "path": "products/error_tracking/frontend/components/IssueFeatureFlags",
+      "action": "create",
+      "responsibility": "issueFeatureFlagsLogic (loads the query for the preview's issue and date range) and IssueFeatureFlagsPreview (rows per flag with variant split, linking to the flag).",
+      "origin": "agent"
+    },
+    {
+      "path": "products/error_tracking/frontend/components/IssueFilterPreview",
+      "action": "modify",
+      "responsibility": "Add a 'Flags' tab to IssueFilterPreviewPanel behind the ERROR_TRACKING_ISSUE_FEATURE_FLAGS flag; clicking a variant adds a `$feature/<key>` property filter to the preview.",
+      "origin": "agent"
+    },
+    {
+      "path": "products/feature_flags/backend/facade",
+      "action": "modify",
+      "responsibility": "Add get_flag_summaries_by_key(team, keys) returning frozen FlagSummary(id, key, name, active, deleted) records, so callers never touch the FeatureFlag model.",
+      "origin": "agent"
+    }
+  ],
+  "seams": [
+    {
+      "from": "posthog/hogql_queries",
+      "to": "products/error_tracking/backend/facade",
+      "action": "keep",
+      "interface": {
+        "files": [
+          "products/error_tracking/backend/facade/queries.py"
+        ],
+        "symbols": [
+          "ErrorTrackingIssueFeatureFlagsQueryRunner"
+        ]
+      },
+      "rationale": "Existing lazy-import dispatch; only the imported names grow.",
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/backend/hogql_queries",
+      "to": "posthog/hogql",
+      "action": "keep",
+      "interface": {
+        "files": [
+          "posthog/hogql/query.py",
+          "posthog/hogql/parser.py",
+          "posthog/hogql/ast.py"
+        ],
+        "symbols": [
+          "execute_hogql_query",
+          "parse_select"
+        ]
+      },
+      "rationale": "Same HogQL surface the releases and breakdowns runners already use.",
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/backend/hogql_queries",
+      "to": "products/error_tracking/backend/logic",
+      "action": "add",
+      "interface": {
+        "files": [
+          "products/error_tracking/backend/logic/feature_flags.py"
+        ],
+        "symbols": [
+          "resolve_issue_flags",
+          "IssueFlagInfo"
+        ]
+      },
+      "rationale": "The runner is the only path the query response goes through, so it asks logic for enrichment using error-tracking-owned types.",
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/backend/logic",
+      "to": "products/feature_flags/backend/facade",
+      "action": "add",
+      "interface": {
+        "files": [
+          "products/feature_flags/backend/facade/api.py"
+        ],
+        "symbols": [
+          "get_flag_summaries_by_key",
+          "FlagSummary"
+        ]
+      },
+      "rationale": "The only error_tracking→feature_flags edge, owned by business logic and going through the facade, never the models.",
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/frontend/components/IssueFeatureFlags",
+      "to": "frontend/src/queries/schema",
+      "action": "add",
+      "interface": {
+        "files": [
+          "frontend/src/queries/schema/schema-general.ts"
+        ],
+        "symbols": [
+          "ErrorTrackingIssueFeatureFlagsQueryResponse",
+          "ErrorTrackingIssueFeatureFlag",
+          "DateRange"
+        ]
+      },
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/frontend/components/IssueFeatureFlags",
+      "to": "frontend/src/scenes",
+      "action": "add",
+      "interface": {
+        "files": [
+          "frontend/src/scenes/urls.ts",
+          "frontend/src/scenes/teamLogic.tsx"
+        ],
+        "symbols": [
+          "urls",
+          "teamLogic"
+        ]
+      },
+      "rationale": "Link rows to /feature_flags/:id through the global urls helper; no frontend import of products/feature_flags.",
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/frontend/components/IssueFeatureFlags",
+      "to": "products/error_tracking/frontend/components/IssueFilterPreview",
+      "action": "add",
+      "interface": {
+        "files": [
+          "products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts",
+          "products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx"
+        ],
+        "symbols": [
+          "issueFilterPreviewLogic",
+          "PreviewPropertyFilter",
+          "IssueFilterPreviewHeader"
+        ]
+      },
+      "rationale": "Reads date range and pushes variant filters, same two-way coupling IssueReleases has today.",
+      "origin": "agent"
+    },
+    {
+      "from": "products/error_tracking/frontend/components/IssueFilterPreview",
+      "to": "products/error_tracking/frontend/components/IssueFeatureFlags",
+      "action": "add",
+      "interface": {
+        "files": [
+          "products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx"
+        ],
+        "symbols": [
+          "IssueFeatureFlagsPreview"
+        ]
+      },
+      "rationale": "Panel mounts the tab, as it does IssueReleasesPreview.",
+      "origin": "agent"
+    }
+  ],
+  "comments": [
+    {
+      "id": "c1",
+      "target": {
+        "kind": "seam",
+        "from": "products/error_tracking/backend/hogql_queries",
+        "to": "products/feature_flags/backend/facade"
+      },
+      "author": "agent",
+      "body": "Open decision: v1 reads flag state from the `$feature/<key>` properties the SDKs stamp on $exception events, so it needs nothing from feature_flags except key→id/name enrichment. The alternative is to join posthog.flag_evaluations (gated by is_flag_evaluations_table_enabled in facade/flags.py). That would also catch server-side flags that were never stamped on the event, but it is cloud-only and costs a join. Recommendation: event properties for v1, with evaluations as a follow-up.",
+      "at": "2026-09-26T12:18:54.945Z",
+      "revision": 3,
+      "resolution": {
+        "by": "agent",
+        "reply": "Decided with c2: event properties for v1, flag_evaluations join as a follow-up.",
+        "at": "2026-09-26T12:20:28.683Z",
+        "revision": 5
+      }
+    },
+    {
+      "id": "c2",
+      "target": {
+        "kind": "seam",
+        "from": "products/error_tracking/backend/hogql_queries",
+        "to": "products/feature_flags/backend/facade"
+      },
+      "author": "human",
+      "body": "Keep the query runner free of other products. Put the flag enrichment in backend/logic, where issue business logic lives, and route logic -> feature_flags facade instead. Agree on event properties for v1.",
+      "at": "2026-09-26T12:19:50.151Z",
+      "revision": 4,
+      "resolution": {
+        "by": "agent",
+        "reply": "Done. Enrichment now lives in backend/logic/feature_flags.py (resolve_issue_flags returns error-tracking-owned IssueFlagInfo), and logic→feature_flags facade is the only cross-product edge. The runner calls logic for enrichment, because core dispatch sends the query response through the runner. So hogql_queries now depends on logic (a new edge; it doesn't today) but imports no other product. Event properties stay the v1 source.",
+        "at": "2026-09-26T12:20:28.683Z",
+        "revision": 5
+      }
+    }
+  ],
+  "revisions": [
+    {
+      "number": 1,
+      "at": "2026-09-26T12:18:11.681Z",
+      "actor": "agent",
+      "client": "claude-code@2.1.282",
+      "kind": "create",
+      "operations": []
+    },
+    {
+      "number": 2,
+      "at": "2026-09-26T12:18:49.245Z",
+      "actor": "agent",
+      "client": "claude-code@2.1.282",
+      "kind": "edit",
+      "note": "Initial draft modeled on the ErrorTrackingReleasesQuery + IssueReleases tab path.",
+      "operations": [
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/backend/hogql_queries",
+          "action": "modify",
+          "responsibility": "New ErrorTrackingIssueFeatureFlagsQueryRunner: aggregates the issue's $exception events by `$feature/<key>` property into per-flag, per-variant counts, capped at N flags, then enriches keys via the feature_flags facade."
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/backend/facade",
+          "action": "modify",
+          "responsibility": "Export the new runner from queries.py so core query dispatch can reach it, like the other error tracking runners."
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/feature_flags/backend/facade",
+          "action": "modify",
+          "responsibility": "Add get_flag_summaries_by_key(team, keys) returning frozen FlagSummary(id, key, name, active, deleted) records, so callers never touch the FeatureFlag model."
+        },
+        {
+          "op": "upsert_module",
+          "path": "posthog/hogql_queries",
+          "action": "modify",
+          "responsibility": "Register the ErrorTrackingIssueFeatureFlagsQuery kind in get_query_runner via a lazy import from the error tracking facade."
+        },
+        {
+          "op": "upsert_module",
+          "path": "frontend/src/queries/schema",
+          "action": "modify",
+          "responsibility": "Add NodeKind.ErrorTrackingIssueFeatureFlagsQuery, the query, response and row types; regenerate posthog/schema.py."
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/frontend",
+          "action": "modify",
+          "responsibility": "queries.ts gains errorTrackingIssueFeatureFlagsQuery builder next to errorTrackingReleasesQuery; the new IssueFeatureFlags logic uses it."
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/frontend/components/IssueFeatureFlags",
+          "action": "create",
+          "responsibility": "issueFeatureFlagsLogic (loads the query for the preview's issue and date range) and IssueFeatureFlagsPreview (rows per flag with variant split, linking to the flag)."
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/frontend/components/IssueFilterPreview",
+          "action": "modify",
+          "responsibility": "Add a 'Flags' tab to IssueFilterPreviewPanel behind the ERROR_TRACKING_ISSUE_FEATURE_FLAGS flag; clicking a variant adds a `$feature/<key>` property filter to the preview."
+        },
+        {
+          "op": "upsert_module",
+          "path": "frontend/src/lib",
+          "action": "modify",
+          "responsibility": "Add ERROR_TRACKING_ISSUE_FEATURE_FLAGS to FEATURE_FLAGS in constants.tsx."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/backend/hogql_queries",
+          "to": "products/feature_flags/backend/facade",
+          "action": "add",
+          "interface": {
+            "files": [
+              "products/feature_flags/backend/facade/api.py"
+            ],
+            "symbols": [
+              "get_flag_summaries_by_key",
+              "FlagSummary"
+            ]
+          },
+          "rationale": "First error_tracking→feature_flags dependency; must go through the facade, not models, per product isolation."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/backend/hogql_queries",
+          "to": "posthog/hogql",
+          "action": "keep",
+          "interface": {
+            "files": [
+              "posthog/hogql/query.py",
+              "posthog/hogql/parser.py",
+              "posthog/hogql/ast.py"
+            ],
+            "symbols": [
+              "execute_hogql_query",
+              "parse_select"
+            ]
+          },
+          "rationale": "Same HogQL surface the releases and breakdowns runners already use."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "posthog/hogql_queries",
+          "to": "products/error_tracking/backend/facade",
+          "action": "keep",
+          "interface": {
+            "files": [
+              "products/error_tracking/backend/facade/queries.py"
+            ],
+            "symbols": [
+              "ErrorTrackingIssueFeatureFlagsQueryRunner"
+            ]
+          },
+          "rationale": "Existing lazy-import dispatch; only the imported names grow."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/frontend/components/IssueFilterPreview",
+          "to": "products/error_tracking/frontend/components/IssueFeatureFlags",
+          "action": "add",
+          "interface": {
+            "files": [
+              "products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx"
+            ],
+            "symbols": [
+              "IssueFeatureFlagsPreview"
+            ]
+          },
+          "rationale": "Panel mounts the tab, as it does IssueReleasesPreview."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/frontend/components/IssueFeatureFlags",
+          "to": "products/error_tracking/frontend/components/IssueFilterPreview",
+          "action": "add",
+          "interface": {
+            "files": [
+              "products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts",
+              "products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx"
+            ],
+            "symbols": [
+              "issueFilterPreviewLogic",
+              "PreviewPropertyFilter",
+              "IssueFilterPreviewHeader"
+            ]
+          },
+          "rationale": "Reads date range and pushes variant filters, same two-way coupling IssueReleases has today."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/frontend/components/IssueFeatureFlags",
+          "to": "frontend/src/queries/schema",
+          "action": "add",
+          "interface": {
+            "files": [
+              "frontend/src/queries/schema/schema-general.ts"
+            ],
+            "symbols": [
+              "ErrorTrackingIssueFeatureFlagsQueryResponse",
+              "ErrorTrackingIssueFeatureFlag",
+              "DateRange"
+            ]
+          }
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/frontend/components/IssueFeatureFlags",
+          "to": "frontend/src/scenes",
+          "action": "add",
+          "interface": {
+            "files": [
+              "frontend/src/scenes/urls.ts",
+              "frontend/src/scenes/teamLogic.tsx"
+            ],
+            "symbols": [
+              "urls",
+              "teamLogic"
+            ]
+          },
+          "rationale": "Link rows to /feature_flags/:id through the global urls helper; no frontend import of products/feature_flags."
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "at": "2026-09-26T12:18:54.945Z",
+      "actor": "agent",
+      "client": "claude-code@2.1.282",
+      "kind": "edit",
+      "operations": [
+        {
+          "op": "add_comment",
+          "target": {
+            "kind": "seam",
+            "from": "products/error_tracking/backend/hogql_queries",
+            "to": "products/feature_flags/backend/facade"
+          },
+          "body": "Open decision: v1 reads flag state from the `$feature/<key>` properties the SDKs stamp on $exception events, so it needs nothing from feature_flags except key→id/name enrichment. The alternative is to join posthog.flag_evaluations (gated by is_flag_evaluations_table_enabled in facade/flags.py). That would also catch server-side flags that were never stamped on the event, but it is cloud-only and costs a join. Recommendation: event properties for v1, with evaluations as a follow-up."
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "at": "2026-09-26T12:19:50.151Z",
+      "actor": "human",
+      "kind": "edit",
+      "note": "Comment from the explorer",
+      "operations": [
+        {
+          "op": "add_comment",
+          "target": {
+            "kind": "seam",
+            "from": "products/error_tracking/backend/hogql_queries",
+            "to": "products/feature_flags/backend/facade"
+          },
+          "body": "Keep the query runner free of other products. Put the flag enrichment in backend/logic, where issue business logic lives, and route logic -> feature_flags facade instead. Agree on event properties for v1."
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "at": "2026-09-26T12:20:28.683Z",
+      "actor": "agent",
+      "client": "claude-code@2.1.282",
+      "kind": "edit",
+      "note": "Per c2: moved flag enrichment from the query runner into backend/logic; runner now depends only on error tracking and HogQL.",
+      "operations": [
+        {
+          "op": "drop_seam",
+          "from": "products/error_tracking/backend/hogql_queries",
+          "to": "products/feature_flags/backend/facade"
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/backend/hogql_queries",
+          "action": "modify",
+          "responsibility": "New ErrorTrackingIssueFeatureFlagsQueryRunner: aggregates the issue's $exception events by `$feature/<key>` property into per-flag, per-variant counts (capped at N flags), then hands the keys to logic for enrichment. Imports no other product."
+        },
+        {
+          "op": "upsert_module",
+          "path": "products/error_tracking/backend/logic",
+          "action": "modify",
+          "responsibility": "New feature_flags.py: resolve_issue_flags(team, keys) maps flag keys to error-tracking-owned IssueFlagInfo(id, name, active, deleted) via the feature_flags facade. Unknown/deleted keys stay unlinked."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/backend/hogql_queries",
+          "to": "products/error_tracking/backend/logic",
+          "action": "add",
+          "interface": {
+            "files": [
+              "products/error_tracking/backend/logic/feature_flags.py"
+            ],
+            "symbols": [
+              "resolve_issue_flags",
+              "IssueFlagInfo"
+            ]
+          },
+          "rationale": "The runner is the only path the query response goes through, so it asks logic for enrichment using error-tracking-owned types."
+        },
+        {
+          "op": "upsert_seam",
+          "from": "products/error_tracking/backend/logic",
+          "to": "products/feature_flags/backend/facade",
+          "action": "add",
+          "interface": {
+            "files": [
+              "products/feature_flags/backend/facade/api.py"
+            ],
+            "symbols": [
+              "get_flag_summaries_by_key",
+              "FlagSummary"
+            ]
+          },
+          "rationale": "The only error_tracking→feature_flags edge, owned by business logic and going through the facade, never the models."
+        },
+        {
+          "op": "resolve_comment",
+          "commentId": "c2",
+          "reply": "Done. Enrichment now lives in backend/logic/feature_flags.py (resolve_issue_flags returns error-tracking-owned IssueFlagInfo), and logic→feature_flags facade is the only cross-product edge. The runner calls logic for enrichment, because core dispatch sends the query response through the runner. So hogql_queries now depends on logic (a new edge; it doesn't today) but imports no other product. Event properties stay the v1 source."
+        },
+        {
+          "op": "resolve_comment",
+          "commentId": "c1",
+          "reply": "Decided with c2: event properties for v1, flag_evaluations join as a follow-up."
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "at": "2026-09-26T12:21:21.867Z",
+      "actor": "human",
+      "kind": "lock",
+      "operations": []
+    }
+  ],
+  "createdAt": "2026-09-26T12:18:11.681Z",
+  "updatedAt": "2026-09-26T12:21:21.867Z"
+}

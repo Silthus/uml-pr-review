@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { ArchitecturePlan } from "../../architecture/contracts/index.ts";
+import type { ArchitecturePlan, CommentTarget, PlanComment } from "../../architecture/contracts/index.ts";
 import { statusGlyph } from "../canvas/package-node.tsx";
 import { currentConformance, type CheckView } from "../state/check-provenance.ts";
-import { CommentThread, shortTime } from "./comments.tsx";
+import { CommentList, CommentThread, shortTime } from "./comments.tsx";
 import { FindingList } from "./finding-list.tsx";
 import { ModulePath } from "./module-path.tsx";
 import { closingOnSuccess, type PlanActions } from "./plan-actions.ts";
@@ -15,6 +15,7 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
   const moduleStatus = new Map(conformance?.modules.map((module) => [module.path, module.status]) ?? []);
   const seamStatus = new Map(conformance?.seams.map((seam) => [`${seam.from}->${seam.to}`, seam.status]) ?? []);
   const planComments = plan.comments.filter((comment) => comment.target.kind === "plan");
+  const droppedThreads = threadsOnDroppedElements(plan);
   return (
     <section className="panel plan" aria-label="Architecture plan">
       <p className="eyebrow">{`Architecture plan · revision ${plan.revision}`}</p>
@@ -59,6 +60,14 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
           </li>
         ))}
       </ul>
+      {droppedThreads.length > 0 ? (
+        <>
+          <h3>Comments on dropped elements <span className="count">{droppedThreads.length}</span></h3>
+          {droppedThreads.map((thread) => (
+            <DroppedThread key={thread.key} thread={thread} onSelectModule={onSelectModule} onSelectSeam={onSelectSeam} />
+          ))}
+        </>
+      ) : null}
       {conformance ? (
         <>
           <h3>Findings <span className="count">{conformance.findings.length}</span></h3>
@@ -67,6 +76,42 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
       ) : null}
       <h3>Plan comments</h3>
       <CommentThread comments={planComments} target={{ kind: "plan" }} actions={actions} label="the plan" />
+    </section>
+  );
+}
+
+type DroppedThreadView = { key: string; target: Exclude<CommentTarget, { kind: "plan" }>; comments: PlanComment[] };
+
+function threadsOnDroppedElements(plan: ArchitecturePlan): DroppedThreadView[] {
+  const threads = new Map<string, DroppedThreadView>();
+  for (const comment of plan.comments) {
+    const { target } = comment;
+    if (target.kind === "plan" || !isDropped(plan, target)) continue;
+    const key = target.kind === "module" ? `module:${target.path}` : `seam:${target.from}->${target.to}`;
+    const thread = threads.get(key) ?? { key, target, comments: [] };
+    thread.comments.push(comment);
+    threads.set(key, thread);
+  }
+  return [...threads.values()];
+}
+
+function isDropped(plan: ArchitecturePlan, target: Exclude<CommentTarget, { kind: "plan" }>): boolean {
+  if (target.kind === "module") return !plan.modules.some((module) => module.path === target.path);
+  return !plan.seams.some((seam) => seam.from === target.from && seam.to === target.to);
+}
+
+function DroppedThread({ thread, onSelectModule, onSelectSeam }: { thread: DroppedThreadView; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void }) {
+  const { target } = thread;
+  const label = target.kind === "module" ? target.path : `${target.from} → ${target.to}`;
+  return (
+    <section className="dropped-thread" aria-label={`Comments on dropped ${target.kind} ${label}`}>
+      <header>
+        <span className="chip chip-action action-remove">dropped {target.kind}</span>
+        <button type="button" className="link" aria-label={label} onClick={() => (target.kind === "module" ? onSelectModule(target.path) : onSelectSeam(target.from, target.to))}>
+          {target.kind === "module" ? <ModulePath path={target.path} /> : <span className="seam-ends"><ModulePath path={target.from} /> <span className="arrow">→</span> <ModulePath path={target.to} /></span>}
+        </button>
+      </header>
+      <CommentList comments={thread.comments} />
     </section>
   );
 }

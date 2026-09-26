@@ -252,6 +252,11 @@ a:hover {
   white-space: nowrap;
 }
 
+.header-controls select {
+  max-width: 220px;
+  text-overflow: ellipsis;
+}
+
 .search {
   position: relative;
   flex: 1 1 260px;
@@ -1189,6 +1194,16 @@ a:hover {
   font-weight: 600;
 }
 
+.finding p {
+  overflow-wrap: anywhere;
+}
+
+.finding code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+
 .finding .fix {
   color: var(--ink-2);
   margin-top: 4px;
@@ -1197,6 +1212,24 @@ a:hover {
 .finding .fix::before {
   content: "Fix: ";
   font-weight: 600;
+}
+
+.interface-files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropped-thread {
+  margin-bottom: 10px;
+}
+
+.dropped-thread header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .comment-list {

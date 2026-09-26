@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import type { z } from "zod";
 import explorer from "../index.html";
-import { ApplyOperationsRequestSchema, ArchitecturePayloadSchema, CheckPlanRequestSchema, SetLockRequestSchema, type ArchitectureEvent, type ArchitecturePlan, type ConformanceResult, type PlanOperation } from "../../architecture/contracts/index.ts";
+import { ApplyOperationsRequestSchema, ArchitecturePayloadSchema, ArchitecturePlanSchema, CheckPlanRequestSchema, SetLockRequestSchema, type ArchitectureEvent, type ArchitecturePlan, type ConformanceResult, type PlanOperation } from "../../architecture/contracts/index.ts";
 
 const at = "2026-09-26T10:15:00.000Z";
 const baseCommit = "f637db96f1fc853ea6a83694f02b94ab690bdcaf";
@@ -9,7 +9,8 @@ const fixturePath = process.env.EXPLORER_FIXTURE ?? "src/explorer/dev/posthog-ar
 const port = Number(process.env.PORT ?? 4488);
 const payload = ArchitecturePayloadSchema.parse(await Bun.file(fixturePath).json());
 let seq = 1;
-let plan: ArchitecturePlan = {
+let published = !process.env.EXPLORER_PLAN_LIVE;
+let plan: ArchitecturePlan = process.env.EXPLORER_PLAN ? ArchitecturePlanSchema.parse(await Bun.file(process.env.EXPLORER_PLAN).json()) : {
   version: 1,
   id: "flags-on-issues",
   title: "Flags on issues",
@@ -44,6 +45,7 @@ const server = Bun.serve({
   routes: {
     "/": explorer,
     "/dev/scenario": async (request) => routeScenario(request),
+    "/dev/publish": async (request) => routePublish(request),
     "/api/architecture": () => Response.json(payload),
     "/api/plans": (request) => routePlans(request),
     "/api/plans/:id": (request) => routePlan(request),
@@ -59,11 +61,13 @@ console.log(`Regenerate the fixture with: /usr/bin/git show origin/prototype/rep
 
 function routePlans(request: Request): Response {
   if (request.method !== "GET") return new Response("method not allowed", { status: 405 });
+  if (!published) return Response.json([]);
   return Response.json([{ id: plan.id, title: plan.title, status: plan.status, revision: plan.revision, baseCommit: plan.baseCommit, updatedAt: plan.updatedAt, pendingHumanComments: plan.comments.filter((comment) => !comment.resolution).length }]);
 }
 
 function routePlan(request: Request): Response {
   if (request.method !== "GET") return new Response("method not allowed", { status: 405 });
+  if (!published) return Response.json({ error: "no such plan" }, { status: 404 });
   return Response.json({ plan, conformance });
 }
 
@@ -100,30 +104,28 @@ async function routeCheck(request: Request): Promise<Response> {
 }
 
 function checkResult(): ConformanceResult {
+  const [violated, ...kept] = plan.seams;
+  const seams = [...(violated ? [{ from: violated.from, to: violated.to, action: violated.action, status: "violating" as const, imports: 1 }] : []), ...kept.map((seam) => ({ from: seam.from, to: seam.to, action: seam.action, status: "conforming" as const, imports: 1 }))];
+  const findings: ConformanceResult["findings"] = violated
+    ? [{
+        id: `bypasses-seam|${violated.from}|${violated.to}`,
+        rule: "bypasses-seam",
+        severity: "violation",
+        file: `${violated.from}/feature_flags.py`,
+        line: 42,
+        subject: { kind: "seam", from: violated.from, to: violated.to },
+        target: "products/feature_flags/backend/models/__init__.py",
+        test: false,
+        message: `\`${violated.from}/feature_flags.py:42\` imports \`products/feature_flags/backend/models/__init__.py\` from \`products/feature_flags/backend/models\` directly, but the plan routes \`${violated.from}\` to \`products/feature_flags\` through \`${violated.to}\`.`,
+        fix: `Import it through \`${violated.interface?.files[0] ?? violated.to}\` instead. If that interface does not offer it yet, add it there first.`,
+      }]
+    : [];
   return {
-    verdict: "violating",
-    modules: [
-      { path: "products/error_tracking/backend/facade", action: "modify", status: "pending" },
-      { path: "products/error_tracking/backend/logic", action: "modify", status: "pending" },
-      { path: "products/error_tracking/frontend", action: "modify", status: "pending" },
-    ],
-    seams: [
-      { from: "products/error_tracking/backend/logic", to: "products/feature_flags/backend/facade", action: "add", status: "conforming", imports: 1 },
-      { from: "products/error_tracking/backend/facade", to: "products/feature_flags/backend/models", action: "add", status: "violating", imports: 1 },
-    ],
-    findings: [{
-      id: "bypasses-seam|products/error_tracking/backend/facade|products/feature_flags/backend/models",
-      rule: "bypasses-seam",
-      severity: "violation",
-      file: "products/error_tracking/backend/facade.py",
-      line: 42,
-      subject: { kind: "seam", from: "products/error_tracking/backend/logic", to: "products/feature_flags/backend/facade" },
-      target: "products/feature_flags/backend/models/feature_flag.py",
-      test: false,
-      message: "products/error_tracking/backend/facade bypasses the planned feature flags facade seam.",
-      fix: "Import through products/feature_flags/backend/facade instead of products/feature_flags/backend/models.",
-    }],
-    counts: { violations: 1, pending: 3, warnings: 0 },
+    verdict: findings.length > 0 ? "violating" : "conforming",
+    modules: plan.modules.map((module) => ({ path: module.path, action: module.action, status: "pending" as const })),
+    seams,
+    findings,
+    counts: { violations: findings.length, pending: plan.modules.length, warnings: 0 },
     planId: plan.id,
     planRevision: plan.revision,
     planStatus: plan.status,
@@ -142,6 +144,13 @@ function outdatedCheck(): ConformanceResult {
 async function routeScenario(request: Request): Promise<Response> {
   if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
   void playScenario();
+  return Response.json({ ok: true });
+}
+
+async function routePublish(request: Request): Promise<Response> {
+  if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
+  published = true;
+  emit({ seq: seq++, at: plan.updatedAt, repositoryId: payload.repository.id, type: "plan_patch", planId: plan.id, revision: plan.revisions[0]!, plan });
   return Response.json({ ok: true });
 }
 

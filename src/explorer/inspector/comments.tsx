@@ -24,31 +24,36 @@ export function CommentThread({ comments, target, actions, label }: { comments: 
   };
   return (
     <section className="comments" aria-label={label}>
-      {comments.length > 0 ? (
-        <ol className="comment-list">
-          {comments.map((comment) => (
-            <li key={comment.id} className={`comment author-${comment.author}`}>
-              <header>
-                <span className="comment-author">{comment.author}</span>
-                <time dateTime={comment.at}>{shortTime(comment.at)}</time>
-              </header>
-              <p>{comment.body}</p>
-              {comment.resolution ? (
-                <div className="comment-reply">
-                  <span className="comment-author">{comment.resolution.by} replied</span>
-                  <p>{comment.resolution.reply ?? "Resolved without a reply."}</p>
-                </div>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      ) : null}
+      <CommentList comments={comments} />
       <form className="comment-form" aria-label={`New comment on ${label}`} onSubmit={(event) => void submit(event)}>
         <textarea name="body" aria-label={`Comment on ${label}`} placeholder="Tell the agent what to change" rows={2} />
         <button type="submit" disabled={busy}>Add comment</button>
         <FormRejection message={rejection} />
       </form>
     </section>
+  );
+}
+
+export function CommentList({ comments }: { comments: PlanComment[] }) {
+  if (comments.length === 0) return null;
+  return (
+    <ol className="comment-list">
+      {comments.map((comment) => (
+        <li key={comment.id} className={`comment author-${comment.author}`}>
+          <header>
+            <span className="comment-author">{comment.author}</span>
+            <time dateTime={comment.at}>{shortTime(comment.at)}</time>
+          </header>
+          <p>{comment.body}</p>
+          {comment.resolution ? (
+            <div className="comment-reply">
+              <span className="comment-author">{comment.resolution.by} replied</span>
+              <p>{comment.resolution.reply ?? "Resolved without a reply."}</p>
+            </div>
+          ) : null}
+        </li>
+      ))}
+    </ol>
   );
 }
 

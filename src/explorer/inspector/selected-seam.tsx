@@ -24,7 +24,7 @@ export function SelectedSeam({ from, to, model, plan, conformance, includeTests,
         </h2>
         <dl className="facts">
           {checked ? <div><dt>Check</dt><dd className={`chip chip-status status-${checked.status}`}>{statusGlyph(checked.status)} {checked.status}</dd></div> : null}
-          {seam?.interface ? <div><dt>Interface</dt><dd>{seam.interface.files.map((file) => <ModulePath key={file} path={file} />)}</dd></div> : null}
+          {seam?.interface ? <div><dt>Interface</dt><dd><ul className="interface-files" aria-label="Interface files">{seam.interface.files.map((file) => <li key={file}><ModulePath path={file} /></li>)}</ul></dd></div> : null}
           {seam?.interface?.symbols.length ? <div><dt>Symbols</dt><dd>{seam.interface.symbols.join(", ")}</dd></div> : null}
         </dl>
         {seam?.rationale ? <p className="responsibility">{seam.rationale}</p> : null}

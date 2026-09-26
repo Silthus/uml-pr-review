@@ -336,6 +336,28 @@ describe("ExplorerApp", () => {
     expect(within(planPanel).getAllByTitle(facade).some((path) => path.closest("li")?.textContent?.includes("conforming"))).toBe(true);
   });
 
+  test("the plan panel reads as the plan's breakdown: responsibilities, seam interfaces, and rationale", async () => {
+    installFetch();
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+
+    const moduleRow = planPanel(view).getByRole("listitem", { name: `modify ${logic}` });
+    expect(moduleRow.textContent).toContain("Read issue flag usage.");
+    const seamRow = planPanel(view).getByRole("listitem", { name: `add ${logic} → ${facade}` });
+    const via = within(seamRow).getByText(/^via/);
+    expect(via.textContent).toBe("via api.py, types.py (flags_for_issue)");
+    expect(within(via).getByTitle(`${facade}/api.py`)).toBeTruthy();
+    expect(within(seamRow).getByText("Route through the facade.")).toBeTruthy();
+    expect(within(planPanel(view).getByRole("listitem", { name: `add ${logic} → ${models}` })).queryByText(/^via/)).toBeNull();
+
+    await act(async () => {
+      fireEvent.click(within(seamRow).getByRole("button"));
+    });
+    expect(view.getByText("add seam")).toBeTruthy();
+  });
+
   test("show all reveals the children folded behind the more cell", async () => {
     installFetch({ plans: [], architecture: crowded });
 

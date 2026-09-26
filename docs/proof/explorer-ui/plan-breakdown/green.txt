@@ -1,0 +1,4 @@
+# green: bun test test/explorer/explorer.dom.test.tsx -t breakdown (after the change)
+ 1 pass
+ 0 fail
+Ran 1 test across 1 file. [168.00ms]

@@ -1,8 +1,6 @@
 import type { BoundaryHygiene } from "./boundary.ts";
 import type { Focus } from "./focus.ts";
 
-export const weights = { hygiene: 0.4, judge: 0.4, focus: 0.2 } as const;
-
 export const hygienePenalties = {
   facadeBypass: 25,
   newCycle: 25,
@@ -39,16 +37,12 @@ export function judgeScore(verdict: JudgeVerdict): number {
   return round(10 * mean(judgeDimensions.map((dimension) => verdict[dimension].score)));
 }
 
-export function compositeScore(parts: { hygiene: number; judge: number; focus: number }): number {
-  return round(weights.hygiene * parts.hygiene + weights.judge * parts.judge + weights.focus * parts.focus);
-}
-
 export function mean(values: number[]): number {
   return values.reduce((total, value) => total + value, 0) / values.length;
 }
 
-export function round(value: number): number {
-  return Math.round(value * 10) / 10;
+export function round(value: number, decimals = 1): number {
+  return Math.round(value * 10 ** decimals) / 10 ** decimals;
 }
 
 function focusSample(focus: Focus): FocusSample {

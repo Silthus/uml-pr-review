@@ -1,7 +1,7 @@
 {
   "pr": "_smoke",
   "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
-  "scoredAt": "2026-09-26T14:59:16.186Z",
+  "scoredAt": "2026-09-26T15:11:03.841Z",
   "arms": {
     "B-1": {
       "arm": "B",
@@ -10,6 +10,9 @@
         "code": 0
       },
       "application": "clean",
+      "files": [
+        "products/workflows/backend/facade/api.py"
+      ],
       "boundary": {
         "facadeBypasses": [],
         "testFacadeBypasses": [],
@@ -30,25 +33,71 @@
         "pythonFiles": 1,
         "pyCompileFailures": [],
         "ruff": {
-          "available": false
+          "available": true,
+          "violations": []
         },
         "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
       },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 1,
+          "maxCcn": 1,
+          "meanCcn": 1,
+          "overTen": 0,
+          "ccnDelta": 1
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/facade/api.py",
+            "name": "workflows_product_name",
+            "signature": "workflows_product_name( )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 8
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "workflows_product_name"
+        ],
+        "unreferenced": [
+          "workflows_product_name"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
       "hygiene": 100,
       "focusScore": 100,
+      "alignment": null,
       "process": {
         "toolCalls": 2,
-        "edits": 0,
-        "toolCallsBeforeFirstEdit": 2,
-        "secondsBeforeFirstEdit": null,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 1,
+        "secondsBeforeFirstEdit": 5,
         "architectureToolCalls": 0,
-        "architectureExplorationBeforeEdit": 2,
-        "architectureReasoningBeforeEdit": 1,
-        "firstArchitectureThought": "I added `workflows_product_name() -> str` to the end of `products/workflows/backend/facade/api.py`.",
+        "architectureExplorationBeforeEdit": 1,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
         "turns": 3,
         "wallSeconds": 13,
         "costUsd": 0.0850352
       }
     }
+  },
+  "consistency": {
+    "B": null
   }
 }

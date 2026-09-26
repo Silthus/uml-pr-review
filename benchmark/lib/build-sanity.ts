@@ -1,4 +1,5 @@
-import { execute, onPath } from "./execute.ts";
+import { execute } from "./execute.ts";
+import { uvxTool } from "./tools.ts";
 
 export type Failure = { file: string; message: string };
 
@@ -26,18 +27,12 @@ async function pyCompileFailures(worktree: string, files: string[]): Promise<Fai
 }
 
 async function ruffCheck(worktree: string, files: string[]): Promise<BuildSanity["ruff"]> {
-  const ruff = ruffCommand();
+  const ruff = uvxTool("ruff");
   if (!ruff) return { available: false };
   if (files.length === 0) return { available: true, violations: [] };
   const result = await execute(worktree, [...ruff, "check", "--output-format", "json", "--exit-zero", ...files]);
   const reported = JSON.parse(result.stdout || "[]") as { filename: string; code: string | null; message: string }[];
   return { available: true, violations: reported.map(({ filename, code, message }) => ({ file: filename.replace(`${worktree}/`, ""), message: `${code ?? "error"}: ${message}` })) };
-}
-
-function ruffCommand(): string[] | undefined {
-  if (onPath("ruff")) return ["ruff"];
-  if (onPath("uvx")) return ["uvx", "ruff"];
-  return undefined;
 }
 
 function lastLine(text: string): string {

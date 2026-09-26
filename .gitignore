@@ -4,3 +4,4 @@ node_modules
 !test/**/*.html
 .DS_Store
 src/explorer/dev/*.fixture.json
+benchmark/.cache/

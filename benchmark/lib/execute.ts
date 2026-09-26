@@ -5,7 +5,3 @@ export async function execute(cwd: string, command: string[], stdin?: string): P
   const [stdout, stderr, code] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text(), child.exited]);
   return { code, stdout, stderr };
 }
-
-export function onPath(binary: string): boolean {
-  return Bun.which(binary) !== null;
-}

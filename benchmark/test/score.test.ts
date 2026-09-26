@@ -44,6 +44,7 @@ const armChanges: Record<string, Files> = {
     "ee/hogai/context.py": "from products.workflows.backend.models import HogFlow\n\ndef thing():\n    return HogFlow()\n",
     "ee/hogai/test/test_context.py": "from ee.hogai.context import thing\nfrom products.workflows.backend.models import HogFlow\n\ndef test_thing():\n    assert thing()\n\ndef test_again():\n    assert thing()\n",
   },
+  "B-2": { "ee/hogai/context.py": "from products.workflows.backend.facade.api import search_workflows\n\ndef thing():\n    return search_workflows()\n" },
   "C-1": { "products/workflows/backend/logic.py": "from ee.hogai.context import thing\nfrom ee.hogai.missing import nope\n\ndef run():\n    return thing(), nope\n" },
 };
 
@@ -87,6 +88,12 @@ describe("scoring arm diffs against the base tree", () => {
 
   test("focus counts the change's files, lines, and added tests", () => {
     expect(scores.arms["B-1"]!.focus).toMatchObject({ filesChanged: 2, linesAdded: 11, linesRemoved: 1, testsAdded: 2 });
+  });
+
+  test("intent alignment compares each replay's modules and files with the original PR, and consistency compares repeats", () => {
+    expect(scores.arms["B-1"]!.alignment).toEqual({ modules: 0.5, files: 0.5 });
+    expect(scores.arms.A!.alignment).toBeNull();
+    expect(scores.consistency).toEqual({ B: { modules: 0.5, files: 0.5 }, C: null });
   });
 
   test("the scores are written next to the runs", async () => {

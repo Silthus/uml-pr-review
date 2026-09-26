@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import { parseArgs } from "node:util";
+import type { JevReport } from "./lib/jev.ts";
 import { renderReport, type Judgement, type TaskReport } from "./lib/report.ts";
 import { benchmarkDir, loadRunTask, readJson, taskDirs, taskRunsDir } from "./lib/runs.ts";
 import type { TaskScores } from "./lib/score-task.ts";
@@ -18,7 +19,7 @@ for (const dir of dirs) {
     console.warn(`${dir} has no scores.json yet; run bun benchmark/score.ts first. Skipped.`);
     continue;
   }
-  reports.push({ task: await loadRunTask(dir), scores, judgement: await readJson<Judgement>(join(dir, "judge.json")) });
+  reports.push({ task: await loadRunTask(dir), scores, judgement: await readJson<Judgement>(join(dir, "judge.json")), jev: await readJson<JevReport>(join(dir, "jev.json")) });
 }
 
 await Bun.write(values.out, `${renderReport(reports)}\n`);

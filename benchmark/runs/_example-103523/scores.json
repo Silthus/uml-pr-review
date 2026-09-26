@@ -1,12 +1,20 @@
 {
   "pr": 103523,
   "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
-  "scoredAt": "2026-09-26T14:55:12.248Z",
+  "scoredAt": "2026-09-26T15:11:30.017Z",
   "arms": {
     "final": {
       "arm": "final",
       "exit": null,
       "application": "clean",
+      "files": [
+        "ee/hogai/context/entity_search/context.py",
+        "ee/hogai/context/entity_search/test/test_context.py",
+        "ee/hogai/tools/search.py",
+        "products/workflows/backend/facade/api.py",
+        "products/workflows/backend/facade/testing.py",
+        "tach.toml"
+      ],
       "boundary": {
         "facadeBypasses": [],
         "testFacadeBypasses": [],
@@ -33,18 +41,133 @@
         "pythonFiles": 5,
         "pyCompileFailures": [],
         "ruff": {
-          "available": false
+          "available": true,
+          "violations": []
         },
         "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
       },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 8,
+          "maxCcn": 14,
+          "meanCcn": 5.5,
+          "overTen": 1,
+          "ccnDelta": 17
+        },
+        "changedFunctions": [
+          {
+            "file": "ee/hogai/context/entity_search/context.py",
+            "name": "search_entities",
+            "signature": "search_entities( self , entity_types : set [ str ] | Literal [ 'all' ] , query : str , )",
+            "ccn": 9,
+            "nloc": 51,
+            "params": 3,
+            "tokens": 351
+          },
+          {
+            "file": "ee/hogai/context/entity_search/context.py",
+            "name": "list_entities",
+            "signature": "list_entities( self , entity_type : str , limit : int = 100 , offset : int = 0 , )",
+            "ccn": 9,
+            "nloc": 55,
+            "params": 4,
+            "tokens": 302
+          },
+          {
+            "file": "ee/hogai/context/entity_search/context.py",
+            "name": "_build_url",
+            "signature": "_build_url( self , entity_type : str , result_id : str , team_id : int )",
+            "ccn": 14,
+            "nloc": 29,
+            "params": 4,
+            "tokens": 142
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_all_entity_types_respect_filters_exclude_deleted",
+            "signature": "test_all_entity_types_respect_filters_exclude_deleted( self )",
+            "ccn": 2,
+            "nloc": 25,
+            "params": 1,
+            "tokens": 244
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_list_entities_workflow_surfaces_status_and_hides_archived",
+            "signature": "test_list_entities_workflow_surfaces_status_and_hides_archived( self )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 1,
+            "tokens": 142
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_search_entities_merges_workflows_into_the_shared_ranked_limit",
+            "signature": "test_search_entities_merges_workflows_into_the_shared_ranked_limit( self )",
+            "ccn": 2,
+            "nloc": 21,
+            "params": 1,
+            "tokens": 111
+          },
+          {
+            "file": "products/workflows/backend/facade/api.py",
+            "name": "search_workflows",
+            "signature": "search_workflows( * , project_id : int , query : str | None , access_control : UserAccessControl , limit : int , offset : int = 0 , )",
+            "ccn": 5,
+            "nloc": 38,
+            "params": 5,
+            "tokens": 278
+          },
+          {
+            "file": "products/workflows/backend/facade/testing.py",
+            "name": "create_workflow_for_test",
+            "signature": "create_workflow_for_test( * , team_id : int , created_by_id : int , name : str , status : Literal [ 'active' , 'archived' , 'draft' ] , )",
+            "ccn": 1,
+            "nloc": 8,
+            "params": 4,
+            "tokens": 54
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 50,
+        "productionLinesAdded": 107,
+        "testRatio": 0.47,
+        "subjects": [
+          "_build_url",
+          "create_workflow_for_test",
+          "list_entities",
+          "search_entities",
+          "search_workflows"
+        ],
+        "unreferenced": [
+          "search_workflows"
+        ],
+        "referenceCoverage": 0.8,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
       "hygiene": 90,
       "focusScore": 51.9,
+      "alignment": null,
       "process": null
     },
     "first-push": {
       "arm": "first",
       "exit": null,
       "application": "clean",
+      "files": [
+        "ee/hogai/context/entity_search/context.py",
+        "ee/hogai/context/entity_search/test/test_context.py",
+        "ee/hogai/tools/search.py"
+      ],
       "boundary": {
         "facadeBypasses": [
           {
@@ -81,13 +204,76 @@
         "pythonFiles": 3,
         "pyCompileFailures": [],
         "ruff": {
-          "available": false
+          "available": true,
+          "violations": []
         },
         "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
       },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 3,
+          "maxCcn": 14,
+          "meanCcn": 6,
+          "overTen": 1,
+          "ccnDelta": 3
+        },
+        "changedFunctions": [
+          {
+            "file": "ee/hogai/context/entity_search/context.py",
+            "name": "_build_url",
+            "signature": "_build_url( self , entity_type : str , result_id : str , team_id : int )",
+            "ccn": 14,
+            "nloc": 29,
+            "params": 4,
+            "tokens": 142
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_all_entity_types_respect_filters_exclude_deleted",
+            "signature": "test_all_entity_types_respect_filters_exclude_deleted( self )",
+            "ccn": 2,
+            "nloc": 25,
+            "params": 1,
+            "tokens": 248
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_list_entities_workflow_surfaces_status_and_hides_archived",
+            "signature": "test_list_entities_workflow_surfaces_status_and_hides_archived( self )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 1,
+            "tokens": 154
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 25,
+        "productionLinesAdded": 14,
+        "testRatio": 1.79,
+        "subjects": [
+          "_build_url"
+        ],
+        "unreferenced": [],
+        "referenceCoverage": 1,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
       "hygiene": 50,
       "focusScore": 100,
+      "alignment": null,
       "process": null
     }
+  },
+  "consistency": {
+    "final": null,
+    "first": null
   }
 }

@@ -1,8 +1,12 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { git, run } from "../../src/git.ts";
+import { execute } from "./execute.ts";
 
 export const posthogRepository = process.env.BENCH_POSTHOG ?? join(homedir(), "dev", "posthog");
+
+export type Application = "empty" | "clean" | "three-way" | "failed";
+export type Applied = { application: Application; applyError?: string };
 
 export async function addScratchWorktree(repository: string, path: string, commit: string): Promise<void> {
   if (await Bun.file(join(path, ".git")).exists()) throw new Error(`${path} already exists; remove it or pick another run index.`);
@@ -16,10 +20,10 @@ export async function removeScratchWorktree(repository: string, path: string): P
   await git(repository, ["worktree", "prune"]);
 }
 
-export async function withScratchWorktree<T>(repository: string, path: string, commit: string, work: (path: string) => Promise<T>): Promise<T> {
+export async function withPatchedWorktree<T>(repository: string, path: string, commit: string, patch: string, work: (path: string, applied: Applied) => Promise<T>): Promise<T> {
   await addScratchWorktree(repository, path, commit);
   try {
-    return await work(path);
+    return await work(path, await applyPatch(path, patch));
   } finally {
     await removeScratchWorktree(repository, path);
   }
@@ -32,4 +36,12 @@ export async function commonDir(repository: string): Promise<string> {
 export async function workingTreeDiff(worktree: string, base: string): Promise<string> {
   await git(worktree, ["add", "--all", "--intent-to-add"]);
   return git(worktree, ["diff", "--binary", base]);
+}
+
+async function applyPatch(worktree: string, patch: string): Promise<Applied> {
+  const clean = await execute(worktree, ["git", "apply", "--binary", "--whitespace=nowarn", "-"], patch);
+  if (clean.code === 0) return { application: "clean" };
+  const threeWay = await execute(worktree, ["git", "apply", "--binary", "--3way", "--whitespace=nowarn", "-"], patch);
+  if (threeWay.code === 0) return { application: "three-way" };
+  return { application: "failed", applyError: threeWay.stderr.trim() };
 }

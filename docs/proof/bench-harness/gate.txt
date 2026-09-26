@@ -1,0 +1,3 @@
+ 350 pass
+ 0 fail
+$ tsc --noEmit

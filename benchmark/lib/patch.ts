@@ -1,25 +1,43 @@
 export type FileStatus = "added" | "modified" | "deleted" | "renamed";
 
-export type PatchedFile = { path: string; previousPath: string; status: FileStatus; added: number; removed: number; addedLines: string[] };
+export type Hunk = { start: number; length: number };
+
+export type PatchedFile = {
+  path: string;
+  previousPath: string;
+  status: FileStatus;
+  added: number;
+  removed: number;
+  addedLines: string[];
+  hunks: Hunk[];
+  section: string;
+};
 
 export function parsePatch(text: string): PatchedFile[] {
   const files: PatchedFile[] = [];
+  const sections: string[][] = [];
   let current: PatchedFile | undefined;
   let inHunk = false;
   for (const line of text.split("\n")) {
     const header = /^diff --git a\/(.+) b\/(.+)$/.exec(line);
     if (header) {
-      current = { path: header[2]!, previousPath: header[1]!, status: "modified", added: 0, removed: 0, addedLines: [] };
+      current = { path: header[2]!, previousPath: header[1]!, status: "modified", added: 0, removed: 0, addedLines: [], hunks: [], section: "" };
       files.push(current);
+      sections.push([]);
       inHunk = false;
-      continue;
     }
     if (!current) continue;
-    if (line.startsWith("@@")) inHunk = true;
-    else if (inHunk && line.startsWith("+")) recordAdded(current, line.slice(1));
+    sections.at(-1)!.push(line);
+    if (header) continue;
+    const hunk = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/.exec(line);
+    if (hunk) {
+      inHunk = true;
+      current.hunks.push({ start: Number(hunk[1]), length: Number(hunk[2] ?? 1) });
+    } else if (inHunk && line.startsWith("+")) recordAdded(current, line.slice(1));
     else if (inHunk && line.startsWith("-")) current.removed++;
     else if (!inHunk) readExtendedHeader(current, line);
   }
+  files.forEach((file, index) => (file.section = sections[index]!.join("\n")));
   return files;
 }
 

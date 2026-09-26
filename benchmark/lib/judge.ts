@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { JudgeDimension, JudgeVerdict } from "./composite.ts";
+import type { JudgeDimension, JudgeVerdict } from "./metric-scores.ts";
 import { parsePatch } from "./patch.ts";
 
 export const judgeLabels = ["X", "Y", "Z", "W", "V", "U", "T", "S"] as const;

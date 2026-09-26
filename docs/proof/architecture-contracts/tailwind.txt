@@ -1,0 +1,17 @@
+Served src/explorer/index.html once with Bun.serve({ routes: { "/": page } }) from the repository root (bunfig.toml [serve.static] plugins = ["bun-plugin-tailwind"]).
+
+$ curl -s http://127.0.0.1:4499/
+  <link rel="stylesheet" href="/_bun/asset/b1a4b5e6cf1a8b83.css"> ...
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+
+$ curl -s http://127.0.0.1:4499/_bun/asset/b1a4b5e6cf1a8b83.css | grep -oE '\.(bg-slate-50|text-indigo-700|shadow-sm|font-semibold|justify-between|hover\\:bg-indigo-50)' | sort -u
+.bg-slate-50
+.font-semibold
+.hover\:bg-indigo-50
+.justify-between
+.shadow-sm
+.text-indigo-700
+
+Screenshot: explorer-placeholder.png
+
+v1 unchanged: PORT=4498 bun run start, then curl http://127.0.0.1:4498/ returns the v1 picker (<title>PR Review Diagram</title>, masthead), and its CSS bundle contains no Tailwind output.

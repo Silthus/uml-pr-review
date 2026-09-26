@@ -19,7 +19,9 @@ import { useViewState } from "./state/use-view-state.ts";
 
 const emptyGraph: VisibleGraph = { mode: "map", nodes: [], edges: [] };
 
-
+function isTypingTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || (target instanceof HTMLElement && target.isContentEditable);
+}
 
 export function ExplorerApp() {
   const [url] = useState(readUrlState);
@@ -67,7 +69,7 @@ export function ExplorerApp() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && view.mode === "lens") view.closeLens();
+      if (event.key === "Escape" && view.mode === "lens" && !isTypingTarget(event.target)) view.closeLens();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -125,10 +127,16 @@ export function ExplorerApp() {
     [applyOperations, repository.api, plan, live.note, view.setPlanVisible],
   );
 
-  const canvasActions = useMemo(
-    () => ({ selectModule: view.selectModule, selectSeam: view.selectSeam, focusConnections: view.focusConnections, toggleExpanded: view.toggleExpanded, showAllChildren: view.showAllChildren }),
-    [view.selectModule, view.selectSeam, view.focusConnections, view.toggleExpanded, view.showAllChildren],
+  const selectModule = useCallback(
+    (path: string) => (graph.mode === "map" && path.includes("/") ? view.focusConnections(path) : view.selectModule(path)),
+    [graph.mode, view.focusConnections, view.selectModule],
   );
+
+  const canvasActions = useMemo(
+    () => ({ selectModule, selectSeam: view.selectSeam, focusConnections: view.focusConnections, toggleExpanded: view.toggleExpanded, showAllChildren: view.showAllChildren }),
+    [selectModule, view.selectSeam, view.focusConnections, view.toggleExpanded, view.showAllChildren],
+  );
+  const lensPath = graph.mode === "lens" && view.selection?.kind === "module" ? view.selection.path : null;
 
   if (!repository.path) return <RepositoryPicker onOpen={(path) => repository.open(path, null)} />;
 
@@ -150,19 +158,19 @@ export function ExplorerApp() {
         onIncludeTests={view.setIncludeTests}
         onFollowAgent={view.setFollowAgent}
         onTheme={setTheme}
-        onSearch={view.selectModule}
+        onSearch={selectModule}
         onLeave={repository.leave}
       />
       {repository.loadState === "error" ? <div role="alert" className="banner-error">{repository.error}</div> : null}
       <div className="workspace">
         <CanvasActionsContext.Provider value={canvasActions}>
           <div className="canvas-column">
-            <ArchitectureCanvas scene={layout.scene} fresh={live.fresh} focus={view.focus} pending={layout.pending} error={layout.error} loading={repository.loadState === "loading"} theme={theme} lensPath={view.mode === "lens" && view.selection?.kind === "module" ? view.selection.path : null} allEdges={view.allEdges} onAllEdges={view.setAllEdges} onCloseLens={view.closeLens} onClearSelection={view.clearSelection} />
+            <ArchitectureCanvas scene={layout.scene} fresh={live.fresh} focus={view.focus} pending={layout.pending} error={layout.error} loading={repository.loadState === "loading"} theme={theme} lensPath={lensPath} allEdges={view.allEdges} onAllEdges={view.setAllEdges} onCloseLens={view.closeLens} onClearSelection={view.clearSelection} />
             <ActivityFeed activity={live.activity} />
           </div>
         </CanvasActionsContext.Provider>
         {repository.model ? (
-          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} includeTests={view.includeTests} actions={actions} onSelectModule={view.selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={view.mode === "lens"} />
+          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} includeTests={view.includeTests} actions={actions} onSelectModule={selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={lensPath !== null} />
         ) : (
           <aside className="inspector" aria-label="Inspector"><section className="panel"><p className="muted">{repository.loadState === "loading" ? "Indexing the repository. A cold PostHog index takes a few seconds." : "Nothing loaded."}</p></section></aside>
         )}

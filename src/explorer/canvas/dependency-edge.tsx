@@ -25,7 +25,7 @@ export function DependencyEdge({ id, source, target, data }: EdgeProps<Dependenc
         <EdgeLabelRenderer>
           <div className={`edge-label tone-${tone} ${seam ? "seam" : ""}`} style={{ transform: `translate(-50%, -50%) translate(${data.labelAt.x}px, ${data.labelAt.y}px)` }} onClick={seam ? () => actions.selectSeam(source, target) : undefined}>
             {seam?.status ? <span className={`status-${seam.status}`}>{statusGlyph(seam.status)}</span> : null}
-            {data.label}
+            <span className="edge-label-text">{data.label.split("\n").map((line, index) => <span key={index}>{line}</span>)}</span>
             {seam && seam.comments > 0 ? <span className="chip chip-comment">{seam.comments}</span> : null}
           </div>
         </EdgeLabelRenderer>

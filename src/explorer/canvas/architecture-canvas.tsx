@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Switch } from "../shell/switch.tsx";
-import { Background, BackgroundVariant, Controls, MiniMap, Panel, ReactFlow, ReactFlowProvider, useReactFlow, type Node } from "@xyflow/react";
+import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider, useReactFlow, type Node } from "@xyflow/react";
 import type { Scene } from "../state/use-layout.ts";
 import type { Theme } from "../state/theme.ts";
 import type { FocusRequest } from "../state/use-view-state.ts";
@@ -55,6 +55,7 @@ function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath,
             <Switch label="All dependencies" checked={allEdges} onChange={onAllEdges} />
           </>
         )}
+        <span className="canvas-status">{loading ? "Indexing repository…" : pending ? "Laying out…" : scene ? `${scene.graph.nodes.length} packages · ${scene.graph.edges.length} dependencies drawn · layout ${Math.round(scene.layout.milliseconds)} ms` : ""}</span>
       </div>
       <ReactFlow
         nodes={nodes}
@@ -74,9 +75,6 @@ function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath,
         <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} className="canvas-paper" />
         <Controls showInteractive={false} position="bottom-left" />
         {scene?.graph.mode === "map" ? <MiniMap pannable zoomable position="bottom-right" nodeColor={(node) => minimapColor(node, theme)} nodeStrokeWidth={0} className="minimap" /> : null}
-        <Panel position="bottom-center" className="canvas-status">
-          {loading ? "Indexing repository…" : pending ? "Laying out…" : scene ? `${scene.graph.nodes.length} packages · ${scene.graph.edges.length} dependencies drawn · layout ${Math.round(scene.layout.milliseconds)} ms` : ""}
-        </Panel>
       </ReactFlow>
       {error ? (
         <div role="alert" className="canvas-error">

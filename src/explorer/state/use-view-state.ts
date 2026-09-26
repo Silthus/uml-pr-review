@@ -45,11 +45,8 @@ export function useViewState(initialFocus: string | null, initialExpanded: strin
   const selectModule = useCallback((path: string) => {
     setSelection({ kind: "module", path });
     setExpanded((current) => new Set([...current, ...ancestorsOf(path)]));
-    setMode((current) => {
-      requestFocus(current === "lens" ? "all" : [path]);
-      return current;
-    });
-  }, [requestFocus]);
+    requestFocus(mode === "lens" ? "all" : [path]);
+  }, [mode, requestFocus]);
 
   const selectSeam = useCallback((from: string, to: string) => {
     setSelection({ kind: "seam", from, to });
@@ -67,11 +64,8 @@ export function useViewState(initialFocus: string | null, initialExpanded: strin
 
   const closeLens = useCallback(() => {
     setMode("map");
-    setSelection((current) => {
-      requestFocus(current?.kind === "module" ? [current.path] : "all");
-      return current;
-    });
-  }, [requestFocus]);
+    requestFocus(selection?.kind === "module" ? [selection.path] : "all");
+  }, [selection, requestFocus]);
 
   const toggleExpanded = useCallback((path: string) => {
     setExpanded((current) => {

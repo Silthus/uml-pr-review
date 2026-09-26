@@ -1,7 +1,8 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { useCanvasActions } from "./canvas-actions.ts";
 import type { PackageFlowNode } from "./flow-elements.ts";
-import { labelLines } from "../graph/nodes.ts";
+import { describeContents, labelLines } from "../graph/nodes.ts";
+import { ModulePath } from "../inspector/module-path.tsx";
 import { stereotypeOf } from "./stereotype.ts";
 
 export function PackageNode({ data }: NodeProps<PackageFlowNode>) {
@@ -16,14 +17,19 @@ export function PackageNode({ data }: NodeProps<PackageFlowNode>) {
         {data.comments > 0 ? <span className="chip chip-comment" aria-label={`${data.comments} comments`}>{data.comments}</span> : null}
       </button>
       <div className="package-body">
-        {data.context ? <div className="package-context">in {data.context}</div> : null}
+        {data.context ? <div className="package-context">in <ModulePath path={data.context} /></div> : null}
         <div className="package-head">
           <span className="stereotype">{stereotypeOf(data.kind)}</span>
-          <span className="package-meta">{describeContents(data)}</span>
-          {data.planAction ? <span className={`chip chip-action action-${data.planAction}`}>{data.planAction}</span> : null}
-          {data.status ? <span className={`chip chip-status status-${data.status}`}>{statusGlyph(data.status)} {data.status}</span> : null}
-          {data.childCount > 0 ? <Disclosure data={data} /> : null}
+          {data.container ? <span className="package-meta">{describeContents(data, data.ghost)}</span> : null}
+          {data.expandable ? <Disclosure data={data} /> : null}
         </div>
+        {data.container ? null : <div className="package-meta package-meta-row">{describeContents(data, data.ghost)}</div>}
+        {data.planAction || data.status ? (
+          <div className="package-chips">
+            {data.planAction ? <span className={`chip chip-action action-${data.planAction}`}>{data.planAction}</span> : null}
+            {data.status ? <span className={`chip chip-status status-${data.status}`}>{statusGlyph(data.status)} {data.status}</span> : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -38,13 +44,6 @@ function Disclosure({ data }: { data: PackageFlowNode["data"] }) {
       {data.expanded && data.hiddenChildren > 0 ? <span>{data.hiddenChildren} folded</span> : null}
     </button>
   );
-}
-
-function describeContents(data: PackageFlowNode["data"]): string {
-  if (data.ghost) return "planned, does not exist yet";
-  const files = `${data.totalFiles.toLocaleString()} ${data.totalFiles === 1 ? "file" : "files"}`;
-  if (data.childCount === 0) return files;
-  return `${files} · ${data.childCount} ${data.childCount === 1 ? "module" : "modules"}`;
 }
 
 export function statusGlyph(status: "conforming" | "pending" | "violating"): string {

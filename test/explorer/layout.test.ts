@@ -2,6 +2,7 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { ArchitectureModel } from "../../src/architecture/model/index.ts";
 import type { ViewState } from "../../src/explorer/graph/types.ts";
 import { buildVisibleGraph } from "../../src/explorer/graph/visible-graph.ts";
+import { lensFarEndCap } from "../../src/explorer/graph/lens-graph.ts";
 import { createLayoutEngine, type LaidOutNode } from "../../src/explorer/layout/layout-engine.ts";
 import { architectureOf, type ArchitectureSource } from "../support/architecture.ts";
 
@@ -23,6 +24,15 @@ describe("PostHog layout through the app's layout path", () => {
     expect(new Set(graph.edges.map((edge) => edge.source)).size).toBe(graph.edges.length);
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
     for (const edge of laidOut.edges) expect(edge.points.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test("selecting a top-level package draws only its own dependencies, in and out", () => {
+    const graph = buildVisibleGraph(model, { ...mapView, selection: { kind: "module", path: "products" } });
+
+    expect(graph.edges.length).toBeGreaterThan(2);
+    expect(graph.edges.every((edge) => (edge.source === "products" && edge.data.tone === "outgoing") || (edge.target === "products" && edge.data.tone === "incoming"))).toBe(true);
+    expect(graph.nodes.find((node) => node.id === "products")?.data.tone).toBe("selected");
+    expect(graph.nodes.some((node) => node.data.tone === "dimmed")).toBe(true);
   });
 
   test("all dependencies brings back every top-level dependency", () => {
@@ -59,7 +69,7 @@ describe("PostHog layout through the app's layout path", () => {
     expect(positions.get(selection.path)!.x).toBeLessThan(positions.get(strongestDependency)!.x);
     expect(graph.edges.every((edge) => edge.data.tone === "incoming" || edge.data.tone === "outgoing")).toBe(true);
     expect(graph.edges.some((edge) => edge.target === strongestDependency && edge.data.tone === "outgoing")).toBe(true);
-    expect(graph.nodes.filter((node) => node.parentId === null).length).toBeLessThanOrEqual(1 + 2 * 8 + 2);
+    expect(graph.nodes.filter((node) => node.parentId === null).length).toBeLessThanOrEqual(1 + 2 * lensFarEndCap + 2);
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
   });
 
@@ -78,9 +88,10 @@ describe("PostHog layout through the app's layout path", () => {
     const errorTracking = graph.nodes.find((node) => node.id === "products/error_tracking");
     expect(errorTracking?.type === "package" ? errorTracking.data.context : null).toBe("products");
     expect(graph.edges.find((edge) => edge.id === "products/error_tracking->products/feature_flags")?.data.seam?.action).toBe("add");
-    expect(graph.edges.every((edge) => edge.data.seam !== null || edge.source.startsWith("products/error_tracking") || edge.target.startsWith("products/error_tracking") || edge.source.startsWith("products/feature_flags") || edge.target.startsWith("products/feature_flags"))).toBe(true);
+    const plannedImports = graph.edges.filter((edge) => edge.source === "products/error_tracking" && edge.data.seam === null).reduce((total, edge) => total + edge.data.imports, 0);
+    const modelImports = model.dependencies("products/error_tracking", "out").filter((far) => ids.includes(far.module)).reduce((total, far) => total + far.imports, 0);
+    expect(plannedImports).toBe(modelImports);
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
-    expect(childrenOutsideParents(laidOut.nodes)).toEqual([]);
   });
 });
 

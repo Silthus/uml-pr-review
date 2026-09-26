@@ -1,5 +1,6 @@
 import ELK, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk-api.js";
 import elkWorkerUrl from "elkjs/lib/elk-worker.min.js" with { type: "file" };
+import { headerHeightOf } from "../graph/nodes.ts";
 import type { GraphEdge, GraphNode, VisibleGraph } from "../graph/types.ts";
 import { packGrid, type Placement } from "./grid.ts";
 
@@ -9,10 +10,10 @@ export type LaidOutEdge = { id: string; points: Point[]; labelAt: Point | null }
 export type LayoutResult = { nodes: LaidOutNode[]; edges: LaidOutEdge[]; milliseconds: number };
 export type LayoutEngine = { layout(graph: VisibleGraph): Promise<LayoutResult>; dispose(): void };
 
-const containerPadding = "[top=64,left=20,bottom=20,right=20]";
 const edgeLabelHeight = 20;
 const layerConstraints = { first: "FIRST", last: "LAST" } as const;
 const directions = { map: "DOWN", lens: "RIGHT", plan: "RIGHT" } as const;
+const hierarchy = { map: "INCLUDE_CHILDREN", lens: "INCLUDE_CHILDREN", plan: "SEPARATE_CHILDREN" } as const;
 const spacing = {
   map: { nodeNode: "20", betweenLayers: "44" },
   lens: { nodeNode: "12", betweenLayers: "64" },
@@ -27,8 +28,14 @@ export function createLayoutEngine(): LayoutEngine {
     async layout(graph) {
       session ??= startElk();
       const started = performance.now();
-      const result = graph.mode === "map" ? await layoutMap(session, graph) : await layoutHierarchy(session, graph);
-      return { ...result, milliseconds: performance.now() - started };
+      try {
+        const result = graph.mode === "map" ? await layoutMap(session, graph) : await layoutHierarchy(session, graph);
+        return { ...result, milliseconds: performance.now() - started };
+      } catch (error) {
+        session.elk.terminateWorker();
+        session = null;
+        throw error;
+      }
     },
     dispose() {
       session?.elk.terminateWorker();
@@ -38,7 +45,7 @@ export function createLayoutEngine(): LayoutEngine {
 }
 
 export function edgeLabelWidth(label: string): number {
-  return label.length * 7 + 14;
+  return Math.max(...label.split("\n").map((line) => line.length)) * 7 + 14;
 }
 
 function startElk(): ElkSession {
@@ -75,7 +82,7 @@ async function layoutMap(session: ElkSession, graph: VisibleGraph): Promise<Omit
 function measure(node: GraphNode, nodes: GraphNode[], placements: Map<string, Placement>): { width: number; height: number } {
   const children = nodes.filter((candidate) => candidate.parentId === node.id).sort((a, b) => Number(a.type === "more") - Number(b.type === "more"));
   if (children.length === 0) return { width: node.width, height: node.height };
-  const packed = packGrid(children.map((child) => ({ id: child.id, ...measure(child, nodes, placements) })), { minWidth: node.width });
+  const packed = packGrid(children.map((child) => ({ id: child.id, ...measure(child, nodes, placements) })), { minWidth: node.width, headerHeight: headerHeightOf(node) });
   for (const [id, placement] of packed.placements) placements.set(id, placement);
   return { width: packed.width, height: packed.height };
 }
@@ -87,7 +94,7 @@ function toElkGraph(graph: VisibleGraph, children: ElkNode[]): ElkNode {
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": directions[graph.mode],
-      "elk.hierarchyHandling": graph.nodes.some((node) => node.parentId !== null) ? "INCLUDE_CHILDREN" : "SEPARATE_CHILDREN",
+      "elk.hierarchyHandling": hierarchy[graph.mode],
       "elk.edgeRouting": "ORTHOGONAL",
       "elk.edgeLabels.inline": "true",
       "elk.spacing.nodeNode": spacing[graph.mode].nodeNode,
@@ -119,7 +126,7 @@ function toElkNode(node: GraphNode, nodes: GraphNode[]): ElkNode {
   return {
     id: node.id,
     children,
-    layoutOptions: { ...layer, "elk.padding": containerPadding, "elk.nodeSize.constraints": "MINIMUM_SIZE", "elk.nodeSize.minimum": `(${node.width}, ${node.height})` },
+    layoutOptions: { ...layer, "elk.padding": `[top=${headerHeightOf(node) + 4},left=20,bottom=20,right=20]`, "elk.nodeSize.constraints": "MINIMUM_SIZE", "elk.nodeSize.minimum": `(${node.width}, ${node.height})` },
   };
 }
 
@@ -128,7 +135,7 @@ function toElkEdge(edge: GraphEdge): ElkExtendedEdge {
     id: edge.id,
     sources: [edge.source],
     targets: [edge.target],
-    labels: edge.label ? [{ text: edge.label, width: edgeLabelWidth(edge.label), height: edgeLabelHeight }] : [],
+    labels: edge.label ? [{ text: edge.label, width: edgeLabelWidth(edge.label), height: edgeLabelHeight * edge.label.split("\n").length }] : [],
   };
 }
 

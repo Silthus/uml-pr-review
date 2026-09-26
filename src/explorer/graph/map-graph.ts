@@ -13,8 +13,9 @@ export function buildMapGraph(model: ArchitectureModel, view: ViewState): Visibl
   const folded = foldedChildren(shown, expanded, view.showAll, new Set(pinned));
   const visible = shown.filter((module) => !folded.has(module.path));
   const marks = planMarks(null, null);
+  const shownPaths = new Set(shown.map((module) => module.path));
   const nodes = [
-    ...visible.map((module) => packageNode(module, { parentId: module.parent && module.parent !== "." ? module.parent : null, container: visible.some((candidate) => candidate.parent === module.path) || folded.has(module.path, true), expanded: expanded.has(module.path), hiddenChildren: hiddenChildren(model, module, visible, view.includeTests) }, marks)),
+    ...visible.map((module) => packageNode(module, { parentId: module.parent && module.parent !== "." ? module.parent : null, container: visible.some((candidate) => candidate.parent === module.path), expanded: expanded.has(module.path), expandable: module.childCount > 0, hiddenChildren: hiddenChildren(model, module, shownPaths, view.includeTests) }, marks)),
     ...moreNodes(folded),
   ];
   const rootIds = new Set(nodes.filter((node) => node.parentId === null).map((node) => node.id));
@@ -22,14 +23,8 @@ export function buildMapGraph(model: ArchitectureModel, view: ViewState): Visibl
   return { mode: "map", nodes: withTones(nodes, mapTones(model, nodes, view)), edges };
 }
 
-class FoldedChildren extends Map<string, string> {
-  has(path: string, asParent = false): boolean {
-    return asParent ? [...this.values()].includes(path) : super.has(path);
-  }
-}
-
-function foldedChildren(shown: ModuleView[], expanded: ReadonlySet<string>, showAll: ReadonlySet<string>, pinned: ReadonlySet<string>): FoldedChildren {
-  const folded = new FoldedChildren();
+function foldedChildren(shown: ModuleView[], expanded: ReadonlySet<string>, showAll: ReadonlySet<string>, pinned: ReadonlySet<string>): Map<string, string> {
+  const folded = new Map<string, string>();
   for (const [parent, children] of Map.groupBy(shown, (module) => module.parent ?? ".")) {
     if (parent === "." || showAll.has(parent) || children.length <= childCap) continue;
     const kept = new Set([...children].sort(bySizeDescending).slice(0, childCap).map((child) => child.path));
@@ -41,15 +36,14 @@ function foldedChildren(shown: ModuleView[], expanded: ReadonlySet<string>, show
   return folded;
 }
 
-function moreNodes(folded: FoldedChildren): GraphNode[] {
+function moreNodes(folded: Map<string, string>): GraphNode[] {
   const hiddenByParent = new Map<string, number>();
   for (const parent of folded.values()) hiddenByParent.set(parent, (hiddenByParent.get(parent) ?? 0) + 1);
   return [...hiddenByParent].map(([parent, hidden]) => moreNode(moreNodeId(parent), parent, { parent, hidden, label: `+${hidden} more`, detail: "smaller modules, show all", expandable: true }));
 }
 
-function hiddenChildren(model: ArchitectureModel, module: ModuleView, visible: ModuleView[], includeTests: boolean): number {
-  const visiblePaths = new Set(visible.map((entry) => entry.path));
-  return model.children(module.path).filter((child) => !visiblePaths.has(child.path) && (includeTests || child.kind !== "tests")).length;
+function hiddenChildren(model: ArchitectureModel, module: ModuleView, shownPaths: ReadonlySet<string>, includeTests: boolean): number {
+  return model.children(module.path).filter((child) => !shownPaths.has(child.path) && (includeTests || child.kind !== "tests")).length;
 }
 
 function mapEdges(model: ArchitectureModel, view: ViewState, rootIds: ReadonlySet<string>): GraphEdge[] {

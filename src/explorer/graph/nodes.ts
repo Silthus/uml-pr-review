@@ -2,18 +2,20 @@ import type { ArchitecturePlan, ConformanceResult, ModuleView } from "../../arch
 import { moduleLabel, parentOf } from "./paths.ts";
 import type { GraphEdge, GraphNode, Layer, MoreNodeData, Tone } from "./types.ts";
 
-export const leafHeight = 64;
+export const leafHeight = 76;
 export const containerMinHeight = 120;
+export const headerHeight = 62;
 const moreNodeSize = { width: 150, height: 56 };
 const maxNodeWidth = 300;
 const labelCharWidth = 8.4;
-const tabLineHeight = 18;
+const tabLineHeight = 19;
 const contextCharWidth = 6.4;
-const contextLineHeight = 15;
+export const contextLineHeight = 15;
+const chipRowHeight = 20;
 
 export type PlanMarks = { actions: Map<string, "create" | "modify" | "remove">; statuses: Map<string, "conforming" | "pending" | "violating">; comments: Map<string, number> };
 
-export type PackageOptions = { container: boolean; expanded: boolean; hiddenChildren: number; context?: string | null; ghost?: boolean; layer?: Layer; parentId: string | null };
+export type PackageOptions = { container: boolean; expanded: boolean; expandable?: boolean; hiddenChildren: number; context?: string | null; ghost?: boolean; layer?: Layer; parentId: string | null };
 
 export function packageNode(module: ModuleView, options: PackageOptions, marks: PlanMarks, id = module.path): GraphNode {
   return {
@@ -21,7 +23,7 @@ export function packageNode(module: ModuleView, options: PackageOptions, marks: 
     type: "package",
     parentId: options.parentId,
     layer: options.layer,
-    ...packageSize(module.label, options.container, options.context ?? null),
+    ...packageSize(module, options, marks),
     data: {
       path: module.path,
       label: module.label,
@@ -32,6 +34,7 @@ export function packageNode(module: ModuleView, options: PackageOptions, marks: 
       childCount: module.childCount,
       hiddenChildren: options.hiddenChildren,
       expanded: options.expanded && options.container,
+      expandable: options.expandable ?? false,
       container: options.container,
       ghost: options.ghost ?? false,
       tone: "neutral",
@@ -50,14 +53,31 @@ export function moreNode(id: string, parentId: string | null, data: Omit<MoreNod
   return { id, type: "more", parentId, layer, ...moreNodeSize, data: { ...data, tone: "neutral" } };
 }
 
-export function packageSize(label: string, container: boolean, context: string | null = null): { width: number; height: number } {
-  const lines = labelLines(label);
+export function packageSize(module: ModuleView, options: Pick<PackageOptions, "container" | "context" | "ghost">, marks: PlanMarks): { width: number; height: number } {
+  const lines = labelLines(module.label);
   const longest = Math.max(...lines.map((line) => line.length));
-  const contextWidth = context ? Math.min(maxNodeWidth, (context.length + 3) * contextCharWidth + 28) : 0;
-  const width = Math.max(200, Math.min(maxNodeWidth, longest * labelCharWidth + 72), contextWidth);
-  const contextLines = context ? Math.ceil(((context.length + 3) * contextCharWidth) / (width - 24)) : 0;
-  const extra = (lines.length - 1) * tabLineHeight + contextLines * contextLineHeight;
-  return { width, height: (container ? containerMinHeight : leafHeight) + extra };
+  const context = options.context ?? null;
+  const width = Math.max(200, Math.min(maxNodeWidth, longest * labelCharWidth + 72));
+  const contextLines = context ? contextLinesOf(context, width) : 0;
+  const chips = marks.actions.has(module.path) || marks.statuses.has(module.path) ? chipRowHeight : 0;
+  const extra = (lines.length - 1) * tabLineHeight + contextLines * contextLineHeight + chips;
+  return { width, height: (options.container ? containerMinHeight : leafHeight) + extra };
+}
+
+export function headerHeightOf(node: GraphNode): number {
+  if (node.type !== "package") return headerHeight;
+  return headerHeight + (node.data.context ? contextLineHeight * contextLinesOf(node.data.context, node.width) : 0) + (node.data.planAction || node.data.status ? chipRowHeight : 0) + (labelLines(node.data.label).length - 1) * tabLineHeight;
+}
+
+function contextLinesOf(context: string, width: number): number {
+  return Math.ceil(((context.length + 3) * contextCharWidth) / (width - 24));
+}
+
+export function describeContents(module: Pick<ModuleView, "totalFiles" | "childCount">, ghost: boolean): string {
+  if (ghost) return "planned, does not exist yet";
+  const files = `${module.totalFiles.toLocaleString()} ${module.totalFiles === 1 ? "file" : "files"}`;
+  if (module.childCount === 0) return files;
+  return `${files} · ${module.childCount} ${module.childCount === 1 ? "module" : "modules"}`;
 }
 
 export function labelLines(label: string): string[] {

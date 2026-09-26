@@ -19,8 +19,13 @@ export function buildPlanGraph(model: ArchitectureModel, view: ViewState, plan: 
   });
 
   const drawnSet = new Set(drawn);
-  const lifted = model.lift(new Set(drawn.flatMap(ancestorsOf)), { includeTests: view.includeTests }).dependencies.filter((dependency) => drawnSet.has(dependency.from) && drawnSet.has(dependency.to) && (planned.has(dependency.from) || planned.has(dependency.to)));
-  const merged = aggregateEdges(lifted.map((dependency) => ({ source: dependency.from, target: dependency.to, imports: dependency.imports })));
+  const nearestDrawn = (path: string): string | null => [path, ...ancestorsOf(path).reverse()].find((candidate) => drawnSet.has(candidate)) ?? null;
+  const lifted = model.lift(new Set(drawn.flatMap(ancestorsOf)), { includeTests: view.includeTests }).dependencies.flatMap((dependency) => {
+    const source = nearestDrawn(dependency.from);
+    const target = nearestDrawn(dependency.to);
+    return source && target && source !== target && (planned.has(source) || planned.has(target)) ? [{ source, target, imports: dependency.imports }] : [];
+  });
+  const merged = aggregateEdges(lifted);
   const seams = new Map(plan.seams.filter((seam) => drawnSet.has(seam.from) && drawnSet.has(seam.to)).map((seam) => [edgeId(seam.from, seam.to), seam]));
   for (const [key, seam] of seams) if (!merged.has(key)) merged.set(key, { source: seam.from, target: seam.to, imports: 0 });
   const edges = [...merged].map(([key, edge]): GraphEdge => {
@@ -52,7 +57,7 @@ function seamOverlay(seam: Seam, view: ViewState, comments: number): SeamOverlay
 }
 
 function seamLabel(seam: SeamOverlay): string {
-  const via = seam.interfaceFile ? ` via ${seam.interfaceFile.slice(seam.interfaceFile.lastIndexOf("/") + 1)}` : "";
+  const via = seam.interfaceFile ? `\nvia ${seam.interfaceFile.slice(seam.interfaceFile.lastIndexOf("/") + 1)}` : "";
   return `${seam.action} seam${via}`;
 }
 

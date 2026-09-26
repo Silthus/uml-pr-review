@@ -7,13 +7,15 @@ import type { GraphEdge, GraphNode, Tone, ViewState, VisibleGraph } from "./type
 export const lensChildCap = 5;
 export const lensFarEndCap = 5;
 
+const restIds = { in: "rest:in", out: "rest:out" } as const;
+
 export function buildLensGraph(model: ArchitectureModel, view: ViewState, subject: ModuleView): VisibleGraph {
-  const marks = planMarks(null, null);
+  const marks = planMarks(view.plan, view.conformance);
   const children = model.children(subject.path).filter((child) => view.includeTests || child.kind !== "tests").sort(bySizeDescending);
   const keptChildren = children.slice(0, lensChildCap);
   const foldedChildren = children.slice(lensChildCap);
-  const outgoing = model.dependencies(subject.path, "out", { includeTests: view.includeTests });
-  const incoming = model.dependencies(subject.path, "in", { includeTests: view.includeTests });
+  const outgoing = model.dependencies(subject.path, "out", { includeTests: view.includeTests }).filter((far) => far.module !== ".");
+  const incoming = model.dependencies(subject.path, "in", { includeTests: view.includeTests }).filter((far) => far.module !== ".");
   const farEnds = farEndSides(outgoing.slice(0, lensFarEndCap), incoming.slice(0, lensFarEndCap));
   const container = keptChildren.length > 0;
   const ownId = container && subject.directFiles > 0 ? `own:${subject.path}` : null;
@@ -24,12 +26,12 @@ export function buildLensGraph(model: ArchitectureModel, view: ViewState, subjec
     ...(ownId ? [packageNode({ ...ghostModule(subject.path, subject.parent), label: "own files", kind: subject.kind, directFiles: subject.directFiles, totalFiles: subject.directFiles }, { parentId: subject.path, container: false, expanded: false, hiddenChildren: 0 }, marks, ownId)] : []),
     ...(foldedChildren.length > 0 ? [moreNode(moreNodeId(subject.path), subject.path, { parent: subject.path, hidden: foldedChildren.length, label: `+${foldedChildren.length} more`, detail: "smaller modules", expandable: false })] : []),
     ...[...farEnds].map(([path, side]) => packageNode(model.module(path) ?? ghostModule(path, null), { parentId: null, container: false, expanded: false, hiddenChildren: model.module(path)?.childCount ?? 0, context: contextOf(path), layer: side === "in" ? "first" : side === "out" ? "last" : undefined }, marks)),
-    ...restNode("more:in", incoming.slice(lensFarEndCap), "dependents", "first"),
-    ...restNode("more:out", outgoing.slice(lensFarEndCap), "dependencies", "last"),
+    ...restNode(restIds.in, incoming.slice(lensFarEndCap), "dependents", "first"),
+    ...restNode(restIds.out, outgoing.slice(lensFarEndCap), "dependencies", "last"),
   ];
 
   const inside = new Map<string, string>([[subject.path, ownId ?? subject.path], ...keptChildren.map((child): [string, string] => [child.path, child.path]), ...foldedChildren.map((child): [string, string] => [child.path, moreNodeId(subject.path)])]);
-  const outside = (path: string, direction: "in" | "out") => (farEnds.has(path) ? path : path === subject.path || inside.has(path) ? null : direction === "in" ? "more:in" : "more:out");
+  const outside = (path: string, direction: "in" | "out") => (farEnds.has(path) ? path : path === subject.path || inside.has(path) ? null : restIds[direction]);
   const lifted = model.lift(new Set([...ancestorsOf(subject.path), subject.path]), { includeTests: view.includeTests }).dependencies;
   const edges: GraphEdge[] = [];
   const outEdges = aggregateEdges(lifted.flatMap((dependency) => {

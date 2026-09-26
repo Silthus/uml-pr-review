@@ -212,6 +212,8 @@ describe("ExplorerApp", () => {
     });
 
     expect(view.queryByText(/Connections of/)).toBeNull();
+    expect(await view.findByText(/Plan focus/)).toBeTruthy();
+    await settle();
   });
 
   test("follow agent moves the selection on selection hints and stays put when switched off", async () => {

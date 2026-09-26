@@ -26,6 +26,7 @@ export type PackageNodeData = {
   childCount: number;
   hiddenChildren: number;
   expanded: boolean;
+  expandable: boolean;
   container: boolean;
   ghost: boolean;
   tone: Tone;

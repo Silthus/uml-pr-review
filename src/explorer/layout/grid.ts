@@ -1,15 +1,15 @@
 export type Placement = { x: number; y: number; width: number; height: number };
 export type Packed = { width: number; height: number; placements: Map<string, Placement> };
 
-const padding = { top: 64, left: 20, bottom: 20, right: 20 };
+const padding = { left: 20, bottom: 20, right: 20 };
 const gap = 16;
 const targetAspect = 1.2;
 const maxColumns = 4;
 
-export function packGrid(items: { id: string; width: number; height: number }[], options: { minWidth: number }): Packed {
+export function packGrid(items: { id: string; width: number; height: number }[], options: { minWidth: number; headerHeight: number }): Packed {
   const columns = Math.max(1, Math.min(items.length, maxColumns, Math.ceil(Math.sqrt(items.length * targetAspect))));
   const placements = new Map<string, Placement>();
-  let y = padding.top;
+  let y = options.headerHeight + 4;
   let widest = 0;
   for (let start = 0; start < items.length; start += columns) {
     const row = items.slice(start, start + columns);

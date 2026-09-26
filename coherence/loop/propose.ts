@@ -4,7 +4,8 @@ import { parseArgs } from "node:util";
 import { git, run } from "../../src/git.ts";
 import { emit, usageError } from "./cli.ts";
 import { renderPullRequest, reviewHeading } from "./proposal.ts";
-import { readIteration, writeIteration, type Iteration } from "./state.ts";
+import { recordPromotion } from "./ledger.ts";
+import { ledgerFile, readIteration, runsDirectoryOf, writeIteration, type Iteration } from "./state.ts";
 
 const usage = "Usage: bun coherence/loop/propose.ts --iteration <dir> --summary <markdown file> [--draft] [--push-remote <name>]";
 
@@ -32,7 +33,8 @@ await emit(async () => {
   await Bun.write(body, renderPullRequest({ iteration, verification, title, summary, mode }));
   const pullRequest = values.draft ? await openDraft(iteration, workspace, body, title, values["push-remote"]) : null;
   await writeIteration(directory, { ...iteration, proposal: { mode, body, pullRequest } });
-  return { mode, body, branch: workspace.branch, workspace: workspace.path, pullRequest };
+  const ledgerEntry = pullRequest === null ? null : await recordPromotion(ledgerFile(runsDirectoryOf(iteration.sense)), { sense: iteration.senseId, module: iteration.target.module }, pullRequest);
+  return { mode, body, branch: workspace.branch, workspace: workspace.path, pullRequest, ledgerEntry };
 });
 
 async function openDraft(iteration: Iteration, workspace: { path: string; branch: string }, body: string, title: string, pushRemote: string): Promise<string> {

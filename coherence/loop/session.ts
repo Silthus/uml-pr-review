@@ -4,14 +4,28 @@ import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { githubPushGuard, type Invocation } from "../../benchmark/lib/invocation.ts";
+import { activePullRequestDays } from "../signals/rank.ts";
 import { emit, usageError, wholeNumber } from "./cli.ts";
+import { defaultMaxQuestions, defaultRunsDirectory } from "./state.ts";
 
-export type SessionOptions = { repository: string; scope: string; budget: number; draft: boolean; fetch: boolean; signals: string | null; model: string };
+export type SessionOptions = {
+  repository: string;
+  scope: string;
+  budget: number;
+  draft: boolean;
+  fetch: boolean;
+  signals: string | null;
+  model: string;
+  runs: string;
+  activeDays: number;
+  maxQuestions: number;
+};
 
 export const sessionModel = "claude-opus-5-5";
 export const skillPath = join(import.meta.dir, "..", "..", "skills", "coherence-loop", "SKILL.md");
 
-const usage = "Usage: bun coherence/loop/session.ts --repo <path> --scope <path> [--budget <n>] [--draft] [--fetch] [--posthog-signals <file>] [--model <id>] [--transcript <file>]";
+const usage =
+  "Usage: bun coherence/loop/session.ts --repo <path> --scope <path> [--budget <n>] [--draft] [--fetch] [--posthog-signals <file>] [--runs <dir>] [--active-days <n>] [--max-questions <n>] [--model <id>] [--transcript <file>]";
 const inheritedEnvironment = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "TERM", "LANG", "LC_ALL", "TMPDIR"];
 const ResultEventSchema = z.object({ type: z.literal("result"), result: z.string() });
 const agentOutwardTools = ["Bash(git push:*)", "Bash(gh:*)", "Bash(curl:*github.com*)"];
@@ -36,6 +50,8 @@ export function sessionInvocation(options: SessionOptions, skill: string, enviro
       "--add-dir",
       options.repository,
       "--add-dir",
+      options.runs,
+      "--add-dir",
       tmpdir(),
       "--append-system-prompt",
       skill,
@@ -52,7 +68,7 @@ export function sessionInvocation(options: SessionOptions, skill: string, enviro
   };
 }
 
-export function sessionPrompt({ repository, scope, budget, draft, fetch, signals }: SessionOptions): string {
+export function sessionPrompt({ repository, scope, budget, draft, fetch, signals, runs, activeDays, maxQuestions }: SessionOptions): string {
   return [
     "Run the coherence loop with the coherence-loop skill in your system prompt.",
     "",
@@ -64,37 +80,50 @@ export function sessionPrompt({ repository, scope, budget, draft, fetch, signals
     signals === null
       ? "- Signals: refresh them with coherence/signals/export-ci.md when PostHog MCP tools are available; otherwise pass the newest report for this scope in coherence/signals/reports/."
       : `- Signals: pass --posthog-signals ${signals} to sense.`,
+    `- Sense: pass --runs ${runs} --active-days ${activeDays} --max-questions ${maxQuestions} to sense.`,
     "",
     "End with the target, step, verification class, index delta, and the pr.md path or question URL of each iteration.",
   ].join("\n");
 }
 
-async function main(): Promise<void> {
-  const { values } = parseArgs({
-    options: {
-      repo: { type: "string" },
-      scope: { type: "string" },
-      budget: { type: "string", default: "1" },
-      draft: { type: "boolean", default: false },
-      fetch: { type: "boolean", default: false },
-      "posthog-signals": { type: "string" },
-      model: { type: "string", default: sessionModel },
-      transcript: { type: "string", default: join(tmpdir(), `coherence-session-${Date.now()}.jsonl`) },
-    },
-  });
+const sessionFlags = {
+  repo: { type: "string" },
+  scope: { type: "string" },
+  budget: { type: "string", default: "1" },
+  draft: { type: "boolean", default: false },
+  fetch: { type: "boolean", default: false },
+  "posthog-signals": { type: "string" },
+  runs: { type: "string", default: defaultRunsDirectory },
+  "active-days": { type: "string", default: String(activePullRequestDays) },
+  "max-questions": { type: "string", default: String(defaultMaxQuestions) },
+  model: { type: "string", default: sessionModel },
+  transcript: { type: "string" },
+} as const;
+
+export type SessionRequest = { options: SessionOptions; transcript: string };
+
+export function sessionRequest(args: string[]): SessionRequest {
+  const { values } = parseArgs({ args, options: sessionFlags });
   if (!values.repo || !values.scope) usageError(usage);
+  const options: SessionOptions = {
+    repository: resolve(values.repo),
+    scope: values.scope,
+    budget: wholeNumber(values.budget, "budget", 1),
+    draft: values.draft,
+    fetch: values.fetch,
+    signals: values["posthog-signals"] === undefined ? null : resolve(values["posthog-signals"]),
+    model: values.model,
+    runs: resolve(values.runs),
+    activeDays: wholeNumber(values["active-days"], "active-days", 1),
+    maxQuestions: wholeNumber(values["max-questions"], "max-questions"),
+  };
+  return { options, transcript: resolve(values.transcript ?? join(tmpdir(), `coherence-session-${Date.now()}.jsonl`)) };
+}
+
+async function main(): Promise<void> {
   await emit(async () => {
-    const options: SessionOptions = {
-      repository: resolve(values.repo!),
-      scope: values.scope!,
-      budget: wholeNumber(values.budget, "budget", 1),
-      draft: values.draft,
-      fetch: values.fetch,
-      signals: values["posthog-signals"] === undefined ? null : resolve(values["posthog-signals"]),
-      model: values.model,
-    };
+    const { options, transcript } = sessionRequest(process.argv.slice(2));
     const invocation = sessionInvocation(options, await Bun.file(skillPath).text(), process.env);
-    const transcript = resolve(values.transcript);
     const child = Bun.spawn(invocation.command, { cwd: join(import.meta.dir, "..", ".."), env: invocation.env, stdin: new TextEncoder().encode(invocation.prompt), stdout: Bun.file(transcript), stderr: "inherit" });
     return { transcript, exitCode: await child.exited, result: await finalResult(transcript) };
   });

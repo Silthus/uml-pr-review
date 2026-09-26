@@ -1,6 +1,8 @@
-import { appendFile, mkdir } from "node:fs/promises";
+import { appendFile, mkdir, rename } from "node:fs/promises";
 import { dirname } from "node:path";
 import { z } from "zod";
+import { git, run } from "../../src/git.ts";
+import type { Sense } from "./state.ts";
 
 const ScoreChangeSchema = z.object({ before: z.number().nullable(), after: z.number().nullable() });
 
@@ -12,6 +14,7 @@ export const IndexDeltaSchema = z.object({
 
 export const outcomes = ["proposed", "question", "abandoned"] as const;
 export const OutcomeSchema = z.enum(outcomes);
+export const ProposalModeSchema = z.enum(["dry-run", "draft"]);
 
 export const LedgerEntrySchema = z.object({
   at: z.iso.datetime(),
@@ -21,6 +24,7 @@ export const LedgerEntrySchema = z.object({
   step: z.string(),
   verification: z.string(),
   outcome: OutcomeSchema,
+  mode: ProposalModeSchema.nullable().default(null),
   indexDelta: IndexDeltaSchema.nullable(),
   questions: z.array(z.string()),
   branch: z.string().nullable(),
@@ -28,9 +32,13 @@ export const LedgerEntrySchema = z.object({
   note: z.string().nullable(),
 });
 
+const PullRequestStateSchema = z.object({ state: z.enum(["OPEN", "CLOSED", "MERGED"]), mergeCommit: z.object({ oid: z.string() }).nullable() });
+
 export type IndexDelta = z.infer<typeof IndexDeltaSchema>;
 export type Outcome = z.infer<typeof OutcomeSchema>;
+export type ProposalMode = z.infer<typeof ProposalModeSchema>;
 export type LedgerEntry = z.infer<typeof LedgerEntrySchema>;
+export type SensedRun = Pick<Sense, "id" | "scope" | "repository" | "base">;
 
 export async function readLedger(path: string): Promise<LedgerEntry[]> {
   const file = Bun.file(path);
@@ -45,5 +53,58 @@ export async function readLedger(path: string): Promise<LedgerEntry[]> {
 
 export async function appendLedger(path: string, entry: LedgerEntry): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
-  await appendFile(path, `${JSON.stringify(LedgerEntrySchema.parse(entry))}\n`);
+  await appendFile(path, serialized(entry));
+}
+
+export async function recordPromotion(path: string, { sense, module }: { sense: string; module: string }, pullRequest: string): Promise<LedgerEntry | null> {
+  const entries = await readLedger(path);
+  const index = entries.findIndex((entry) => entry.sense === sense && entry.module === module && entry.outcome === "proposed");
+  if (index === -1) return null;
+  const promoted: LedgerEntry = { ...entries[index]!, mode: "draft", pullRequest };
+  entries[index] = promoted;
+  await replaceFile(path, entries.map(serialized).join(""));
+  return promoted;
+}
+
+export async function modulesHeldByEarlierRuns(entries: LedgerEntry[], sense: SensedRun): Promise<Set<string>> {
+  const earlier = entries.filter((entry) => entry.scope === sense.scope && entry.sense !== sense.id && entry.outcome === "proposed");
+  const held = await Promise.all(earlier.map(async (entry) => ((await isPending(entry, sense)) ? [entry.module] : [])));
+  return new Set(held.flat());
+}
+
+function isPending(entry: LedgerEntry, sense: SensedRun): Promise<boolean> {
+  if (entry.mode === "draft" && entry.pullRequest !== null) return isPullRequestPending(entry.pullRequest, sense);
+  return entry.branch === null ? Promise.resolve(false) : branchExists(sense.repository, entry.branch);
+}
+
+async function isPullRequestPending(url: string, { repository, base }: SensedRun): Promise<boolean> {
+  const { state, mergeCommit } = PullRequestStateSchema.parse(JSON.parse(await run(repository, ["gh", "pr", "view", url, "--json", "state,mergeCommit"])));
+  if (state === "OPEN") return true;
+  if (state === "CLOSED" || mergeCommit === null) return false;
+  return !(await isAncestor(repository, mergeCommit.oid, base.commit));
+}
+
+function branchExists(repository: string, branch: string): Promise<boolean> {
+  return succeeds(git(repository, ["rev-parse", "--verify", "--quiet", `refs/heads/${branch}`]));
+}
+
+function isAncestor(repository: string, commit: string, descendant: string): Promise<boolean> {
+  return succeeds(git(repository, ["merge-base", "--is-ancestor", commit, descendant]));
+}
+
+function succeeds(command: Promise<unknown>): Promise<boolean> {
+  return command.then(
+    () => true,
+    () => false,
+  );
+}
+
+async function replaceFile(path: string, content: string): Promise<void> {
+  const replacement = `${path}.${process.pid}.tmp`;
+  await Bun.write(replacement, content);
+  await rename(replacement, path);
+}
+
+function serialized(entry: LedgerEntry): string {
+  return `${JSON.stringify(LedgerEntrySchema.parse(entry))}\n`;
 }

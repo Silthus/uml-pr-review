@@ -180,7 +180,7 @@ Where the output lands:
 
 - `coherence/runs/<date>/workflows.sense.json`: the ranking and inbox state the run started from.
 - `coherence/runs/<date>/<slug>/`: one directory per iteration, with `iteration.json` (runner state), `summary.md` (the agent's words), and `pr.md` (the pull request body).
-- `coherence/runs/ledger.jsonl`: one line per proposal or question. The loop never proposes the same step for the same module twice, and a dry run counts ([#88](https://github.com/Silthus/uml-pr-review/issues/88)). To give a target back to the loop, delete its line.
+- `coherence/runs/ledger.jsonl`: one line per proposal or question. A proposal keeps its module out of later runs only while it is pending: a dry run while its branch exists in your clone, and a draft pull request while it is open (`gh pr view`, read-only). Deleting a dry run's branch gives the module back. A merged pull request gives the module back once the sensed base contains the merge; the ranking then picks the module's next recipe step from that base.
 - `$TMPDIR/coherence-workflows-<slug>`: the scratch worktree, on branch `coherence/workflows/<slug>` in your PostHog clone.
 - `$TMPDIR/coherence-session-<ms>.jsonl`: the transcript.
 - New `coherence:question` issues in this repository, when the agent hits a boundary decision.
@@ -197,6 +197,13 @@ git -C "$(jq -r .workspace.path $iteration/iteration.json)" show --stat
 
 ```sh
 bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
+```
+
+A dry run keeps its module out of later runs while its branch exists. If you will not promote it, drop it, and the next run may pick the module again:
+
+```sh
+git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
+git -C ~/dev/posthog branch -D "$(jq -r .workspace.branch $iteration/iteration.json)"
 ```
 
 ### 7. Open your first draft pull request
@@ -221,7 +228,7 @@ jq .proposal $iteration/iteration.json
 gh pr list --repo PostHog/posthog --author @me --draft
 ```
 
-Keep the scratch worktree until the pull request merges or you drop it; review fixes go there. The ledger keeps the `pr.md` path for this iteration, not the URL ([#87](https://github.com/Silthus/uml-pr-review/issues/87)). Then remove the worktree and the branch from your clone:
+Its ledger line now holds the pull request URL, so the module stays out of later runs until the pull request closes or merges. Keep the scratch worktree until the pull request merges or you drop it; review fixes go there. Then remove the worktree and the branch from your clone:
 
 ```sh
 git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
@@ -244,13 +251,14 @@ Two questions were open when this section was written (September 2026):
 ### 9. Tune it
 
 - **`--budget <n>`** (on `session.ts`, default 1): pull requests to propose per run. Each iteration costs about 5 minutes.
-- **`--active-days <n>`** (on `targets.ts` and `sense.ts`, default 14): a file counts as busy when a PostHog pull request updated within this many days touches it. Fewer days frees more modules; bots bump `updatedAt`, so 14 days still keeps about 2,000 pull requests active. `session.ts` does not pass it through yet, so preview its effect with the ranking:
+- **`--active-days <n>`** (on `session.ts`, `sense.ts`, and `targets.ts`, default 14): a file counts as busy when a PostHog pull request updated within this many days touches it. Fewer days frees more modules; bots bump `updatedAt`, so 14 days still keeps about 2,000 pull requests active. Preview its effect with the ranking:
 
   ```sh
   bun coherence/targets.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master --posthog-signals coherence/signals/reports/workflows-ci-2026-09-26.json --active-days 3 | head -20
   ```
 
-- **`--max-questions <n>`** (on `sense.ts`, default 2): inbox questions per run.
+- **`--max-questions <n>`** (on `session.ts` and `sense.ts`, default 2): inbox questions per run.
+- **`--runs <dir>`** (on `session.ts` and `sense.ts`, default `coherence/runs`): where the sense file, the iterations, and the ledger go. A fresh directory starts with an empty ledger.
 - **Recipe steps:** there is no switch to turn a step off. The order is fixed in `coherence/signals/recipe.ts`: facade, then characterisation tests, then a ratchet rule, then internal cleanup. Boundary steps always wait for an inbox answer, and "skip" on a question takes one target out of the loop.
 
 ### 10. Next steps

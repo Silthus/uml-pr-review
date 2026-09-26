@@ -2,7 +2,7 @@
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { emit, usageError } from "./cli.ts";
-import { readLedger } from "./ledger.ts";
+import { modulesHeldByEarlierRuns, readLedger } from "./ledger.ts";
 import { chooseNext } from "./selection.ts";
 import { iterationDirectory, iterationSlug, ledgerFile, readIteration, readSense, runsDirectoryOf, writeIteration } from "./state.ts";
 
@@ -15,7 +15,8 @@ if (!values.sense) usageError(usage);
 await emit(async () => {
   const sensePath = resolve(values.sense!);
   const sense = await readSense(sensePath);
-  const choice = chooseNext(sense, await readLedger(ledgerFile(runsDirectoryOf(sensePath))));
+  const ledger = await readLedger(ledgerFile(runsDirectoryOf(sensePath)));
+  const choice = chooseNext(sense, ledger, await modulesHeldByEarlierRuns(ledger, sense));
   if (choice.action === "done") return choice;
   const slug = iterationSlug(sense.scope, choice.target.module, choice.target.step);
   const iteration = iterationDirectory(sensePath, slug);

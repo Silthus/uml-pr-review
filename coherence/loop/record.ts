@@ -41,6 +41,7 @@ function entryFor(iteration: Iteration, outcome: Outcome, note: string | null, r
     step: iteration.target.step,
     verification: iteration.target.verification,
     outcome,
+    mode: outcome === "proposed" ? (iteration.proposal?.mode ?? null) : null,
     indexDelta: index === undefined ? null : { scope: index.scope, composite: index.composite, dimensions: index.dimensions },
     questions: iteration.question?.raised ? [iteration.question.raised.url] : [],
     branch: iteration.workspace?.branch ?? null,

@@ -4,23 +4,35 @@ import { join } from "node:path";
 
 export type GhCall = { args: string[]; stdin: string };
 export type FakeIssue = { number: number; url: string; title: string; state: "OPEN" | "CLOSED"; stateReason: string | null; labels: string[]; body: string; comments: { body: string; authorAssociation: string }[] };
-export type FakeGhState = { issues: FakeIssue[]; pullRequests: unknown[]; labels: string[] };
-export type FakeGh = { env: Record<string, string>; calls(): Promise<GhCall[]>; state(): Promise<FakeGhState>; cleanup(): Promise<void> };
+export type FakePullRequestState = { state: "OPEN" | "CLOSED" | "MERGED"; mergeCommit: { oid: string } | null };
+export type FakeGhState = { issues: FakeIssue[]; pullRequests: unknown[]; pullRequestStates: Record<string, FakePullRequestState>; labels: string[] };
+export type FakeGh = { env: Record<string, string>; executable: string; calls(): Promise<GhCall[]>; state(): Promise<FakeGhState>; cleanup(): Promise<void> };
+
+export const unreachableGitHub = { GH_TOKEN: "fake-gh-invalid-token", GH_ENTERPRISE_TOKEN: "fake-gh-invalid-token", GH_HOST: "fake-gh.invalid" };
 
 export async function fakeGh(initial: Partial<FakeGhState> = {}): Promise<FakeGh> {
   const directory = await mkdtemp(join(tmpdir(), "coherence-fake-gh-"));
   const log = join(directory, "calls.jsonl");
   const statePath = join(directory, "state.json");
-  await writeFile(statePath, JSON.stringify({ issues: [], pullRequests: [], labels: [], ...initial }));
+  const executable = join(directory, "gh");
+  await writeFile(statePath, JSON.stringify({ issues: [], pullRequests: [], pullRequestStates: {}, labels: [], ...initial }));
   await writeFile(log, "");
-  await writeFile(join(directory, "gh"), `#!/bin/sh\nexec bun ${JSON.stringify(import.meta.path)} "$@"\n`);
-  await chmod(join(directory, "gh"), 0o755);
+  await writeFile(executable, `#!/bin/sh\nexec bun ${JSON.stringify(import.meta.path)} "$@"\n`);
+  await chmod(executable, 0o755);
+  const env = { ...process.env, ...unreachableGitHub, GH_CONFIG_DIR: directory, PATH: `${directory}:${process.env.PATH}`, FAKE_GH_LOG: log, FAKE_GH_STATE: statePath } as Record<string, string>;
+  assertFakeGhFirst(env, executable);
   return {
-    env: { ...process.env, PATH: `${directory}:${process.env.PATH}`, FAKE_GH_LOG: log, FAKE_GH_STATE: statePath } as Record<string, string>,
+    env,
+    executable,
     calls: async () => (await Bun.file(log).text()).split("\n").filter(Boolean).map((line) => JSON.parse(line) as GhCall),
     state: async () => (await Bun.file(statePath).json()) as FakeGhState,
     cleanup: () => rm(directory, { recursive: true, force: true }),
   };
+}
+
+function assertFakeGhFirst(env: Record<string, string>, executable: string): void {
+  const resolved = Bun.which("gh", { PATH: env.PATH });
+  if (resolved !== executable) throw new Error(`the fake gh at ${executable} is not the gh on PATH (${resolved ?? "none"}); refusing to run against the real gh`);
 }
 
 function option(args: string[], name: string): string | undefined {
@@ -37,6 +49,11 @@ async function respond(args: string[], stdin: string, state: FakeGhState): Promi
       return JSON.stringify(state.pullRequests);
     case "pr create":
       return `https://github.com/${repository}/pull/4242\n`;
+    case "pr view": {
+      const pullRequest = state.pullRequestStates[target!];
+      if (pullRequest === undefined) throw new Error(`the fake gh knows no pull request ${target}`);
+      return JSON.stringify(pullRequest);
+    }
     case "issue list":
       return JSON.stringify(state.issues);
     case "label create":

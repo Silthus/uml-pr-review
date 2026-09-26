@@ -18,7 +18,7 @@ const stepQuestions: Record<RecipeStep, string> = {
   "internal-cleanup": "clean up the internals of",
 };
 
-export function chooseNext(sense: Sense, ledger: LedgerEntry[]): Choice {
+export function chooseNext(sense: Sense, ledger: LedgerEntry[], heldModules: ReadonlySet<string>): Choice {
   const thisRun = ledger.filter(({ sense: id }) => id === sense.id);
   const proposed = thisRun.filter(({ outcome }) => outcome === "proposed").length;
   if (proposed >= sense.budget) return { action: "done", reason: `budget spent: ${proposed} of ${sense.budget} pull requests proposed` };
@@ -26,7 +26,7 @@ export function chooseNext(sense: Sense, ledger: LedgerEntry[]): Choice {
   for (const target of sense.report.targets.filter(({ score }) => score > 0)) {
     const { module } = target;
     const { step, verification } = target.recommendation;
-    if (isHandled(sense, ledger, module, step) || hasOpenQuestion(sense, module)) continue;
+    if (heldModules.has(module) || isHandledInThisRun(sense, ledger, module) || hasOpenQuestion(sense, module)) continue;
     const answer = answerFor(sense, module, step);
     if (answer?.answer === null) continue;
     if (verification === "boundary" && answer === undefined) {
@@ -38,8 +38,8 @@ export function chooseNext(sense: Sense, ledger: LedgerEntry[]): Choice {
   return { action: "done", reason: "no targets left: every ranked module is handled, busy, waiting on a question, or has no score" };
 }
 
-function isHandled(sense: Sense, ledger: LedgerEntry[], module: string, step: string): boolean {
-  return ledger.some((entry) => entry.scope === sense.scope && entry.module === module && (entry.sense === sense.id || (entry.outcome === "proposed" && entry.step === step)));
+function isHandledInThisRun(sense: Sense, ledger: LedgerEntry[], module: string): boolean {
+  return ledger.some((entry) => entry.scope === sense.scope && entry.module === module && entry.sense === sense.id);
 }
 
 function hasOpenQuestion(sense: Sense, module: string): boolean {

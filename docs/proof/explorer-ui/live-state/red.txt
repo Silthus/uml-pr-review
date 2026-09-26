@@ -1,28 +1,29 @@
 # test/explorer/live-state.dom.test.tsx against origin/main (b00fa27), before the change
+# The six Astra reproductions fail. The three that pass (plan switching, a patch during a resync, a late load after leaving a plan) guard against regressions the adversarial review found in the first version of this change.
 
 bun test v1.4.2 (50a8a8387)
 test/explorer/live-state.dom.test.tsx:
-(fail) explorer live state > reconnecting the event stream refetches the revision the stream missed [5005.78ms]
+(fail) explorer live state > reconnecting the event stream refetches the revision the stream missed [5005.93ms]
 TestingLibraryElementError: Unable to find an element with the text: Architecture plan · revision 2. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
-149 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
-153 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+207 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+211 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
 error: expect(received).toBe(expected)
 Expected: "Architecture plan · revision 3"
 Received: "Architecture plan · revision 2"
-(fail) explorer live state > a late mutation response never rolls the plan back behind a newer live revision [30.75ms]
-164 |     expect(box.value).toBe("Please preserve my detailed feedback");
+(fail) explorer live state > a late mutation response never rolls the plan back behind a newer live revision [9.18ms]
+222 |     expect(box.value).toBe("Please preserve my detailed feedback");
 error: expect(received).toBe(expected)
 Expected: "Please preserve my detailed feedback"
 Received: ""
-(fail) explorer live state > a rejected comment keeps the text and says why it was not saved [9.10ms]
+(fail) explorer live state > a rejected comment keeps the text and says why it was not saved [7.82ms]
 TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name "Responsibility"
-(fail) explorer live state > a rejected module save keeps the form open with its input [21.16ms]
-194 |     expect(panel.queryByText("✓ conforming · final")).toBeNull();
+(fail) explorer live state > a rejected module save keeps the form open with its input [18.53ms]
+252 |     expect(panel.queryByText("✓ conforming · final")).toBeNull();
 error: expect(received).toBeNull()
 Received: HTMLSpanElement {
-(fail) explorer live state > a check of another revision in another worktree is shown as outdated, with what it checked [4132.35ms]
+(fail) explorer live state > a check of another revision in another worktree is shown as outdated, with what it checked [4118.90ms]
 TestingLibraryElementError: Unable to find an element with the text: Not checked yet. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
-(fail) explorer live state > live check results count only for this worktree, and any plan edit outdates them [11.65ms]
- 0 pass
+(fail) explorer live state > live check results count only for this worktree, and any plan edit outdates them [10.70ms]
+ 3 pass
  6 fail
- 4 expect() calls
+ 10 expect() calls

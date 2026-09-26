@@ -911,10 +911,10 @@
     }
   },
   "timing": {
-    "milliseconds": 4950,
+    "milliseconds": 1047,
     "cache": {
-      "hits": 358,
-      "misses": 13
+      "hits": 371,
+      "misses": 0
     }
   }
 }

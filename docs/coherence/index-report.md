@@ -1,6 +1,6 @@
 # Coherence Index: posthog `upstream/master`, 27 weekly points (2026-03-23 to 2026-09-21)
 
-Built 2026-09-26 at `c25b27f874a1`. 0 commits measured in 9.2 s across all backfill runs; the last run took 9.2 s (0 measured, 368 reused). The full report with charts is [index-report.html](index-report.html).
+Built 2026-09-26 at `c25b27f874a1`. 368 commits measured in 330.3 s across all backfill runs; the last run took 330.3 s (368 measured, 0 reused). The full report with charts is [index-report.html](index-report.html).
 
 ## Is the index trustworthy?
 

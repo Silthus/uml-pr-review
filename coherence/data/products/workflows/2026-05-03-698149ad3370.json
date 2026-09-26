@@ -713,10 +713,10 @@
     }
   },
   "timing": {
-    "milliseconds": 2079,
+    "milliseconds": 600,
     "cache": {
-      "hits": 246,
-      "misses": 23
+      "hits": 269,
+      "misses": 0
     }
   }
 }

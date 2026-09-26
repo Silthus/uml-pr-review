@@ -819,7 +819,7 @@
     }
   },
   "timing": {
-    "milliseconds": 1246,
+    "milliseconds": 734,
     "cache": {
       "hits": 295,
       "misses": 0

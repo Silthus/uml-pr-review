@@ -540,7 +540,7 @@ td.module b { font-weight: 600; }
     <li><b>Points.</b> One score per week: the first-parent <code>upstream/master</code> commit at each Monday 00:00 UTC boundary, measured by <code>coherence/index.ts</code> with pinned tools and fixed anchors, so the same commit always gives the same number.</li>
     <li><b>Band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score: the size of an ordinary weekday of work, including the odd refactor. It is the yardstick for single commits; weekly steps are summarised separately as the typical and largest week.</li>
     <li><b>Movers.</b> In the three weeks with the largest composite change per product, every first-parent commit that touched the product was scored, and each is compared with the previous scored commit.</li>
-    <li><b>Runtime.</b> 0 commits measured in 9.2 s across all backfill runs; the last run took 9.2 s with 0 measured and 368 reused from <code>coherence/data/</code>.</li>
+    <li><b>Runtime.</b> 368 commits measured in 330.3 s across all backfill runs; the last run took 330.3 s with 368 measured and 0 reused from <code>coherence/data/</code>.</li>
   </ul>
 </footer>
 </main>

@@ -708,10 +708,10 @@
     }
   },
   "timing": {
-    "milliseconds": 2034,
+    "milliseconds": 599,
     "cache": {
-      "hits": 206,
-      "misses": 53
+      "hits": 259,
+      "misses": 0
     }
   }
 }

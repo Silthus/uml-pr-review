@@ -928,10 +928,10 @@
     }
   },
   "timing": {
-    "milliseconds": 1695,
+    "milliseconds": 644,
     "cache": {
-      "hits": 394,
-      "misses": 7
+      "hits": 401,
+      "misses": 0
     }
   }
 }

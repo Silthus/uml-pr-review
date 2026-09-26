@@ -1172,10 +1172,10 @@
     }
   },
   "timing": {
-    "milliseconds": 2931,
+    "milliseconds": 1684,
     "cache": {
-      "hits": 704,
-      "misses": 27
+      "hits": 731,
+      "misses": 0
     }
   }
 }

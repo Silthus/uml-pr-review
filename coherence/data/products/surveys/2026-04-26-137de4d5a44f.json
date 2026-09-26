@@ -639,10 +639,10 @@
     }
   },
   "timing": {
-    "milliseconds": 1141,
+    "milliseconds": 519,
     "cache": {
-      "hits": 50,
-      "misses": 9
+      "hits": 59,
+      "misses": 0
     }
   }
 }

@@ -1080,10 +1080,10 @@
     }
   },
   "timing": {
-    "milliseconds": 2471,
+    "milliseconds": 1011,
     "cache": {
-      "hits": 568,
-      "misses": 3
+      "hits": 571,
+      "misses": 0
     }
   }
 }

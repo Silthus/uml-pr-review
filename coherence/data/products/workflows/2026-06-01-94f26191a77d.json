@@ -795,10 +795,10 @@
     }
   },
   "timing": {
-    "milliseconds": 1746,
+    "milliseconds": 699,
     "cache": {
-      "hits": 288,
-      "misses": 1
+      "hits": 289,
+      "misses": 0
     }
   }
 }

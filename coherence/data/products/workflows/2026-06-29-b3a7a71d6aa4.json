@@ -861,10 +861,10 @@
     }
   },
   "timing": {
-    "milliseconds": 1954,
+    "milliseconds": 839,
     "cache": {
-      "hits": 314,
-      "misses": 1
+      "hits": 315,
+      "misses": 0
     }
   }
 }

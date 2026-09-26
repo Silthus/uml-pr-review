@@ -1077,7 +1077,7 @@
     }
   },
   "timing": {
-    "milliseconds": 1117,
+    "milliseconds": 985,
     "cache": {
       "hits": 569,
       "misses": 0

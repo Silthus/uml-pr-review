@@ -1,0 +1,152 @@
+bun test v1.4.2 (50a8a8387)
+test/coherence/coherence-index.test.ts:
+91 |     async () => {
+92 |       const typeOnly = await indexAt(
+93 |         await variant({ "products/a/backend/helpers.py": helpersImporting("from typing import TYPE_CHECKING\n\nif TYPE_CHECKING:\n    from products.a.backend import logic") }),
+94 |       );
+95 | 
+96 |       expect(typeOnly.dimensions.architecture.cycles).toEqual({ count: 0, files: [] });
+                                                           ^
+error: expect(received).toEqual(expected)
+  {
+-   "count": 0,
+-   "files": [],
++   "count": 1,
++   "files": [
++     "products/a/backend/helpers.py",
++     "products/a/backend/logic.py",
++   ],
+  }
+- Expected  - 2
++ Received  + 5
+      at <anonymous> (/private/tmp/wf69-before/test/coherence/coherence-index.test.ts:96:55)
+(fail) architecture > a type-only back-edge does not form a cycle [261.25ms]
+102 |     "routing an inbound cross-product import through the facade raises the facade share",
+103 |     async () => {
+104 |       const before = await indexAt(base);
+105 |       const after = await indexAt(await variant({ "products/b/backend/consumer.py": "from products.a.backend.facade.api import run\n\n\ndef consume():\n    return run(2)\n" }));
+106 | 
+107 |       expect(before.dimensions.architecture.facade).toMatchObject({
+                                                          ^
+error: expect(received).toMatchObject(expected)
+@@ -3,3 +3,2 @@
+      {
+-       "direction": "inbound",
+        "from": "products/b/backend/consumer.py",
+@@ -9,6 +8,2 @@
+    "crossings": 1,
+-   "inbound": {
+-     "bypasses": 1,
+-     "crossings": 1,
+-   },
+    "share": 0,
+- Expected  - 5
++ Received  + 0
+      at <anonymous> (/private/tmp/wf69-before/test/coherence/coherence-index.test.ts:107:53)
+(fail) architecture > routing an inbound cross-product import through the facade raises the facade share [117.20ms]
+120 |     "an outbound import counts against the facade share unless it goes through the other product's facade",
+121 |     async () => {
+122 |       const bypassing = await indexAt(await variant({ "products/a/backend/helpers.py": helpersImporting("from products.b.backend.consumer import consume") }));
+123 |       const throughFacade = await indexAt(await variant({ "products/a/backend/helpers.py": helpersImporting("from products.b.backend.facade.api import lookup") }));
+124 | 
+125 |       expect(bypassing.dimensions.architecture.facade).toMatchObject({ crossings: 2, share: 0, outbound: { crossings: 1, bypasses: 1 } });
+                                                             ^
+error: expect(received).toMatchObject(expected)
+@@ -1,7 +1,13 @@
+  {
++   "bypasses": [
++     {
++       "from": "products/a/backend/helpers.py",
++       "to": "products/b/backend/consumer.py",
++     },
++     {
++       "from": "products/b/backend/consumer.py",
++       "to": "products/a/backend/logic.py",
++     },
++   ],
+    "crossings": 2,
+-   "outbound": {
+-     "bypasses": 1,
+-     "crossings": 1,
+-   },
+    "share": 0,
+- Expected  - 4
++ Received  + 10
+      at <anonymous> (/private/tmp/wf69-before/test/coherence/coherence-index.test.ts:125:56)
+(fail) architecture > an outbound import counts against the facade share unless it goes through the other product's facade [524.56ms]
+172 |         }),
+173 |       );
+174 | 
+175 |       expect(after.dimensions.smells.ruff).toMatchObject({ count: before.dimensions.smells.ruff.count + 1, rules: { F401: 1 }, drivers: [{ file: "products/a/backend/helpers.py", count: 1 }] });
+176 |       expect(after.dimensions.smells.oxlint).toMatchObject({ count: 1, rules: { "eslint(no-debugger)": 1 }, drivers: [{ file: "products/a/frontend/view.tsx", count: 1 }] });
+177 |       expect(after.dimensions.smells.duplication).toMatchObject({ clones: 1, drivers: [{ file: "products/a/backend/rows.py", count: 14 }, { file: "products/a/backend/rows_copy.py", count: 14 }] });
+                                                        ^
+error: expect(received).toMatchObject(expected)
+@@ -4,3 +4,3 @@
+      {
+-       "count": 14,
++       "count": 13,
+        "file": "products/a/backend/rows.py",
+@@ -8,3 +8,3 @@
+      {
+-       "count": 14,
++       "count": 13,
+        "file": "products/a/backend/rows_copy.py",
+@@ -12,2 +12,4 @@
+    ],
++   "duplicatedLines": 13,
++   "percentage": 26.53,
+  }
+- Expected  - 2
++ Received  + 4
+      at <anonymous> (/private/tmp/wf69-before/test/coherence/coherence-index.test.ts:177:51)
+(fail) smells > lint findings, duplicated code, workaround comments, and type escapes lower the smells score [286.81ms]
+118 |       ...toolbox.jscpd, "--silent", "--reporters", "json", "--output", output,
+119 |       "--min-tokens", String(jscpdSettings.minTokens), "--min-lines", String(jscpdSettings.minLines),
+120 |       "--mode", jscpdSettings.mode, "--format", jscpdSettings.formats.join(","),
+121 |       ...files.map(({ path }) => path).sort(),
+122 |     ]);
+123 |     const { statistics } = JscpdReportSchema.parse(await Bun.file(join(output, "jscpd-report.json")).json());
+                                                                                                           ^
+ENOENT: no such file or directory, open '<tmp>
+    path: "<tmp>
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+      at async jscpd (/private/tmp/wf69-before/coherence/smells.ts:123:102)
+      at async <anonymous> (/private/tmp/wf69-before/coherence/smells.ts:109:95)
+      at async resolve (/private/tmp/wf69-before/coherence/blob-cache.ts:28:28)
+      at async duplicationOf (/private/tmp/wf69-before/coherence/smells.ts:109:31)
+(fail) smells > a scope too small for clone detection measures no duplication [196.54ms]
+202 |       const imported = await indexAt(
+203 |         await variant({ "products/a/backend/test/test_stop.py": "from products.a.backend.facade.api import stop\n\n\ndef test_stop():\n    assert stop(1) == 1\n" }),
+204 |       );
+205 | 
+206 |       expect(before.dimensions.tests.facadeCoverage).toEqual({ functions: 2, covered: 1, share: 0.5, uncovered: ["products/a/backend/facade/api.py:stop"] });
+207 |       expect(mentionOnly.dimensions.tests.facadeCoverage.covered).toBe(1);
+                                                                        ^
+error: expect(received).toBe(expected)
+Expected: 1
+Received: 2
+      at <anonymous> (/private/tmp/wf69-before/test/coherence/coherence-index.test.ts:207:67)
+(fail) tests > facade coverage counts the public facade functions a test in the scope imports [238.26ms]
+235 |       await writeFile(rules, JSON.stringify({ rules: [{ id: "one", currentLevel: "lint" }, { id: "two", currentLevel: "review" }, { id: "three", currentLevel: "lint" }] }));
+236 |       try {
+237 |         const withRules = await measureCoherence({ repository: repository.dir, scope, commit: base, rules });
+238 |         const withoutRules = await measureCoherence({ repository: repository.dir, scope, commit: base, rules: join(directory, "missing.json") });
+239 | 
+240 |         expect(withRules.index.dimensions.ladder).toEqual({ source: expect.stringMatching(/^sha256:[0-9a-f]{64}$/), rules: 3, levels: { lint: 2, review: 1 } });
+                                                        ^
+error: expect(received).toEqual(expected)
+@@ -6,3 +6,2 @@
+    "rules": 3,
+-   "source": StringMatching /^sha256:[0-9a-f]{64}$/,
+  }
+- Expected  - 1
++ Received  + 0
+      at <anonymous> (/private/tmp/wf69-before/test/coherence/coherence-index.test.ts:240:51)
+(fail) the index > reports rule counts per enforcement level when a rules file exists, and null when it does not [104.65ms]
+ 6 pass
+ 7 fail
+ 26 expect() calls
+Ran 13 tests across 1 file. [3.29s]

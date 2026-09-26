@@ -11,14 +11,15 @@
       "jscpd": "4.0.5"
     },
     "files": {
-      "production": 391,
+      "production": 387,
       "test": 97,
-      "excluded": 44,
-      "productionLines": 49527,
-      "testLines": 17307
+      "excluded": 48,
+      "productionLines": 45845,
+      "testLines": 17307,
+      "generatedLines": 3682
     },
     "composite": {
-      "score": 71.9,
+      "score": 71.4,
       "weights": {
         "architecture": 35,
         "complexity": 25,
@@ -28,19 +29,19 @@
     },
     "dimensions": {
       "architecture": {
-        "score": 81.2,
+        "score": 83.3,
         "measures": {
           "propagationCost": {
-            "value": 0.0368,
-            "score": 90.8,
+            "value": 0.0221,
+            "score": 94.5,
             "best": 0,
             "worst": 0.4
           },
           "cycleShare": {
-            "value": 0.0153,
-            "score": 92.4,
+            "value": 0.0155,
+            "score": 94.8,
             "best": 0,
-            "worst": 0.2
+            "worst": 0.3
           },
           "facadeShare": {
             "value": 0.6047,
@@ -50,49 +51,49 @@
           }
         },
         "propagationCost": {
-          "value": 0.0368,
-          "files": 391,
-          "outboundFiles": 287,
+          "value": 0.0221,
+          "files": 387,
+          "outboundFiles": 284,
           "drivers": [
             {
               "file": "products/error_tracking/manifest.tsx",
-              "count": 311
+              "count": 165
             },
             {
               "file": "products/error_tracking/frontend/scenes/ErrorTrackingIssueScene/ErrorTrackingIssueScene.tsx",
-              "count": 234
+              "count": 114
             },
             {
               "file": "products/error_tracking/frontend/scenes/ErrorTrackingScene/ErrorTrackingScene.tsx",
-              "count": 175
+              "count": 90
             },
             {
               "file": "products/error_tracking/backend/routes.py",
-              "count": 140
-            },
-            {
-              "file": "products/error_tracking/backend/presentation/views/__init__.py",
-              "count": 139
+              "count": 69
             },
             {
               "file": "products/error_tracking/frontend/scenes/ErrorTrackingIssueScene/IssueEventsPanel.tsx",
-              "count": 131
+              "count": 69
             },
             {
-              "file": "products/error_tracking/frontend/errorTrackingIssueNotebookWidgetViews.tsx",
-              "count": 117
+              "file": "products/error_tracking/backend/presentation/views/__init__.py",
+              "count": 68
             },
             {
               "file": "products/error_tracking/backend/facade/temporal.py",
-              "count": 116
-            },
-            {
-              "file": "products/error_tracking/backend/presentation/views/query.py",
-              "count": 113
+              "count": 64
             },
             {
               "file": "products/error_tracking/backend/temporal/__init__.py",
-              "count": 111
+              "count": 60
+            },
+            {
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/issues/IssuesList.tsx",
+              "count": 54
+            },
+            {
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/insights/ErrorTrackingInsights.tsx",
+              "count": 48
             }
           ]
         },
@@ -110,77 +111,103 @@
         "facade": {
           "crossings": 43,
           "share": 0.6047,
+          "inbound": {
+            "crossings": 36,
+            "bypasses": 13
+          },
+          "outbound": {
+            "crossings": 7,
+            "bypasses": 4
+          },
           "bypasses": [
             {
               "from": "posthog/api/embedding_worker.py",
-              "to": "products/error_tracking/backend/indexed_embedding.py"
+              "to": "products/error_tracking/backend/indexed_embedding.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/clickhouse/schema.py",
-              "to": "products/error_tracking/backend/embedding.py"
+              "to": "products/error_tracking/backend/embedding.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/clickhouse/schema.py",
-              "to": "products/error_tracking/backend/indexed_embedding.py"
+              "to": "products/error_tracking/backend/indexed_embedding.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/clickhouse/schema.py",
-              "to": "products/error_tracking/backend/sql.py"
+              "to": "products/error_tracking/backend/sql.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/conftest.py",
-              "to": "products/error_tracking/backend/embedding.py"
+              "to": "products/error_tracking/backend/embedding.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/conftest.py",
-              "to": "products/error_tracking/backend/sql.py"
+              "to": "products/error_tracking/backend/sql.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/hogql/database/schema/document_embeddings.py",
-              "to": "products/error_tracking/backend/indexed_embedding.py"
+              "to": "products/error_tracking/backend/indexed_embedding.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/management/commands/fingerprint_embeddings_backfill.py",
-              "to": "products/error_tracking/backend/models.py"
+              "to": "products/error_tracking/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/management/commands/sync_exceptions_to_clickhouse.py",
-              "to": "products/error_tracking/backend/models.py"
+              "to": "products/error_tracking/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/error_tracking/backend/facade/api.py",
-              "to": "products/access_control/backend/models/role.py"
+              "to": "products/access_control/backend/models/role.py",
+              "direction": "outbound"
             },
             {
               "from": "products/error_tracking/backend/logic/issue_mutations.py",
-              "to": "products/access_control/backend/models/role.py"
+              "to": "products/access_control/backend/models/role.py",
+              "direction": "outbound"
             },
             {
               "from": "products/error_tracking/backend/logic/issue_mutations.py",
-              "to": "products/cohorts/backend/models/cohort.py"
+              "to": "products/cohorts/backend/models/cohort.py",
+              "direction": "outbound"
             },
             {
               "from": "products/error_tracking/backend/logic/recommendations/alerts.py",
-              "to": "products/cdp/backend/models/hog_functions/hog_function.py"
+              "to": "products/cdp/backend/models/hog_functions/hog_function.py",
+              "direction": "outbound"
             },
             {
               "from": "products/posthog_ai/evals/error_tracking/seeders.py",
-              "to": "products/error_tracking/backend/models.py"
+              "to": "products/error_tracking/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/posthog_ai/evals/error_tracking/seeders.py",
-              "to": "products/error_tracking/backend/sql.py"
+              "to": "products/error_tracking/backend/sql.py",
+              "direction": "inbound"
             },
             {
               "from": "products/signals/backend/management/commands/cleanup_signals.py",
-              "to": "products/error_tracking/backend/embedding.py"
+              "to": "products/error_tracking/backend/embedding.py",
+              "direction": "inbound"
             },
             {
               "from": "products/signals/backend/management/commands/cleanup_signals.py",
-              "to": "products/error_tracking/backend/indexed_embedding.py"
+              "to": "products/error_tracking/backend/indexed_embedding.py",
+              "direction": "inbound"
             }
           ]
         },
+        "undeclaredDependencies": [],
         "modules": [
           {
             "path": "products/error_tracking",
@@ -653,7 +680,7 @@
         ]
       },
       "complexity": {
-        "score": 81.7,
+        "score": 81.9,
         "measures": {
           "p90Ccn": {
             "value": 5,
@@ -662,41 +689,41 @@
             "worst": 12
           },
           "shareOverTen": {
-            "value": 0.018,
-            "score": 91,
+            "value": 0.0196,
+            "score": 90.2,
             "best": 0,
             "worst": 0.2
           },
           "shareOverTwenty": {
-            "value": 0.0017,
-            "score": 96.6,
+            "value": 0.0018,
+            "score": 96.4,
             "best": 0,
             "worst": 0.05
           },
           "p90FunctionNloc": {
-            "value": 21,
-            "score": 78,
+            "value": 22,
+            "score": 76,
             "best": 10,
             "worst": 60
           },
           "p90FileLines": {
-            "value": 291,
-            "score": 72.7,
+            "value": 262,
+            "score": 76.9,
             "best": 100,
             "worst": 800
           }
         },
         "functions": {
-          "count": 2999,
+          "count": 2705,
           "p50Ccn": 1,
           "p90Ccn": 5,
-          "overTen": 54,
+          "overTen": 53,
           "overTwenty": 5,
-          "p90Nloc": 21
+          "p90Nloc": 22
         },
         "files": {
-          "count": 391,
-          "p90Lines": 291
+          "count": 387,
+          "p90Lines": 262
         },
         "drivers": [
           {
@@ -762,7 +789,7 @@
         ]
       },
       "smells": {
-        "score": 85.8,
+        "score": 82.3,
         "measures": {
           "ruffPerKloc": {
             "value": 2.1018,
@@ -771,26 +798,26 @@
             "worst": 10
           },
           "oxlintPerKloc": {
-            "value": 0.1272,
-            "score": 97.5,
+            "value": 0.1441,
+            "score": 97.1,
             "best": 0,
             "worst": 5
           },
           "duplicationPercentage": {
-            "value": 2.38,
-            "score": 76.2,
+            "value": 4.02,
+            "score": 59.8,
             "best": 0,
             "worst": 10
           },
           "markersPerKloc": {
-            "value": 0.1211,
-            "score": 93.9,
+            "value": 0.1309,
+            "score": 93.5,
             "best": 0,
             "worst": 2
           },
           "typeEscapesPerKloc": {
-            "value": 3.493,
-            "score": 82.5,
+            "value": 3.5336,
+            "score": 82.3,
             "best": 0,
             "worst": 20
           }
@@ -853,7 +880,7 @@
         },
         "oxlint": {
           "count": 4,
-          "perKloc": 0.1272,
+          "perKloc": 0.1441,
           "drivers": [
             {
               "file": "products/error_tracking/frontend/components/ExceptionCard/ExceptionCard.tsx",
@@ -878,55 +905,55 @@
           }
         },
         "duplication": {
-          "percentage": 2.38,
-          "duplicatedLines": 1432,
-          "clones": 92,
+          "percentage": 4.02,
+          "duplicatedLines": 2242,
+          "clones": 91,
           "drivers": [
             {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/suppression_rules/suppressionRuleModalLogic.ts",
-              "count": 382
-            },
-            {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/grouping_rules/groupingRuleModalLogic.ts",
-              "count": 210
-            },
-            {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/assignment_rules/assignmentRuleModalLogic.ts",
-              "count": 156
-            },
-            {
-              "file": "products/error_tracking/backend/presentation/views/suppression_rules.py",
-              "count": 149
+              "file": "products/error_tracking/backend/hogql_queries/error_tracking_query_builder.py",
+              "count": 186
             },
             {
               "file": "products/error_tracking/backend/presentation/views/assignment_rules.py",
-              "count": 112
-            },
-            {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/insights/queries.ts",
-              "count": 110
-            },
-            {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/insights/errorTrackingInsightsLogic.ts",
-              "count": 108
+              "count": 119
             },
             {
               "file": "products/error_tracking/backend/presentation/views/grouping_rules.py",
-              "count": 104
+              "count": 111
             },
             {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/rate_limit/issueRateLimitConfigLogic.ts",
-              "count": 99
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/insights/queries.ts",
+              "count": 88
             },
             {
-              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/severity_rules/severityRuleModalLogic.ts",
-              "count": 93
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/assignment_rules/assignmentRuleModalLogic.ts",
+              "count": 84
+            },
+            {
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/grouping_rules/groupingRuleModalLogic.ts",
+              "count": 84
+            },
+            {
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/suppression_rules/suppressionRuleModalLogic.ts",
+              "count": 82
+            },
+            {
+              "file": "products/error_tracking/frontend/ErrorTracking.stories.tsx",
+              "count": 76
+            },
+            {
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingIssueScene/ErrorTrackingIssueScene.tsx",
+              "count": 75
+            },
+            {
+              "file": "products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/rate_limit/IssueRateLimitSettings.tsx",
+              "count": 69
             }
           ]
         },
         "markers": {
           "count": 6,
-          "perKloc": 0.1211,
+          "perKloc": 0.1309,
           "drivers": [
             {
               "file": "products/error_tracking/backend/models.py",
@@ -943,52 +970,52 @@
           ]
         },
         "typeEscapes": {
-          "count": 173,
-          "perKloc": 3.493,
+          "count": 162,
+          "perKloc": 3.5336,
           "drivers": [
             {
               "file": "products/error_tracking/backend/facade/api.py",
-              "count": 21
+              "count": 20
             },
             {
               "file": "products/error_tracking/backend/logic/alerts.py",
-              "count": 10
+              "count": 9
             },
             {
               "file": "products/error_tracking/backend/logic/external_references.py",
-              "count": 8
+              "count": 7
             },
             {
               "file": "products/error_tracking/backend/logic/issue_mutations.py",
-              "count": 8
+              "count": 7
             },
             {
               "file": "products/error_tracking/backend/facade/issues.py",
-              "count": 7
+              "count": 6
             },
             {
               "file": "products/error_tracking/backend/facade/symbol_sets.py",
-              "count": 7
+              "count": 6
+            },
+            {
+              "file": "products/error_tracking/frontend/hooks/use-callback-once.tsx",
+              "count": 6
             },
             {
               "file": "products/error_tracking/backend/logic/recommendations/base.py",
-              "count": 6
+              "count": 5
             },
             {
               "file": "products/error_tracking/backend/logic/recommendations/long_running_issues.py",
-              "count": 6
+              "count": 5
             },
             {
               "file": "products/error_tracking/backend/logic/rules.py",
-              "count": 6
-            },
-            {
-              "file": "products/error_tracking/backend/logic/symbol_sets.py",
-              "count": 6
+              "count": 5
             }
           ],
           "counts": {
-            "any": 146,
+            "any": 135,
             "typeIgnore": 11,
             "tsIgnore": 0,
             "asAny": 3,
@@ -997,36 +1024,37 @@
         }
       },
       "tests": {
-        "score": 29.7,
+        "score": 26.4,
         "measures": {
           "testRatio": {
-            "value": 0.3494,
-            "score": 34.9,
+            "value": 0.3775,
+            "score": 37.8,
             "best": 1,
             "worst": 0
           },
           "facadeCoverage": {
-            "value": 0.2438,
-            "score": 24.4,
+            "value": 0.15,
+            "score": 15,
             "best": 1,
             "worst": 0
           }
         },
         "ratio": {
           "testLines": 17307,
-          "productionLines": 49527,
-          "value": 0.3494
+          "productionLines": 45845,
+          "value": 0.3775
         },
         "facadeCoverage": {
           "functions": 160,
-          "covered": 39,
-          "share": 0.2438,
+          "covered": 24,
+          "share": 0.15,
           "uncovered": [
             "products/error_tracking/backend/facade/alerts.py:create_alert",
             "products/error_tracking/backend/facade/alerts.py:delete_alert",
             "products/error_tracking/backend/facade/alerts.py:get_alert",
             "products/error_tracking/backend/facade/alerts.py:list_alerts",
             "products/error_tracking/backend/facade/alerts.py:update_alert",
+            "products/error_tracking/backend/facade/api.py:auto_select_project_for_user",
             "products/error_tracking/backend/facade/api.py:batch_get_stack_frames",
             "products/error_tracking/backend/facade/api.py:build_ingestion_failures_url",
             "products/error_tracking/backend/facade/api.py:build_team_section_payload",
@@ -1045,17 +1073,26 @@
             "products/error_tracking/backend/facade/api.py:document_embedding_tables",
             "products/error_tracking/backend/facade/api.py:get_assignment_rule",
             "products/error_tracking/backend/facade/api.py:get_bypass_rule",
+            "products/error_tracking/backend/facade/api.py:get_client_safe_suppression_rules",
+            "products/error_tracking/backend/facade/api.py:get_crash_free_sessions",
+            "products/error_tracking/backend/facade/api.py:get_daily_exception_counts",
+            "products/error_tracking/backend/facade/api.py:get_exception_counts",
+            "products/error_tracking/backend/facade/api.py:get_exception_summary_for_team",
             "products/error_tracking/backend/facade/api.py:get_external_reference",
             "products/error_tracking/backend/facade/api.py:get_fingerprint",
             "products/error_tracking/backend/facade/api.py:get_fingerprint_by_value",
             "products/error_tracking/backend/facade/api.py:get_grouping_rule",
             "products/error_tracking/backend/facade/api.py:get_issue_basics",
             "products/error_tracking/backend/facade/api.py:get_issue_permalink",
+            "products/error_tracking/backend/facade/api.py:get_new_issues_for_team",
+            "products/error_tracking/backend/facade/api.py:get_org_ids_with_exceptions",
             "products/error_tracking/backend/facade/api.py:get_release",
             "products/error_tracking/backend/facade/api.py:get_release_by_hash",
             "products/error_tracking/backend/facade/api.py:get_severity_rule",
+            "products/error_tracking/backend/facade/api.py:get_source_maps_recommendation_for_team",
             "products/error_tracking/backend/facade/api.py:get_stack_frame",
             "products/error_tracking/backend/facade/api.py:get_suppression_rule",
+            "products/error_tracking/backend/facade/api.py:get_top_issues_for_team",
             "products/error_tracking/backend/facade/api.py:has_filter_values",
             "products/error_tracking/backend/facade/api.py:has_resolved_issues",
             "products/error_tracking/backend/facade/api.py:is_supported_external_issue_provider",
@@ -1119,6 +1156,7 @@
             "products/error_tracking/backend/facade/query_utils.py:normalize_volume_resolution",
             "products/error_tracking/backend/facade/query_utils.py:parse_jsonish",
             "products/error_tracking/backend/facade/query_utils.py:pick_fields",
+            "products/error_tracking/backend/facade/query_utils.py:property_name",
             "products/error_tracking/backend/facade/query_utils.py:strip_non_raw_fields",
             "products/error_tracking/backend/facade/query_utils.py:to_number",
             "products/error_tracking/backend/facade/query_utils.py:truncate_text",
@@ -1127,9 +1165,13 @@
             "products/error_tracking/backend/facade/recommendations.py:refresh_recommendation",
             "products/error_tracking/backend/facade/recommendations.py:refresh_team_recommendations",
             "products/error_tracking/backend/facade/recommendations.py:restore_recommendation",
+            "products/error_tracking/backend/facade/symbol_sets.py:bulk_check_upload",
             "products/error_tracking/backend/facade/symbol_sets.py:bulk_delete_symbol_sets",
+            "products/error_tracking/backend/facade/symbol_sets.py:bulk_finish_upload",
+            "products/error_tracking/backend/facade/symbol_sets.py:bulk_start_upload",
             "products/error_tracking/backend/facade/symbol_sets.py:create_deprecated_symbol_set",
             "products/error_tracking/backend/facade/symbol_sets.py:delete_symbol_set",
+            "products/error_tracking/backend/facade/symbol_sets.py:finish_upload",
             "products/error_tracking/backend/facade/symbol_sets.py:get_download",
             "products/error_tracking/backend/facade/symbol_sets.py:get_symbol_set",
             "products/error_tracking/backend/facade/symbol_sets.py:list_symbol_sets",
@@ -1150,9 +1192,9 @@
     }
   },
   "timing": {
-    "milliseconds": 3207,
+    "milliseconds": 2928,
     "cache": {
-      "hits": 8,
+      "hits": 0,
       "misses": 775
     }
   }

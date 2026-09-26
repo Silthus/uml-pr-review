@@ -1,41 +1,53 @@
 import { isFacadeBypass } from "../benchmark/lib/boundary.ts";
+import type { TachConfig } from "../benchmark/lib/tach.ts";
 import type { ArchitecturePayload } from "../src/architecture/contracts/index.ts";
 import { ArchitectureModel } from "../src/architecture/model/index.ts";
 import type { Architecture, ModuleCoupling } from "./contract.ts";
 import { compare, topFiles } from "./drivers.ts";
-import { unmeasuredModules, type Scope } from "./scope.ts";
+import { moduleChain, unmeasuredModules, type Scope } from "./scope.ts";
 import { anchors, dimensionScore, measure, ratio, roundTo } from "./score.ts";
 
-type FileImport = { from: string; to: string };
+type FileImport = { from: string; to: string; typeOnly: boolean };
 type FileGraph = Map<string, Set<string>>;
+type Direction = "inbound" | "outbound";
 
 const productBackend = /^products\/([^/]+)\/backend\//;
 
-export function measureArchitecture(payload: ArchitecturePayload, scope: Scope): Architecture {
+export function measureArchitecture(payload: ArchitecturePayload, scope: Scope, tach: TachConfig | null): Architecture {
   const imports = productionImports(payload);
-  const internal = fileGraph(imports.filter(({ from, to }) => scope.isMeasured(from) && scope.isMeasured(to)));
-  const outbound = fileGraph(imports.filter(({ from, to }) => scope.isMeasured(from) && !scope.isWithin(to)));
-  const propagationCost = propagationCostOf(scope, internal, outbound);
+  const runtime = imports.filter(({ typeOnly }) => !typeOnly);
+  const internal = fileGraph(runtime.filter(({ from, to }) => scope.isMeasured(from) && scope.isMeasured(to)));
+  const outboundFiles = new Set(runtime.filter(({ from, to }) => scope.isMeasured(from) && !scope.isWithin(to)).map(({ to }) => to));
+  const propagationCost = propagationCostOf(scope, internal, outboundFiles.size);
   const cycles = cyclesOf(scope, internal);
   const facade = facadeOf(imports, scope);
   const measures = {
     propagationCost: measure(propagationCost.value, anchors.propagationCost),
     cycleShare: measure(ratio(cycles.files.length, scope.production.length), anchors.cycleShare),
-    facadeShare: measure(facade.share, anchors.facadeShare),
+    facadeShare: measure(facade.share ?? 1, anchors.facadeShare),
   };
-  return { score: dimensionScore(measures), measures, propagationCost, cycles, facade, modules: couplingOf(payload, scope) };
+  return {
+    score: dimensionScore(measures),
+    measures,
+    propagationCost,
+    cycles,
+    facade,
+    undeclaredDependencies: tach === null ? null : undeclaredDependencies(imports, scope, tach),
+    modules: couplingOf(payload, scope),
+  };
 }
 
 function productionImports(payload: ArchitecturePayload): FileImport[] {
   const unmeasured = unmeasuredModules(payload);
   const counted = payload.files.map(([, module, , role]) => role === "production" && unmeasured[module] === 0);
-  const seen = new Set<string>();
-  return payload.imports.flatMap(([from, to]) => {
+  const pairs = new Map<string, FileImport>();
+  for (const [from, to, kind] of payload.imports) {
+    if (from === to || !counted[from] || !counted[to]) continue;
     const key = `${from}\0${to}`;
-    if (from === to || !counted[from] || !counted[to] || seen.has(key)) return [];
-    seen.add(key);
-    return [{ from: payload.files[from]![0], to: payload.files[to]![0] }];
-  });
+    const typeOnly = kind === "type" && (pairs.get(key)?.typeOnly ?? true);
+    pairs.set(key, { from: payload.files[from]![0], to: payload.files[to]![0], typeOnly });
+  }
+  return [...pairs.values()];
 }
 
 function fileGraph(imports: FileImport[]): FileGraph {
@@ -44,21 +56,19 @@ function fileGraph(imports: FileImport[]): FileGraph {
   return graph;
 }
 
-function propagationCostOf(scope: Scope, internal: FileGraph, outbound: FileGraph): Architecture["propagationCost"] {
-  const outboundFiles = new Set([...outbound.values()].flatMap((targets) => [...targets]));
-  const nodes = scope.production.length + outboundFiles.size;
-  const reach = scope.production.map(({ path }): [string, number] => [path, reachableFrom(path, internal, outbound).size]);
+function propagationCostOf(scope: Scope, internal: FileGraph, outboundFiles: number): Architecture["propagationCost"] {
+  const files = scope.production.length;
+  const reach = scope.production.map(({ path }): [string, number] => [path, reachableFrom(path, internal).size]);
   const totalReach = reach.reduce((total, [, reached]) => total + reached, 0);
-  const value = nodes <= 1 ? 0 : roundTo(totalReach / scope.production.length / (nodes - 1), 4);
-  return { value, files: scope.production.length, outboundFiles: outboundFiles.size, drivers: topFiles(reach) };
+  const value = files <= 1 ? 0 : roundTo(totalReach / files / (files - 1), 4);
+  return { value, files, outboundFiles, drivers: topFiles(reach) };
 }
 
-function reachableFrom(start: string, internal: FileGraph, outbound: FileGraph): Set<string> {
+function reachableFrom(start: string, graph: FileGraph): Set<string> {
   const reached = new Set<string>();
   const pending = [start];
   for (let file = pending.pop(); file !== undefined; file = pending.pop()) {
-    for (const target of outbound.get(file) ?? []) reached.add(target);
-    for (const target of internal.get(file) ?? []) {
+    for (const target of graph.get(file) ?? []) {
       if (reached.has(target) || target === start) continue;
       reached.add(target);
       pending.push(target);
@@ -78,6 +88,16 @@ function stronglyConnectedComponents(nodes: string[], graph: FileGraph): string[
   const stack: string[] = [];
   const onStack = new Set<string>();
   const components: string[][] = [];
+  const popComponent = (root: string) => {
+    const component: string[] = [];
+    let member: string;
+    do {
+      member = stack.pop()!;
+      onStack.delete(member);
+      component.push(member);
+    } while (member !== root);
+    components.push(component);
+  };
   const visit = (node: string) => {
     order.set(node, order.size);
     lowLink.set(node, order.get(node)!);
@@ -89,14 +109,7 @@ function stronglyConnectedComponents(nodes: string[], graph: FileGraph): string[
         lowLink.set(node, Math.min(lowLink.get(node)!, lowLink.get(next)!));
       } else if (onStack.has(next)) lowLink.set(node, Math.min(lowLink.get(node)!, order.get(next)!));
     }
-    if (lowLink.get(node) !== order.get(node)) return;
-    const component: string[] = [];
-    for (let member = stack.pop()!; ; member = stack.pop()!) {
-      onStack.delete(member);
-      component.push(member);
-      if (member === node) break;
-    }
-    components.push(component);
+    if (lowLink.get(node) === order.get(node)) popComponent(node);
   };
   for (const node of nodes) if (!order.has(node)) visit(node);
   return components;
@@ -104,8 +117,21 @@ function stronglyConnectedComponents(nodes: string[], graph: FileGraph): string[
 
 function facadeOf(imports: FileImport[], scope: Scope): Architecture["facade"] {
   const crossings = imports.filter(({ from, to }) => scope.isWithin(from) !== scope.isWithin(to) && crossesIntoProductBackend(from, to));
-  const bypasses = crossings.filter(isFacadeBypass).sort((a, b) => compare(a.from, b.from) || compare(a.to, b.to));
-  return { crossings: crossings.length, share: ratio(crossings.length - bypasses.length, crossings.length), bypasses };
+  const bypasses = crossings
+    .filter(isFacadeBypass)
+    .map(({ from, to }) => ({ from, to, direction: (scope.isWithin(from) ? "outbound" : "inbound") as Direction }))
+    .sort((a, b) => compare(a.from, b.from) || compare(a.to, b.to));
+  const countOf = (direction: Direction) => ({
+    crossings: crossings.filter(({ from }) => scope.isWithin(from) === (direction === "outbound")).length,
+    bypasses: bypasses.filter((bypass) => bypass.direction === direction).length,
+  });
+  return {
+    crossings: crossings.length,
+    share: ratio(crossings.length - bypasses.length, crossings.length),
+    inbound: countOf("inbound"),
+    outbound: countOf("outbound"),
+    bypasses,
+  };
 }
 
 function crossesIntoProductBackend(from: string, to: string): boolean {
@@ -113,18 +139,24 @@ function crossesIntoProductBackend(from: string, to: string): boolean {
   return product !== undefined && !from.startsWith(`products/${product}/`);
 }
 
+function undeclaredDependencies(imports: FileImport[], scope: Scope, tach: TachConfig): Architecture["undeclaredDependencies"] {
+  const pairs = new Map<string, { from: string; to: string }>();
+  for (const { from, to } of imports) {
+    if (scope.isWithin(from) === scope.isWithin(to) || !from.endsWith(".py") || !to.endsWith(".py")) continue;
+    const dependency = { from: tach.moduleOf(from), to: tach.moduleOf(to) };
+    if (dependency.from !== dependency.to && !tach.declares(dependency.from, dependency.to)) pairs.set(`${dependency.from}\0${dependency.to}`, dependency);
+  }
+  return [...pairs.values()].sort((a, b) => compare(a.from, b.from) || compare(a.to, b.to));
+}
+
 function couplingOf(payload: ArchitecturePayload, scope: Scope): ModuleCoupling[] {
   const model = new ArchitectureModel(payload);
-  const modulePaths = new Set(scope.production.flatMap(({ path }) => modulesHolding(model, path, scope)));
+  const moduleOfFile = new Map(payload.files.map(([path, module]) => [path, module]));
+  const modulesHolding = (file: string) => moduleChain(payload, moduleOfFile.get(file)!).map((module) => payload.modules[module]![0]);
+  const modulePaths = new Set(scope.production.flatMap(({ path }) => modulesHolding(path).filter((module) => scope.isWithin(`${module}/`))));
   return [...modulePaths].sort(compare).map((path) => {
     const fanIn = model.dependencies(path, "in").length;
     const fanOut = model.dependencies(path, "out").length;
     return { path, fanIn, fanOut, instability: ratio(fanOut, fanIn + fanOut) };
   });
-}
-
-function modulesHolding(model: ArchitectureModel, file: string, scope: Scope): string[] {
-  const modules: string[] = [];
-  for (let view = model.moduleOfFile(file); view && scope.isWithin(`${view.path}/`); view = view.parent === null ? undefined : model.module(view.parent)) modules.push(view.path);
-  return modules;
 }

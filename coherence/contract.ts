@@ -17,11 +17,20 @@ export const ComplexitySchema = z.object({
 
 export const ModuleCouplingSchema = z.object({ path: z.string(), fanIn: z.number().int(), fanOut: z.number().int(), instability: z.number().nullable() });
 
+const CrossingCountSchema = z.object({ crossings: z.number().int(), bypasses: z.number().int() });
+
 export const ArchitectureSchema = z.object({
   ...DimensionBase,
   propagationCost: z.object({ value: z.number(), files: z.number().int(), outboundFiles: z.number().int(), drivers: z.array(FileCountSchema) }),
   cycles: z.object({ count: z.number().int(), files: z.array(z.string()) }),
-  facade: z.object({ crossings: z.number().int(), share: z.number().nullable(), bypasses: z.array(z.object({ from: z.string(), to: z.string() })) }),
+  facade: z.object({
+    crossings: z.number().int(),
+    share: z.number().nullable(),
+    inbound: CrossingCountSchema,
+    outbound: CrossingCountSchema,
+    bypasses: z.array(z.object({ from: z.string(), to: z.string(), direction: z.enum(["inbound", "outbound"]) })),
+  }),
+  undeclaredDependencies: z.array(z.object({ from: z.string(), to: z.string() })).nullable(),
   modules: z.array(ModuleCouplingSchema),
 });
 
@@ -44,7 +53,7 @@ export const TestsSchema = z.object({
   facadeCoverage: z.object({ functions: z.number().int(), covered: z.number().int(), share: z.number().nullable(), uncovered: z.array(z.string()) }),
 });
 
-export const LadderSchema = z.object({ rules: z.number().int(), levels: z.record(z.string(), z.number().int()) }).nullable();
+export const LadderSchema = z.object({ source: z.string(), rules: z.number().int(), levels: z.record(z.string(), z.number().int()) }).nullable();
 
 export const DimensionWeightsSchema = z.object({ architecture: z.number(), complexity: z.number(), smells: z.number(), tests: z.number() });
 
@@ -54,7 +63,7 @@ export const CoherenceIndexSchema = z.object({
   commit: z.string(),
   tree: z.string(),
   tools: z.record(z.string(), z.string()),
-  files: z.object({ production: z.number().int(), test: z.number().int(), excluded: z.number().int(), productionLines: z.number().int(), testLines: z.number().int() }),
+  files: z.object({ production: z.number().int(), test: z.number().int(), excluded: z.number().int(), productionLines: z.number().int(), testLines: z.number().int(), generatedLines: z.number().int() }),
   composite: z.object({ score: ScoreSchema, weights: DimensionWeightsSchema }),
   dimensions: z.object({ architecture: ArchitectureSchema, complexity: ComplexitySchema, smells: SmellsSchema, tests: TestsSchema, ladder: LadderSchema }),
 });

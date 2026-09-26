@@ -25,10 +25,14 @@ const report = await measureCoherence({
   repository: resolve(values.repo),
   scope: values.scope,
   commit: values.commit,
-  rules: values.rules ?? join(import.meta.dir, "..", "docs", "harvest", basename(values.scope), "rules.json"),
+  rules: values.rules ?? join(import.meta.dir, "..", "docs", "harvest", harvestName(values.scope), "rules.json"),
 });
 
 console.log(values.json ? JSON.stringify(report, null, 2) : summary(report));
+
+function harvestName(scope: string): string {
+  return /^(?:\.\/)?products\/([^/]+)/.exec(scope)?.[1] ?? basename(resolve(scope));
+}
 
 function summary({ index, timing }: CoherenceReport): string {
   const { architecture, complexity, smells, tests, ladder } = index.dimensions;

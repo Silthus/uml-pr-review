@@ -4,7 +4,7 @@ import type { Complexity } from "./contract.ts";
 import { compare, driverLimit } from "./drivers.ts";
 import type { ScopeFile } from "./scope.ts";
 import { anchors, dimensionScore, measure, percentile, ratio } from "./score.ts";
-import { blobKey, runTool, type Toolbox } from "./tools.ts";
+import { blobKey, runPerFile, type Toolbox } from "./tools.ts";
 
 type FunctionComplexity = { function: string; ccn: number; nloc: number };
 type LocatedFunction = FunctionComplexity & { file: string };
@@ -47,8 +47,8 @@ export async function measureComplexity(files: ScopeFile[], toolbox: Toolbox, ca
 }
 
 async function lizard(files: ScopeFile[], toolbox: Toolbox): Promise<Map<ScopeFile, FunctionComplexity[]>> {
-  const csv = await runTool(toolbox, [...toolbox.lizard, "--csv", ...files.map(({ path }) => path)]);
-  const byPath = Map.groupBy(parseLizardCsv(csv, toolbox.directory), ({ file }) => file);
+  const outputs = await runPerFile(toolbox, files, (paths) => [...toolbox.lizard, "--csv", ...paths]);
+  const byPath = Map.groupBy(outputs.flatMap((csv) => parseLizardCsv(csv, toolbox.directory)), ({ file }) => file);
   return new Map(
     files.map((file) => [
       file,

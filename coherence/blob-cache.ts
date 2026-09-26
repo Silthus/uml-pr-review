@@ -12,6 +12,8 @@ export class BlobCache {
     const directory = join(commonDir, "uml-pr-review");
     mkdirSync(directory, { recursive: true });
     this.database = new Database(join(directory, "coherence-cache.sqlite"), { create: true });
+    this.database.run("PRAGMA busy_timeout = 10000");
+    this.database.run("PRAGMA journal_mode = WAL");
     this.database.run("CREATE TABLE IF NOT EXISTS result (key TEXT PRIMARY KEY, data TEXT) WITHOUT ROWID");
   }
 

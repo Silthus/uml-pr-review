@@ -4,7 +4,7 @@ export type Anchor = { best: number; worst: number };
 
 export const anchors = {
   propagationCost: { best: 0, worst: 0.4 },
-  cycleShare: { best: 0, worst: 0.2 },
+  cycleShare: { best: 0, worst: 0.3 },
   facadeShare: { best: 1, worst: 0 },
   p90Ccn: { best: 2, worst: 12 },
   shareOverTen: { best: 0, worst: 0.2 },

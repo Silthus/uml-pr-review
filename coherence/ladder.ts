@@ -7,6 +7,7 @@ const RulesFileSchema = z.union([z.array(RuleSchema), z.object({ rules: z.array(
 
 export async function readLadder(path: string | undefined): Promise<Ladder> {
   if (path === undefined || !(await Bun.file(path).exists())) return null;
-  const rules = RulesFileSchema.parse(await Bun.file(path).json());
-  return { rules: rules.length, levels: tally(rules, ({ currentLevel }) => currentLevel) };
+  const text = await Bun.file(path).text();
+  const rules = RulesFileSchema.parse(JSON.parse(text));
+  return { source: `sha256:${new Bun.CryptoHasher("sha256").update(text).digest("hex")}`, rules: rules.length, levels: tally(rules, ({ currentLevel }) => currentLevel) };
 }

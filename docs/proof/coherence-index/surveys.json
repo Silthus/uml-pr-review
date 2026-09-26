@@ -11,14 +11,15 @@
       "jscpd": "4.0.5"
     },
     "files": {
-      "production": 47,
+      "production": 44,
       "test": 13,
-      "excluded": 10,
+      "excluded": 13,
       "productionLines": 7930,
-      "testLines": 10073
+      "testLines": 10073,
+      "generatedLines": 0
     },
     "composite": {
-      "score": 51.1,
+      "score": 43.8,
       "weights": {
         "architecture": 35,
         "complexity": 25,
@@ -28,19 +29,19 @@
     },
     "dimensions": {
       "architecture": {
-        "score": 22.3,
+        "score": 31.4,
         "measures": {
           "propagationCost": {
-            "value": 0.1577,
-            "score": 60.6,
+            "value": 0.1591,
+            "score": 60.2,
             "best": 0,
             "worst": 0.4
           },
           "cycleShare": {
-            "value": 0.1915,
-            "score": 4.3,
+            "value": 0.2045,
+            "score": 31.8,
             "best": 0,
-            "worst": 0.2
+            "worst": 0.3
           },
           "facadeShare": {
             "value": 0.0208,
@@ -50,49 +51,49 @@
           }
         },
         "propagationCost": {
-          "value": 0.1577,
-          "files": 47,
-          "outboundFiles": 87,
+          "value": 0.1591,
+          "files": 44,
+          "outboundFiles": 86,
           "drivers": [
             {
+              "file": "products/surveys/backend/admin.py",
+              "count": 19
+            },
+            {
               "file": "products/surveys/backend/data_freshness.py",
-              "count": 63
+              "count": 19
             },
             {
               "file": "products/surveys/backend/debug.py",
-              "count": 63
+              "count": 19
             },
             {
               "file": "products/surveys/backend/max_tools.py",
-              "count": 63
-            },
-            {
-              "file": "products/surveys/backend/admin.py",
-              "count": 61
+              "count": 19
             },
             {
               "file": "products/surveys/backend/routes.py",
-              "count": 61
+              "count": 19
             },
             {
               "file": "products/surveys/backend/api/survey.py",
-              "count": 60
+              "count": 18
             },
             {
               "file": "products/surveys/backend/models.py",
-              "count": 60
+              "count": 18
             },
             {
               "file": "products/surveys/backend/responses/__init__.py",
-              "count": 60
+              "count": 18
             },
             {
               "file": "products/surveys/backend/responses/fetch_rows.py",
-              "count": 60
+              "count": 18
             },
             {
               "file": "products/surveys/backend/responses/per_question_stats.py",
-              "count": 60
+              "count": 18
             }
           ]
         },
@@ -113,197 +114,258 @@
         "facade": {
           "crossings": 48,
           "share": 0.0208,
+          "inbound": {
+            "crossings": 38,
+            "bypasses": 38
+          },
+          "outbound": {
+            "crossings": 10,
+            "bypasses": 9
+          },
           "bypasses": [
             {
               "from": "ee/hogai/context/entity_search/context.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/hogai/context/survey/context.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/hogai/core/agent_modes/presets/survey.py",
-              "to": "products/surveys/backend/max_tools.py"
+              "to": "products/surveys/backend/max_tools.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/hogai/eval/ci/eval_survey_analysis.py",
-              "to": "products/surveys/backend/max_tools.py"
+              "to": "products/surveys/backend/max_tools.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/hogai/eval/ci/eval_survey_analysis.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/hogai/eval/ci/eval_surveys.py",
-              "to": "products/surveys/backend/max_tools.py"
+              "to": "products/surveys/backend/max_tools.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/hogai/eval/ci/eval_surveys.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/surveys/summaries/headline_summary.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/surveys/summaries/headline_summary.py",
-              "to": "products/surveys/backend/responses/fetch_rows.py"
+              "to": "products/surveys/backend/responses/fetch_rows.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/surveys/summaries/headline_summary.py",
-              "to": "products/surveys/backend/util.py"
+              "to": "products/surveys/backend/util.py",
+              "direction": "inbound"
             },
             {
               "from": "ee/surveys/summaries/summarize_surveys.py",
-              "to": "products/surveys/backend/responses/fetch_rows.py"
+              "to": "products/surveys/backend/responses/fetch_rows.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/api/search.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/management/commands/generate_random_surveys.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/models/file_system/unfiled_file_saver.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/models/product_intent/product_intent.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/models/remote_config.py",
-              "to": "products/surveys/backend/api/survey.py"
+              "to": "products/surveys/backend/api/survey.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/models/remote_config.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/models/resource_transfer/visitors/survey.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/early_access_feature.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/stop_surveys_reached_target.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/surveys.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/update_survey_adaptive_sampling.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/update_survey_iteration.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/usage_report.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/tasks/usage_report.py",
-              "to": "products/surveys/backend/util.py"
+              "to": "products/surveys/backend/util.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/temporal/usage_report/queries.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/temporal/weekly_digest/queries.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "posthog/urls.py",
-              "to": "products/surveys/backend/api/survey.py"
+              "to": "products/surveys/backend/api/survey.py",
+              "direction": "inbound"
             },
             {
               "from": "products/dashboards/backend/widgets/survey_results.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/dashboards/backend/widgets/survey_results.py",
-              "to": "products/surveys/backend/responses/__init__.py"
+              "to": "products/surveys/backend/responses/__init__.py",
+              "direction": "inbound"
             },
             {
               "from": "products/early_access_features/backend/management/commands/migrate_enrollments_to_waitlist_surveys.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/feature_flags/backend/api/feature_flag.py",
-              "to": "products/surveys/backend/api/survey.py"
+              "to": "products/surveys/backend/api/survey.py",
+              "direction": "inbound"
             },
             {
               "from": "products/feature_flags/backend/api/feature_flag.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/feature_flags/backend/local_evaluation.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/feature_flags/backend/temporal/health_checks/stale_flags.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/product_tours/backend/api/product_tour.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/reminders/backend/constants.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/signals/backend/scout_harness/profile/builders.py",
-              "to": "products/surveys/backend/models.py"
+              "to": "products/surveys/backend/models.py",
+              "direction": "inbound"
             },
             {
               "from": "products/surveys/backend/api/survey.py",
-              "to": "products/access_control/backend/presentation/access_control.py"
+              "to": "products/access_control/backend/presentation/access_control.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/api/survey.py",
-              "to": "products/actions/backend/api/action.py"
+              "to": "products/actions/backend/api/action.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/api/survey.py",
-              "to": "products/actions/backend/models/action.py"
+              "to": "products/actions/backend/models/action.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/api/survey.py",
-              "to": "products/feature_flags/backend/api/feature_flag.py"
+              "to": "products/feature_flags/backend/api/feature_flag.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/api/survey.py",
-              "to": "products/feature_flags/backend/models/feature_flag.py"
+              "to": "products/feature_flags/backend/models/feature_flag.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/api/survey.py",
-              "to": "products/feature_flags/backend/ownership.py"
+              "to": "products/feature_flags/backend/ownership.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/max_tools.py",
-              "to": "products/feature_flags/backend/models/feature_flag.py"
+              "to": "products/feature_flags/backend/models/feature_flag.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/models.py",
-              "to": "products/actions/backend/models/action.py"
+              "to": "products/actions/backend/models/action.py",
+              "direction": "outbound"
             },
             {
               "from": "products/surveys/backend/models.py",
-              "to": "products/feature_flags/backend/tasks.py"
+              "to": "products/feature_flags/backend/tasks.py",
+              "direction": "outbound"
             }
           ]
         },
+        "undeclaredDependencies": [
+          {
+            "from": "products.early_access_features",
+            "to": "products.surveys"
+          }
+        ],
         "modules": [
           {
             "path": "products/surveys",
@@ -422,7 +484,7 @@
           "p90Nloc": 53
         },
         "files": {
-          "count": 47,
+          "count": 44,
           "p90Lines": 287
         },
         "drivers": [
@@ -489,7 +551,7 @@
         ]
       },
       "smells": {
-        "score": 79.1,
+        "score": 76.7,
         "measures": {
           "ruffPerKloc": {
             "value": 2.4908,
@@ -504,8 +566,8 @@
             "worst": 5
           },
           "duplicationPercentage": {
-            "value": 1.71,
-            "score": 82.9,
+            "value": 3.31,
+            "score": 66.9,
             "best": 0,
             "worst": 10
           },
@@ -516,8 +578,8 @@
             "worst": 2
           },
           "typeEscapesPerKloc": {
-            "value": 12.4842,
-            "score": 37.6,
+            "value": 11.7276,
+            "score": 41.4,
             "best": 0,
             "worst": 20
           }
@@ -558,25 +620,29 @@
           "rules": {}
         },
         "duplication": {
-          "percentage": 1.71,
-          "duplicatedLines": 93,
-          "clones": 5,
+          "percentage": 3.31,
+          "duplicatedLines": 303,
+          "clones": 10,
           "drivers": [
             {
+              "file": "products/surveys/backend/api/survey.py",
+              "count": 108
+            },
+            {
               "file": "products/surveys/backend/debug.py",
-              "count": 80
+              "count": 81
             },
             {
               "file": "products/surveys/backend/max_tools.py",
-              "count": 58
+              "count": 64
             },
             {
               "file": "products/surveys/backend/summarization/llm/call.py",
-              "count": 24
+              "count": 25
             },
             {
               "file": "products/surveys/backend/summarization/llm/gemini.py",
-              "count": 24
+              "count": 25
             }
           ]
         },
@@ -586,36 +652,36 @@
           "drivers": []
         },
         "typeEscapes": {
-          "count": 99,
-          "perKloc": 12.4842,
+          "count": 93,
+          "perKloc": 11.7276,
           "drivers": [
             {
               "file": "products/surveys/backend/api/survey.py",
-              "count": 42
+              "count": 41
             },
             {
               "file": "products/surveys/backend/max_tools.py",
-              "count": 23
+              "count": 22
             },
             {
               "file": "products/surveys/backend/translation.py",
-              "count": 15
+              "count": 14
             },
             {
               "file": "products/surveys/backend/debug.py",
-              "count": 10
+              "count": 9
             },
             {
               "file": "products/surveys/backend/responses/fetch_rows.py",
-              "count": 7
+              "count": 6
             },
             {
               "file": "products/surveys/backend/responses/stats.py",
-              "count": 2
+              "count": 1
             }
           ],
           "counts": {
-            "any": 97,
+            "any": 91,
             "typeIgnore": 2,
             "tsIgnore": 0,
             "asAny": 0,
@@ -624,7 +690,7 @@
         }
       },
       "tests": {
-        "score": 100,
+        "score": 50,
         "measures": {
           "testRatio": {
             "value": 1.2702,
@@ -633,8 +699,8 @@
             "worst": 0
           },
           "facadeCoverage": {
-            "value": null,
-            "score": null,
+            "value": 0,
+            "score": 0,
             "best": 1,
             "worst": 0
           }
@@ -655,9 +721,9 @@
     }
   },
   "timing": {
-    "milliseconds": 1378,
+    "milliseconds": 1726,
     "cache": {
-      "hits": 6,
+      "hits": 0,
       "misses": 89
     }
   }

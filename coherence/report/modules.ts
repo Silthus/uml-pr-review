@@ -42,7 +42,7 @@ export async function scoreModules(
 ): Promise<ModuleBreakdown | null> {
   const file = join(dataDir, scope, `modules-${commit.slice(0, 12)}.json`);
   const stored = await readFile(file, "utf8").catch(() => null);
-  if (stored !== null) return ModuleBreakdownSchema.parse(JSON.parse(stored));
+  if (stored !== null) return withoutPassThroughParents(ModuleBreakdownSchema.parse(JSON.parse(stored)));
   if (repository === undefined) return null;
   const rows: ModuleRow[] = [];
   for (const path of await modulePaths(dataDir, scope, commit, date)) {
@@ -53,7 +53,12 @@ export async function scoreModules(
   }
   const breakdown = ModuleBreakdownSchema.parse({ scope, commit, date, rows: rows.sort((a, b) => a.code - b.code || a.path.localeCompare(b.path)) });
   await writeFile(file, JSON.stringify(breakdown, null, 2));
-  return breakdown;
+  return withoutPassThroughParents(breakdown);
+}
+
+function withoutPassThroughParents(breakdown: ModuleBreakdown): ModuleBreakdown {
+  const isPassThrough = (parent: ModuleRow) => breakdown.rows.some((child) => child.path.startsWith(`${parent.path}/`) && child.files === parent.files && child.lines === parent.lines);
+  return { ...breakdown, rows: breakdown.rows.filter((row) => !isPassThrough(row)) };
 }
 
 async function modulePaths(dataDir: string, scope: string, commit: string, date: string): Promise<string[]> {

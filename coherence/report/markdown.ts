@@ -8,7 +8,7 @@ export function renderMarkdown(model: ReportModel): string {
   return [
     `# Coherence Index: ${model.repository} \`${model.ref}\`, ${model.weeks.length} weekly points (${first} to ${last})`,
     "",
-    `Built ${model.built} at \`${model.head.slice(0, 12)}\`. The backfill took ${model.runtime.seconds} s: ${model.runtime.measured} commits measured, ${model.runtime.reused} reused. The full report with charts is [index-report.html](index-report.html).`,
+    `Built ${model.built} at \`${model.head.slice(0, 12)}\`. The last backfill run took ${model.runtime.seconds} s: ${model.runtime.measured} commits measured, ${model.runtime.reused} reused. The full report with charts is [index-report.html](index-report.html).`,
     "",
     "## Is the index trustworthy?",
     "",

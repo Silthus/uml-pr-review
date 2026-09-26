@@ -7,7 +7,7 @@ import type { ModuleBreakdown } from "./modules.ts";
 export type Dimension = Exclude<keyof Scores, "composite">;
 export const dimensions = ["architecture", "complexity", "smells", "tests"] as const satisfies readonly Dimension[];
 
-export type ScopeView = ScopeSeries & { scope: string; label: string; slot: number; latest: Scores; change: Scores; steps: number; stepsBeyondBand: number };
+export type ScopeView = ScopeSeries & { scope: string; label: string; slot: number; latest: Scores; change: Scores; steps: number; stepsBeyondBand: number; largestStep: { week: string; delta: number } };
 export type MoverView = ScopeSeries["movers"][number] & { scope: string; label: string; timesBand: number | null; dimension: Dimension };
 export type Intervention = { date: string; results: Record<keyof Scores, DifferenceInDifferences> };
 export type ReportModel = {
@@ -50,7 +50,8 @@ export function labelOf(scope: string): string {
 function scopeView(scope: string, series: ScopeSeries, slot: number): ScopeView {
   const first = series.points[0]?.scores ?? zeroScores();
   const latest = series.points.at(-1)?.scores ?? zeroScores();
-  const steps = series.points.slice(1).map((point, index) => Math.abs(point.scores.composite - series.points[index]!.scores.composite));
+  const steps = series.points.slice(1).map((point, index) => ({ week: point.week, delta: roundTo(point.scores.composite - series.points[index]!.scores.composite, 1) }));
+  const largestStep = steps.reduce((largest, step) => (Math.abs(step.delta) > Math.abs(largest.delta) ? step : largest), { week: series.points[0]?.week ?? "", delta: 0 });
   return {
     ...series,
     scope,
@@ -59,7 +60,8 @@ function scopeView(scope: string, series: ScopeSeries, slot: number): ScopeView 
     latest,
     change: Object.fromEntries(scoreKeys.map((key) => [key, roundTo(latest[key] - first[key], 1)])) as Scores,
     steps: steps.length,
-    stepsBeyondBand: steps.filter((step) => step > series.noise.band.composite).length,
+    stepsBeyondBand: steps.filter(({ delta }) => Math.abs(delta) > series.noise.band.composite).length,
+    largestStep,
   };
 }
 

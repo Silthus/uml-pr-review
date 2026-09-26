@@ -1,0 +1,4602 @@
+{
+  "version": 1,
+  "repository": "posthog",
+  "ref": "upstream/master",
+  "head": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
+  "until": "2026-09-26T20:21:20.939Z",
+  "weeks": 26,
+  "scopes": {
+    "products/workflows": {
+      "points": [
+        {
+          "commit": "d2953186c204c01d86dd0ca893bdde45327b10d0",
+          "date": "2026-03-22T10:32:03Z",
+          "week": "2026-03-23",
+          "file": "products/workflows/2026-03-22-d2953186c204.json",
+          "scores": {
+            "composite": 52.6,
+            "architecture": 42.9,
+            "complexity": 84.7,
+            "smells": 70.1,
+            "tests": 11.8
+          }
+        },
+        {
+          "commit": "b5db3557e4a6d3d700e4649f7894c237f0056fba",
+          "date": "2026-03-29T14:57:04+01:00",
+          "week": "2026-03-30",
+          "file": "products/workflows/2026-03-29-b5db3557e4a6.json",
+          "scores": {
+            "composite": 51.8,
+            "architecture": 42.2,
+            "complexity": 85.3,
+            "smells": 68.1,
+            "tests": 10.5
+          }
+        },
+        {
+          "commit": "0927d6b52d38de56e5bed3506dd5eb84e81df34d",
+          "date": "2026-04-05T18:28:14Z",
+          "week": "2026-04-06",
+          "file": "products/workflows/2026-04-05-0927d6b52d38.json",
+          "scores": {
+            "composite": 52,
+            "architecture": 42.2,
+            "complexity": 84,
+            "smells": 69,
+            "tests": 12.3
+          }
+        },
+        {
+          "commit": "a560cb1c0e82634e294998f6b10ec8ae64b36639",
+          "date": "2026-04-12T18:07:36-04:00",
+          "week": "2026-04-13",
+          "file": "products/workflows/2026-04-12-a560cb1c0e82.json",
+          "scores": {
+            "composite": 52.3,
+            "architecture": 42.2,
+            "complexity": 84.1,
+            "smells": 69.8,
+            "tests": 12.5
+          }
+        },
+        {
+          "commit": "f55d8340b44b9f815a1c0555ebb71a1d40d57d75",
+          "date": "2026-04-19T22:43:07Z",
+          "week": "2026-04-20",
+          "file": "products/workflows/2026-04-19-f55d8340b44b.json",
+          "scores": {
+            "composite": 52.7,
+            "architecture": 43,
+            "complexity": 83.6,
+            "smells": 71.2,
+            "tests": 12.7
+          }
+        },
+        {
+          "commit": "137de4d5a44f6f0e8ffe83dff6ec4097435d1b6e",
+          "date": "2026-04-26T18:33:25-04:00",
+          "week": "2026-04-27",
+          "file": "products/workflows/2026-04-26-137de4d5a44f.json",
+          "scores": {
+            "composite": 52.9,
+            "architecture": 43.1,
+            "complexity": 84.1,
+            "smells": 71.1,
+            "tests": 13
+          }
+        },
+        {
+          "commit": "698149ad3370c91f19d7f533c7fd785ab2f283dc",
+          "date": "2026-05-04T00:28:03+01:00",
+          "week": "2026-05-04",
+          "file": "products/workflows/2026-05-03-698149ad3370.json",
+          "scores": {
+            "composite": 52.8,
+            "architecture": 44,
+            "complexity": 84.2,
+            "smells": 68.8,
+            "tests": 12.7
+          }
+        },
+        {
+          "commit": "f41c55b2f7a5230c3f9c44ec1506d3b5e246782f",
+          "date": "2026-05-10T19:17:47Z",
+          "week": "2026-05-11",
+          "file": "products/workflows/2026-05-10-f41c55b2f7a5.json",
+          "scores": {
+            "composite": 52.9,
+            "architecture": 44,
+            "complexity": 84.1,
+            "smells": 68.9,
+            "tests": 13.3
+          }
+        },
+        {
+          "commit": "8bf1ce63224da919897fe8d8fcdc22824b2f3fbf",
+          "date": "2026-05-17T23:14:57Z",
+          "week": "2026-05-18",
+          "file": "products/workflows/2026-05-17-8bf1ce63224d.json",
+          "scores": {
+            "composite": 52.9,
+            "architecture": 44,
+            "complexity": 84.1,
+            "smells": 69,
+            "tests": 13.2
+          }
+        },
+        {
+          "commit": "4406542d2c429e7dcca1bebf12bbcacdc97c8d1d",
+          "date": "2026-05-24T17:34:53+01:00",
+          "week": "2026-05-25",
+          "file": "products/workflows/2026-05-24-4406542d2c42.json",
+          "scores": {
+            "composite": 53.4,
+            "architecture": 43.6,
+            "complexity": 84.1,
+            "smells": 71.5,
+            "tests": 14
+          }
+        },
+        {
+          "commit": "309c3b6b9169c394ef29aa063761c5fa511798bf",
+          "date": "2026-05-31T21:55:59+01:00",
+          "week": "2026-06-01",
+          "file": "products/workflows/2026-05-31-309c3b6b9169.json",
+          "scores": {
+            "composite": 53.2,
+            "architecture": 43.9,
+            "complexity": 81.6,
+            "smells": 68.7,
+            "tests": 18.4
+          }
+        },
+        {
+          "commit": "1050dad2a10e5cb253416d4fec3e3563d3c31063",
+          "date": "2026-06-07T23:22:29Z",
+          "week": "2026-06-08",
+          "file": "products/workflows/2026-06-07-1050dad2a10e.json",
+          "scores": {
+            "composite": 54.8,
+            "architecture": 46.7,
+            "complexity": 80.7,
+            "smells": 72.1,
+            "tests": 19.2
+          }
+        },
+        {
+          "commit": "57696b06d2b3104acdeef6497bd1fe27efb9eab5",
+          "date": "2026-06-14T22:18:23+01:00",
+          "week": "2026-06-15",
+          "file": "products/workflows/2026-06-14-57696b06d2b3.json",
+          "scores": {
+            "composite": 55.7,
+            "architecture": 47.4,
+            "complexity": 81.2,
+            "smells": 73.7,
+            "tests": 20.4
+          }
+        },
+        {
+          "commit": "8e473b6a37a49ba94fb59ce8810821381540e980",
+          "date": "2026-06-21T23:34:17Z",
+          "week": "2026-06-22",
+          "file": "products/workflows/2026-06-21-8e473b6a37a4.json",
+          "scores": {
+            "composite": 55.9,
+            "architecture": 47.7,
+            "complexity": 80,
+            "smells": 74.9,
+            "tests": 21.2
+          }
+        },
+        {
+          "commit": "13c7dfaea7ab452367bfe6a33698ef47e4b336ad",
+          "date": "2026-06-28T20:48:53Z",
+          "week": "2026-06-29",
+          "file": "products/workflows/2026-06-28-13c7dfaea7ab.json",
+          "scores": {
+            "composite": 56.1,
+            "architecture": 48,
+            "complexity": 79.3,
+            "smells": 75.5,
+            "tests": 21.8
+          }
+        },
+        {
+          "commit": "6577fc44f726da86da4288e5a8ef011571a80c47",
+          "date": "2026-07-05T18:57:15Z",
+          "week": "2026-07-06",
+          "file": "products/workflows/2026-07-05-6577fc44f726.json",
+          "scores": {
+            "composite": 57,
+            "architecture": 49.8,
+            "complexity": 79.4,
+            "smells": 77,
+            "tests": 21.8
+          }
+        },
+        {
+          "commit": "7026f7ec439ac946666604fafb99f1f4aae26ed6",
+          "date": "2026-07-12T18:01:37-03:00",
+          "week": "2026-07-13",
+          "file": "products/workflows/2026-07-12-7026f7ec439a.json",
+          "scores": {
+            "composite": 57.1,
+            "architecture": 50,
+            "complexity": 79.2,
+            "smells": 76.1,
+            "tests": 23
+          }
+        },
+        {
+          "commit": "6f8208e93ef6e34e8cd499fca7ba59f9ea8d0076",
+          "date": "2026-07-19T21:06:49Z",
+          "week": "2026-07-20",
+          "file": "products/workflows/2026-07-19-6f8208e93ef6.json",
+          "scores": {
+            "composite": 57.5,
+            "architecture": 50.9,
+            "complexity": 78,
+            "smells": 77.7,
+            "tests": 23.3
+          }
+        },
+        {
+          "commit": "78b3689515fda9f732d9586be89a051eae853cd9",
+          "date": "2026-07-26T21:48:10Z",
+          "week": "2026-07-27",
+          "file": "products/workflows/2026-07-26-78b3689515fd.json",
+          "scores": {
+            "composite": 57.8,
+            "architecture": 51.9,
+            "complexity": 77.2,
+            "smells": 77.7,
+            "tests": 24.1
+          }
+        },
+        {
+          "commit": "634bad0710c614fcd5dde95804481e8ad822f35e",
+          "date": "2026-08-02T15:19:56-05:00",
+          "week": "2026-08-03",
+          "file": "products/workflows/2026-08-02-634bad0710c6.json",
+          "scores": {
+            "composite": 57.9,
+            "architecture": 52.4,
+            "complexity": 76.3,
+            "smells": 78.1,
+            "tests": 24.5
+          }
+        },
+        {
+          "commit": "7da1c4690c65a40358a696b0c1ae51565e77863a",
+          "date": "2026-08-09T22:20:50Z",
+          "week": "2026-08-10",
+          "file": "products/workflows/2026-08-09-7da1c4690c65.json",
+          "scores": {
+            "composite": 57.8,
+            "architecture": 52.5,
+            "complexity": 75.3,
+            "smells": 77.3,
+            "tests": 25.5
+          }
+        },
+        {
+          "commit": "42d5edca6dc46299dac88d1545e93fb761481ca9",
+          "date": "2026-08-16T21:56:21Z",
+          "week": "2026-08-17",
+          "file": "products/workflows/2026-08-16-42d5edca6dc4.json",
+          "scores": {
+            "composite": 57.9,
+            "architecture": 52.7,
+            "complexity": 74.9,
+            "smells": 77.6,
+            "tests": 25.8
+          }
+        },
+        {
+          "commit": "0250a2b68bcfecb7875a5ccd476179d6ff2e32bd",
+          "date": "2026-08-23T23:26:23Z",
+          "week": "2026-08-24",
+          "file": "products/workflows/2026-08-23-0250a2b68bcf.json",
+          "scores": {
+            "composite": 57.7,
+            "architecture": 54.3,
+            "complexity": 72.2,
+            "smells": 77,
+            "tests": 26.3
+          }
+        },
+        {
+          "commit": "e62b8dd5e87c8af6819fc2372c18b1172b10df51",
+          "date": "2026-08-30T21:16:22Z",
+          "week": "2026-08-31",
+          "file": "products/workflows/2026-08-30-e62b8dd5e87c.json",
+          "scores": {
+            "composite": 58.4,
+            "architecture": 56.3,
+            "complexity": 71.7,
+            "smells": 77.2,
+            "tests": 26.4
+          }
+        },
+        {
+          "commit": "5f8bc937a84b877dc737ab3f9b5317b82c4bf881",
+          "date": "2026-09-06T21:55:35Z",
+          "week": "2026-09-07",
+          "file": "products/workflows/2026-09-06-5f8bc937a84b.json",
+          "scores": {
+            "composite": 59.2,
+            "architecture": 58.3,
+            "complexity": 70.5,
+            "smells": 78.2,
+            "tests": 27.6
+          }
+        },
+        {
+          "commit": "66ea432ade172a2f5e8a5f5067a7e16554ff71d2",
+          "date": "2026-09-13T23:48:44Z",
+          "week": "2026-09-14",
+          "file": "products/workflows/2026-09-13-66ea432ade17.json",
+          "scores": {
+            "composite": 59.3,
+            "architecture": 58.7,
+            "complexity": 70.4,
+            "smells": 79.4,
+            "tests": 26.6
+          }
+        },
+        {
+          "commit": "6bbc94fa5128f06aaf2592ca82f5c0f8d81dc491",
+          "date": "2026-09-20T21:45:41Z",
+          "week": "2026-09-21",
+          "file": "products/workflows/2026-09-20-6bbc94fa5128.json",
+          "scores": {
+            "composite": 59.7,
+            "architecture": 59.3,
+            "complexity": 71.1,
+            "smells": 79.7,
+            "tests": 26.3
+          }
+        }
+      ],
+      "noise": {
+        "pairs": [
+          {
+            "before": {
+              "commit": "e54a2a7f319de5a726ed77ca8a18162a0302da35",
+              "date": "2026-03-24T23:57:45Z"
+            },
+            "after": {
+              "commit": "ad86b2ceae2957f6b8b983c58bf8f7415f76b81b",
+              "date": "2026-03-25T23:54:17Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "7ab5afcc2a4f9fdc619f103ba90e66ff84777869",
+              "date": "2026-04-01T00:17:00+02:00"
+            },
+            "after": {
+              "commit": "3a56f4cc2ba38c674e73dec20f7c48f1dd815d3a",
+              "date": "2026-04-02T01:50:38+02:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0.1,
+              "complexity": -1.2,
+              "smells": 0.8,
+              "tests": 0.5
+            }
+          },
+          {
+            "before": {
+              "commit": "87a5734833e63c42e8369a32d8d1afc27d522694",
+              "date": "2026-04-14T16:39:03-07:00"
+            },
+            "after": {
+              "commit": "cfde8e16bfebb708133cf570cc8bbe162893b727",
+              "date": "2026-04-15T16:04:48-07:00"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0.2,
+              "complexity": 0,
+              "smells": 0.9,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "735159b17316afad4d21b27fbc2818b9e1189a13",
+              "date": "2026-05-05T16:51:00-07:00"
+            },
+            "after": {
+              "commit": "b942dce784366d2d5e2560d6cc6d5c3e6f3d386c",
+              "date": "2026-05-06T23:43:12Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "f4d50285b5887e82cd581232bab6820b56d5a47d",
+              "date": "2026-05-12T18:44:19-04:00"
+            },
+            "after": {
+              "commit": "f9a2cd7dee74d961e274f1f5a29c0d9bd1306782",
+              "date": "2026-05-14T00:26:28+01:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0.1,
+              "tests": -0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "f043be09c838f3c9486591a666c87262a79c4d61",
+              "date": "2026-05-19T23:44:05Z"
+            },
+            "after": {
+              "commit": "8341fe063a5e16a34fbe55c5d3b5768c7835bcc3",
+              "date": "2026-05-20T16:54:22-07:00"
+            },
+            "delta": {
+              "composite": 0.7,
+              "architecture": 0.3,
+              "complexity": 0,
+              "smells": 2.8,
+              "tests": -0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "02312429e7b4b3eefa2f16fe4bab3902ef99f86e",
+              "date": "2026-06-02T16:51:24-07:00"
+            },
+            "after": {
+              "commit": "f2167f5071b2b1cd66fda3c01f2a6c74e62e9baa",
+              "date": "2026-06-03T23:33:21Z"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0.2,
+              "complexity": -0.1,
+              "smells": 0.7,
+              "tests": 0.3
+            }
+          },
+          {
+            "before": {
+              "commit": "90a2c1b92313c21bde117beb23c341e5392219f3",
+              "date": "2026-06-09T23:32:40Z"
+            },
+            "after": {
+              "commit": "257b977b9a58ab541d2832092db805462baf8fb0",
+              "date": "2026-06-10T16:49:34-07:00"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0.2,
+              "complexity": -0.1,
+              "smells": 0.5,
+              "tests": 0.4
+            }
+          },
+          {
+            "before": {
+              "commit": "ad2d1d101bd0853b743c9da9e471e072c0322b73",
+              "date": "2026-06-16T23:43:54Z"
+            },
+            "after": {
+              "commit": "dcca3c438f508a809f0428c0d9421bc84bbb91b9",
+              "date": "2026-06-17T20:44:22-03:00"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0.4,
+              "complexity": -1.1,
+              "smells": 1.1,
+              "tests": 0.8
+            }
+          },
+          {
+            "before": {
+              "commit": "50b5dd161e0ac675c80afd238c1f78d25d64c35a",
+              "date": "2026-06-23T23:38:19Z"
+            },
+            "after": {
+              "commit": "aa1143b5d6807b9a03b850d13fbcac9b6854bf02",
+              "date": "2026-06-24T16:37:31-07:00"
+            },
+            "delta": {
+              "composite": -0.2,
+              "architecture": 0,
+              "complexity": -0.6,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "7dc7d1a7c6076b857846e7d59b17403683a1c12e",
+              "date": "2026-06-30T16:38:47-07:00"
+            },
+            "after": {
+              "commit": "561fc8a3b4e3065f2e8204bccba2e3aca81b64a2",
+              "date": "2026-07-01T23:51:07Z"
+            },
+            "delta": {
+              "composite": -0.1,
+              "architecture": -0.1,
+              "complexity": 0.1,
+              "smells": -0.2,
+              "tests": -0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "b13e0ca6305485580d34f699e450c97e891bb303",
+              "date": "2026-07-07T20:55:35-03:00"
+            },
+            "after": {
+              "commit": "0d908fee771515d096813a3e4cd290e2f5f961d7",
+              "date": "2026-07-08T16:16:44-07:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "a771072e66fdb96cf517a559a294063251a1e38e",
+              "date": "2026-07-14T22:36:51Z"
+            },
+            "after": {
+              "commit": "e8858fdabe15cce244324d360f067c814bfebc56",
+              "date": "2026-07-15T16:53:17-07:00"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0.2,
+              "complexity": -0.4,
+              "smells": 0.3,
+              "tests": 0.5
+            }
+          },
+          {
+            "before": {
+              "commit": "c0db7aaf2a8b99423e25432a07f0391ee24bd5d9",
+              "date": "2026-07-21T23:42:08Z"
+            },
+            "after": {
+              "commit": "5f13a28823022a6243eed4e35efabfd64a28c838",
+              "date": "2026-07-22T23:13:28Z"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0.5,
+              "complexity": -0.3,
+              "smells": 0,
+              "tests": 0.3
+            }
+          },
+          {
+            "before": {
+              "commit": "f59d2a92cd54a6fc00b140916cab60e3e0bee67e",
+              "date": "2026-07-28T23:16:48Z"
+            },
+            "after": {
+              "commit": "78ceb2b34e7cd1499bcfe8fd931e72b1b727c51d",
+              "date": "2026-07-29T23:02:40Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0.1,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "7bf27ecbafe66c2f9d1939635603e15cbc8d4715",
+              "date": "2026-08-04T23:40:33Z"
+            },
+            "after": {
+              "commit": "45970ec8754d8fe50efc0ead75f7f0805cb175d0",
+              "date": "2026-08-05T23:58:18Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": -0.1,
+              "complexity": -0.4,
+              "smells": 0.2,
+              "tests": 0.4
+            }
+          },
+          {
+            "before": {
+              "commit": "57ad611e03146edb0e9f2478419cb7824422a575",
+              "date": "2026-08-11T23:48:53Z"
+            },
+            "after": {
+              "commit": "9b084ae8b18eb39e75d20652fcd62d13a3223da9",
+              "date": "2026-08-12T23:49:00Z"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0.1,
+              "complexity": 0,
+              "smells": 0.2,
+              "tests": -0.3
+            }
+          },
+          {
+            "before": {
+              "commit": "11219ae927e844238ad72ed8433d00631f66ac6b",
+              "date": "2026-08-18T23:57:26Z"
+            },
+            "after": {
+              "commit": "dd571e4f3e5e6bc109dffbbd41608986af589748",
+              "date": "2026-08-19T23:44:35Z"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 1.2,
+              "complexity": -0.2,
+              "smells": -0.3,
+              "tests": -0.3
+            }
+          },
+          {
+            "before": {
+              "commit": "e25723b24450aec8c0583d800d87a0794ae0f281",
+              "date": "2026-08-25T23:48:44Z"
+            },
+            "after": {
+              "commit": "040beb55dcf3085cff87806d0d88aace6e2dbbfd",
+              "date": "2026-08-26T23:13:56Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": -0.1,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "03d287288649b0e7d0171d92a1ad0652c3499a23",
+              "date": "2026-09-01T23:32:54Z"
+            },
+            "after": {
+              "commit": "e04d608d229160ffe3ff8fdebe897a79ebe4b876",
+              "date": "2026-09-02T23:54:39Z"
+            },
+            "delta": {
+              "composite": 0.6,
+              "architecture": 1.3,
+              "complexity": 0,
+              "smells": 0.3,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "00a08ee0bdd4673efdb13aeafe98c6c6890e96bf",
+              "date": "2026-09-08T23:48:59Z"
+            },
+            "after": {
+              "commit": "76704da4aacf3b0cc04cacf22cb90294284c26e5",
+              "date": "2026-09-09T23:53:02Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0.1,
+              "complexity": 0.1,
+              "smells": 0.4,
+              "tests": -0.8
+            }
+          },
+          {
+            "before": {
+              "commit": "8e3a23526c5cc9213cb7bd2a94315336f8a75161",
+              "date": "2026-09-15T23:39:45Z"
+            },
+            "after": {
+              "commit": "781036a2f75cf14455e315d603e4a6c4ed841982",
+              "date": "2026-09-16T23:43:04Z"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0.3,
+              "complexity": 0.1,
+              "smells": 0.3,
+              "tests": 0.2
+            }
+          },
+          {
+            "before": {
+              "commit": "22ae33e36417084d6405bc8d59d16887a52edba5",
+              "date": "2026-09-22T23:57:50Z"
+            },
+            "after": {
+              "commit": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
+              "date": "2026-09-23T15:06:50Z"
+            },
+            "delta": {
+              "composite": -1.6,
+              "architecture": 0.1,
+              "complexity": 0.1,
+              "smells": 0.2,
+              "tests": -8.3
+            }
+          }
+        ],
+        "median": {
+          "composite": 0.1,
+          "architecture": 0.1,
+          "complexity": 0.1,
+          "smells": 0.2,
+          "tests": 0.2
+        },
+        "band": {
+          "composite": 0.6,
+          "architecture": 0.5,
+          "complexity": 0.6,
+          "smells": 0.9,
+          "tests": 0.8
+        }
+      },
+      "movers": [
+        {
+          "commit": "58e8f530f8be560fc2e59210f1a790d11dbd4a62",
+          "date": "2026-06-07T22:40:03+01:00",
+          "week": "2026-06-08",
+          "subject": "refactor(frontend): remove defunct tabId from workflows scenes (#62026)",
+          "pr": 62026,
+          "previous": "d8c7134083105f962071eeab772a24d3aef0444e",
+          "delta": {
+            "composite": 0.6,
+            "architecture": 1.6,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "c617e72bbb8eb6b8d5b855592b099802f1736604",
+          "date": "2026-06-29T14:55:59Z",
+          "week": "2026-07-06",
+          "subject": "feat(workflows): make the builder aware of edits from MCP/API (#64001)",
+          "pr": 64001,
+          "previous": "20ce9edc35554c8a4dd2b65d6b4424ce862cd1a5",
+          "delta": {
+            "composite": 0.6,
+            "architecture": 1.3,
+            "complexity": 0,
+            "smells": 0.2,
+            "tests": 0.4
+          }
+        },
+        {
+          "commit": "6970121e6400d8766641cb3a7d33ce3b6c661d85",
+          "date": "2026-06-01T11:14:41+01:00",
+          "week": "2026-06-08",
+          "subject": "feat(workflows): add base MCP tools for workflows product (#60388)",
+          "pr": 60388,
+          "previous": "2d0591c792179de20cf76db886e8e1c4d939f0f3",
+          "delta": {
+            "composite": 0.4,
+            "architecture": 0,
+            "complexity": 0.3,
+            "smells": 1.2,
+            "tests": 0.3
+          }
+        },
+        {
+          "commit": "cb5b59f6da85bbb6c568e335fa2e7521d96804d9",
+          "date": "2026-06-01T08:15:56+02:00",
+          "week": "2026-06-08",
+          "subject": "fix(admin): register moved hogflow and cdp admins via package init (#60652)",
+          "pr": 60652,
+          "previous": "309c3b6b9169c394ef29aa063761c5fa511798bf",
+          "delta": {
+            "composite": 0.3,
+            "architecture": 0.6,
+            "complexity": 0,
+            "smells": 0.7,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "64c5a4efdd391e86ef1157bfa93e3952f97b5519",
+          "date": "2026-06-09T12:32:11Z",
+          "week": "2026-06-15",
+          "subject": "feat(workflows): add invocation debugging MCP tools and align names (#61655)",
+          "pr": 61655,
+          "previous": "eb85f6c7df1d67273fc5a4f55d1bbf90b3eed5ca",
+          "delta": {
+            "composite": 0.3,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.6,
+            "tests": 0.7
+          }
+        },
+        {
+          "commit": "5c87a4657a33635f43b3e387d3e1ff9d71186d78",
+          "date": "2026-06-12T12:59:37Z",
+          "week": "2026-06-15",
+          "subject": "feat(workflows): design-first email template authoring over MCP (#62753)",
+          "pr": 62753,
+          "previous": "9c06e96956f68b6cd67e39e30df8ff736e1fcaad",
+          "delta": {
+            "composite": 0.3,
+            "architecture": 0.4,
+            "complexity": 0.7,
+            "smells": 0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "2558916f5f3181c2ba7f342473ed205249d1a288",
+          "date": "2026-07-03T13:52:02+02:00",
+          "week": "2026-07-06",
+          "subject": "feat(workflows): capture sent emails as browsable assets (#65974)",
+          "pr": 65974,
+          "previous": "c763aeff1e096e1240bb24bc48eb50a92873ce90",
+          "delta": {
+            "composite": 0.3,
+            "architecture": 0.5,
+            "complexity": 0.1,
+            "smells": 0.7,
+            "tests": -0.2
+          }
+        },
+        {
+          "commit": "e001466cc9af0f009ea4835c92301ebb8efa2ed8",
+          "date": "2026-06-05T12:38:49+02:00",
+          "week": "2026-06-08",
+          "subject": "feat(workflows): add team config + settings UI for messaging engagement events (#50122)",
+          "pr": 50122,
+          "previous": "638ef884e8edd7e35b68b0bfb632d9f02b6843a6",
+          "delta": {
+            "composite": 0.2,
+            "architecture": 0.4,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "94f26191a77dae6fec59734679565b4d35abd370",
+          "date": "2026-06-01T10:26:05+02:00",
+          "week": "2026-06-08",
+          "subject": "chore(messaging): drop vestigial from.email and from.name in native email (#60438)",
+          "pr": 60438,
+          "previous": "cb5b59f6da85bbb6c568e335fa2e7521d96804d9",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": -0.4,
+            "smells": 0,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "60e1fe1d43778839e8c58e19a85232fecbddf265",
+          "date": "2026-06-02T18:27:29+02:00",
+          "week": "2026-06-08",
+          "subject": "feat(workflows): Wire up wait-until-event handler and UI (#59299)",
+          "pr": 59299,
+          "previous": "02b3560c5f7b870f38bcb155c6d2dab562f49a1a",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": -0.4,
+            "smells": 0.1,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "aaed68c2b81620d00f705172644fb21472e4aa72",
+          "date": "2026-06-03T16:11:52Z",
+          "week": "2026-06-08",
+          "subject": "feat(workflows): add batch-workflow MCP tools (#61001)",
+          "pr": 61001,
+          "previous": "d6bf7cca94135550f6776d416a0112175407f0e6",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": -0.1,
+            "smells": 0.7,
+            "tests": 0.3
+          }
+        },
+        {
+          "commit": "d6bf7cca94135550f6776d416a0112175407f0e6",
+          "date": "2026-06-03T17:09:51+02:00",
+          "week": "2026-06-08",
+          "subject": "feat(api): migrate product API routes to product-local registration (#60700)",
+          "pr": 60700,
+          "previous": "60e1fe1d43778839e8c58e19a85232fecbddf265",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0.2,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "638ef884e8edd7e35b68b0bfb632d9f02b6843a6",
+          "date": "2026-06-05T11:39:47+02:00",
+          "week": "2026-06-08",
+          "subject": "fix(workflows): respect groups in workflow test runs (#61480)",
+          "pr": 61480,
+          "previous": "aaed68c2b81620d00f705172644fb21472e4aa72",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.4,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "635a1bcdc9c6cad41d5210eb2154bddbe03fda60",
+          "date": "2026-06-10T16:57:27+02:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): Backfill event-based conversions into conversion.events (#62355)",
+          "pr": 62355,
+          "previous": "5166b9c233aa4b0049e73e321bc693954472cfd0",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0.2,
+            "complexity": -0.1,
+            "smells": 0.3,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "39a29d3bbd5ccc441fb7969693ea8a7f7a70f612",
+          "date": "2026-06-10T17:01:30+01:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): harden against behavioural-cohort/frequency targeting via MCP (#62368)",
+          "pr": 62368,
+          "previous": "635a1bcdc9c6cad41d5210eb2154bddbe03fda60",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "9c06e96956f68b6cd67e39e30df8ff736e1fcaad",
+          "date": "2026-06-12T09:46:38Z",
+          "week": "2026-06-15",
+          "subject": "feat(workflows): block deleting integrations used by active workflows (#63015)",
+          "pr": 63015,
+          "previous": "dcfda132834608771097751b6738cfce3461cf6e",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0.1,
+            "complexity": 0,
+            "smells": 0.2,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "b90c08f684b08267dd572961adf2b59c73b960b2",
+          "date": "2026-06-30T15:21:48+02:00",
+          "week": "2026-07-06",
+          "subject": "feat(messaging): add per-invocation log entries for SES email events (#65911)",
+          "pr": 65911,
+          "previous": "6359ab83fa22164800829fef3f7299f04156dfcc",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.3,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "d4fdb97d0585d56eb46feadec98a84b753e60457",
+          "date": "2026-07-01T11:22:48+02:00",
+          "week": "2026-07-06",
+          "subject": "chore(workflows): remove membership filter backfill command (#66952)",
+          "pr": 66952,
+          "previous": "790565eeecb2a428701441ad27afad0979bae85e",
+          "delta": {
+            "composite": -0.1,
+            "architecture": -0.1,
+            "complexity": 0.1,
+            "smells": -0.2,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "2d0591c792179de20cf76db886e8e1c4d939f0f3",
+          "date": "2026-06-01T09:35:00Z",
+          "week": "2026-06-08",
+          "subject": "refactor(openapi): move product routing to server-side x-product extension (#59587)",
+          "pr": 59587,
+          "previous": "94f26191a77dae6fec59734679565b4d35abd370",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "02b3560c5f7b870f38bcb155c6d2dab562f49a1a",
+          "date": "2026-06-02T15:32:53Z",
+          "week": "2026-06-08",
+          "subject": "feat(workflows): hide generic schedule trigger from selector (#60938)",
+          "pr": 60938,
+          "previous": "41c3a2014a7a53b7be636121f7f28fabd19a6a6f",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f38b5d3cc76ddf1773ea3d89f235d5c94efb35c5",
+          "date": "2026-06-02T16:06:01+02:00",
+          "week": "2026-06-08",
+          "subject": "feat(cdp): add non_failure_status_codes inputs_schema type (#60866)",
+          "pr": 60866,
+          "previous": "6970121e6400d8766641cb3a7d33ce3b6c661d85",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "41c3a2014a7a53b7be636121f7f28fabd19a6a6f",
+          "date": "2026-06-02T16:58:01+02:00",
+          "week": "2026-06-08",
+          "subject": "feat(cdp): Add hogflow subscription matcher consumer (#57847)",
+          "pr": 57847,
+          "previous": "f38b5d3cc76ddf1773ea3d89f235d5c94efb35c5",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": -0.3,
+            "smells": 0.2,
+            "tests": 0.3
+          }
+        },
+        {
+          "commit": "2fde546c6c585990f4f6ab0a17d4f404723788a2",
+          "date": "2026-06-06T19:10:21+01:00",
+          "week": "2026-06-08",
+          "subject": "refactor(frontend): replace tabAwareActionToUrl with trackedActionToUrl (#61978)",
+          "pr": 61978,
+          "previous": "e001466cc9af0f009ea4835c92301ebb8efa2ed8",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "c4889dda4e8220406403a49aeebb12eec490806a",
+          "date": "2026-06-06T19:49:33+01:00",
+          "week": "2026-06-08",
+          "subject": "refactor(frontend): replace tabAwareUrlToAction with urlToAction (#61990)",
+          "pr": 61990,
+          "previous": "2fde546c6c585990f4f6ab0a17d4f404723788a2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "d8c7134083105f962071eeab772a24d3aef0444e",
+          "date": "2026-06-06T22:37:14+01:00",
+          "week": "2026-06-08",
+          "subject": "refactor(frontend): de-key remaining shallow scenes (#61994)",
+          "pr": 61994,
+          "previous": "c4889dda4e8220406403a49aeebb12eec490806a",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "af75ae00e132f32786a808337c53d53125815017",
+          "date": "2026-06-08T10:50:43+02:00",
+          "week": "2026-06-15",
+          "subject": "chore(workflows): add e2e guarding hidden built-in templates load (#62076)",
+          "pr": 62076,
+          "previous": "1050dad2a10e5cb253416d4fec3e3563d3c31063",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "1f214df7c6241da14a327a2a8c217d31f3fcd0dc",
+          "date": "2026-06-09T10:53:47+01:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): gate test-run groups on group_analytics (#62225)",
+          "pr": 62225,
+          "previous": "f2810fdb75c94a99cc6c1c11a5df57195164a4b8",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": -0.1,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f2810fdb75c94a99cc6c1c11a5df57195164a4b8",
+          "date": "2026-06-09T11:04:04+02:00",
+          "week": "2026-06-15",
+          "subject": "chore(devex): move cohorts and replay models to product apps (#62112)",
+          "pr": 62112,
+          "previous": "af75ae00e132f32786a808337c53d53125815017",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "eb85f6c7df1d67273fc5a4f55d1bbf90b3eed5ca",
+          "date": "2026-06-09T12:13:00+02:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): fix SES stuff (#62290)",
+          "pr": 62290,
+          "previous": "1f214df7c6241da14a327a2a8c217d31f3fcd0dc",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.2,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "ff42d5120dc0c0542de76377ad98931a65d6668d",
+          "date": "2026-06-09T20:25:57+01:00",
+          "week": "2026-06-15",
+          "subject": "chore(openapi): bump orval to 8.14.0 (#62248)",
+          "pr": 62248,
+          "previous": "64c5a4efdd391e86ef1157bfa93e3952f97b5519",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5d215cc329012147b931eb061a14df8686858ef2",
+          "date": "2026-06-10T01:10:08-04:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): raise hog_flows list page size to 200 (#62424)",
+          "pr": 62424,
+          "previous": "ff42d5120dc0c0542de76377ad98931a65d6668d",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "3bf7e35ab5c2dd28f07537d825cc3695fa4c78b2",
+          "date": "2026-06-10T08:06:05-04:00",
+          "week": "2026-06-15",
+          "subject": "chore(playwright): replace deprecated playwright-test-base with workspace-test-base (#61762)",
+          "pr": 61762,
+          "previous": "05419616da8da3dc4e8fd14dfecf09d4612d2439",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "05419616da8da3dc4e8fd14dfecf09d4612d2439",
+          "date": "2026-06-10T13:57:35+02:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): two-phase event sampling in testing tabs (#62626)",
+          "pr": 62626,
+          "previous": "5d215cc329012147b931eb061a14df8686858ef2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5166b9c233aa4b0049e73e321bc693954472cfd0",
+          "date": "2026-06-10T15:14:31+02:00",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): Don't wake on an empty wait_until_condition events entry (#62306)",
+          "pr": 62306,
+          "previous": "3bf7e35ab5c2dd28f07537d825cc3695fa4c78b2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0.2
+          }
+        },
+        {
+          "commit": "a26b4ea078f153142bae312e86dafe1a4cf069c4",
+          "date": "2026-06-11T08:06:05+01:00",
+          "week": "2026-06-15",
+          "subject": "feat: Warn when hog function variable syntax doesn't match expected (#62728)",
+          "pr": 62728,
+          "previous": "39a29d3bbd5ccc441fb7969693ea8a7f7a70f612",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "4bfbfa70dd90cc1245ff45eb2c947897ebdc664b",
+          "date": "2026-06-11T08:10:26Z",
+          "week": "2026-06-15",
+          "subject": "perf(api): lazy DRF router, defer heavy imports off django.setup() (#60849)",
+          "pr": 60849,
+          "previous": "a26b4ea078f153142bae312e86dafe1a4cf069c4",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "a8f7eff631f044afc411727cbe1bfb1bcf8c74c7",
+          "date": "2026-06-11T08:19:49Z",
+          "week": "2026-06-15",
+          "subject": "fix(workflows): read correct SES list_resource_tenants response key (#62844)",
+          "pr": 62844,
+          "previous": "4bfbfa70dd90cc1245ff45eb2c947897ebdc664b",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "dcfda132834608771097751b6738cfce3461cf6e",
+          "date": "2026-06-12T09:00:08+02:00",
+          "week": "2026-06-15",
+          "subject": "fix(test): resolve race condition in hogFlowEditorNotificationTestLogic test (#63166)",
+          "pr": 63166,
+          "previous": "a8f7eff631f044afc411727cbe1bfb1bcf8c74c7",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "414e10ee3139c27b019ba508adf1e1801eb0d0fd",
+          "date": "2026-06-12T15:45:03+02:00",
+          "week": "2026-06-15",
+          "subject": "chore(workflows): type SES clients and pin response shapes in tests (#62872)",
+          "pr": 62872,
+          "previous": "5c87a4657a33635f43b3e387d3e1ff9d71186d78",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "08283f61a4af678d2bed74c29d2b0fd1fdd5cd3d",
+          "date": "2026-06-29T11:27:36+02:00",
+          "week": "2026-07-06",
+          "subject": "feat(cdp-email): cyclotron-based batch resolver (#65864)",
+          "pr": 65864,
+          "previous": "13c7dfaea7ab452367bfe6a33698ef47e4b336ad",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "b3a7a71d6aa496467aeaa2544c905885606fa562",
+          "date": "2026-06-29T13:13:20+02:00",
+          "week": "2026-07-06",
+          "subject": "feat(workflows): improve node move/copy UX with visual feedback and error handling (#65912)",
+          "pr": 65912,
+          "previous": "08283f61a4af678d2bed74c29d2b0fd1fdd5cd3d",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "20ce9edc35554c8a4dd2b65d6b4424ce862cd1a5",
+          "date": "2026-06-29T14:21:18+02:00",
+          "week": "2026-07-06",
+          "subject": "feat(workflows): track conversions as a metric in the metrics tab (#65897)",
+          "pr": 65897,
+          "previous": "b3a7a71d6aa496467aeaa2544c905885606fa562",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "7ca890bdf98f35cf22c07cafc1cf4be03fd697b4",
+          "date": "2026-06-29T16:39:19+01:00",
+          "week": "2026-07-06",
+          "subject": "fix(deps): pin @posthog/icons via pnpm catalog to dedupe products (#66758)",
+          "pr": 66758,
+          "previous": "c617e72bbb8eb6b8d5b855592b099802f1736604",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "dbd5796621c3d9790ac27a44b4aba0543f491110",
+          "date": "2026-06-30T10:42:23+02:00",
+          "week": "2026-07-06",
+          "subject": "feat(cdp): rerun invocations API and Runs tab (#65748)",
+          "pr": 65748,
+          "previous": "7ca890bdf98f35cf22c07cafc1cf4be03fd697b4",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.2,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "6359ab83fa22164800829fef3f7299f04156dfcc",
+          "date": "2026-06-30T11:24:54+01:00",
+          "week": "2026-07-06",
+          "subject": "feat(data-warehouse): polish DWH source UX for destinations and workflows (#65605)",
+          "pr": 65605,
+          "previous": "dbd5796621c3d9790ac27a44b4aba0543f491110",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "eef54c8baace9b911b00779a54b4151cf2977414",
+          "date": "2026-06-30T17:24:02+02:00",
+          "week": "2026-07-06",
+          "subject": "fix(workflows): use real moments when comparing recurrence occurrences to now (#67022)",
+          "pr": 67022,
+          "previous": "b90c08f684b08267dd572961adf2b59c73b960b2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "67926dedfc556e4dc76dbd3995aa6f408f69ae22",
+          "date": "2026-06-30T20:27:08+01:00",
+          "week": "2026-07-06",
+          "subject": "fix(data-warehouse): scope DWH workflow trigger filter to row columns (#67014)",
+          "pr": 67014,
+          "previous": "eef54c8baace9b911b00779a54b4151cf2977414",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "b24a85a50b3899b804023ef1986d8b2beaaed3c5",
+          "date": "2026-06-30T20:53:09Z",
+          "week": "2026-07-06",
+          "subject": "feat(customer-analytics): add \"update account property\" workflow action (#66346)",
+          "pr": 66346,
+          "previous": "67926dedfc556e4dc76dbd3995aa6f408f69ae22",
+          "delta": {
+            "composite": 0,
+            "architecture": 0.1,
+            "complexity": -0.1,
+            "smells": 0.1,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "790565eeecb2a428701441ad27afad0979bae85e",
+          "date": "2026-07-01T00:34:17-03:00",
+          "week": "2026-07-06",
+          "subject": "refactor(brand): migrate hedgehog illustrations to `@posthog/brand/hoggies` (#66238)",
+          "pr": 66238,
+          "previous": "b24a85a50b3899b804023ef1986d8b2beaaed3c5",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "acbff0919709b131a4c0946f4c7de8b305103873",
+          "date": "2026-07-01T13:06:36+01:00",
+          "week": "2026-07-06",
+          "subject": "feat(messaging): support per-link click-tracking opt-out in emails (#67308)",
+          "pr": 67308,
+          "previous": "d4fdb97d0585d56eb46feadec98a84b753e60457",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "c763aeff1e096e1240bb24bc48eb50a92873ce90",
+          "date": "2026-07-01T14:48:47Z",
+          "week": "2026-07-06",
+          "subject": "feat(workflows): warn before discarding unsaved message template (#66812)",
+          "pr": 66812,
+          "previous": "acbff0919709b131a4c0946f4c7de8b305103873",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "682035b293fa92e4541937d869d3c187139d150e",
+          "date": "2026-07-03T16:51:53-03:00",
+          "week": "2026-07-06",
+          "subject": "chore(semgrep): group rules into security/ and devex/ subfolders (#68086)",
+          "pr": 68086,
+          "previous": "2558916f5f3181c2ba7f342473ed205249d1a288",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        }
+      ]
+    },
+    "products/surveys": {
+      "points": [
+        {
+          "commit": "d2953186c204c01d86dd0ca893bdde45327b10d0",
+          "date": "2026-03-22T10:32:03Z",
+          "week": "2026-03-23",
+          "file": "products/surveys/2026-03-22-d2953186c204.json",
+          "scores": {
+            "composite": 58.5,
+            "architecture": 57.8,
+            "complexity": 64.8,
+            "smells": 81.4,
+            "tests": 29
+          }
+        },
+        {
+          "commit": "b5db3557e4a6d3d700e4649f7894c237f0056fba",
+          "date": "2026-03-29T14:57:04+01:00",
+          "week": "2026-03-30",
+          "file": "products/surveys/2026-03-29-b5db3557e4a6.json",
+          "scores": {
+            "composite": 44.7,
+            "architecture": 39.1,
+            "complexity": 23.1,
+            "smells": 76.4,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "0927d6b52d38de56e5bed3506dd5eb84e81df34d",
+          "date": "2026-04-05T18:28:14Z",
+          "week": "2026-04-06",
+          "file": "products/surveys/2026-04-05-0927d6b52d38.json",
+          "scores": {
+            "composite": 47.3,
+            "architecture": 42.1,
+            "complexity": 34.5,
+            "smells": 73.9,
+            "tests": 45.7
+          }
+        },
+        {
+          "commit": "a560cb1c0e82634e294998f6b10ec8ae64b36639",
+          "date": "2026-04-12T18:07:36-04:00",
+          "week": "2026-04-13",
+          "file": "products/surveys/2026-04-12-a560cb1c0e82.json",
+          "scores": {
+            "composite": 47.2,
+            "architecture": 42.1,
+            "complexity": 34.1,
+            "smells": 73.2,
+            "tests": 46.5
+          }
+        },
+        {
+          "commit": "f55d8340b44b9f815a1c0555ebb71a1d40d57d75",
+          "date": "2026-04-19T22:43:07Z",
+          "week": "2026-04-20",
+          "file": "products/surveys/2026-04-19-f55d8340b44b.json",
+          "scores": {
+            "composite": 47.3,
+            "architecture": 42.1,
+            "complexity": 34.4,
+            "smells": 73.4,
+            "tests": 46.5
+          }
+        },
+        {
+          "commit": "137de4d5a44f6f0e8ffe83dff6ec4097435d1b6e",
+          "date": "2026-04-26T18:33:25-04:00",
+          "week": "2026-04-27",
+          "file": "products/surveys/2026-04-26-137de4d5a44f.json",
+          "scores": {
+            "composite": 39.2,
+            "architecture": 43.4,
+            "complexity": 28.1,
+            "smells": 47.9,
+            "tests": 36.9
+          }
+        },
+        {
+          "commit": "698149ad3370c91f19d7f533c7fd785ab2f283dc",
+          "date": "2026-05-04T00:28:03+01:00",
+          "week": "2026-05-04",
+          "file": "products/surveys/2026-05-03-698149ad3370.json",
+          "scores": {
+            "composite": 40,
+            "architecture": 43.9,
+            "complexity": 31.6,
+            "smells": 47.5,
+            "tests": 36.3
+          }
+        },
+        {
+          "commit": "f41c55b2f7a5230c3f9c44ec1506d3b5e246782f",
+          "date": "2026-05-10T19:17:47Z",
+          "week": "2026-05-11",
+          "file": "products/surveys/2026-05-10-f41c55b2f7a5.json",
+          "scores": {
+            "composite": 40,
+            "architecture": 43.9,
+            "complexity": 31.8,
+            "smells": 47.2,
+            "tests": 36.4
+          }
+        },
+        {
+          "commit": "8bf1ce63224da919897fe8d8fcdc22824b2f3fbf",
+          "date": "2026-05-17T23:14:57Z",
+          "week": "2026-05-18",
+          "file": "products/surveys/2026-05-17-8bf1ce63224d.json",
+          "scores": {
+            "composite": 40,
+            "architecture": 43.9,
+            "complexity": 31.8,
+            "smells": 47.2,
+            "tests": 36.4
+          }
+        },
+        {
+          "commit": "4406542d2c429e7dcca1bebf12bbcacdc97c8d1d",
+          "date": "2026-05-24T17:34:53+01:00",
+          "week": "2026-05-25",
+          "file": "products/surveys/2026-05-24-4406542d2c42.json",
+          "scores": {
+            "composite": 44.2,
+            "architecture": 41.3,
+            "complexity": 20.5,
+            "smells": 73.3,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "309c3b6b9169c394ef29aa063761c5fa511798bf",
+          "date": "2026-05-31T21:55:59+01:00",
+          "week": "2026-06-01",
+          "file": "products/surveys/2026-05-31-309c3b6b9169.json",
+          "scores": {
+            "composite": 44.2,
+            "architecture": 41.3,
+            "complexity": 20.5,
+            "smells": 73.3,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "1050dad2a10e5cb253416d4fec3e3563d3c31063",
+          "date": "2026-06-07T23:22:29Z",
+          "week": "2026-06-08",
+          "file": "products/surveys/2026-06-07-1050dad2a10e.json",
+          "scores": {
+            "composite": 40.3,
+            "architecture": 28.5,
+            "complexity": 21,
+            "smells": 75.6,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "57696b06d2b3104acdeef6497bd1fe27efb9eab5",
+          "date": "2026-06-14T22:18:23+01:00",
+          "week": "2026-06-15",
+          "file": "products/surveys/2026-06-14-57696b06d2b3.json",
+          "scores": {
+            "composite": 40.5,
+            "architecture": 28.8,
+            "complexity": 21.3,
+            "smells": 75.7,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "8e473b6a37a49ba94fb59ce8810821381540e980",
+          "date": "2026-06-21T23:34:17Z",
+          "week": "2026-06-22",
+          "file": "products/surveys/2026-06-21-8e473b6a37a4.json",
+          "scores": {
+            "composite": 40.6,
+            "architecture": 28.8,
+            "complexity": 21.3,
+            "smells": 76,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "13c7dfaea7ab452367bfe6a33698ef47e4b336ad",
+          "date": "2026-06-28T20:48:53Z",
+          "week": "2026-06-29",
+          "file": "products/surveys/2026-06-28-13c7dfaea7ab.json",
+          "scores": {
+            "composite": 40.6,
+            "architecture": 28.8,
+            "complexity": 21.7,
+            "smells": 75.4,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "6577fc44f726da86da4288e5a8ef011571a80c47",
+          "date": "2026-07-05T18:57:15Z",
+          "week": "2026-07-06",
+          "file": "products/surveys/2026-07-05-6577fc44f726.json",
+          "scores": {
+            "composite": 41,
+            "architecture": 26.8,
+            "complexity": 25.3,
+            "smells": 76.6,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "7026f7ec439ac946666604fafb99f1f4aae26ed6",
+          "date": "2026-07-12T18:01:37-03:00",
+          "week": "2026-07-13",
+          "file": "products/surveys/2026-07-12-7026f7ec439a.json",
+          "scores": {
+            "composite": 41,
+            "architecture": 26.8,
+            "complexity": 25.3,
+            "smells": 76.7,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "6f8208e93ef6e34e8cd499fca7ba59f9ea8d0076",
+          "date": "2026-07-19T21:06:49Z",
+          "week": "2026-07-20",
+          "file": "products/surveys/2026-07-19-6f8208e93ef6.json",
+          "scores": {
+            "composite": 40.7,
+            "architecture": 26.8,
+            "complexity": 24,
+            "smells": 76.5,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "78b3689515fda9f732d9586be89a051eae853cd9",
+          "date": "2026-07-26T21:48:10Z",
+          "week": "2026-07-27",
+          "file": "products/surveys/2026-07-26-78b3689515fd.json",
+          "scores": {
+            "composite": 40.6,
+            "architecture": 26.8,
+            "complexity": 23.5,
+            "smells": 76.6,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "634bad0710c614fcd5dde95804481e8ad822f35e",
+          "date": "2026-08-02T15:19:56-05:00",
+          "week": "2026-08-03",
+          "file": "products/surveys/2026-08-02-634bad0710c6.json",
+          "scores": {
+            "composite": 41,
+            "architecture": 26.8,
+            "complexity": 25.3,
+            "smells": 76.3,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "7da1c4690c65a40358a696b0c1ae51565e77863a",
+          "date": "2026-08-09T22:20:50Z",
+          "week": "2026-08-10",
+          "file": "products/surveys/2026-08-09-7da1c4690c65.json",
+          "scores": {
+            "composite": 38.4,
+            "architecture": 19.3,
+            "complexity": 25.3,
+            "smells": 76.7,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "42d5edca6dc46299dac88d1545e93fb761481ca9",
+          "date": "2026-08-16T21:56:21Z",
+          "week": "2026-08-17",
+          "file": "products/surveys/2026-08-16-42d5edca6dc4.json",
+          "scores": {
+            "composite": 37.9,
+            "architecture": 19.3,
+            "complexity": 23.1,
+            "smells": 76.7,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "0250a2b68bcfecb7875a5ccd476179d6ff2e32bd",
+          "date": "2026-08-23T23:26:23Z",
+          "week": "2026-08-24",
+          "file": "products/surveys/2026-08-23-0250a2b68bcf.json",
+          "scores": {
+            "composite": 38.2,
+            "architecture": 20.1,
+            "complexity": 23.1,
+            "smells": 76.7,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "e62b8dd5e87c8af6819fc2372c18b1172b10df51",
+          "date": "2026-08-30T21:16:22Z",
+          "week": "2026-08-31",
+          "file": "products/surveys/2026-08-30-e62b8dd5e87c.json",
+          "scores": {
+            "composite": 38.2,
+            "architecture": 20,
+            "complexity": 23.2,
+            "smells": 76.8,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "5f8bc937a84b877dc737ab3f9b5317b82c4bf881",
+          "date": "2026-09-06T21:55:35Z",
+          "week": "2026-09-07",
+          "file": "products/surveys/2026-09-06-5f8bc937a84b.json",
+          "scores": {
+            "composite": 42.1,
+            "architecture": 26.4,
+            "complexity": 30.1,
+            "smells": 76.6,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "66ea432ade172a2f5e8a5f5067a7e16554ff71d2",
+          "date": "2026-09-13T23:48:44Z",
+          "week": "2026-09-14",
+          "file": "products/surveys/2026-09-13-66ea432ade17.json",
+          "scores": {
+            "composite": 43.8,
+            "architecture": 31.4,
+            "complexity": 29.9,
+            "smells": 76.7,
+            "tests": 50
+          }
+        },
+        {
+          "commit": "6bbc94fa5128f06aaf2592ca82f5c0f8d81dc491",
+          "date": "2026-09-20T21:45:41Z",
+          "week": "2026-09-21",
+          "file": "products/surveys/2026-09-20-6bbc94fa5128.json",
+          "scores": {
+            "composite": 46.2,
+            "architecture": 36.7,
+            "complexity": 31.8,
+            "smells": 76.8,
+            "tests": 50
+          }
+        }
+      ],
+      "noise": {
+        "pairs": [
+          {
+            "before": {
+              "commit": "e54a2a7f319de5a726ed77ca8a18162a0302da35",
+              "date": "2026-03-24T23:57:45Z"
+            },
+            "after": {
+              "commit": "ad86b2ceae2957f6b8b983c58bf8f7415f76b81b",
+              "date": "2026-03-25T23:54:17Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "87a5734833e63c42e8369a32d8d1afc27d522694",
+              "date": "2026-04-14T16:39:03-07:00"
+            },
+            "after": {
+              "commit": "cfde8e16bfebb708133cf570cc8bbe162893b727",
+              "date": "2026-04-15T16:04:48-07:00"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0,
+              "complexity": 0.3,
+              "smells": 0.2,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "8e8a9fda6c3e4034debb85420afacdc48c79636f",
+              "date": "2026-04-21T23:28:24Z"
+            },
+            "after": {
+              "commit": "b62ad85620cf9f7646062a01894e03d9a7a021c5",
+              "date": "2026-04-22T23:35:51Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "f043be09c838f3c9486591a666c87262a79c4d61",
+              "date": "2026-05-19T23:44:05Z"
+            },
+            "after": {
+              "commit": "8341fe063a5e16a34fbe55c5d3b5768c7835bcc3",
+              "date": "2026-05-20T16:54:22-07:00"
+            },
+            "delta": {
+              "composite": 5.4,
+              "architecture": -2.6,
+              "complexity": -7.1,
+              "smells": 27.3,
+              "tests": 13.1
+            }
+          },
+          {
+            "before": {
+              "commit": "54b60f558bc41a077c416f63a809ee6be6629d46",
+              "date": "2026-05-26T16:29:04-07:00"
+            },
+            "after": {
+              "commit": "1d1cf1d7cfa3f1dc74d6c4c7b951495810a0a136",
+              "date": "2026-05-27T20:27:25-03:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "02312429e7b4b3eefa2f16fe4bab3902ef99f86e",
+              "date": "2026-06-02T16:51:24-07:00"
+            },
+            "after": {
+              "commit": "f2167f5071b2b1cd66fda3c01f2a6c74e62e9baa",
+              "date": "2026-06-03T23:33:21Z"
+            },
+            "delta": {
+              "composite": -3.9,
+              "architecture": -12.8,
+              "complexity": 0.5,
+              "smells": 2.3,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "90a2c1b92313c21bde117beb23c341e5392219f3",
+              "date": "2026-06-09T23:32:40Z"
+            },
+            "after": {
+              "commit": "257b977b9a58ab541d2832092db805462baf8fb0",
+              "date": "2026-06-10T16:49:34-07:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "ad2d1d101bd0853b743c9da9e471e072c0322b73",
+              "date": "2026-06-16T23:43:54Z"
+            },
+            "after": {
+              "commit": "dcca3c438f508a809f0428c0d9421bc84bbb91b9",
+              "date": "2026-06-17T20:44:22-03:00"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0.3,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "b13e0ca6305485580d34f699e450c97e891bb303",
+              "date": "2026-07-07T20:55:35-03:00"
+            },
+            "after": {
+              "commit": "0d908fee771515d096813a3e4cd290e2f5f961d7",
+              "date": "2026-07-08T16:16:44-07:00"
+            },
+            "delta": {
+              "composite": -0.1,
+              "architecture": 0,
+              "complexity": -0.2,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "a771072e66fdb96cf517a559a294063251a1e38e",
+              "date": "2026-07-14T22:36:51Z"
+            },
+            "after": {
+              "commit": "e8858fdabe15cce244324d360f067c814bfebc56",
+              "date": "2026-07-15T16:53:17-07:00"
+            },
+            "delta": {
+              "composite": -0.4,
+              "architecture": 0,
+              "complexity": -1.6,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "c0db7aaf2a8b99423e25432a07f0391ee24bd5d9",
+              "date": "2026-07-21T23:42:08Z"
+            },
+            "after": {
+              "commit": "5f13a28823022a6243eed4e35efabfd64a28c838",
+              "date": "2026-07-22T23:13:28Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "7bf27ecbafe66c2f9d1939635603e15cbc8d4715",
+              "date": "2026-08-04T23:40:33Z"
+            },
+            "after": {
+              "commit": "45970ec8754d8fe50efc0ead75f7f0805cb175d0",
+              "date": "2026-08-05T23:58:18Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0.1,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "11219ae927e844238ad72ed8433d00631f66ac6b",
+              "date": "2026-08-18T23:57:26Z"
+            },
+            "after": {
+              "commit": "dd571e4f3e5e6bc109dffbbd41608986af589748",
+              "date": "2026-08-19T23:44:35Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "e25723b24450aec8c0583d800d87a0794ae0f281",
+              "date": "2026-08-25T23:48:44Z"
+            },
+            "after": {
+              "commit": "040beb55dcf3085cff87806d0d88aace6e2dbbfd",
+              "date": "2026-08-26T23:13:56Z"
+            },
+            "delta": {
+              "composite": -0.1,
+              "architecture": 0,
+              "complexity": -0.4,
+              "smells": 0.1,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "03d287288649b0e7d0171d92a1ad0652c3499a23",
+              "date": "2026-09-01T23:32:54Z"
+            },
+            "after": {
+              "commit": "e04d608d229160ffe3ff8fdebe897a79ebe4b876",
+              "date": "2026-09-02T23:54:39Z"
+            },
+            "delta": {
+              "composite": 0.5,
+              "architecture": 0,
+              "complexity": 2.9,
+              "smells": -1,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "00a08ee0bdd4673efdb13aeafe98c6c6890e96bf",
+              "date": "2026-09-08T23:48:59Z"
+            },
+            "after": {
+              "commit": "76704da4aacf3b0cc04cacf22cb90294284c26e5",
+              "date": "2026-09-09T23:53:02Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "8e3a23526c5cc9213cb7bd2a94315336f8a75161",
+              "date": "2026-09-15T23:39:45Z"
+            },
+            "after": {
+              "commit": "781036a2f75cf14455e315d603e4a6c4ed841982",
+              "date": "2026-09-16T23:43:04Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          }
+        ],
+        "median": {
+          "composite": 0,
+          "architecture": 0,
+          "complexity": 0,
+          "smells": 0,
+          "tests": 0
+        },
+        "band": {
+          "composite": 3.9,
+          "architecture": 2.6,
+          "complexity": 2.9,
+          "smells": 2.3,
+          "tests": 0
+        }
+      },
+      "movers": [
+        {
+          "commit": "731051cb6951587692dc1c86eaba65a70add4fbf",
+          "date": "2026-03-23T21:18:26Z",
+          "week": "2026-03-30",
+          "subject": "chore(surveys): move survey models and API to products app (#51611)",
+          "pr": 51611,
+          "previous": "af18966458a1cb1e034ec868355049e7f3e82507",
+          "delta": {
+            "composite": -13.7,
+            "architecture": -18.7,
+            "complexity": -41.5,
+            "smells": -5,
+            "tests": 21
+          }
+        },
+        {
+          "commit": "fbfbfb7a12985fa0d9a252646378be42eea548b2",
+          "date": "2026-04-23T12:25:54+02:00",
+          "week": "2026-04-27",
+          "subject": "feat(devex): generate Zod validation schemas from OpenAPI spec (#54698)",
+          "pr": 54698,
+          "previous": "7d69f056cc748e537af13ff15e997e1b5c552b98",
+          "delta": {
+            "composite": -8.3,
+            "architecture": 1.3,
+            "complexity": -6.3,
+            "smells": -26.3,
+            "tests": -9.7
+          }
+        },
+        {
+          "commit": "706db7c3d5ee4ab321334a717d365fc6d43d5616",
+          "date": "2026-05-20T11:30:30-03:00",
+          "week": "2026-05-25",
+          "subject": "refactor(onboarding): compose flow from per-product step providers (#57579)",
+          "pr": 57579,
+          "previous": "87f0ad3266eddb1e127bac5a33f832336b8e1a9e",
+          "delta": {
+            "composite": 5.4,
+            "architecture": -2.6,
+            "complexity": -7.1,
+            "smells": 27.3,
+            "tests": 13.1
+          }
+        },
+        {
+          "commit": "1095361a044ac7586ab30fc033b035f7b624d322",
+          "date": "2026-05-21T14:04:10-03:00",
+          "week": "2026-05-25",
+          "subject": "feat(surveys): replace 'Default' translation with explicit base_language (#58628)",
+          "pr": 58628,
+          "previous": "60d10aafdf1bffab21a4cc06b80d7645f4f636b9",
+          "delta": {
+            "composite": -1.5,
+            "architecture": 0,
+            "complexity": -4.6,
+            "smells": -1.3,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "7d69f056cc748e537af13ff15e997e1b5c552b98",
+          "date": "2026-04-23T09:49:45+02:00",
+          "week": "2026-04-27",
+          "subject": "chore(devex): enforce type annotations in product backend code (#55443)",
+          "pr": 55443,
+          "previous": "f88c5c995b4c69fbf2e3c619b0804618d7e3531a",
+          "delta": {
+            "composite": 0.2,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.8,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "2e7d3f9b45dc6f6aa740406103ad5c6371c75321",
+          "date": "2026-03-27T15:51:05-04:00",
+          "week": "2026-03-30",
+          "subject": "chore(devex): Upgrade to Typescript 5.6 (#52510)",
+          "pr": 52510,
+          "previous": "54dfcb5ae168213a1ad6b6e56cf0cb331f127855",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": -0.2,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "cc0d74f8d36a6c86ae45aebc857f991cf967c08f",
+          "date": "2026-05-19T16:26:56Z",
+          "week": "2026-05-25",
+          "subject": "fix(surveys): enforce object access control on generate_translations (#59003)",
+          "pr": 59003,
+          "previous": "e89d0efc36e45dfa2ec20bd0f84f2be369d6d2a0",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.3
+          }
+        },
+        {
+          "commit": "87f0ad3266eddb1e127bac5a33f832336b8e1a9e",
+          "date": "2026-05-19T20:41:28-03:00",
+          "week": "2026-05-25",
+          "subject": "feat(surveys): resolve $survey_response_<id> taxonomy to question text (#59072)",
+          "pr": 59072,
+          "previous": "cc0d74f8d36a6c86ae45aebc857f991cf967c08f",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0.4,
+            "smells": 0,
+            "tests": 0.2
+          }
+        },
+        {
+          "commit": "029887d11c9861c9fb0ab0b6b36931e77feb30c0",
+          "date": "2026-05-21T12:11:59Z",
+          "week": "2026-05-25",
+          "subject": "chore(flags): log when surveys/EAF mutate flags without feature_flag:write (#59226)",
+          "pr": 59226,
+          "previous": "706db7c3d5ee4ab321334a717d365fc6d43d5616",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "af18966458a1cb1e034ec868355049e7f3e82507",
+          "date": "2026-03-23T10:34:32+01:00",
+          "week": "2026-03-30",
+          "subject": "chore(mcp): migrate surveys mcp tools to codegen (#51667)",
+          "pr": 51667,
+          "previous": "d2953186c204c01d86dd0ca893bdde45327b10d0",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "712e0723086654ad2203d023a3010ec9e465424e",
+          "date": "2026-03-24T11:37:50-07:00",
+          "week": "2026-03-30",
+          "subject": "feat(feature-flags): add per-condition-set aggregation validation logic (#51399)",
+          "pr": 51399,
+          "previous": "731051cb6951587692dc1c86eaba65a70add4fbf",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "d3844f4637459f66d6cafa63df99cc1294317a94",
+          "date": "2026-03-24T15:42:06-07:00",
+          "week": "2026-03-30",
+          "subject": "fix(rbac): enforce object-level permissions on detail actions (#50254)",
+          "pr": 50254,
+          "previous": "465b2a2c15e5339a842b72904b977d0618f823c9",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "465b2a2c15e5339a842b72904b977d0618f823c9",
+          "date": "2026-03-24T17:33:40-03:00",
+          "week": "2026-03-30",
+          "subject": "chore(flags): migrate super_groups flags key (phase 1) (#52157)",
+          "pr": 52157,
+          "previous": "712e0723086654ad2203d023a3010ec9e465424e",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "ee68aa21adb3c08ae3312c2b8a3b9de0ac69986a",
+          "date": "2026-03-25T16:51:38-07:00",
+          "week": "2026-03-30",
+          "subject": "chore: remove deprecated FeatureFlagEvaluationTag and TeamDefaultEvaluationTag models (#52186)",
+          "pr": 52186,
+          "previous": "d3844f4637459f66d6cafa63df99cc1294317a94",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "d9d5a9bca57ed7fc003e2e3a3128f337f6bbcd46",
+          "date": "2026-03-26T09:59:35Z",
+          "week": "2026-03-30",
+          "subject": "fix(surveys): add product and feature tags to ClickHouse queries (#52341)",
+          "pr": 52341,
+          "previous": "ee68aa21adb3c08ae3312c2b8a3b9de0ac69986a",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5e7c25a697c04c217f1c4c767b2bb87509fcbd39",
+          "date": "2026-03-26T11:49:05Z",
+          "week": "2026-03-30",
+          "subject": "chore(mcp): enable all mcp tools (#52398)",
+          "pr": 52398,
+          "previous": "d9d5a9bca57ed7fc003e2e3a3128f337f6bbcd46",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "becc368c9b816796cbb96ea96c9409ef27c55ca0",
+          "date": "2026-03-26T15:31:16-07:00",
+          "week": "2026-03-30",
+          "subject": "feat(feature-flags): add shareable links for specific activity history entries (#51060)",
+          "pr": 51060,
+          "previous": "f950f8e267af213b2f2ced4718110131d1a6f72f",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f950f8e267af213b2f2ced4718110131d1a6f72f",
+          "date": "2026-03-26T20:53:12Z",
+          "week": "2026-03-30",
+          "subject": "fix(feature-flags): update null checks to enable per-condition aggregation_group_type_index (#52179)",
+          "pr": 52179,
+          "previous": "5e7c25a697c04c217f1c4c767b2bb87509fcbd39",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "54dfcb5ae168213a1ad6b6e56cf0cb331f127855",
+          "date": "2026-03-27T09:56:14-04:00",
+          "week": "2026-03-30",
+          "subject": "feat: link existing PostHog project to Vercel in connectable flow (#52480)",
+          "pr": 52480,
+          "previous": "becc368c9b816796cbb96ea96c9409ef27c55ca0",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "e29bd4156d6755e0e83f4d7cbbd7fe0d4f85b359",
+          "date": "2026-04-21T09:23:09+02:00",
+          "week": "2026-04-27",
+          "subject": "chore(deps): bump Django ecosystem deps for 5.2 readiness (#55226)",
+          "pr": 55226,
+          "previous": "f55d8340b44b9f815a1c0555ebb71a1d40d57d75",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "852a682d3898f4f5d26c802096e7df00fc81aa03",
+          "date": "2026-04-22T18:37:31Z",
+          "week": "2026-04-27",
+          "subject": "feat(integrations): cache github repositories and branches (#55447)",
+          "pr": 55447,
+          "previous": "e29bd4156d6755e0e83f4d7cbbd7fe0d4f85b359",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f88c5c995b4c69fbf2e3c619b0804618d7e3531a",
+          "date": "2026-04-23T01:47:42Z",
+          "week": "2026-04-27",
+          "subject": "fix(flags): ensure FeatureFlag.filters always carries groups key (#55012)",
+          "pr": 55012,
+          "previous": "852a682d3898f4f5d26c802096e7df00fc81aa03",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "7b4e45fd1585ec340f2d750588f88f9b1127de86",
+          "date": "2026-04-23T22:25:54+02:00",
+          "week": "2026-04-27",
+          "subject": "feat(devex): add product.yaml for team ownership and display names (#55428)",
+          "pr": 55428,
+          "previous": "fbfbfb7a12985fa0d9a252646378be42eea548b2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "66cb6614f8eb738fe874d38d5848e4f00283262f",
+          "date": "2026-04-24T12:45:40+02:00",
+          "week": "2026-04-27",
+          "subject": "fix(openapi): eliminate all drf-spectacular warnings and gate CI with --fail-on-warn (#54909)",
+          "pr": 54909,
+          "previous": "7b4e45fd1585ec340f2d750588f88f9b1127de86",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "e89d0efc36e45dfa2ec20bd0f84f2be369d6d2a0",
+          "date": "2026-05-18T15:15:44Z",
+          "week": "2026-05-25",
+          "subject": "chore(rbac): replace deprecated ADVANCED_PERMISSIONS (#56976)",
+          "pr": 56976,
+          "previous": "8bf1ce63224da919897fe8d8fcdc22824b2f3fbf",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "60d10aafdf1bffab21a4cc06b80d7645f4f636b9",
+          "date": "2026-05-21T12:17:09-04:00",
+          "week": "2026-05-25",
+          "subject": "chore(llma): rename visible/comments from LLMA to AIO (#59264)",
+          "pr": 59264,
+          "previous": "54d24c825c63ac7f957f308f6ae2c9b15fdecf49",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "54d24c825c63ac7f957f308f6ae2c9b15fdecf49",
+          "date": "2026-05-21T14:22:02+02:00",
+          "week": "2026-05-25",
+          "subject": "chore(devex): move alert and action models to product folders (#59224)",
+          "pr": 59224,
+          "previous": "029887d11c9861c9fb0ab0b6b36931e77feb30c0",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        }
+      ]
+    },
+    "products/error_tracking": {
+      "points": [
+        {
+          "commit": "d2953186c204c01d86dd0ca893bdde45327b10d0",
+          "date": "2026-03-22T10:32:03Z",
+          "week": "2026-03-23",
+          "file": "products/error_tracking/2026-03-22-d2953186c204.json",
+          "scores": {
+            "composite": 59.6,
+            "architecture": 63,
+            "complexity": 84.9,
+            "smells": 72.6,
+            "tests": 9.1
+          }
+        },
+        {
+          "commit": "b5db3557e4a6d3d700e4649f7894c237f0056fba",
+          "date": "2026-03-29T14:57:04+01:00",
+          "week": "2026-03-30",
+          "file": "products/error_tracking/2026-03-29-b5db3557e4a6.json",
+          "scores": {
+            "composite": 60,
+            "architecture": 63.1,
+            "complexity": 85.4,
+            "smells": 73.8,
+            "tests": 8.9
+          }
+        },
+        {
+          "commit": "0927d6b52d38de56e5bed3506dd5eb84e81df34d",
+          "date": "2026-04-05T18:28:14Z",
+          "week": "2026-04-06",
+          "file": "products/error_tracking/2026-04-05-0927d6b52d38.json",
+          "scores": {
+            "composite": 60.1,
+            "architecture": 63.1,
+            "complexity": 85.3,
+            "smells": 74.4,
+            "tests": 8.8
+          }
+        },
+        {
+          "commit": "a560cb1c0e82634e294998f6b10ec8ae64b36639",
+          "date": "2026-04-12T18:07:36-04:00",
+          "week": "2026-04-13",
+          "file": "products/error_tracking/2026-04-12-a560cb1c0e82.json",
+          "scores": {
+            "composite": 59.1,
+            "architecture": 63.2,
+            "complexity": 84.1,
+            "smells": 70.5,
+            "tests": 9.5
+          }
+        },
+        {
+          "commit": "f55d8340b44b9f815a1c0555ebb71a1d40d57d75",
+          "date": "2026-04-19T22:43:07Z",
+          "week": "2026-04-20",
+          "file": "products/error_tracking/2026-04-19-f55d8340b44b.json",
+          "scores": {
+            "composite": 66.6,
+            "architecture": 69,
+            "complexity": 84.7,
+            "smells": 71.3,
+            "tests": 35.1
+          }
+        },
+        {
+          "commit": "137de4d5a44f6f0e8ffe83dff6ec4097435d1b6e",
+          "date": "2026-04-26T18:33:25-04:00",
+          "week": "2026-04-27",
+          "file": "products/error_tracking/2026-04-26-137de4d5a44f.json",
+          "scores": {
+            "composite": 65.8,
+            "architecture": 66.6,
+            "complexity": 84.6,
+            "smells": 77.9,
+            "tests": 28.8
+          }
+        },
+        {
+          "commit": "698149ad3370c91f19d7f533c7fd785ab2f283dc",
+          "date": "2026-05-04T00:28:03+01:00",
+          "week": "2026-05-04",
+          "file": "products/error_tracking/2026-05-03-698149ad3370.json",
+          "scores": {
+            "composite": 65.8,
+            "architecture": 66.6,
+            "complexity": 84.5,
+            "smells": 78.2,
+            "tests": 28.6
+          }
+        },
+        {
+          "commit": "f41c55b2f7a5230c3f9c44ec1506d3b5e246782f",
+          "date": "2026-05-10T19:17:47Z",
+          "week": "2026-05-11",
+          "file": "products/error_tracking/2026-05-10-f41c55b2f7a5.json",
+          "scores": {
+            "composite": 66.3,
+            "architecture": 68.8,
+            "complexity": 81.7,
+            "smells": 79,
+            "tests": 30.2
+          }
+        },
+        {
+          "commit": "8bf1ce63224da919897fe8d8fcdc22824b2f3fbf",
+          "date": "2026-05-17T23:14:57Z",
+          "week": "2026-05-18",
+          "file": "products/error_tracking/2026-05-17-8bf1ce63224d.json",
+          "scores": {
+            "composite": 66.2,
+            "architecture": 68.6,
+            "complexity": 81.6,
+            "smells": 78.7,
+            "tests": 30.2
+          }
+        },
+        {
+          "commit": "4406542d2c429e7dcca1bebf12bbcacdc97c8d1d",
+          "date": "2026-05-24T17:34:53+01:00",
+          "week": "2026-05-25",
+          "file": "products/error_tracking/2026-05-24-4406542d2c42.json",
+          "scores": {
+            "composite": 65.9,
+            "architecture": 68.7,
+            "complexity": 81.6,
+            "smells": 77.1,
+            "tests": 30.3
+          }
+        },
+        {
+          "commit": "309c3b6b9169c394ef29aa063761c5fa511798bf",
+          "date": "2026-05-31T21:55:59+01:00",
+          "week": "2026-06-01",
+          "file": "products/error_tracking/2026-05-31-309c3b6b9169.json",
+          "scores": {
+            "composite": 65.9,
+            "architecture": 68.1,
+            "complexity": 81.5,
+            "smells": 77.2,
+            "tests": 31.4
+          }
+        },
+        {
+          "commit": "1050dad2a10e5cb253416d4fec3e3563d3c31063",
+          "date": "2026-06-07T23:22:29Z",
+          "week": "2026-06-08",
+          "file": "products/error_tracking/2026-06-07-1050dad2a10e.json",
+          "scores": {
+            "composite": 66.4,
+            "architecture": 68,
+            "complexity": 82.2,
+            "smells": 78.4,
+            "tests": 31.7
+          }
+        },
+        {
+          "commit": "57696b06d2b3104acdeef6497bd1fe27efb9eab5",
+          "date": "2026-06-14T22:18:23+01:00",
+          "week": "2026-06-15",
+          "file": "products/error_tracking/2026-06-14-57696b06d2b3.json",
+          "scores": {
+            "composite": 67.4,
+            "architecture": 67.7,
+            "complexity": 82.7,
+            "smells": 81.8,
+            "tests": 33.1
+          }
+        },
+        {
+          "commit": "8e473b6a37a49ba94fb59ce8810821381540e980",
+          "date": "2026-06-21T23:34:17Z",
+          "week": "2026-06-22",
+          "file": "products/error_tracking/2026-06-21-8e473b6a37a4.json",
+          "scores": {
+            "composite": 68.3,
+            "architecture": 75.9,
+            "complexity": 83,
+            "smells": 81.4,
+            "tests": 23.5
+          }
+        },
+        {
+          "commit": "13c7dfaea7ab452367bfe6a33698ef47e4b336ad",
+          "date": "2026-06-28T20:48:53Z",
+          "week": "2026-06-29",
+          "file": "products/error_tracking/2026-06-28-13c7dfaea7ab.json",
+          "scores": {
+            "composite": 67.3,
+            "architecture": 75.6,
+            "complexity": 83,
+            "smells": 78.6,
+            "tests": 21.9
+          }
+        },
+        {
+          "commit": "6577fc44f726da86da4288e5a8ef011571a80c47",
+          "date": "2026-07-05T18:57:15Z",
+          "week": "2026-07-06",
+          "file": "products/error_tracking/2026-07-05-6577fc44f726.json",
+          "scores": {
+            "composite": 67.4,
+            "architecture": 75.7,
+            "complexity": 83.1,
+            "smells": 78.7,
+            "tests": 21.9
+          }
+        },
+        {
+          "commit": "7026f7ec439ac946666604fafb99f1f4aae26ed6",
+          "date": "2026-07-12T18:01:37-03:00",
+          "week": "2026-07-13",
+          "file": "products/error_tracking/2026-07-12-7026f7ec439a.json",
+          "scores": {
+            "composite": 69.3,
+            "architecture": 81.2,
+            "complexity": 82.9,
+            "smells": 78.3,
+            "tests": 22.5
+          }
+        },
+        {
+          "commit": "6f8208e93ef6e34e8cd499fca7ba59f9ea8d0076",
+          "date": "2026-07-19T21:06:49Z",
+          "week": "2026-07-20",
+          "file": "products/error_tracking/2026-07-19-6f8208e93ef6.json",
+          "scores": {
+            "composite": 70.6,
+            "architecture": 81.6,
+            "complexity": 82.8,
+            "smells": 80,
+            "tests": 26.5
+          }
+        },
+        {
+          "commit": "78b3689515fda9f732d9586be89a051eae853cd9",
+          "date": "2026-07-26T21:48:10Z",
+          "week": "2026-07-27",
+          "file": "products/error_tracking/2026-07-26-78b3689515fd.json",
+          "scores": {
+            "composite": 70.8,
+            "architecture": 82.1,
+            "complexity": 82.7,
+            "smells": 80.4,
+            "tests": 26.6
+          }
+        },
+        {
+          "commit": "634bad0710c614fcd5dde95804481e8ad822f35e",
+          "date": "2026-08-02T15:19:56-05:00",
+          "week": "2026-08-03",
+          "file": "products/error_tracking/2026-08-02-634bad0710c6.json",
+          "scores": {
+            "composite": 71.3,
+            "architecture": 82.7,
+            "complexity": 82.7,
+            "smells": 80.8,
+            "tests": 27.8
+          }
+        },
+        {
+          "commit": "7da1c4690c65a40358a696b0c1ae51565e77863a",
+          "date": "2026-08-09T22:20:50Z",
+          "week": "2026-08-10",
+          "file": "products/error_tracking/2026-08-09-7da1c4690c65.json",
+          "scores": {
+            "composite": 71.4,
+            "architecture": 82.7,
+            "complexity": 82.8,
+            "smells": 81.1,
+            "tests": 27.9
+          }
+        },
+        {
+          "commit": "42d5edca6dc46299dac88d1545e93fb761481ca9",
+          "date": "2026-08-16T21:56:21Z",
+          "week": "2026-08-17",
+          "file": "products/error_tracking/2026-08-16-42d5edca6dc4.json",
+          "scores": {
+            "composite": 71.6,
+            "architecture": 82.8,
+            "complexity": 82.3,
+            "smells": 80.9,
+            "tests": 29.1
+          }
+        },
+        {
+          "commit": "0250a2b68bcfecb7875a5ccd476179d6ff2e32bd",
+          "date": "2026-08-23T23:26:23Z",
+          "week": "2026-08-24",
+          "file": "products/error_tracking/2026-08-23-0250a2b68bcf.json",
+          "scores": {
+            "composite": 70.9,
+            "architecture": 82.8,
+            "complexity": 81.9,
+            "smells": 80.9,
+            "tests": 26.1
+          }
+        },
+        {
+          "commit": "e62b8dd5e87c8af6819fc2372c18b1172b10df51",
+          "date": "2026-08-30T21:16:22Z",
+          "week": "2026-08-31",
+          "file": "products/error_tracking/2026-08-30-e62b8dd5e87c.json",
+          "scores": {
+            "composite": 71.2,
+            "architecture": 83.1,
+            "complexity": 81.7,
+            "smells": 81.6,
+            "tests": 26.6
+          }
+        },
+        {
+          "commit": "5f8bc937a84b877dc737ab3f9b5317b82c4bf881",
+          "date": "2026-09-06T21:55:35Z",
+          "week": "2026-09-07",
+          "file": "products/error_tracking/2026-09-06-5f8bc937a84b.json",
+          "scores": {
+            "composite": 70.8,
+            "architecture": 82.8,
+            "complexity": 81.7,
+            "smells": 81.4,
+            "tests": 25.7
+          }
+        },
+        {
+          "commit": "66ea432ade172a2f5e8a5f5067a7e16554ff71d2",
+          "date": "2026-09-13T23:48:44Z",
+          "week": "2026-09-14",
+          "file": "products/error_tracking/2026-09-13-66ea432ade17.json",
+          "scores": {
+            "composite": 71,
+            "architecture": 82.9,
+            "complexity": 81.9,
+            "smells": 81.8,
+            "tests": 25.7
+          }
+        },
+        {
+          "commit": "6bbc94fa5128f06aaf2592ca82f5c0f8d81dc491",
+          "date": "2026-09-20T21:45:41Z",
+          "week": "2026-09-21",
+          "file": "products/error_tracking/2026-09-20-6bbc94fa5128.json",
+          "scores": {
+            "composite": 71.5,
+            "architecture": 83.7,
+            "complexity": 81.3,
+            "smells": 82.5,
+            "tests": 27.1
+          }
+        }
+      ],
+      "noise": {
+        "pairs": [
+          {
+            "before": {
+              "commit": "e54a2a7f319de5a726ed77ca8a18162a0302da35",
+              "date": "2026-03-24T23:57:45Z"
+            },
+            "after": {
+              "commit": "ad86b2ceae2957f6b8b983c58bf8f7415f76b81b",
+              "date": "2026-03-25T23:54:17Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "d141d2ab963f1b5446b62a52b2c53c08fd6cc82e",
+              "date": "2026-04-07T16:30:05-07:00"
+            },
+            "after": {
+              "commit": "16acf4e39a5e8d04c00631db20f1405723787d18",
+              "date": "2026-04-09T01:34:12+02:00"
+            },
+            "delta": {
+              "composite": -0.2,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": -0.8,
+              "tests": -0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "87a5734833e63c42e8369a32d8d1afc27d522694",
+              "date": "2026-04-14T16:39:03-07:00"
+            },
+            "after": {
+              "commit": "cfde8e16bfebb708133cf570cc8bbe162893b727",
+              "date": "2026-04-15T16:04:48-07:00"
+            },
+            "delta": {
+              "composite": 10.4,
+              "architecture": 0.1,
+              "complexity": 1,
+              "smells": 0.3,
+              "tests": 50.1
+            }
+          },
+          {
+            "before": {
+              "commit": "8e8a9fda6c3e4034debb85420afacdc48c79636f",
+              "date": "2026-04-21T23:28:24Z"
+            },
+            "after": {
+              "commit": "b62ad85620cf9f7646062a01894e03d9a7a021c5",
+              "date": "2026-04-22T23:35:51Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "6d79bea69c20fa3af6ca5dff7854593fec4b179f",
+              "date": "2026-04-28T18:59:46-04:00"
+            },
+            "after": {
+              "commit": "4519984f0f2eebee3ac63dfebf75f942be43a429",
+              "date": "2026-04-29T16:57:27-07:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0.2,
+              "tests": -0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "735159b17316afad4d21b27fbc2818b9e1189a13",
+              "date": "2026-05-05T16:51:00-07:00"
+            },
+            "after": {
+              "commit": "b942dce784366d2d5e2560d6cc6d5c3e6f3d386c",
+              "date": "2026-05-06T23:43:12Z"
+            },
+            "delta": {
+              "composite": 0.4,
+              "architecture": 0.9,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "f4d50285b5887e82cd581232bab6820b56d5a47d",
+              "date": "2026-05-12T18:44:19-04:00"
+            },
+            "after": {
+              "commit": "f9a2cd7dee74d961e274f1f5a29c0d9bd1306782",
+              "date": "2026-05-14T00:26:28+01:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": -0.2,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "f043be09c838f3c9486591a666c87262a79c4d61",
+              "date": "2026-05-19T23:44:05Z"
+            },
+            "after": {
+              "commit": "8341fe063a5e16a34fbe55c5d3b5768c7835bcc3",
+              "date": "2026-05-20T16:54:22-07:00"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0.1,
+              "complexity": 0,
+              "smells": 0.1,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "54b60f558bc41a077c416f63a809ee6be6629d46",
+              "date": "2026-05-26T16:29:04-07:00"
+            },
+            "after": {
+              "commit": "1d1cf1d7cfa3f1dc74d6c4c7b951495810a0a136",
+              "date": "2026-05-27T20:27:25-03:00"
+            },
+            "delta": {
+              "composite": -0.1,
+              "architecture": 0,
+              "complexity": -0.7,
+              "smells": 0,
+              "tests": 0.3
+            }
+          },
+          {
+            "before": {
+              "commit": "02312429e7b4b3eefa2f16fe4bab3902ef99f86e",
+              "date": "2026-06-02T16:51:24-07:00"
+            },
+            "after": {
+              "commit": "f2167f5071b2b1cd66fda3c01f2a6c74e62e9baa",
+              "date": "2026-06-03T23:33:21Z"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0.9,
+              "tests": 0.1
+            }
+          },
+          {
+            "before": {
+              "commit": "90a2c1b92313c21bde117beb23c341e5392219f3",
+              "date": "2026-06-09T23:32:40Z"
+            },
+            "after": {
+              "commit": "257b977b9a58ab541d2832092db805462baf8fb0",
+              "date": "2026-06-10T16:49:34-07:00"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0.3,
+              "complexity": 0,
+              "smells": -0.4,
+              "tests": 0.4
+            }
+          },
+          {
+            "before": {
+              "commit": "ad2d1d101bd0853b743c9da9e471e072c0322b73",
+              "date": "2026-06-16T23:43:54Z"
+            },
+            "after": {
+              "commit": "dcca3c438f508a809f0428c0d9421bc84bbb91b9",
+              "date": "2026-06-17T20:44:22-03:00"
+            },
+            "delta": {
+              "composite": 1.3,
+              "architecture": 8.2,
+              "complexity": 0,
+              "smells": 0.1,
+              "tests": -7.5
+            }
+          },
+          {
+            "before": {
+              "commit": "50b5dd161e0ac675c80afd238c1f78d25d64c35a",
+              "date": "2026-06-23T23:38:19Z"
+            },
+            "after": {
+              "commit": "aa1143b5d6807b9a03b850d13fbcac9b6854bf02",
+              "date": "2026-06-24T16:37:31-07:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "7dc7d1a7c6076b857846e7d59b17403683a1c12e",
+              "date": "2026-06-30T16:38:47-07:00"
+            },
+            "after": {
+              "commit": "561fc8a3b4e3065f2e8204bccba2e3aca81b64a2",
+              "date": "2026-07-01T23:51:07Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0.1,
+              "smells": -0.1,
+              "tests": -0.2
+            }
+          },
+          {
+            "before": {
+              "commit": "b13e0ca6305485580d34f699e450c97e891bb303",
+              "date": "2026-07-07T20:55:35-03:00"
+            },
+            "after": {
+              "commit": "0d908fee771515d096813a3e4cd290e2f5f961d7",
+              "date": "2026-07-08T16:16:44-07:00"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0,
+              "complexity": -0.2,
+              "smells": 0,
+              "tests": 0.7
+            }
+          },
+          {
+            "before": {
+              "commit": "a771072e66fdb96cf517a559a294063251a1e38e",
+              "date": "2026-07-14T22:36:51Z"
+            },
+            "after": {
+              "commit": "e8858fdabe15cce244324d360f067c814bfebc56",
+              "date": "2026-07-15T16:53:17-07:00"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0.1,
+              "complexity": 0,
+              "smells": 0,
+              "tests": -0.3
+            }
+          },
+          {
+            "before": {
+              "commit": "c0db7aaf2a8b99423e25432a07f0391ee24bd5d9",
+              "date": "2026-07-21T23:42:08Z"
+            },
+            "after": {
+              "commit": "5f13a28823022a6243eed4e35efabfd64a28c838",
+              "date": "2026-07-22T23:13:28Z"
+            },
+            "delta": {
+              "composite": 0.3,
+              "architecture": 0.5,
+              "complexity": -0.2,
+              "smells": 0.5,
+              "tests": 0.2
+            }
+          },
+          {
+            "before": {
+              "commit": "f59d2a92cd54a6fc00b140916cab60e3e0bee67e",
+              "date": "2026-07-28T23:16:48Z"
+            },
+            "after": {
+              "commit": "78ceb2b34e7cd1499bcfe8fd931e72b1b727c51d",
+              "date": "2026-07-29T23:02:40Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "7bf27ecbafe66c2f9d1939635603e15cbc8d4715",
+              "date": "2026-08-04T23:40:33Z"
+            },
+            "after": {
+              "commit": "45970ec8754d8fe50efc0ead75f7f0805cb175d0",
+              "date": "2026-08-05T23:58:18Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "57ad611e03146edb0e9f2478419cb7824422a575",
+              "date": "2026-08-11T23:48:53Z"
+            },
+            "after": {
+              "commit": "9b084ae8b18eb39e75d20652fcd62d13a3223da9",
+              "date": "2026-08-12T23:49:00Z"
+            },
+            "delta": {
+              "composite": 0.2,
+              "architecture": 0,
+              "complexity": 0.2,
+              "smells": 0.1,
+              "tests": 0.7
+            }
+          },
+          {
+            "before": {
+              "commit": "11219ae927e844238ad72ed8433d00631f66ac6b",
+              "date": "2026-08-18T23:57:26Z"
+            },
+            "after": {
+              "commit": "dd571e4f3e5e6bc109dffbbd41608986af589748",
+              "date": "2026-08-19T23:44:35Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": -0.2,
+              "smells": 0,
+              "tests": 0.5
+            }
+          },
+          {
+            "before": {
+              "commit": "e25723b24450aec8c0583d800d87a0794ae0f281",
+              "date": "2026-08-25T23:48:44Z"
+            },
+            "after": {
+              "commit": "040beb55dcf3085cff87806d0d88aace6e2dbbfd",
+              "date": "2026-08-26T23:13:56Z"
+            },
+            "delta": {
+              "composite": -0.2,
+              "architecture": 0,
+              "complexity": 0.1,
+              "smells": -0.5,
+              "tests": -0.2
+            }
+          },
+          {
+            "before": {
+              "commit": "03d287288649b0e7d0171d92a1ad0652c3499a23",
+              "date": "2026-09-01T23:32:54Z"
+            },
+            "after": {
+              "commit": "e04d608d229160ffe3ff8fdebe897a79ebe4b876",
+              "date": "2026-09-02T23:54:39Z"
+            },
+            "delta": {
+              "composite": 0.1,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0.2
+            }
+          },
+          {
+            "before": {
+              "commit": "00a08ee0bdd4673efdb13aeafe98c6c6890e96bf",
+              "date": "2026-09-08T23:48:59Z"
+            },
+            "after": {
+              "commit": "76704da4aacf3b0cc04cacf22cb90294284c26e5",
+              "date": "2026-09-09T23:53:02Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "8e3a23526c5cc9213cb7bd2a94315336f8a75161",
+              "date": "2026-09-15T23:39:45Z"
+            },
+            "after": {
+              "commit": "781036a2f75cf14455e315d603e4a6c4ed841982",
+              "date": "2026-09-16T23:43:04Z"
+            },
+            "delta": {
+              "composite": -0.1,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": -0.2,
+              "tests": 0
+            }
+          },
+          {
+            "before": {
+              "commit": "22ae33e36417084d6405bc8d59d16887a52edba5",
+              "date": "2026-09-22T23:57:50Z"
+            },
+            "after": {
+              "commit": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
+              "date": "2026-09-23T15:06:50Z"
+            },
+            "delta": {
+              "composite": 0,
+              "architecture": 0,
+              "complexity": 0,
+              "smells": 0,
+              "tests": 0
+            }
+          }
+        ],
+        "median": {
+          "composite": 0.1,
+          "architecture": 0,
+          "complexity": 0,
+          "smells": 0,
+          "tests": 0.1
+        },
+        "band": {
+          "composite": 0.4,
+          "architecture": 0.5,
+          "complexity": 0.2,
+          "smells": 0.5,
+          "tests": 0.7
+        }
+      },
+      "movers": [
+        {
+          "commit": "4c6495dec83ced70b5efc763f027ab0189952ea3",
+          "date": "2026-04-15T14:59:30Z",
+          "week": "2026-04-20",
+          "subject": "feat(error_tracking): add issue facade kickoff (#54718)",
+          "pr": 54718,
+          "previous": "2706b5d0fef8ccddc019b486d660f3b77c94c00a",
+          "delta": {
+            "composite": 10.4,
+            "architecture": 0.1,
+            "complexity": 1,
+            "smells": 0.3,
+            "tests": 50.1
+          }
+        },
+        {
+          "commit": "9a84ad66f544fd737550396c036df2280a6c4c1c",
+          "date": "2026-04-16T12:09:34Z",
+          "week": "2026-04-20",
+          "subject": "feat(error_tracking): migrate digest and task callers to facade (#54749)",
+          "pr": 54749,
+          "previous": "cf7a56580c53092b9a2364bfbbb2357e749df153",
+          "delta": {
+            "composite": -4.6,
+            "architecture": 1.3,
+            "complexity": 0,
+            "smells": -0.4,
+            "tests": -24.9
+          }
+        },
+        {
+          "commit": "c5f763e280d5209a4f243608902c263b51529e6c",
+          "date": "2026-07-06T16:40:38+02:00",
+          "week": "2026-07-13",
+          "subject": "chore(error-tracking): seal external boundary and enable contract-check (#65456)",
+          "pr": 65456,
+          "previous": "34c32bc1cf87bd52ffddec8ae25c4279abb1e911",
+          "delta": {
+            "composite": 1.6,
+            "architecture": 4.6,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "cf7a56580c53092b9a2364bfbbb2357e749df153",
+          "date": "2026-04-16T13:00:30+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error_tracking): migrate issue readers to facade (#54724)",
+          "pr": 54724,
+          "previous": "74bfbbfe15bc8932a293ced7d0ae8c40128b9db3",
+          "delta": {
+            "composite": 1.5,
+            "architecture": 4.4,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "35a43af6cf0b01c7acb7f9acd7adc7583cba048e",
+          "date": "2026-07-14T12:11:06+02:00",
+          "week": "2026-07-20",
+          "subject": "perf(error-tracking): cut weekly digest clickhouse query load (#70471)",
+          "pr": 70471,
+          "previous": "1634816e15a820e3e39ed72ea72fcaf2c7270f9a",
+          "delta": {
+            "composite": 0.9,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": -0.2,
+            "tests": 4.5
+          }
+        },
+        {
+          "commit": "e126f1bc9f1e4400a7ba1979610792b565fb146d",
+          "date": "2026-04-16T14:55:38+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error-tracking): exception steps and adaptive loading (#52593)",
+          "pr": 52593,
+          "previous": "9a84ad66f544fd737550396c036df2280a6c4c1c",
+          "delta": {
+            "composite": -0.4,
+            "architecture": 0,
+            "complexity": -1,
+            "smells": -0.2,
+            "tests": -0.3
+          }
+        },
+        {
+          "commit": "8b91349d26b29fa8cad780f01c8949d7b37cc6d8",
+          "date": "2026-04-19T15:06:17+02:00",
+          "week": "2026-04-20",
+          "subject": "feat: et recommendations - alerts (#55053)",
+          "pr": 55053,
+          "previous": "86b8e1ccf36acc2838152374d9f98f0b82d0638a",
+          "delta": {
+            "composite": 0.3,
+            "architecture": 0,
+            "complexity": 1,
+            "smells": 0.3,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f9190c1e4bb84792b7b60521b7f304a7df314a72",
+          "date": "2026-07-06T12:56:28+01:00",
+          "week": "2026-07-13",
+          "subject": "refactor(data-warehouse): isolate warehouse_sources behind its facade + narrow CI (#67741)",
+          "pr": 67741,
+          "previous": "6577fc44f726da86da4288e5a8ef011571a80c47",
+          "delta": {
+            "composite": 0.3,
+            "architecture": 0.9,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "ee9d7740da57c8bea536500aef1084a81bed5c6c",
+          "date": "2026-04-17T21:02:03+03:00",
+          "week": "2026-04-20",
+          "subject": "chore(error-tracking): update assignment rule create schema (#54531)",
+          "pr": 54531,
+          "previous": "4d76a4dfe8df03a09b4ecff1c382c64f7336ecb9",
+          "delta": {
+            "composite": 0.2,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.7,
+            "tests": 0.5
+          }
+        },
+        {
+          "commit": "b248d6a60b3a2ba39f886c94049536401a9a34cd",
+          "date": "2026-04-14T15:36:55+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error-tracking): add benchmark command for query v1 vs v3 (#54379)",
+          "pr": 54379,
+          "previous": "916fdd93387d39f24f8c5cbe9f7534a9b7e57922",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": -1.1,
+            "smells": 0.7,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "6ffa7d94ed4e956c1032f000645b38892284f71a",
+          "date": "2026-04-16T17:00:53+03:00",
+          "week": "2026-04-20",
+          "subject": "chore(error-tracking): update issue split schema (#54528)",
+          "pr": 54528,
+          "previous": "7dcce43498f89b359a442d6adf5288c449fb0fd1",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "8a1617576b8d4d734a1cfa0bad7d9c7f87de285e",
+          "date": "2026-04-16T21:21:10+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error-tracking): add recommendations system (#54690)",
+          "pr": 54690,
+          "previous": "f974d78be7ce12b7aabf2f1a5f7bb635512306ba",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0.1,
+            "complexity": 0.1,
+            "smells": 0.2,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "4d76a4dfe8df03a09b4ecff1c382c64f7336ecb9",
+          "date": "2026-04-17T18:55:58+02:00",
+          "week": "2026-04-20",
+          "subject": "fix(mypy): reduce mypy-baseline (part 8) (#55040)",
+          "pr": 55040,
+          "previous": "8a1617576b8d4d734a1cfa0bad7d9c7f87de285e",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0.6,
+            "smells": -0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "86b8e1ccf36acc2838152374d9f98f0b82d0638a",
+          "date": "2026-04-18T22:53:13+03:00",
+          "week": "2026-04-20",
+          "subject": "chore(error-tracking): update grouping rule create schema (#54535)",
+          "pr": 54535,
+          "previous": "d2530e62cc5ff29babb7f70f794d033113d00525",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": -0.8,
+            "tests": 0.3
+          }
+        },
+        {
+          "commit": "5d18132161c369b33a90bc8ac43678b0ffccd991",
+          "date": "2026-07-07T14:32:45+02:00",
+          "week": "2026-07-13",
+          "subject": "feat(error-tracking): deliver weekly digest via workflow webhook instead of SMTP (#68512)",
+          "pr": 68512,
+          "previous": "23f060a2b209d696827a3b11bf8b1020f097d5f6",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": -0.5,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "959bee3e62ef5172a520c6dc3be155e72ca92485",
+          "date": "2026-07-08T23:28:21+03:00",
+          "week": "2026-07-13",
+          "subject": "fix(signals): source error-tracking backfill from Postgres, not an events scan (#64673)",
+          "pr": 64673,
+          "previous": "ef37737e3df5ad5f379bc151cedb496e0af3cada",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.6
+          }
+        },
+        {
+          "commit": "e38163eaab6d1120f3c87fc2c38f2772ee9cadf2",
+          "date": "2026-07-13T15:59:16+02:00",
+          "week": "2026-07-20",
+          "subject": "fix(cli): harden release and symbol uploads (#70061)",
+          "pr": 70061,
+          "previous": "7026f7ec439ac946666604fafb99f1f4aae26ed6",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.4,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "45e37ab8b19b955d0ff5a80b0db4039c81c4e673",
+          "date": "2026-07-14T11:36:04-03:00",
+          "week": "2026-07-20",
+          "subject": "feat(weekly-digest): add usage trends (WoW) and new error issues (#68212)",
+          "pr": 68212,
+          "previous": "35a43af6cf0b01c7acb7f9acd7adc7583cba048e",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0.4,
+            "complexity": 0,
+            "smells": 0,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "bac5cbc1ea26d154546cfbcd2130c2cf85e3b7a2",
+          "date": "2026-07-14T19:33:43Z",
+          "week": "2026-07-20",
+          "subject": "feat(error-tracking): move autocapture opt-in to settings (phase 1) (#70701)",
+          "pr": 70701,
+          "previous": "45e37ab8b19b955d0ff5a80b0db4039c81c4e673",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.2,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "4f4333482fc624832d0fa4a98eb165d8e4a4c558",
+          "date": "2026-07-15T11:26:22Z",
+          "week": "2026-07-20",
+          "subject": "feat(mcp): parallel harness for sandboxed agent evals (#70072)",
+          "pr": 70072,
+          "previous": "b56c590ec47412594e9e87abff94ff0ae08648b1",
+          "delta": {
+            "composite": -0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": -0.4
+          }
+        },
+        {
+          "commit": "8fa8d0bd0a262cf7609847c35d29d2fe1b0b9c1e",
+          "date": "2026-07-15T15:57:10+02:00",
+          "week": "2026-07-20",
+          "subject": "chore(error-tracking): render rate limit charts via quill-charts directly (#70837)",
+          "pr": 70837,
+          "previous": "335a4d6b0a960ad26787e25b070f559586a0b6e7",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0.1,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "4321d74e4b27ae089941a388a78e0332c98106e0",
+          "date": "2026-07-16T15:19:32Z",
+          "week": "2026-07-20",
+          "subject": "chore(frontend): inline Kea types batch 5 (#71459)",
+          "pr": 71459,
+          "previous": "1a2ff27f8b94ee677ae2c53e489ffa23427357ec",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.6,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "d02b44c16f226c35c7f5f22bb18bcb734b016374",
+          "date": "2026-07-17T18:21:30+02:00",
+          "week": "2026-07-20",
+          "subject": "chore(devex): adopt the facade wiring-couplings doctrine (#71486)",
+          "pr": 71486,
+          "previous": "a1b2f0518315df264427e9a7d8148e4f91dc2546",
+          "delta": {
+            "composite": -0.1,
+            "architecture": -0.1,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "6261d2551d6b4f811166add03156446afe9a42f6",
+          "date": "2026-07-18T09:50:29+02:00",
+          "week": "2026-07-20",
+          "subject": "feat(error-tracking): adopt single source assignee on issue merge (#72033)",
+          "pr": 72033,
+          "previous": "64add03251497583ae018706821efaa81644395b",
+          "delta": {
+            "composite": 0.1,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "1dda9ccda65841808048b4742da9edd49c291b95",
+          "date": "2026-04-13T11:58:24Z",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): remove id ordering from issue state backfill query (#54241)",
+          "pr": 54241,
+          "previous": "a560cb1c0e82634e294998f6b10ec8ae64b36639",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "916fdd93387d39f24f8c5cbe9f7534a9b7e57922",
+          "date": "2026-04-13T15:50:26-05:00",
+          "week": "2026-04-20",
+          "subject": "feat(web-analytics): Add Web Analytics Digest Email Job (#52785)",
+          "pr": 52785,
+          "previous": "c1500b8ce0070d08fde0d875c0fdbe7ff5149013",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "d528d73a4e95169a32f693a2de0d72ee38679e39",
+          "date": "2026-04-13T18:10:24+02:00",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): replace slow issues list query with lightweight exists check (#54245)",
+          "pr": 54245,
+          "previous": "1dda9ccda65841808048b4742da9edd49c291b95",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "c1500b8ce0070d08fde0d875c0fdbe7ff5149013",
+          "date": "2026-04-13T18:38:59+02:00",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): iterate teams individually in issue state backfill (#54284)",
+          "pr": 54284,
+          "previous": "d528d73a4e95169a32f693a2de0d72ee38679e39",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "2f2f50ad00347a9d8cee7720d25d2c97255a09e9",
+          "date": "2026-04-14T18:03:52+03:00",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): improve mobile issue layout (#54196)",
+          "pr": 54196,
+          "previous": "b248d6a60b3a2ba39f886c94049536401a9a34cd",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "42e7690f37dc056f3061aa0ae6660a339b3258bc",
+          "date": "2026-04-14T18:16:22Z",
+          "week": "2026-04-20",
+          "subject": "chore(mcp): reduce error-tracking-issues-list response with response.include (#54455)",
+          "pr": 54455,
+          "previous": "2f2f50ad00347a9d8cee7720d25d2c97255a09e9",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "2706b5d0fef8ccddc019b486d660f3b77c94c00a",
+          "date": "2026-04-15T09:44:08-03:00",
+          "week": "2026-04-20",
+          "subject": "feat(growth): refactor cross-sell into weighted candidate selector (#53516)",
+          "pr": 53516,
+          "previous": "e2fe46a8b3ae242afb7f8268e339c5b7e43d81d0",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "e2fe46a8b3ae242afb7f8268e339c5b7e43d81d0",
+          "date": "2026-04-15T13:05:10+02:00",
+          "week": "2026-04-20",
+          "subject": "feat: add OptOutSyncConfig model and Customer.io integration kinds (#54343)",
+          "pr": 54343,
+          "previous": "42e7690f37dc056f3061aa0ae6660a339b3258bc",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "74bfbbfe15bc8932a293ced7d0ae8c40128b9db3",
+          "date": "2026-04-15T17:38:51+02:00",
+          "week": "2026-04-20",
+          "subject": "fix: get rid of mypy-baseline, take 1 (#54514)",
+          "pr": 54514,
+          "previous": "4c6495dec83ced70b5efc763f027ab0189952ea3",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "7dcce43498f89b359a442d6adf5288c449fb0fd1",
+          "date": "2026-04-16T14:48:32+01:00",
+          "week": "2026-04-20",
+          "subject": "feat(cli): add --build flag to shared ReleaseArgs (#54869)",
+          "pr": 54869,
+          "previous": "e126f1bc9f1e4400a7ba1979610792b565fb146d",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5880e5dd2fa4a0c2356737bf88e4a19c8a2c77db",
+          "date": "2026-04-16T16:52:40+01:00",
+          "week": "2026-04-20",
+          "subject": "fix: Strip toTimeZone from timestamp comparison in WHERE clause to fix primary key usage (#54819)",
+          "pr": 54819,
+          "previous": "6ffa7d94ed4e956c1032f000645b38892284f71a",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "37a64d2e1751fbc9e19f1fb529ba2a2ace9faea2",
+          "date": "2026-04-16T20:09:38+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error-tracking): add banner pointing users to integrations in global settings (#54855)",
+          "pr": 54855,
+          "previous": "5880e5dd2fa4a0c2356737bf88e4a19c8a2c77db",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": -0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f1075947581f06f6f15289f72d42a40d797132c4",
+          "date": "2026-04-16T21:53:53+03:00",
+          "week": "2026-04-20",
+          "subject": "feat(mcp): add error tracking issue split tool (#54529)",
+          "pr": 54529,
+          "previous": "37a64d2e1751fbc9e19f1fb529ba2a2ace9faea2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "f974d78be7ce12b7aabf2f1a5f7bb635512306ba",
+          "date": "2026-04-16T22:06:54+03:00",
+          "week": "2026-04-20",
+          "subject": "feat(mcp): add error tracking assignment rules list tool (#54530)",
+          "pr": 54530,
+          "previous": "f1075947581f06f6f15289f72d42a40d797132c4",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "86ba2268bd985254f7f0d90fb76cee3a3cb1b465",
+          "date": "2026-04-17T20:14:42-03:00",
+          "week": "2026-04-20",
+          "subject": "refactor: Remove deprecated sidepanel components and consolidate health/status logic (#53103)",
+          "pr": 53103,
+          "previous": "fc38e6c57dcaef8051225bb7a0a77228b160ce62",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "fc38e6c57dcaef8051225bb7a0a77228b160ce62",
+          "date": "2026-04-17T21:15:49+03:00",
+          "week": "2026-04-20",
+          "subject": "feat(mcp): add error tracking assignment rule create tool (#54532)",
+          "pr": 54532,
+          "previous": "ee9d7740da57c8bea536500aef1084a81bed5c6c",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "4e038bf65ddf2076dc45cf9b87cf25e46d65b90e",
+          "date": "2026-04-18T09:05:47-03:00",
+          "week": "2026-04-20",
+          "subject": "feat: Add Settings section to context panel (#53104)",
+          "pr": 53104,
+          "previous": "86ba2268bd985254f7f0d90fb76cee3a3cb1b465",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": -0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "0e048298d45e1884bc2064f98157bf5eaa5b1ba9",
+          "date": "2026-04-18T18:44:38+03:00",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): use dedicated logs query runner for checking logs existence (#55177)",
+          "pr": 55177,
+          "previous": "4e038bf65ddf2076dc45cf9b87cf25e46d65b90e",
+          "delta": {
+            "composite": 0,
+            "architecture": -0.1,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "81a6a72fc8b870ffac6749a746515669bd3e3267",
+          "date": "2026-04-18T19:06:12+03:00",
+          "week": "2026-04-20",
+          "subject": "chore(error-tracking): update grouping rule list schema (#54533)",
+          "pr": 54533,
+          "previous": "0e048298d45e1884bc2064f98157bf5eaa5b1ba9",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "d2530e62cc5ff29babb7f70f794d033113d00525",
+          "date": "2026-04-18T19:19:54+03:00",
+          "week": "2026-04-20",
+          "subject": "feat(mcp): add error tracking grouping rules list tool (#54534)",
+          "pr": 54534,
+          "previous": "81a6a72fc8b870ffac6749a746515669bd3e3267",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "34c32bc1cf87bd52ffddec8ae25c4279abb1e911",
+          "date": "2026-07-06T15:17:18+02:00",
+          "week": "2026-07-13",
+          "subject": "fix(phai): pass user to query runners (#68611)",
+          "pr": 68611,
+          "previous": "f9190c1e4bb84792b7b60521b7f304a7df314a72",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5018bc400833b5b6f8bc75dccca3f9bfa6f353f8",
+          "date": "2026-07-06T19:07:08Z",
+          "week": "2026-07-13",
+          "subject": "fix(error-tracking): derive eventsQueryKey from query content, not uuid() (#68536)",
+          "pr": 68536,
+          "previous": "c5f763e280d5209a4f243608902c263b51529e6c",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "23f060a2b209d696827a3b11bf8b1020f097d5f6",
+          "date": "2026-07-06T21:44:19+01:00",
+          "week": "2026-07-13",
+          "subject": "fix(frontend): clear the ByRole name-query backlog, flip semgrep rule to blocking (#68740)",
+          "pr": 68740,
+          "previous": "5018bc400833b5b6f8bc75dccca3f9bfa6f353f8",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "b13e0ca6305485580d34f699e450c97e891bb303",
+          "date": "2026-07-07T20:55:35-03:00",
+          "week": "2026-07-13",
+          "subject": "feat(onboarding): unified wizard progress with a completed-run handoff (#69024)",
+          "pr": 69024,
+          "previous": "5d18132161c369b33a90bc8ac43678b0ffccd991",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "dc7b88780a3f5e9597e72ffb30586676aa3fb72a",
+          "date": "2026-07-08T06:16:35Z",
+          "week": "2026-07-13",
+          "subject": "fix(devex): meter GitHub search resources separately in the egress limiter (#68899)",
+          "pr": 68899,
+          "previous": "b13e0ca6305485580d34f699e450c97e891bb303",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": -0.2,
+            "smells": 0,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "79312d389900f7048e8c7a9a936677b518f2c7a7",
+          "date": "2026-07-08T13:23:20+02:00",
+          "week": "2026-07-13",
+          "subject": "feat(error-tracking): format weekly digest counts as compact numbers (#69223)",
+          "pr": 69223,
+          "previous": "dc7b88780a3f5e9597e72ffb30586676aa3fb72a",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5ed289bf50207fa318ddf2bb544782f43b72dc34",
+          "date": "2026-07-08T19:33:44Z",
+          "week": "2026-07-13",
+          "subject": "chore(error-tracking): fix $lib value in grouping-noisy-errors skill (#68882)",
+          "pr": 68882,
+          "previous": "79312d389900f7048e8c7a9a936677b518f2c7a7",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "1fee4722eb0d6ab5be55c556d69148867b97effd",
+          "date": "2026-07-08T20:20:06Z",
+          "week": "2026-07-13",
+          "subject": "fix(error-tracking): coerce nullable arg in flag-exposure skill query (#68416)",
+          "pr": 68416,
+          "previous": "90bbadbbd085c1eefb8256fc496c92acd980be6c",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "ef37737e3df5ad5f379bc151cedb496e0af3cada",
+          "date": "2026-07-08T20:21:08Z",
+          "week": "2026-07-13",
+          "subject": "chore(error-tracking): surface _posthogUrl in triage skill link tip (#68296)",
+          "pr": 68296,
+          "previous": "1fee4722eb0d6ab5be55c556d69148867b97effd",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "90bbadbbd085c1eefb8256fc496c92acd980be6c",
+          "date": "2026-07-08T20:36:07+01:00",
+          "week": "2026-07-13",
+          "subject": "chore(tests): skip ON CLUSTER DDL on the single-node test ClickHouse (#69431)",
+          "pr": 69431,
+          "previous": "5ed289bf50207fa318ddf2bb544782f43b72dc34",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "1138c64f7839fc3a61798f80917bd5c029fba878",
+          "date": "2026-07-09T11:43:55Z",
+          "week": "2026-07-13",
+          "subject": "feat(metrics): replace filter chips with a logs-style attribute filter bar (#69248)",
+          "pr": 69248,
+          "previous": "959bee3e62ef5172a520c6dc3be155e72ca92485",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "785142fc489bb3b74784e6ff8c6eb03fb12a2412",
+          "date": "2026-07-09T15:58:25+02:00",
+          "week": "2026-07-13",
+          "subject": "feat(error-tracking): use clickhouse user for embeddings (#68267)",
+          "pr": 68267,
+          "previous": "1138c64f7839fc3a61798f80917bd5c029fba878",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "e1b53827cbeb29b6eae36b7ab906b764c9554eb0",
+          "date": "2026-07-09T22:28:24+03:00",
+          "week": "2026-07-13",
+          "subject": "fix(error-tracking): default missing date_from to a 7-day window (#64663)",
+          "pr": 64663,
+          "previous": "785142fc489bb3b74784e6ff8c6eb03fb12a2412",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "e9a6889cb9afeff58ecfe767bad01f1da669e9f5",
+          "date": "2026-07-13T19:42:26Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): point Node.js setup link to /node docs (#70537)",
+          "pr": 70537,
+          "previous": "e38163eaab6d1120f3c87fc2c38f2772ee9cadf2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "1634816e15a820e3e39ed72ea72fcaf2c7270f9a",
+          "date": "2026-07-14T11:06:12+02:00",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): show access denied instead of 403s in configuration (#70533)",
+          "pr": 70533,
+          "previous": "e9a6889cb9afeff58ecfe767bad01f1da669e9f5",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": -0.1,
+            "smells": 0.4,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "b56c590ec47412594e9e87abff94ff0ae08648b1",
+          "date": "2026-07-15T11:20:34+01:00",
+          "week": "2026-07-20",
+          "subject": "fix(insights): replace fast-deep-equal with fast-equals (#69668)",
+          "pr": 69668,
+          "previous": "bac5cbc1ea26d154546cfbcd2130c2cf85e3b7a2",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "23b754caec8f156576f8d5334733edeeec0c92bc",
+          "date": "2026-07-15T13:35:52Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): treat deleted team as no-op in fingerprint auto-merge (#66509)",
+          "pr": 66509,
+          "previous": "4f4333482fc624832d0fa4a98eb165d8e4a4c558",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.1
+          }
+        },
+        {
+          "commit": "335a4d6b0a960ad26787e25b070f559586a0b6e7",
+          "date": "2026-07-15T13:48:35Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): handle missing initial event (#71067)",
+          "pr": 71067,
+          "previous": "23b754caec8f156576f8d5334733edeeec0c92bc",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "d367246cd3043ae53f6abc173a33f82c1023cf92",
+          "date": "2026-07-15T17:41:54+02:00",
+          "week": "2026-07-20",
+          "subject": "feat(phai): add context injection and tool stream events to agent surface (#68671)",
+          "pr": 68671,
+          "previous": "8fa8d0bd0a262cf7609847c35d29d2fe1b0b9c1e",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "3d6acbd4f2d767844df34a8e4982a024e8e318f6",
+          "date": "2026-07-15T17:42:45+02:00",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): parallelize symbol set cleanup (#71080)",
+          "pr": 71080,
+          "previous": "d367246cd3043ae53f6abc173a33f82c1023cf92",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "daf27f9147d3218d5d43a7120386708a3f53c0e9",
+          "date": "2026-07-15T19:38:28+01:00",
+          "week": "2026-07-20",
+          "subject": "chore(alerts): move shared AlertWizard into lib/components/Alerting (4/7) (#68939)",
+          "pr": 68939,
+          "previous": "3d6acbd4f2d767844df34a8e4982a024e8e318f6",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "41f692b5e9d006ea25ca8d677af180efc612a922",
+          "date": "2026-07-15T22:27:28Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): surface rejection reasons in code owners import errors (#70594)",
+          "pr": 70594,
+          "previous": "daf27f9147d3218d5d43a7120386708a3f53c0e9",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "481b3255f8360d82a761813ca2aa4452eb505001",
+          "date": "2026-07-16T08:56:06Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): give S3 writes/deletes retry backoff and pace cleanup (#71393)",
+          "pr": 71393,
+          "previous": "41f692b5e9d006ea25ca8d677af180efc612a922",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "0d1c5073c132415634916273ee61b60e4b68ecef",
+          "date": "2026-07-16T10:12:52Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): declare quill charts dependency (#71454)",
+          "pr": 71454,
+          "previous": "481b3255f8360d82a761813ca2aa4452eb505001",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "1a2ff27f8b94ee677ae2c53e489ffa23427357ec",
+          "date": "2026-07-16T12:20:58Z",
+          "week": "2026-07-20",
+          "subject": "chore(skills): add contents to long references (#71510)",
+          "pr": 71510,
+          "previous": "09b2c2a9519bc994f94c502004b359f572b342b9",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "3c6ec10be2ece868d2f8f06943d16f7afc783d0f",
+          "date": "2026-07-16T13:03:18+01:00",
+          "week": "2026-07-20",
+          "subject": "feat(error-tracking): add view logs link from exception surfaces (#70751)",
+          "pr": 70751,
+          "previous": "0d1c5073c132415634916273ee61b60e4b68ecef",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "09b2c2a9519bc994f94c502004b359f572b342b9",
+          "date": "2026-07-16T14:09:35+02:00",
+          "week": "2026-07-20",
+          "subject": "feat(error-tracking): add selectable MCP event context (#71111)",
+          "pr": 71111,
+          "previous": "3c6ec10be2ece868d2f8f06943d16f7afc783d0f",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": -0.1,
+            "smells": 0.1,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "c4a9775f537e767caf2085c03582b9072363ed76",
+          "date": "2026-07-16T17:14:43Z",
+          "week": "2026-07-20",
+          "subject": "chore(frontend): inline Kea types batch 4 (#71458)",
+          "pr": 71458,
+          "previous": "4321d74e4b27ae089941a388a78e0332c98106e0",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "a2e125eeded865f5394c48b23516a4b7ce4a9f68",
+          "date": "2026-07-17T06:22:36Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): guard against malformed timestamp param on issue scene (#70933)",
+          "pr": 70933,
+          "previous": "c4a9775f537e767caf2085c03582b9072363ed76",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "a1b2f0518315df264427e9a7d8148e4f91dc2546",
+          "date": "2026-07-17T09:17:09Z",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): run symbol cleanup every 30 minutes (#71848)",
+          "pr": 71848,
+          "previous": "c63f2b3bf78b06464610f7de1765cd3eb8df5705",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "2469229872ab5e21f89c778a4d4006827a3735ff",
+          "date": "2026-07-17T10:05:48+02:00",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): don't build volume bins when volumeResolution is 0 (#70530)",
+          "pr": 70530,
+          "previous": "a2e125eeded865f5394c48b23516a4b7ce4a9f68",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "c63f2b3bf78b06464610f7de1765cd3eb8df5705",
+          "date": "2026-07-17T10:40:20+02:00",
+          "week": "2026-07-20",
+          "subject": "fix(error-tracking): route auto-merge queries offline (#71815)",
+          "pr": 71815,
+          "previous": "2469229872ab5e21f89c778a4d4006827a3735ff",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0.1,
+            "smells": 0,
+            "tests": -0.1
+          }
+        },
+        {
+          "commit": "64add03251497583ae018706821efaa81644395b",
+          "date": "2026-07-17T19:09:03+02:00",
+          "week": "2026-07-20",
+          "subject": "feat(error-tracking): add fingerprint redirect URL for stable issue links (#71031)",
+          "pr": 71031,
+          "previous": "d02b44c16f226c35c7f5f22bb18bcb734b016374",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0.2,
+            "tests": -0.1
+          }
+        }
+      ]
+    }
+  },
+  "runtime": {
+    "seconds": 302.2,
+    "measured": 131,
+    "reused": 238
+  }
+}

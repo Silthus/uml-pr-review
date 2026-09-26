@@ -44,7 +44,7 @@ function verdict(model: ReportModel): string {
   <h2>Is the index trustworthy?</h2>
   ${treated ? `<p class="lead">${escape(verdictSentence(treated, model))}</p>` : ""}
   <div class="tiles">${model.scopes.map(tile).join("")}</div>
-  <p class="note">Noise is measured, not assumed: each weekly commit was re-scored against the commit one day earlier. The band is the 90th percentile of those day-to-day movements, drawn as a shaded band around every line below. A weekly step inside the band is not evidence of anything.</p>
+  <p class="note">Noise is measured, not assumed: for every week in which a product changed, the commits at Wednesday and Thursday 00:00 UTC were scored too. The band is the 90th percentile of those one-weekday movements, drawn as a shaded band around every line below. A weekly step inside the band is not evidence of anything.</p>
 </section>`;
 }
 
@@ -52,7 +52,7 @@ function verdictSentence(treated: ScopeView, model: ReportModel): string {
   const largest = model.movers.find(({ scope }) => scope === treated.scope);
   const pairs = treated.noise.pairs.length;
   const largestMove = Math.max(0, ...treated.noise.pairs.map(({ delta }) => Math.abs(delta.composite)));
-  const stability = `Re-scoring the day before each of ${pairs} weekly commits moved the ${treated.label} composite by a median of ${treated.noise.median.composite.toFixed(1)} points and at most ${largestMove.toFixed(1)}, so the band is ±${treated.noise.band.composite.toFixed(1)}. ${treated.stepsBeyondBand} of ${treated.steps} weekly steps moved beyond it.`;
+  const stability = `Re-scoring Wednesday and Thursday of each week in which ${treated.label} changed (${pairs} day pairs) moved its composite by a median of ${treated.noise.median.composite.toFixed(1)} points and at most ${largestMove.toFixed(1)}, so the band is ±${treated.noise.band.composite.toFixed(1)}. ${treated.stepsBeyondBand} of ${treated.steps} weekly steps moved beyond it; the largest was ${signed(treated.largestStep.delta)} in the week of ${treated.largestStep.week}.`;
   if (!largest) return stability;
   const times = largest.timesBand === null ? "" : `, ${largest.timesBand.toFixed(1)}× the band,`;
   return `${stability} The largest single change${times} was ${signed(largest.delta.composite)} on ${largest.date.slice(0, 10)}: ${largest.subject}.`;
@@ -185,9 +185,9 @@ function method(model: ReportModel): string {
   <h2>How to read this</h2>
   <ul>
     <li><b>Points.</b> One score per week: the first-parent <code>${escape(model.ref)}</code> commit at each Monday 00:00 UTC boundary, measured by <code>coherence/index.ts</code> with pinned tools and fixed anchors, so the same commit always gives the same number.</li>
-    <li><b>Noise band.</b> For each weekly commit, the first-parent commit one day earlier was scored too. The band is the 90th percentile of the absolute day-to-day change per product and per score, so it reflects how much the index moves on an ordinary day of commits.</li>
+    <li><b>Noise band.</b> For each week, the first-parent commits at Wednesday and Thursday 00:00 UTC were scored too, and the pair is kept when the product's files changed between them. The band is the 90th percentile of the absolute change per product and per score, so it reflects how much the index moves on an ordinary weekday of commits.</li>
     <li><b>Movers.</b> In the three weeks with the largest composite change per product, every first-parent commit that touched the product was scored, and each is compared with the previous scored commit.</li>
-    <li><b>Runtime.</b> The backfill took ${model.runtime.seconds.toLocaleString("en-US")} s: ${model.runtime.measured} commits measured, ${model.runtime.reused} reused from <code>coherence/data/</code>.</li>
+    <li><b>Runtime.</b> The last backfill run took ${model.runtime.seconds.toLocaleString("en-US")} s: ${model.runtime.measured} commits measured, ${model.runtime.reused} reused from <code>coherence/data/</code>.</li>
   </ul>
 </footer>`;
 }

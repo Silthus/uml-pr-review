@@ -39,7 +39,9 @@ function gridlines(chart: Chart, plot: Plot, y: Scale): string {
 
 function xAxis(chart: Chart, plot: Plot, x: Scale): string {
   const every = Math.max(1, Math.ceil(chart.weeks.length / 7));
-  const labels = chart.weeks.flatMap((week, index) => (index % every === 0 || index === chart.weeks.length - 1 ? [`<text class="tick" x="${x(index).toFixed(1)}" y="${plot.top + plot.height + 18}" text-anchor="middle">${week.slice(5)}</text>`] : []));
+  const last = chart.weeks.length - 1;
+  const labelled = (index: number) => index === last || (index % every === 0 && last - index >= every);
+  const labels = chart.weeks.flatMap((week, index) => (labelled(index) ? [`<text class="tick" x="${x(index).toFixed(1)}" y="${plot.top + plot.height + 18}" text-anchor="middle">${week.slice(5)}</text>`] : []));
   return `<line class="axis" x1="${plot.left}" x2="${plot.left + plot.width}" y1="${plot.top + plot.height}" y2="${plot.top + plot.height}"/>${labels.join("")}`;
 }
 

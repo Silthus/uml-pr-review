@@ -1,0 +1,717 @@
+{
+  "index": {
+    "version": 1,
+    "scope": "products/workflows",
+    "commit": "6779fc8c76a0a9e0e28660ef46c399a093d9f9cf",
+    "tree": "b2828e65b9a4c5150d939d67ca87a993d8851ad7",
+    "tools": {
+      "lizard": "1.17.31",
+      "ruff": "0.13.3",
+      "oxlint": "1.19.0",
+      "jscpd": "4.0.5"
+    },
+    "files": {
+      "production": 129,
+      "test": 20,
+      "excluded": 11,
+      "productionLines": 18255,
+      "testLines": 4610,
+      "generatedLines": 0
+    },
+    "composite": {
+      "score": 52.7,
+      "weights": {
+        "architecture": 35,
+        "complexity": 25,
+        "smells": 20,
+        "tests": 20
+      }
+    },
+    "dimensions": {
+      "architecture": {
+        "score": 43,
+        "measures": {
+          "propagationCost": {
+            "value": 0.1185,
+            "score": 70.4,
+            "best": 0,
+            "worst": 0.4
+          },
+          "cycleShare": {
+            "value": 0.124,
+            "score": 58.7,
+            "best": 0,
+            "worst": 0.3
+          },
+          "facadeShare": {
+            "value": 0,
+            "score": 0,
+            "best": 1,
+            "worst": 0
+          }
+        },
+        "propagationCost": {
+          "value": 0.1185,
+          "files": 129,
+          "outboundFiles": 118,
+          "drivers": [
+            {
+              "file": "products/workflows/manifest.tsx",
+              "count": 106
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/WorkflowScene.tsx",
+              "count": 75
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/Workflow.tsx",
+              "count": 66
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/HogFlowEditor.tsx",
+              "count": 65
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/WorkflowsTable.tsx",
+              "count": 64
+            },
+            {
+              "file": "products/workflows/frontend/WorkflowsScene.tsx",
+              "count": 64
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.tsx",
+              "count": 60
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelMetrics.tsx",
+              "count": 43
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/WorkflowMetrics.tsx",
+              "count": 42
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuild.tsx",
+              "count": 42
+            }
+          ]
+        },
+        "cycles": {
+          "count": 4,
+          "files": [
+            "products/workflows/frontend/Channels/ChannelSetupModal.tsx",
+            "products/workflows/frontend/Channels/MessageChannels.tsx",
+            "products/workflows/frontend/Workflows/WorkflowsTable.tsx",
+            "products/workflows/frontend/Workflows/hogflows/hogFlowEditorLogic.tsx",
+            "products/workflows/frontend/Workflows/hogflows/react_flow_utils/SmartEdge.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/HogFlowSteps.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/StepConditionalBranch.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/StepDelay.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/StepFunction.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/StepRandomCohortBranch.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/StepWaitUntilCondition.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/StepWaitUntilTimeWindow.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/components/StepSchemaErrors.tsx",
+            "products/workflows/frontend/Workflows/hogflows/steps/types.ts",
+            "products/workflows/frontend/Workflows/hogflows/types.ts",
+            "products/workflows/frontend/WorkflowsScene.tsx"
+          ]
+        },
+        "facade": {
+          "crossings": 9,
+          "share": 0,
+          "inbound": {
+            "crossings": 9,
+            "bypasses": 9
+          },
+          "outbound": {
+            "crossings": 0,
+            "bypasses": 0
+          },
+          "bypasses": [
+            {
+              "from": "posthog/admin/admins/hog_flow_admin.py",
+              "to": "products/workflows/backend/models/hog_flow_schedule/__init__.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "posthog/api/hog_flow.py",
+              "to": "products/workflows/backend/models/hog_flow_batch_job/__init__.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "posthog/api/hog_flow.py",
+              "to": "products/workflows/backend/models/hog_flow_schedule/__init__.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "posthog/api/hog_flow.py",
+              "to": "products/workflows/backend/utils/rrule_utils.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "posthog/api/hog_flow_batch_job.py",
+              "to": "products/workflows/backend/models/hog_flow_batch_job/__init__.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "posthog/api/hog_flow_template.py",
+              "to": "products/workflows/backend/templates/__init__.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "posthog/models/integration.py",
+              "to": "products/workflows/backend/providers/__init__.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "products/llm_analytics/backend/api/evaluation_reports.py",
+              "to": "products/workflows/backend/utils/rrule_utils.py",
+              "direction": "inbound"
+            },
+            {
+              "from": "products/llm_analytics/backend/models/evaluation_reports.py",
+              "to": "products/workflows/backend/utils/rrule_utils.py",
+              "direction": "inbound"
+            }
+          ]
+        },
+        "undeclaredDependencies": [],
+        "modules": [
+          {
+            "path": "products/workflows",
+            "fanIn": 4,
+            "fanOut": 4,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/backend",
+            "fanIn": 2,
+            "fanOut": 2,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/backend/models",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/backend/models/hog_flow_batch_job",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/backend/models/hog_flow_schedule",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/backend/providers",
+            "fanIn": 1,
+            "fanOut": 0,
+            "instability": 0
+          },
+          {
+            "path": "products/workflows/backend/templates",
+            "fanIn": 1,
+            "fanOut": 0,
+            "instability": 0
+          },
+          {
+            "path": "products/workflows/backend/utils",
+            "fanIn": 2,
+            "fanOut": 0,
+            "instability": 0
+          },
+          {
+            "path": "products/workflows/frontend",
+            "fanIn": 2,
+            "fanOut": 1,
+            "instability": 0.3333
+          },
+          {
+            "path": "products/workflows/frontend/Channels",
+            "fanIn": 2,
+            "fanOut": 1,
+            "instability": 0.3333
+          },
+          {
+            "path": "products/workflows/frontend/Channels/EmailSetup",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/frontend/Channels/SlackSetup",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/frontend/Channels/TwilioSetup",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/frontend/OptOuts",
+            "fanIn": 3,
+            "fanOut": 1,
+            "instability": 0.25
+          },
+          {
+            "path": "products/workflows/frontend/TemplateLibrary",
+            "fanIn": 3,
+            "fanOut": 1,
+            "instability": 0.25
+          },
+          {
+            "path": "products/workflows/frontend/Workflows",
+            "fanIn": 3,
+            "fanOut": 4,
+            "instability": 0.5714
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows",
+            "fanIn": 4,
+            "fanOut": 5,
+            "instability": 0.5556
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/filters",
+            "fanIn": 4,
+            "fanOut": 3,
+            "instability": 0.4286
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/panel",
+            "fanIn": 1,
+            "fanOut": 8,
+            "instability": 0.8889
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/panel/testing",
+            "fanIn": 1,
+            "fanOut": 5,
+            "instability": 0.8333
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/react_flow_utils",
+            "fanIn": 2,
+            "fanOut": 3,
+            "instability": 0.6
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/registry",
+            "fanIn": 3,
+            "fanOut": 4,
+            "instability": 0.5714
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/registry/actions",
+            "fanIn": 2,
+            "fanOut": 2,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers",
+            "fanIn": 3,
+            "fanOut": 4,
+            "instability": 0.5714
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/steps",
+            "fanIn": 5,
+            "fanOut": 7,
+            "instability": 0.5833
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/hogflows/steps/components",
+            "fanIn": 2,
+            "fanOut": 5,
+            "instability": 0.7143
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/logs",
+            "fanIn": 2,
+            "fanOut": 2,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/misc",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          },
+          {
+            "path": "products/workflows/frontend/Workflows/templates",
+            "fanIn": 1,
+            "fanOut": 3,
+            "instability": 0.75
+          },
+          {
+            "path": "products/workflows/mcp/apps",
+            "fanIn": 1,
+            "fanOut": 1,
+            "instability": 0.5
+          }
+        ]
+      },
+      "complexity": {
+        "score": 83.6,
+        "measures": {
+          "p90Ccn": {
+            "value": 4,
+            "score": 80,
+            "best": 2,
+            "worst": 12
+          },
+          "shareOverTen": {
+            "value": 0.0157,
+            "score": 92.2,
+            "best": 0,
+            "worst": 0.2
+          },
+          "shareOverTwenty": {
+            "value": 0.0026,
+            "score": 94.8,
+            "best": 0,
+            "worst": 0.05
+          },
+          "p90FunctionNloc": {
+            "value": 16,
+            "score": 88,
+            "best": 10,
+            "worst": 60
+          },
+          "p90FileLines": {
+            "value": 359,
+            "score": 63,
+            "best": 100,
+            "worst": 800
+          }
+        },
+        "functions": {
+          "count": 1146,
+          "p50Ccn": 1,
+          "p90Ccn": 4,
+          "overTen": 18,
+          "overTwenty": 3,
+          "p90Nloc": 16
+        },
+        "files": {
+          "count": 129,
+          "p90Lines": 359
+        },
+        "drivers": [
+          {
+            "file": "products/workflows/backend/providers/ses.py",
+            "function": "verify_email_domain",
+            "ccn": 44,
+            "nloc": 172
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/workflowLogic.ts",
+            "function": "async",
+            "ccn": 26,
+            "nloc": 63
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/templates/workflowTemplateLogic.ts",
+            "function": "async",
+            "ccn": 24,
+            "nloc": 46
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/workflowLogic.ts",
+            "function": "getTemplatingError",
+            "ccn": 19,
+            "nloc": 63
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "function": "HogFlowEditorPanelBuildDetail",
+            "ccn": 19,
+            "nloc": 52
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/steps/components/rrule-helpers.ts",
+            "function": "parseRRuleToState",
+            "ccn": 15,
+            "nloc": 53
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/hogFlowOutputMappingLogic.ts",
+            "function": "async",
+            "ccn": 15,
+            "nloc": 51
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/hogFlowEditorLogic.tsx",
+            "function": "getBranchLabel",
+            "ccn": 15,
+            "nloc": 31
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/registry/triggers/surveys.tsx",
+            "function": "buildProperties",
+            "ccn": 14,
+            "nloc": 54
+          },
+          {
+            "file": "products/workflows/frontend/OptOuts/CustomerIOImportModal.tsx",
+            "function": "StepBadge",
+            "ccn": 13,
+            "nloc": 19
+          }
+        ]
+      },
+      "smells": {
+        "score": 71.2,
+        "measures": {
+          "ruffPerKloc": {
+            "value": 5.3691,
+            "score": 46.3,
+            "best": 0,
+            "worst": 10
+          },
+          "oxlintPerKloc": {
+            "value": 0.2856,
+            "score": 94.3,
+            "best": 0,
+            "worst": 5
+          },
+          "duplicationPercentage": {
+            "value": 4.4,
+            "score": 56,
+            "best": 0,
+            "worst": 10
+          },
+          "markersPerKloc": {
+            "value": 0.3287,
+            "score": 83.6,
+            "best": 0,
+            "worst": 2
+          },
+          "typeEscapesPerKloc": {
+            "value": 4.8754,
+            "score": 75.6,
+            "best": 0,
+            "worst": 20
+          }
+        },
+        "ruff": {
+          "count": 4,
+          "perKloc": 5.3691,
+          "drivers": [
+            {
+              "file": "products/workflows/backend/templates/__init__.py",
+              "count": 2
+            },
+            {
+              "file": "products/workflows/backend/max_tools.py",
+              "count": 1
+            },
+            {
+              "file": "products/workflows/backend/providers/ses.py",
+              "count": 1
+            }
+          ],
+          "rules": {
+            "B904": 1,
+            "PERF401": 1,
+            "PLW0603": 2
+          }
+        },
+        "oxlint": {
+          "count": 5,
+          "perKloc": 0.2856,
+          "drivers": [
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/react_flow_utils/SmartEdge.tsx",
+              "count": 2
+            },
+            {
+              "file": "products/workflows/frontend/TemplateLibrary/messageTemplateLogic.ts",
+              "count": 1
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/WorkflowsTable.tsx",
+              "count": 1
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/templates/workflowTemplateLogic.ts",
+              "count": 1
+            }
+          ],
+          "rules": {
+            "eslint(no-unused-expressions)": 2,
+            "eslint(no-unused-vars)": 3
+          }
+        },
+        "duplication": {
+          "percentage": 4.4,
+          "duplicatedLines": 876,
+          "clones": 20,
+          "drivers": [
+            {
+              "file": "products/workflows/frontend/Workflows/WorkflowMetrics.tsx",
+              "count": 225
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/testing/HogFlowEditorNotificationPanelTest.tsx",
+              "count": 218
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/testing/HogFlowEditorPanelTest.tsx",
+              "count": 144
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/steps/HogFlowSteps.tsx",
+              "count": 67
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorTestLogic.ts",
+              "count": 46
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorNotificationTestLogic.ts",
+              "count": 45
+            },
+            {
+              "file": "products/workflows/frontend/OptOuts/CustomerIOImportModal.tsx",
+              "count": 40
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/steps/types.ts",
+              "count": 19
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/react_flow_utils/SmartEdge.tsx",
+              "count": 16
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowFilters.tsx",
+              "count": 13
+            }
+          ]
+        },
+        "markers": {
+          "count": 6,
+          "perKloc": 0.3287,
+          "drivers": [
+            {
+              "file": "products/workflows/frontend/Workflows/workflowLogic.ts",
+              "count": 3
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowFilters.tsx",
+              "count": 1
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorTestLogic.ts",
+              "count": 1
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/react_flow_utils/SmartEdge.tsx",
+              "count": 1
+            }
+          ]
+        },
+        "typeEscapes": {
+          "count": 89,
+          "perKloc": 4.8754,
+          "drivers": [
+            {
+              "file": "products/workflows/frontend/Workflows/workflowLogic.ts",
+              "count": 12
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/registry/triggers/surveys.tsx",
+              "count": 10
+            },
+            {
+              "file": "products/workflows/frontend/OptOuts/customerIOImportLogic.ts",
+              "count": 9
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/registry/triggers/triggerTypeRegistry.ts",
+              "count": 6
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuild.tsx",
+              "count": 5
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.tsx",
+              "count": 5
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/hogFlowEditorLogic.tsx",
+              "count": 4
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorTestLogic.ts",
+              "count": 4
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/misc/workflowActivityDescriber.tsx",
+              "count": 4
+            },
+            {
+              "file": "products/workflows/frontend/Workflows/workflowsLogic.ts",
+              "count": 4
+            }
+          ],
+          "counts": {
+            "any": 62,
+            "typeIgnore": 0,
+            "tsIgnore": 0,
+            "asAny": 24,
+            "eslintDisable": 3
+          }
+        }
+      },
+      "tests": {
+        "score": 12.7,
+        "measures": {
+          "testRatio": {
+            "value": 0.2525,
+            "score": 25.3,
+            "best": 1,
+            "worst": 0
+          },
+          "facadeCoverage": {
+            "value": 0,
+            "score": 0,
+            "best": 1,
+            "worst": 0
+          }
+        },
+        "ratio": {
+          "testLines": 4610,
+          "productionLines": 18255,
+          "value": 0.2525
+        },
+        "facadeCoverage": {
+          "functions": 0,
+          "covered": 0,
+          "share": null,
+          "uncovered": []
+        }
+      },
+      "ladder": null
+    }
+  },
+  "timing": {
+    "milliseconds": 650,
+    "cache": {
+      "hits": 259,
+      "misses": 0
+    }
+  }
+}

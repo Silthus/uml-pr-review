@@ -12,20 +12,39 @@ const containerPadding = "[top=64,left=20,bottom=20,right=20]";
 const edgeLabelHeight = 20;
 const denseEdgeCount = 48;
 
+type ElkSession = { elk: InstanceType<typeof ELK>; failure: Promise<never> };
+
 export function createLayoutEngine(): LayoutEngine {
-  let elk: InstanceType<typeof ELK> | null = null;
+  let session: ElkSession | null = null;
   return {
     async layout(graph) {
-      elk ??= new ELK({ workerUrl: elkWorkerUrl });
+      session ??= startElk();
       const started = performance.now();
-      const laidOut = await elk.layout(toElkGraph(graph));
+      const laidOut = await Promise.race([session.elk.layout(toElkGraph(graph)), session.failure]);
       return { ...fromElkGraph(laidOut, graph), milliseconds: performance.now() - started };
     },
     dispose() {
-      elk?.terminateWorker();
-      elk = null;
+      session?.elk.terminateWorker();
+      session = null;
     },
   };
+}
+
+function startElk(): ElkSession {
+  let fail: (error: Error) => void = () => {};
+  const failure = new Promise<never>((_, reject) => {
+    fail = reject;
+  });
+  const elk = new ELK({
+    workerUrl: elkWorkerUrl,
+    workerFactory: (url) => {
+      const worker = new Worker(url!);
+      worker.addEventListener("error", (event) => fail(new Error(event.message || "the layout worker crashed")));
+      worker.addEventListener("messageerror", () => fail(new Error("the layout worker sent an unreadable message")));
+      return worker;
+    },
+  });
+  return { elk, failure };
 }
 
 export function edgeLabelWidth(label: string): number {

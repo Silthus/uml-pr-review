@@ -23,6 +23,12 @@ export type ViewControls = {
   resetFor(paths: string[]): void;
 };
 
+function initialFocusRequest(focus: string | null, expanded: string[]): FocusRequest | null {
+  const deepest = [...expanded].sort((a, b) => b.split("/").length - a.split("/").length)[0];
+  const target = focus ?? deepest;
+  return target ? { ids: [target], version: 1 } : null;
+}
+
 export function useViewState(initialFocus: string | null, initialExpanded: string[]): ViewControls {
   const [selection, setSelection] = useState<Selection | null>(initialFocus ? { kind: "module", path: initialFocus } : null);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set([...initialExpanded, ...(initialFocus ? ancestorsOf(initialFocus) : [])]));
@@ -30,7 +36,7 @@ export function useViewState(initialFocus: string | null, initialExpanded: strin
   const [includeTests, setIncludeTests] = useState(false);
   const [planVisible, setPlanVisible] = useState(true);
   const [followAgent, setFollowAgent] = useState(true);
-  const [focus, setFocus] = useState<FocusRequest | null>(null);
+  const [focus, setFocus] = useState<FocusRequest | null>(() => initialFocusRequest(initialFocus, initialExpanded));
 
   const requestFocus = useCallback((ids: string[]) => setFocus((current) => ({ ids, version: (current?.version ?? 0) + 1 })), []);
 

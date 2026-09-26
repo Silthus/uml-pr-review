@@ -75,10 +75,11 @@ function useFocus(scene: Scene | null, focus: FocusRequest | null) {
   useEffect(() => {
     if (!scene) return;
     if (focus && focus.version !== handled.current) {
-      handled.current = focus.version;
       const ids = withLensNodes(scene, focus.ids);
       if (ids.length > 0) {
-        void fitView({ nodes: ids.map((id) => ({ id })), duration: 360, padding: 0.35, maxZoom: 1 });
+        handled.current = focus.version;
+        fittedInitially.current = true;
+        void fitView({ nodes: ids.map((id) => ({ id })), duration: 360, padding: 0.2, minZoom: 0.55, maxZoom: 1 });
         return;
       }
     }

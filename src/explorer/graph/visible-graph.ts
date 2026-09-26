@@ -196,7 +196,11 @@ function edgeLabel(imports: number, seam: SeamOverlay | null): string {
 function withTones(edges: GraphEdge[], view: ViewState): GraphEdge[] {
   const { selection } = view;
   if (selection?.kind === "module") {
-    return edges.map((edge) => ({ ...edge, data: { ...edge.data, tone: edge.source === selection.path ? "outgoing" : edge.target === selection.path ? "incoming" : "dimmed" } }));
+    const inside = (path: string) => path === selection.path || isWithin(path, selection.path);
+    return edges.map((edge) => {
+      const tone = inside(edge.source) && !inside(edge.target) ? "outgoing" : inside(edge.target) && !inside(edge.source) ? "incoming" : "dimmed";
+      return { ...edge, data: { ...edge.data, tone } };
+    });
   }
   const selectedId = selection ? edgeId(selection.from, selection.to) : null;
   const planned = new Set([...(view.plan?.modules.map((module) => module.path) ?? []), ...(view.plan?.seams.flatMap((seam) => [seam.from, seam.to]) ?? [])]);
@@ -236,6 +240,7 @@ function nodeTones(nodes: GraphNode[], edges: GraphEdge[], selection: Selection 
   }
   if (!selection) return tones;
   const related = new Set<string>([selection.path, ...ancestorsOf(selection.path)]);
+  for (const node of nodes) if (isWithin(node.id, selection.path)) related.add(node.id);
   for (const edge of edges) {
     if (edge.data.tone === "outgoing") tones.set(edge.target, tones.get(edge.target) === "incoming" ? "both" : "outgoing");
     if (edge.data.tone === "incoming") tones.set(edge.source, tones.get(edge.source) === "outgoing" ? "both" : "incoming");
@@ -249,6 +254,10 @@ function nodeTones(nodes: GraphNode[], edges: GraphEdge[], selection: Selection 
 
 function withTone(node: GraphNode, tone: Tone): GraphNode {
   return node.type === "package" ? { ...node, data: { ...node.data, tone } } : { ...node, data: { ...node.data, tone } };
+}
+
+function isWithin(path: string, module: string): boolean {
+  return path.startsWith(`${module}/`);
 }
 
 function commentCounts(plan: ArchitecturePlan | null): Map<string, number> {
@@ -266,11 +275,12 @@ function packageSize(label: string, container: boolean): { width: number; height
 }
 
 function sortParentsFirst(nodes: GraphNode[]): GraphNode[] {
+  const parents = new Map(nodes.map((node) => [node.id, node.parentId]));
+  const depthOf = (id: string): number => {
+    const parent = parents.get(id);
+    return parent ? depthOf(parent) + 1 : 0;
+  };
   return [...nodes].sort((a, b) => depthOf(a.id) - depthOf(b.id) || a.id.localeCompare(b.id));
-}
-
-function depthOf(id: string): number {
-  return id.split("/").length;
 }
 
 function bySizeDescending(a: ModuleView, b: ModuleView): number {

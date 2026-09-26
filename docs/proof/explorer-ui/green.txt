@@ -1,4 +1,4 @@
  10 pass
  0 fail
- 82 expect() calls
-Ran 10 tests across 2 files. [1194.00ms]
+ 83 expect() calls
+Ran 10 tests across 2 files. [1159.00ms]

@@ -33,10 +33,14 @@ export function ExplorerApp() {
 
   const live = useLiveEvents(repository.api, plan, {
     applyPlan: (patched) => {
+      if (repository.planId && patched.id !== repository.planId) return;
       repository.replacePlan(patched);
       if (view.followAgent) view.resetFor(planPaths(patched));
     },
-    applyConformance: repository.replaceConformance,
+    applyConformance: (result) => {
+      if (repository.planId && result.planId !== repository.planId) return;
+      repository.replaceConformance(result);
+    },
     focus: (target: SelectionTarget) => {
       if (!view.followAgent) return;
       if (target.kind === "module") view.selectModule(target.path);

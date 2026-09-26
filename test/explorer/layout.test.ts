@@ -30,6 +30,7 @@ describe("PostHog layout through the app's layout path", () => {
 
     const children = laidOut.nodes.filter((node) => node.parentId === "products");
     expect(children).toHaveLength(13);
+    expect(parentsBeforeChildren(graph.nodes.map((node) => [node.id, node.parentId]))).toBe(true);
     expect(children.map((node) => node.id)).toContain("more:products");
     expect(laidOut.nodes.find((node) => node.id === "products")!.width).toBeGreaterThan(600);
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
@@ -51,6 +52,14 @@ describe("PostHog layout through the app's layout path", () => {
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
   });
 });
+
+function parentsBeforeChildren(order: [string, string | null][]): boolean {
+  const seen = new Set<string>();
+  return order.every(([id, parentId]) => {
+    seen.add(id);
+    return parentId === null || seen.has(parentId);
+  });
+}
 
 type Rect = { id: string; left: number; top: number; right: number; bottom: number; ancestors: Set<string> };
 

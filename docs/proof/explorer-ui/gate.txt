@@ -1,5 +1,5 @@
- 243 pass
+ 268 pass
  0 fail
- 485 expect() calls
-Ran 243 tests across 18 files. [4.94s]
+ 665 expect() calls
+Ran 268 tests across 23 files. [8.39s]
 $ tsc --noEmit

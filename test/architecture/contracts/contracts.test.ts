@@ -10,7 +10,10 @@ import {
   CheckPlanRequestSchema,
   ConformanceResultSchema,
   CreatePlanRequestSchema,
+  DependencySchema,
   ErrorResponseSchema,
+  FarDependencySchema,
+  ImportEvidenceSchema,
   PlanContextSchema,
   PlanDetailResponseSchema,
   PlanListResponseSchema,
@@ -18,9 +21,12 @@ import {
   PlanViewSchema,
   SearchHitSchema,
   SetLockRequestSchema,
+  SetLockResponseSchema,
   type ArchitecturePlan,
   type ConformanceResult,
   type PlanComment,
+  type PlanOperation,
+  type PlanSummary,
   type Revision,
 } from "../../../src/architecture/contracts/index.ts";
 import { architectureOf } from "../../support/architecture.ts";
@@ -71,6 +77,19 @@ const plan: ArchitecturePlan = {
 
 const { revisions: _, ...planView } = plan;
 
+const summary: PlanSummary = { id: plan.id, title: plan.title, status: "draft", revision: 2, baseCommit, updatedAt: at, pendingHumanComments: 1 };
+
+const operations: PlanOperation[] = [
+  { op: "set_summary", title: "Flags on issues", goal: "Show flags on issues." },
+  { op: "set_base_commit", commit: baseCommit },
+  { op: "upsert_module", path: ".", action: "modify", responsibility: "Wire it up." },
+  { op: "drop_module", path: "products/error_tracking/frontend" },
+  { op: "upsert_seam", from: logic, to: facade, action: "keep", interface: { files: [`${facade}/api.py`], symbols: [] }, rationale: "Already there." },
+  { op: "drop_seam", from: logic, to: facade },
+  { op: "add_comment", target: { kind: "plan" }, body: "Ready for review." },
+  { op: "resolve_comment", commentId: "c1", reply: "Done." },
+];
+
 const result: ConformanceResult = {
   verdict: "violating",
   modules: [{ path: "products/error_tracking/backend/facade", action: "modify", status: "pending" }],
@@ -111,20 +130,24 @@ const cases: Case[] = [
   { name: "ChangedFile", schema: ChangedFileSchema, valid: { path: `${logic}/service.py`, status: "modified", firstChangedLine: 3 }, invalid: { path: "x.py", status: "deleted", firstChangedLine: 0 }, path: ["firstChangedLine"] },
   { name: "ArchitecturePlan", schema: ArchitecturePlanSchema, valid: plan, invalid: { ...plan, seams: [{ ...plan.seams[0], from: "products/" }] }, path: ["seams", 0, "from"] },
   { name: "PlanView", schema: PlanViewSchema, valid: planView, invalid: { ...planView, comments: [{ ...comment, id: "comment-1" }] }, path: ["comments", 0, "id"] },
-  { name: "PlanSummary", schema: PlanSummarySchema, valid: { id: plan.id, title: plan.title, status: "draft", revision: 2, baseCommit, updatedAt: at, pendingHumanComments: 1 }, invalid: { id: plan.id, title: plan.title, status: "draft", revision: 2, baseCommit: "HEAD", updatedAt: at, pendingHumanComments: 1 }, path: ["baseCommit"] },
+  { name: "PlanSummary", schema: PlanSummarySchema, valid: summary, invalid: { ...summary, baseCommit: "HEAD" }, path: ["baseCommit"] },
   { name: "ConformanceResult", schema: ConformanceResultSchema, valid: result, invalid: { ...result, findings: [{ ...result.findings[0], rule: "bypass" }] }, path: ["findings", 0, "rule"] },
+  { name: "Dependency", schema: DependencySchema, valid: { from: logic, to: facade, imports: 3 }, invalid: { from: logic, imports: 3 }, path: ["to"] },
+  { name: "FarDependency", schema: FarDependencySchema, valid: { module: "products/feature_flags", imports: 2, via: [{ module: facade, imports: 2 }] }, invalid: { module: "products/feature_flags", imports: 2, via: [{ module: facade }] }, path: ["via", 0, "imports"] },
+  { name: "ImportEvidence", schema: ImportEvidenceSchema, valid: { file: `${logic}/service.py`, line: 3, target: `${facade}/api.py`, kind: "lazy", names: ["flags_for"], test: false }, invalid: { file: `${logic}/service.py`, line: 3, target: `${facade}/api.py`, kind: "eager", names: [], test: false }, path: ["kind"] },
   { name: "SearchHit", schema: SearchHitSchema, valid: { module: { path: facade, label: "facade", kind: "layer", parent: "products/feature_flags/backend", childCount: 0, directFiles: 2, totalFiles: 2 }, files: [] }, invalid: { module: { path: facade, label: "facade", kind: "layer", parent: undefined, childCount: 0, directFiles: 2, totalFiles: 2 }, files: [] }, path: ["module", "parent"] },
   { name: "agent_activity event", schema: ArchitectureEventSchema, valid: { ...event, type: "agent_activity", id: "call-1", client: "claude-code@2.1.0", tool: "describe_module", status: "ok", summary: `describe_module ${facade}`, durationMs: 42 }, invalid: { ...event, type: "agent_activity", id: "call-1", client: "codex", tool: "check_plan", status: "done", summary: "check_plan", durationMs: 1 }, path: ["status"] },
   { name: "plan_patch event", schema: ArchitectureEventSchema, valid: { ...event, type: "plan_patch", planId: plan.id, revision: revisions[1], plan }, invalid: { ...event, type: "plan_patch", planId: plan.id, revision: { ...revisions[1], kind: "merge" }, plan }, path: ["revision", "kind"] },
   { name: "conformance_result event", schema: ArchitectureEventSchema, valid: { ...event, type: "conformance_result", planId: plan.id, result }, invalid: { ...event, type: "conformance_result", planId: plan.id, result: { ...result, checkedAt: "yesterday" } }, path: ["result", "checkedAt"] },
   { name: "selection_hint event", schema: ArchitectureEventSchema, valid: { ...event, type: "selection_hint", client: "codex", tool: "get_dependency_evidence", target: { kind: "seam", from: logic, to: facade } }, invalid: { ...event, type: "selection_hint", client: "codex", tool: "describe_module", target: { kind: "module" } }, path: ["target", "path"] },
   { name: "index_ready event", schema: ArchitectureEventSchema, valid: { ...event, type: "index_ready", root: "/repo", commit: null, tree: payload.tree, stats: payload.stats }, invalid: { ...event, type: "index_ready", root: "/repo", commit: null, tree: payload.tree, stats: { ...payload.stats, parsed: 1.5 } }, path: ["stats", "parsed"] },
-  { name: "PlanList response", schema: PlanListResponseSchema, valid: [], invalid: [{ id: plan.id }], path: [0, "title"] },
+  { name: "PlanList response", schema: PlanListResponseSchema, valid: [summary], invalid: [{ id: plan.id }], path: [0, "title"] },
   { name: "CreatePlan request", schema: CreatePlanRequestSchema, valid: { title: plan.title, goal: plan.goal }, invalid: { title: "", goal: plan.goal }, path: ["title"] },
   { name: "PlanDetail response", schema: PlanDetailResponseSchema, valid: { plan, conformance: null }, invalid: { plan }, path: ["conformance"] },
-  { name: "ApplyOperations request", schema: ApplyOperationsRequestSchema, valid: { expectedRevision: 2, operations: [{ op: "upsert_module", path: ".", action: "modify", responsibility: "Wire it up." }, { op: "resolve_comment", commentId: "c1", reply: "Done." }], note: "Answer the review." }, invalid: { expectedRevision: 2, operations: [{ op: "drop_seam", from: logic }] }, path: ["operations", 0, "to"] },
+  { name: "ApplyOperations request", schema: ApplyOperationsRequestSchema, valid: { expectedRevision: 2, operations, note: "Answer the review." }, invalid: { expectedRevision: 2, operations: [{ op: "drop_seam", from: logic }] }, path: ["operations", 0, "to"] },
   { name: "ApplyOperations response", schema: ApplyOperationsResponseSchema, valid: { plan, warnings: ["Interface file does not exist yet."] }, invalid: { plan, warnings: "none" }, path: ["warnings"] },
   { name: "SetLock request", schema: SetLockRequestSchema, valid: { locked: true, expectedRevision: 3 }, invalid: { locked: "yes", expectedRevision: 3 }, path: ["locked"] },
+  { name: "SetLock response", schema: SetLockResponseSchema, valid: { plan: { ...plan, status: "locked" } }, invalid: { plan: { ...plan, status: "frozen" } }, path: ["plan", "status"] },
   { name: "CheckPlan request", schema: CheckPlanRequestSchema, valid: { final: true }, invalid: { final: 1 }, path: ["final"] },
   { name: "Error response", schema: ErrorResponseSchema, valid: { error: "The plan is at revision 3, not 2.", plan }, invalid: { message: "nope" }, path: ["error"] },
   { name: "PlanContext", schema: PlanContextSchema, valid: { pendingHumanComments: [comment], humanChanges: [revisions[1]], explorerUrl: "http://127.0.0.1:4477/?path=%2Frepo&plan=feature-flags-on-issues-3f2a" }, invalid: { pendingHumanComments: [comment], humanChanges: [] }, path: ["explorerUrl"] },

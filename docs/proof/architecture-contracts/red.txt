@@ -1,1 +1,22 @@
 bun test v1.4.2 (50a8a8387)
+
+test/architecture/model/model.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../../src/architecture/model/index.ts' from '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a921d2d0200f0a3fc/test/architecture/model/model.test.ts'
+-------------------------------
+
+
+test/architecture/model/lift-performance.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../../src/architecture/model/index.ts' from '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a921d2d0200f0a3fc/test/architecture/model/lift-performance.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 2 fail
+ 2 errors
+Ran 2 tests across 2 files. [3.00ms]

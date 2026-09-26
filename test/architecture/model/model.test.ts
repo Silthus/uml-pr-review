@@ -87,6 +87,13 @@ describe("lift", () => {
     expect(view.modules.map(({ path }) => path)).toEqual([".", "frontend", "products"]);
   });
 
+  test("always shows the root, even when every module holds only tests", () => {
+    const tests = new ArchitectureModel(architectureOf({ "tests/test_a.py": ["tests/test_b.py"] }));
+
+    expect(tests.lift(new Set()).modules.map(({ path }) => path)).toEqual(["."]);
+    expect(tests.lift(new Set(), { includeTests: true }).modules.map(({ path }) => path)).toEqual([".", "tests"]);
+  });
+
   test("includes test modules and their imports on request", () => {
     const view = model.lift(new Set(["products", "products/error_tracking", errorTracking]), { includeTests: true });
 
@@ -135,6 +142,39 @@ describe("dependencies", () => {
   test("is empty for the root and for a path that holds no files yet", () => {
     expect(model.dependencies(".", "out")).toEqual([]);
     expect(model.dependencies("products/new_product", "in")).toEqual([]);
+  });
+});
+
+describe("test imports", () => {
+  const helpers = new ArchitectureModel(architectureOf({ "posthog/api/views.py": ["posthog/test/base.py", "posthog/models/user.py"] }));
+
+  test("are decided by the importing file, so production code reaching into tests stays visible", () => {
+    expect(helpers.dependencies("posthog/api", "out").map(({ module }) => module)).toEqual(["posthog/models", "posthog/test"]);
+    expect(helpers.evidence("posthog/api", "posthog/test")).toMatchObject([{ file: "posthog/api/views.py", test: false }]);
+  });
+
+  test("never draw an edge to a hidden test module", () => {
+    expect(helpers.lift(new Set(["posthog"])).dependencies).toEqual([{ from: "posthog/api", to: "posthog/models", imports: 1 }]);
+  });
+});
+
+describe("wide dependencies", () => {
+  const targets = Array.from({ length: 21 }, (_, index) => `hub/m${index}/x.py`);
+  const wide = new ArchitectureModel(architectureOf({ "wide/source.py": targets, "hub/m0/x1.py": [], "hub/m0/x2.py": [], "hub/m0/x3.py": [] }));
+
+  test("name at most 5 deepest modules in via", () => {
+    expect(wide.dependencies("wide", "out")).toEqual([
+      { module: "hub", imports: 21, via: ["hub/m0", "hub/m1", "hub/m10", "hub/m11", "hub/m12"].map((module) => ({ module, imports: 1 })) },
+    ]);
+  });
+
+  test("list at most 20 imports of evidence by default", () => {
+    expect(wide.evidence("wide", "hub")).toHaveLength(20);
+    expect(wide.evidence("wide", "hub", { limit: 100 })).toHaveLength(21);
+  });
+
+  test("show at most 3 matching files per module in search", () => {
+    expect(wide.search("m0/x")).toEqual([{ module: wide.module("hub/m0")!, files: ["hub/m0/x.py", "hub/m0/x1.py", "hub/m0/x2.py"] }]);
   });
 });
 

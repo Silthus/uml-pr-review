@@ -25,7 +25,8 @@ export class ArchitectureModel {
   readonly #fileModule: Int32Array;
   readonly #importFromModule: Int32Array;
   readonly #importToModule: Int32Array;
-  readonly #testImport: Uint8Array;
+  readonly #importFromTest: Uint8Array;
+  readonly #importTouchesTest: Uint8Array;
   readonly #holdsProduction: Uint8Array;
   readonly #lastImportLine: Int32Array;
   readonly #views = new Map<number, ModuleView>();
@@ -41,7 +42,8 @@ export class ArchitectureModel {
     this.#fileModule = Int32Array.from(files, ([, module]) => module);
     this.#importFromModule = Int32Array.from(imports, ([from]) => this.#fileModule[from]!);
     this.#importToModule = Int32Array.from(imports, ([, to]) => this.#fileModule[to]!);
-    this.#testImport = Uint8Array.from(imports, ([from, to]) => Number(this.#isTestFile(from) || this.#isTestFile(to)));
+    this.#importFromTest = Uint8Array.from(imports, ([from]) => Number(this.#isTestFile(from)));
+    this.#importTouchesTest = Uint8Array.from(imports, ([from, to]) => Number(this.#isTestFile(from) || this.#isTestFile(to)));
     this.#holdsProduction = this.#modulesHoldingProduction();
     this.#lastImportLine = this.#lastImportLines();
   }
@@ -70,7 +72,7 @@ export class ArchitectureModel {
     const moduleCount = this.#paths.length;
     const counts = new Map<number, number>();
     for (let index = 0; index < this.#importFromModule.length; index++) {
-      if (!includeTests && this.#testImport[index]) continue;
+      if (!includeTests && this.#importTouchesTest[index]) continue;
       const from = visible[this.#importFromModule[index]!]!;
       const to = visible[this.#importToModule[index]!]!;
       if (from === to) continue;
@@ -78,10 +80,10 @@ export class ArchitectureModel {
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     return {
-      modules: this.#paths.flatMap((_, module) => (visible[module] === module && (includeTests || this.#holdsProduction[module]) ? [this.#view(module)] : [])),
+      modules: this.#paths.flatMap((_, module) => (visible[module] === module && this.#shows(module, includeTests) ? [this.#view(module)] : [])),
       dependencies: [...counts]
-        .map(([key, imports]) => ({ from: this.#paths[Math.floor(key / moduleCount)]!, to: this.#paths[key % moduleCount]!, imports }))
-        .sort((a, b) => compare(a.from, b.from) || compare(a.to, b.to)),
+        .sort(([a], [b]) => a - b)
+        .map(([key, imports]) => ({ from: this.#paths[Math.floor(key / moduleCount)]!, to: this.#paths[key % moduleCount]!, imports })),
     };
   }
 
@@ -90,7 +92,7 @@ export class ArchitectureModel {
     const farEnds = new Map<number, number>();
     const groups = new Map<number, Map<number, number>>();
     this.payload.imports.forEach(([from, to], index) => {
-      if (!includeTests && this.#testImport[index]) return;
+      if (!includeTests && this.#importFromTest[index]) return;
       const [near, far] = direction === "out" ? [from, to] : [to, from];
       if (!inside[near] || inside[far]) return;
       const leaf = this.#fileModule[far]!;
@@ -115,7 +117,7 @@ export class ArchitectureModel {
     const { files, imports } = this.payload;
     return imports
       .flatMap(([source, target, kind, line, names], index): ImportEvidence[] => {
-        const test = this.#testImport[index] === 1;
+        const test = this.#importFromTest[index] === 1;
         if (!sources[source] || !targets[target] || (test && !includeTests)) return [];
         return [{ file: files[source]![0], line, target: files[target]![0], kind, names, test }];
       })
@@ -138,10 +140,11 @@ export class ArchitectureModel {
     const hitModules = new Set(moduleHits.map(({ module }) => module));
     const fileHits = new Map<number, string[]>();
     for (const [file, module] of this.payload.files) {
-      if (hitModules.has(module) || !matches(file.toLowerCase())) continue;
-      fileHits.set(module, [...(fileHits.get(module) ?? []), file]);
+      const files = fileHits.get(module) ?? [];
+      if (hitModules.has(module) || files.length === filesPerSearchHit || !matches(file.toLowerCase())) continue;
+      fileHits.set(module, [...files, file]);
     }
-    return [...moduleHits, ...[...fileHits].map(([module, files]) => ({ module, rank: searchRanks.files, files: files.slice(0, filesPerSearchHit) }))]
+    return [...moduleHits, ...[...fileHits].map(([module, files]) => ({ module, rank: searchRanks.files, files }))]
       .sort((a, b) => a.rank - b.rank || compare(this.#paths[a.module]!, this.#paths[b.module]!))
       .slice(0, limit)
       .map(({ module, files }) => ({ module: this.#view(module), files }));
@@ -158,11 +161,15 @@ export class ArchitectureModel {
     return searchRanks.path;
   }
 
+  #shows(module: number, includeTests: boolean): boolean {
+    return includeTests || this.#parents[module] === -1 || this.#holdsProduction[module] === 1;
+  }
+
   #view(module: number): ModuleView {
     const cached = this.#views.get(module);
     if (cached) return cached;
     const [path, label, parent, kind, directFiles, totalFiles] = this.payload.modules[module]!;
-    const view = { path, label, kind, parent: parent === -1 ? null : this.#paths[parent]!, childCount: this.#children[module]!.length, directFiles, totalFiles };
+    const view = Object.freeze({ path, label, kind, parent: parent === -1 ? null : this.#paths[parent]!, childCount: this.#children[module]!.length, directFiles, totalFiles });
     this.#views.set(module, view);
     return view;
   }

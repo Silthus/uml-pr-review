@@ -7,23 +7,29 @@ const perParent = 20;
 const filesPerLeaf = 6;
 const importCount = 170_000;
 
-test("lift over a PostHog-sized payload stays within a few milliseconds", () => {
-  const payload = syntheticPayload();
-  const model = new ArchitectureModel(payload);
-  const expanded = new Set(["m3", "m3/m7", "m9"]);
+const payload = syntheticPayload();
+const model = new ArchitectureModel(payload);
 
-  const timings = Array.from({ length: 31 }, () => {
-    const started = performance.now();
-    model.lift(expanded);
-    return performance.now() - started;
-  }).sort((a, b) => a - b);
-  const median = timings[Math.floor(timings.length / 2)]!;
+test.each([
+  { view: "one product opened", expanded: ["m3", "m3/m7"], bound: 25 },
+  { view: "every top-level module opened", expanded: [...Array.from({ length: topLevel }, (_, top) => `m${top}`), "m3/m7"], bound: 50 },
+])("lift over a PostHog-sized payload with $view stays within a few milliseconds", ({ view, expanded, bound }) => {
+  const median = medianMilliseconds(() => model.lift(new Set(expanded)));
 
-  console.log(`lift: ${payload.modules.length} modules, ${payload.imports.length} imports, median ${median.toFixed(2)} ms`);
+  console.log(`lift, ${view}: ${payload.modules.length} modules, ${payload.imports.length} imports, median ${median.toFixed(2)} ms`);
   expect(payload.modules.length).toBeGreaterThan(6_500);
   expect(payload.imports.length).toBeGreaterThan(165_000);
-  expect(median).toBeLessThan(25);
+  expect(median).toBeLessThan(bound);
 });
+
+function medianMilliseconds(run: () => void): number {
+  const timings = Array.from({ length: 31 }, () => {
+    const started = performance.now();
+    run();
+    return performance.now() - started;
+  }).sort((a, b) => a - b);
+  return timings[Math.floor(timings.length / 2)]!;
+}
 
 function syntheticPayload(): ArchitecturePayload {
   const modules: ArchitecturePayload["modules"] = [[".", ".", -1, "root", 0, 0]];

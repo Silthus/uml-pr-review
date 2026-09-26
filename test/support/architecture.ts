@@ -16,7 +16,19 @@ export type ArchitectureSource = Record<string, ImportSpec[]>;
 type Resolved = { to: string; line: number; kind: ImportKind; names: string[] };
 type Unresolved = { specifier: string; line: number };
 
-const languages: Record<string, Language> = { py: "python", ts: "typescript", tsx: "typescript", js: "javascript", jsx: "javascript", rs: "rust" };
+const languages: Record<string, Language> = {
+  py: "python",
+  pyi: "python",
+  ts: "typescript",
+  tsx: "typescript",
+  mts: "typescript",
+  cts: "typescript",
+  js: "javascript",
+  jsx: "javascript",
+  mjs: "javascript",
+  cjs: "javascript",
+  rs: "rust",
+};
 
 export function architectureOf(source: ArchitectureSource, overrides: Partial<Pick<ArchitecturePayload, "repository" | "commit" | "tree">> = {}): ArchitecturePayload {
   const specs = Object.entries(source).map(([path, imports]) => ({ path, ...splitImports(imports) }));
@@ -39,11 +51,11 @@ export function architectureOf(source: ArchitectureSource, overrides: Partial<Pi
       filePaths.filter((file) => parentOf(file) === path).length,
       filePaths.filter((file) => isWithin(file, path)).length,
     ]),
-    files: filePaths.map((path) => [path, moduleOf(path), languageOf(path), isTestPath(path) ? "test" : "production"]),
+    files: filePaths.map((path) => [path, moduleOf(path), languageOf(path), isTestFile(path) ? "test" : "production"]),
     imports: importTuples(specs, fileIndex),
     unresolved: specs
       .flatMap(({ path, unresolved }) => unresolved.map(({ specifier, line }) => [fileIndex.get(path)!, line, specifier] as const))
-      .sort(([fileA, lineA, specA], [fileB, lineB, specB]) => fileA - fileB || lineA - lineB || specA.localeCompare(specB)),
+      .sort(([fileA, lineA, specA], [fileB, lineB, specB]) => fileA - fileB || lineA - lineB || compare(specA, specB)),
     stats: { files: filePaths.length, imports: specs.reduce((sum, { resolved }) => sum + resolved.length, 0), parsed: specs.length, cacheHits: 0, failed: 0, milliseconds: 0 },
   });
 }
@@ -55,7 +67,7 @@ function splitImports(imports: ImportSpec[]): { resolved: Resolved[]; unresolved
     const line = typeof spec === "string" ? position + 1 : (spec.line ?? position + 1);
     if (typeof spec === "string") resolved.push({ to: spec, line, kind: "static", names: [] });
     else if ("unresolved" in spec) unresolved.push({ specifier: spec.unresolved, line });
-    else resolved.push({ to: spec.to, line, kind: spec.kind ?? "static", names: [...(spec.names ?? [])].sort() });
+    else resolved.push({ to: spec.to, line, kind: spec.kind ?? "static", names: [...new Set(spec.names)].sort(compare) });
   });
   return { resolved, unresolved };
 }
@@ -74,12 +86,20 @@ function moduleTreeOf(files: string[]): string[] {
   for (const file of files) {
     for (let folder = parentOf(file); folder !== "."; folder = parentOf(folder)) folders.add(folder);
   }
-  return [...folders].sort((a, b) => (a === "." ? -1 : b === "." ? 1 : a < b ? -1 : a > b ? 1 : 0));
+  return [...folders].sort((a, b) => (a === "." ? -1 : b === "." ? 1 : compare(a, b)));
 }
 
 function kindOf(path: string) {
   if (path === ".") return "root" as const;
-  return /^(tests?|__tests__)$/.test(basename(path)) ? ("tests" as const) : ("directory" as const);
+  return isTestFolderName(basename(path)) ? ("tests" as const) : ("directory" as const);
+}
+
+function isTestFile(path: string): boolean {
+  return isTestPath(path) || path.split("/").slice(0, -1).some(isTestFolderName);
+}
+
+function isTestFolderName(name: string): boolean {
+  return /^(tests?|__tests__|e2e|__snapshots__|__mocks__)$/.test(name);
 }
 
 function languageOf(path: string): Language {
@@ -95,6 +115,10 @@ function parentOf(path: string): string {
 
 function basename(path: string): string {
   return path.slice(path.lastIndexOf("/") + 1);
+}
+
+function compare(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
 function isWithin(file: string, module: string): boolean {

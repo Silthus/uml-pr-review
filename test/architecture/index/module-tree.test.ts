@@ -1,10 +1,11 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import type { ArchitecturePayload } from "../../../src/architecture/contracts/index.ts";
+import { ArchitecturePayloadSchema, type ArchitecturePayload } from "../../../src/architecture/contracts/index.ts";
 import { createRepositoryIndexer } from "../../../src/architecture/index/index.ts";
 import { ArchitectureModel } from "../../../src/architecture/model/index.ts";
 import { sourceFiles, temporaryRepository, type TemporaryRepository } from "./repository.ts";
 
 const products = Array.from({ length: 10 }, (_, index) => `products/p${index}`);
+const libraries = Array.from({ length: 9 }, (_, index) => `libs/l${index}`);
 
 let repository: TemporaryRepository;
 let payload: ArchitecturePayload;
@@ -30,6 +31,10 @@ beforeAll(async () => {
       "products/__init__.py",
       "products/shared/helpers.py",
       ...products.flatMap((product) => [`${product}/backend/models.py`, `${product}/frontend/scene.tsx`]),
+      ...libraries.flatMap((library) => [`${library}/backend/models.py`, `${library}/frontend/scene.tsx`]),
+      "services/api/src/server.py",
+      "services/api/app.py",
+      "services/api/settings.py",
       "rust/crate/src/main.rs",
       "tools/management/commands/run.py",
       "tools-extra/lint.py",
@@ -56,6 +61,12 @@ describe("module tree", () => {
       'frontend/src/scenes "scenes" directory',
       'frontend/src/scenes/billing "billing" scene',
       'frontend/src/scenes/insights "insights" scene',
+      'libs "libs" directory',
+      ...libraries.flatMap((library) => [
+        `${library} "${library.slice("libs/".length)}" directory`,
+        `${library}/backend "backend" directory`,
+        `${library}/frontend "frontend" directory`,
+      ]),
       'posthog "posthog" django-app',
       'posthog/api/v2/routes "api/v2/routes" directory',
       'posthog/migrations "migrations" migrations',
@@ -68,16 +79,19 @@ describe("module tree", () => {
       ]),
       'products/shared "shared" directory',
       'rust/crate "rust/crate" package',
+      'services/api "services/api" directory',
+      'services/api/src "src" directory',
       'tools-extra "tools-extra" directory',
       'tools/management/commands "tools/management/commands" directory',
     ]);
   });
 
-  test("makes a dominant src folder transparent and counts its files for the parent", () => {
+  test("makes a src folder with at least 80 % of the files transparent and counts its files for the parent", () => {
     expect(model.module("frontend")).toMatchObject({ parent: ".", childCount: 3, directFiles: 1, totalFiles: 6 });
     expect(model.moduleOfFile("frontend/src/lib/format.ts")?.path).toBe("frontend/src/lib");
     expect(model.moduleOfFile("rust/crate/src/main.rs")?.path).toBe("rust/crate");
-    expect(model.module(".")).toMatchObject({ totalFiles: 37, childCount: 7 });
+    expect(model.moduleOfFile("services/api/src/server.py")?.path).toBe("services/api/src");
+    expect(model.module(".")).toMatchObject({ totalFiles: 58, childCount: 9 });
   });
 
   test("lists source files sorted by path with language and role, without declarations, dot-folders, or node_modules", () => {
@@ -89,13 +103,14 @@ describe("module tree", () => {
     expect(files).toContain("rust/crate/src/main.rs rust production");
     expect(files.some((file) => /globals\.d\.ts|\.github|node_modules|README/.test(file))).toBe(false);
     expect(payload.files.map(([path]) => path)).toEqual(payload.files.map(([path]) => path).sort());
-    expect(payload.files).toHaveLength(37);
+    expect(payload.files).toHaveLength(58);
   });
 
   test("identifies the repository and the indexed commit", async () => {
     const head = (await repository.git("rev-parse", "HEAD")).trim();
     const tree = (await repository.git("rev-parse", "HEAD^{tree}")).trim();
     expect(payload).toMatchObject({ version: 1, commit: head, tree });
+    expect(ArchitecturePayloadSchema.parse(payload)).toEqual(payload);
     expect(payload.repository.root).toBe((await repository.git("rev-parse", "--show-toplevel")).trim());
     expect(payload.repository.name).toBe(payload.repository.root.split("/").at(-1)!);
   });

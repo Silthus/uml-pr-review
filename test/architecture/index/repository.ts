@@ -15,6 +15,12 @@ export type TemporaryRepository = {
 };
 
 export async function temporaryRepository(files: Files): Promise<TemporaryRepository> {
+  const repository = await repositoryWithoutCommits();
+  await repository.commit(files);
+  return repository;
+}
+
+export async function repositoryWithoutCommits(): Promise<TemporaryRepository> {
   const dir = await mkdtemp(join(tmpdir(), "uml-pr-review-index-"));
   const run = (...args: string[]) => git(dir, args);
   const write = async (changes: Files) => {
@@ -34,7 +40,6 @@ export async function temporaryRepository(files: Files): Promise<TemporaryReposi
     return (await run("rev-parse", "HEAD")).trim();
   };
   await run("init", "--quiet", "--initial-branch=main");
-  await commit(files);
   return { dir, write, commit, git: run, cleanup: () => rm(dir, { recursive: true, force: true }) };
 }
 

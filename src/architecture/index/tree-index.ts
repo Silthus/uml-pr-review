@@ -3,6 +3,7 @@ import { languageOf } from "../../analyzer/parser.ts";
 import type { ArchitecturePayload, ImportKind } from "../contracts/index.ts";
 import type { ExtractionStore, Extracted } from "./extraction-store.ts";
 import { isSymbolicLink, listBlobs, readBlobs, type TreeEntry } from "./git.ts";
+import { compareCodeUnits } from "./order.ts";
 import { buildModuleTree, languageOfSource, type ModuleTree } from "./module-tree.ts";
 import { isResolved } from "./resolution.ts";
 import { createImportResolver, type ImportResolver } from "./resolver.ts";
@@ -35,7 +36,7 @@ export async function buildTreeIndex(cwd: string, tree: string, store: Extractio
 function sourceFilesOf(entries: TreeEntry[]): SourceFile[] {
   return entries
     .filter((entry) => !isSymbolicLink(entry) && languageOfSource(entry.path) !== null)
-    .sort((a, b) => compare(a.path, b.path))
+    .sort((a, b) => compareCodeUnits(a.path, b.path))
     .map((entry, index) => ({ ...entry, index }));
 }
 
@@ -90,13 +91,9 @@ function merge(imports: Map<number, FileImport>, key: number, next: FileImport) 
 function importTuples(imports: Map<number, FileImport>, fileCount: number): TreeIndex["imports"] {
   return [...imports]
     .sort(([a], [b]) => a - b)
-    .map(([key, { kind, line, names }]) => [Math.floor(key / fileCount), key % fileCount, kind, line, [...names].sort(compare)]);
+    .map(([key, { kind, line, names }]) => [Math.floor(key / fileCount), key % fileCount, kind, line, [...names].sort(compareCodeUnits)]);
 }
 
 function compareUnresolved([fileA, lineA, specifierA]: TreeIndex["unresolved"][number], [fileB, lineB, specifierB]: TreeIndex["unresolved"][number]): number {
-  return fileA - fileB || lineA - lineB || compare(specifierA, specifierB);
-}
-
-function compare(a: string, b: string): number {
-  return a < b ? -1 : a > b ? 1 : 0;
+  return fileA - fileB || lineA - lineB || compareCodeUnits(specifierA, specifierB);
 }

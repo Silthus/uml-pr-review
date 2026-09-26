@@ -38,3 +38,57 @@ error: expect(received).toBe(expected)
 Expected: 34
 Received: 32
 (fail) unresolved imports > counts every import that resolved inside the repository, assets included [0.36ms]
+
+3. After review: the changes tests (type change, spaces, unicode, option injection) against the first changes.ts:
+
+bun test v1.4.2 (50a8a8387)
+test/architecture/index/snapshot.test.ts:
+101 |       "app/ünï.py": "a\nb\n",
+102 |       "README.md": "changed",
+103 |     });
+104 |     const head = (await repository.git("rev-parse", "HEAD^{tree}")).trim();
+105 | 
+106 |     expect(await createRepositoryIndexer().changes(repository.dir, base, head)).toEqual([
+                                                                                      ^
+error: expect(received).toEqual(expected)
+@@ -7,3 +7,3 @@
+    {
+-     "firstChangedLine": 3,
++     "firstChangedLine": 1,
+      "path": "app/a.py",
+@@ -12,3 +12,3 @@
+    {
+-     "firstChangedLine": 1,
++     "firstChangedLine": 3,
+      "path": "app/added.ts",
+@@ -27,3 +27,3 @@
+    {
+-     "firstChangedLine": 2,
++     "firstChangedLine": 1,
+      "path": "app/sp ace.py",
+@@ -32,3 +32,3 @@
+    {
+-     "firstChangedLine": 2,
++     "firstChangedLine": 1,
+      "path": "app/ünï.py",
+- Expected  - 4
++ Received  + 4
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a03c913c0474be6fe/test/architecture/index/snapshot.test.ts:106:81)
+(fail) changed files > lists source files added, modified, or deleted between two trees with their first changed line [195.49ms]
+116 | 
+117 |   test("accepts only trees, never options, as the two ends", async () => {
+118 |     const repository = await repositoryWithIgnoredButTrackedFile();
+119 |     const output = join(repository.dir, "written-by-git.txt");
+120 | 
+121 |     await expect(createRepositoryIndexer().changes(repository.dir, `--output=${output}`, "HEAD")).rejects.toBeInstanceOf(CommandError);
+                                                                                                                ^
+error: expect(received).rejects.toBeInstanceOf(expected)
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a03c913c0474be6fe/test/architecture/index/snapshot.test.ts:121:107)
+(fail) changed files > accepts only trees, never options, as the two ends [101.92ms]
+ 0 pass
+ 4 filtered out
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [309.00ms]

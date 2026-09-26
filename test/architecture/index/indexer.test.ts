@@ -76,6 +76,15 @@ describe("extraction cache", () => {
     expect(JSON.parse(child.stdout.toString())).toMatchObject({ parsed: 0, cacheHits: 3 });
   });
 
+  test("parses with at least one worker when asked for none", async () => {
+    const repository = await repositoryOf(threeFiles);
+
+    const payload = await createRepositoryIndexer({ workers: 0 }).index(repository.dir, { commit: "HEAD" });
+
+    expect(payload.stats).toMatchObject({ parsed: 3, imports: 2 });
+    expect(payload.imports).toHaveLength(2);
+  });
+
   test("parses only the blobs a new tree adds, and each distinct blob once", async () => {
     const repository = await repositoryOf(threeFiles);
     const indexer = createRepositoryIndexer();

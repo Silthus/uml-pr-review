@@ -8,7 +8,9 @@ export async function extractInWorkers(cwd: string, blobs: BlobToExtract[], work
   const drain = async () => {
     const worker = new Worker(new URL("./extract-worker.ts", import.meta.url).href);
     try {
-      for (let chunk = chunks.shift(); chunk; chunk = chunks.shift()) extractions.push(...(await extractChunk(worker, { cwd, blobs: chunk })));
+      for (let chunk = chunks.shift(); chunk; chunk = chunks.shift()) {
+        extractions.push(...(await extractChunk(worker, { cwd, blobs: chunk })));
+      }
     } finally {
       worker.terminate();
     }
@@ -23,8 +25,14 @@ function chunksOf(blobs: BlobToExtract[]): BlobToExtract[][] {
 
 function extractChunk(worker: Worker, request: ExtractionRequest): Promise<Extraction[]> {
   return new Promise((resolve, reject) => {
-    worker.onmessage = ({ data }: MessageEvent<ExtractionReply>) => (data.ok ? resolve(data.extractions) : reject(new Error(data.message)));
-    worker.onerror = (event) => reject(new Error(event.message));
+    const stopped = () => reject(new Error("An import extraction worker stopped before it answered."));
+    const settle = (outcome: () => void) => {
+      worker.removeEventListener("close", stopped);
+      outcome();
+    };
+    worker.addEventListener("close", stopped);
+    worker.onmessage = ({ data }: MessageEvent<ExtractionReply>) => settle(() => (data.ok ? resolve(data.extractions) : reject(new Error(data.message))));
+    worker.onerror = (event) => settle(() => reject(new Error(event.message)));
     worker.postMessage(request);
   });
 }

@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { rm } from "node:fs/promises";
+import { rm, symlink } from "node:fs/promises";
 import { join } from "node:path";
 import { createRepositoryIndexer } from "../../../src/architecture/index/index.ts";
-import { importsOf, temporaryRepository, type TemporaryRepository } from "./repository.ts";
+import { CommandError } from "../../../src/git.ts";
+import { importsOf, repositoryWithoutCommits, temporaryRepository, type TemporaryRepository } from "./repository.ts";
 
 const repositories: TemporaryRepository[] = [];
 
@@ -28,7 +29,7 @@ async function worktreeState(repository: TemporaryRepository) {
   const index = await Bun.file(join(repository.dir, ".git/index")).bytes();
   return {
     index: new Bun.CryptoHasher("sha256").update(index).digest("hex"),
-    status: await repository.git("status", "--porcelain", "--untracked-files=all"),
+    status: await repository.git("--no-optional-locks", "status", "--porcelain", "--untracked-files=all"),
     head: await repository.git("rev-parse", "HEAD"),
   };
 }
@@ -61,6 +62,16 @@ describe("working-tree snapshot", () => {
     expect(await Bun.file(join(repository.dir, ".git/index")).exists()).toBe(false);
   });
 
+  test("captures the working tree of a repository without commits", async () => {
+    const repository = await repositoryWithoutCommits();
+    repositories.push(repository);
+    await repository.write({ "app/first.py": "from app import second\n", "app/second.py": "" });
+
+    const payload = await createRepositoryIndexer().index(repository.dir, "working-tree");
+
+    expect(importsOf(payload)).toEqual(["app/first.py:1 -> app/second.py static"]);
+  });
+
   test("gives concurrent snapshots of one worktree the same tree", async () => {
     const repository = await repositoryWithIgnoredButTrackedFile();
     await repository.write({ "app/new.py": "" });
@@ -76,23 +87,38 @@ describe("working-tree snapshot", () => {
 describe("changed files", () => {
   test("lists source files added, modified, or deleted between two trees with their first changed line", async () => {
     const repository = await repositoryWithIgnoredButTrackedFile();
-    await repository.commit({ "app/a.py": "one\ntwo\nthree\nfour\n", "app/c.py": "keep\n" });
+    await repository.commit({ "app/0.py": "x\n", "app/a.py": "one\ntwo\nthree\nfour\n", "app/c.py": "keep\n", "app/sp ace.py": "a\nb\n", "app/ünï.py": "a\n" });
     const base = (await repository.git("rev-parse", "HEAD^{tree}")).trim();
+    await rm(join(repository.dir, "app/0.py"));
+    await symlink("c.py", join(repository.dir, "app/0.py"));
     await repository.commit({
-      "app/a.py": "one\ntwo\n3\nfour\n5\n",
+      "app/a.py": "one\ntwo\n++ 3\nfour\n5\n",
       "app/c.py": "",
       "app/b.py": null,
       "app/added.ts": "export {};\n",
       "app/types.d.ts": "declare const x: number;\n",
+      "app/sp ace.py": "a\nB\n",
+      "app/ünï.py": "a\nb\n",
       "README.md": "changed",
     });
     const head = (await repository.git("rev-parse", "HEAD^{tree}")).trim();
 
     expect(await createRepositoryIndexer().changes(repository.dir, base, head)).toEqual([
+      { path: "app/0.py", status: "modified", firstChangedLine: 1 },
       { path: "app/a.py", status: "modified", firstChangedLine: 3 },
       { path: "app/added.ts", status: "added", firstChangedLine: 1 },
       { path: "app/b.py", status: "deleted", firstChangedLine: 1 },
       { path: "app/c.py", status: "modified", firstChangedLine: 1 },
+      { path: "app/sp ace.py", status: "modified", firstChangedLine: 2 },
+      { path: "app/ünï.py", status: "modified", firstChangedLine: 2 },
     ]);
+  });
+
+  test("accepts only trees, never options, as the two ends", async () => {
+    const repository = await repositoryWithIgnoredButTrackedFile();
+    const output = join(repository.dir, "written-by-git.txt");
+
+    await expect(createRepositoryIndexer().changes(repository.dir, `--output=${output}`, "HEAD")).rejects.toBeInstanceOf(CommandError);
+    expect(await Bun.file(output).exists()).toBe(false);
   });
 });

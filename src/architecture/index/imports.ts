@@ -22,7 +22,7 @@ function pythonImports(root: Node): ImportRef[] {
     const module = statement.childForFieldName("module_name")?.text;
     if (!module) return [];
     const wildcard = statement.namedChildren.some((child) => child.type === "wildcard_import");
-    const names = wildcard ? ["*"] : statement.childrenForFieldName("name").map(importedName);
+    const names = wildcard ? ["*"] : statement.childrenForFieldName("name").map(importedName).filter(Boolean);
     return [{ specifier: module, line, kind, names }];
   });
 }
@@ -43,7 +43,7 @@ function isTypeCheckingBranch(parent: Node, child: Node): boolean {
   return (
     parent.type === "if_statement" &&
     parent.childForFieldName("consequence")?.id === child.id &&
-    /\bTYPE_CHECKING\b/.test(parent.childForFieldName("condition")?.text ?? "")
+    /^(typing\.)?TYPE_CHECKING$/.test(parent.childForFieldName("condition")?.text ?? "")
   );
 }
 
@@ -84,7 +84,14 @@ function exportedBindings(statement: Node): string[] {
 }
 
 function specifierNames(list: Node, specifierType: string): string[] {
-  return list.namedChildren.filter((child) => child.type === specifierType).map((specifier) => specifier.childForFieldName("name")?.text ?? "");
+  return list.namedChildren
+    .filter((child) => child.type === specifierType)
+    .map((specifier) => withoutQuotes(specifier.childForFieldName("name")?.text ?? ""))
+    .filter(Boolean);
+}
+
+function withoutQuotes(name: string): string {
+  return /^["']/.test(name) ? name.slice(1, -1) : name;
 }
 
 function importRef(specifierNode: Node | null | undefined, at: Node, kind: ImportKind, names: string[]): ImportRef[] {

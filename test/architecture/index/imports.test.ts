@@ -19,6 +19,8 @@ else:
 
 def handler():
     from app.lazy import thing
+if not TYPE_CHECKING:
+    from app.runtime import Runtime
 `;
 
 const scriptForms = `import Default, { a } from "./default";
@@ -35,6 +37,8 @@ const skipped = import(\`./templated/\${name}\`);
 const template = import(\`./template\`);
 import "./styles.css";
 import { missing } from "./nope";
+import { "quoted name" as q } from "./quoted";
+import { js } from "./esm-style.js";
 `;
 
 const tsconfigBase = `{
@@ -54,17 +58,19 @@ beforeAll(async () => {
     "app/merged.py": "from app.models import Team\n\n\ndef load():\n    from app.models import User\n",
     "app/stems.py": "from app.missing import thing\nimport app.namespace\nfrom app.namespace import only\n",
     "app/__init__.py": "CONSTANT = 1\n",
-    ...sourceFiles(["app/models.py", "app/util.py", "app/users.py", "app/helpers.py", "app/views.py", "app/templates.py", "app/everything.py", "app/types.py", "app/fallback.py", "app/lazy.py", "app/other/missing.py", "app/namespace/only.py"]),
+    ...sourceFiles(["app/models.py", "app/util.py", "app/users.py", "app/helpers.py", "app/views.py", "app/templates.py", "app/everything.py", "app/types.py", "app/fallback.py", "app/lazy.py", "app/runtime.py", "app/other/missing.py", "app/namespace/only.py"]),
     "web/src/forms.ts": scriptForms,
-    ...sourceFiles(["default", "named", "namespace", "types", "side-effect", "reexported", "star", "dynamic", "required", "assigned", "template"].map((name) => `web/src/${name}.ts`)),
+    ...sourceFiles(["default", "named", "namespace", "types", "side-effect", "reexported", "star", "dynamic", "required", "assigned", "template", "quoted", "esm-style"].map((name) => `web/src/${name}.ts`)),
     "web/src/styles.css": "body {}",
     "web/tsconfig.base.json": tsconfigBase,
     "web/tsconfig.json": JSON.stringify({ extends: "./tsconfig.base" }),
-    "web/src/aliases.ts": 'import "~/lib/format";\nimport "~/scenes/home";\nimport "@icons";\nimport "@acme/ui";\nimport "@acme/ui/button";\nimport "@acme/icons";\nimport "@acme/ui/missing";\nimport "react";\n',
+    "web/src/aliases.ts": 'import "~/lib/format";\nimport "~/scenes/home";\nimport "@icons";\nimport "@acme/ui";\nimport "@acme/ui/button";\nimport "@acme/icons";\nimport "@acme/ui/missing";\nimport "react";\nimport "@acme/esm";\nimport "@acme/plain";\n',
     ...sourceFiles(["web/lib/format.ts", "web/src/lib/format.ts", "web/src/scenes/home.tsx"]),
     "packages/ui/package.json": JSON.stringify({ name: "@acme/ui", exports: { ".": { source: "./src/index.ts", import: "./dist/index.js" }, "./button": "./dist/button.js" } }),
     "packages/icons/package.json": JSON.stringify({ name: "@acme/icons", main: "dist/index.js" }),
-    ...sourceFiles(["packages/ui/src/index.ts", "packages/ui/src/button.ts", "packages/icons/src/index.ts"]),
+    "packages/esm/package.json": JSON.stringify({ name: "@acme/esm", module: "./esm/index.js" }),
+    "packages/plain/package.json": JSON.stringify({ name: "@acme/plain" }),
+    ...sourceFiles(["packages/ui/src/index.ts", "packages/ui/src/button.ts", "packages/icons/src/index.ts", "packages/esm/esm/index.js", "packages/plain/src/index.ts"]),
     "services/llm/pyproject.toml": "[project]\nname = 'llm'\n",
     "services/llm/src/llm_gateway/__init__.py": "",
     "services/llm/src/llm_gateway/client.py": "from shared.config import settings\n",
@@ -88,6 +94,7 @@ describe("Python imports", () => {
       "app/service.py:4 -> app/helpers.py static",
       "app/service.py:16 -> app/lazy.py lazy [thing]",
       "app/service.py:2 -> app/models.py static",
+      "app/service.py:18 -> app/runtime.py static [Runtime]",
       "app/service.py:6 -> app/templates.py static [render]",
       "app/service.py:10 -> app/types.py type [TeamType]",
       "app/service.py:3 -> app/users.py static [Team, User]",
@@ -120,8 +127,10 @@ describe("TypeScript and JavaScript imports", () => {
       "web/src/forms.ts:10 -> web/src/assigned.ts require",
       "web/src/forms.ts:1 -> web/src/default.ts static",
       "web/src/forms.ts:8 -> web/src/dynamic.ts dynamic",
+      "web/src/forms.ts:16 -> web/src/esm-style.ts static [js]",
       "web/src/forms.ts:2 -> web/src/named.ts static [b, c]",
       "web/src/forms.ts:3 -> web/src/namespace.ts static",
+      "web/src/forms.ts:15 -> web/src/quoted.ts static [quoted name]",
       "web/src/forms.ts:6 -> web/src/reexported.ts reexport [e, f]",
       "web/src/forms.ts:9 -> web/src/required.ts require",
       "web/src/forms.ts:5 -> web/src/side-effect.ts static",
@@ -133,7 +142,9 @@ describe("TypeScript and JavaScript imports", () => {
 
   test("resolves tsconfig paths through extends, longest pattern first, and workspace packages by name", () => {
     expect(importsFrom("web/src/aliases.ts")).toEqual([
+      "web/src/aliases.ts:9 -> packages/esm/esm/index.js static",
       "web/src/aliases.ts:6 -> packages/icons/src/index.ts static",
+      "web/src/aliases.ts:10 -> packages/plain/src/index.ts static",
       "web/src/aliases.ts:5 -> packages/ui/src/button.ts static",
       "web/src/aliases.ts:4 -> packages/ui/src/index.ts static",
       "web/src/aliases.ts:1 -> web/lib/format.ts static",
@@ -148,7 +159,7 @@ describe("unresolved imports", () => {
   });
 
   test("counts every import that resolved inside the repository, assets included", () => {
-    const resolvedByFile = { "app/service.py": 10, "app/merged.py": 2, "app/stems.py": 2, "web/src/forms.ts": 12, "web/src/aliases.ts": 5, "products/ai/logic.py": 2, "services/llm/src/llm_gateway/client.py": 1 };
+    const resolvedByFile = { "app/service.py": 11, "app/merged.py": 2, "app/stems.py": 2, "web/src/forms.ts": 14, "web/src/aliases.ts": 7, "products/ai/logic.py": 2, "services/llm/src/llm_gateway/client.py": 1 };
     expect(payload.stats.imports).toBe(Object.values(resolvedByFile).reduce((sum, count) => sum + count, 0));
   });
 });

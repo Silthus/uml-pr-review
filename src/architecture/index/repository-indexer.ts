@@ -2,7 +2,7 @@ import { join } from "node:path";
 import type { ArchitecturePayload, ChangedFile, RepositoryRef } from "../contracts/index.ts";
 import { changedFiles } from "./changes.ts";
 import { ExtractionStore } from "./extraction-store.ts";
-import { git } from "./git.ts";
+import { revision } from "./git.ts";
 import { PromiseCache } from "./promise-cache.ts";
 import { locateRepository } from "./repository.ts";
 import { createSnapshotter, type Snapshotter } from "./snapshot.ts";
@@ -25,7 +25,7 @@ const retainedTreeIndexes = 4;
 const maximumWorkers = 8;
 
 export function createRepositoryIndexer(options: RepositoryIndexerOptions = {}): RepositoryIndexer {
-  const workers = options.workers ?? Math.max(1, Math.min(navigator.hardwareConcurrency, maximumWorkers));
+  const workers = Math.max(1, options.workers ?? Math.min(navigator.hardwareConcurrency, maximumWorkers));
   const treeIndexes = new PromiseCache<TreeIndex>(retainedTreeIndexes);
   const stores = new Map<string, ExtractionStore>();
   const snapshot = createSnapshotter();
@@ -61,7 +61,6 @@ export function createRepositoryIndexer(options: RepositoryIndexerOptions = {}):
 
 async function resolveSource(worktree: string, source: IndexSource, snapshot: Snapshotter): Promise<{ commit: string | null; tree: string }> {
   if (source === "working-tree") return { commit: null, tree: await snapshot(worktree) };
-  if (source.commit.startsWith("-")) throw new Error(`${source.commit} is not a commit.`);
-  const [commit, tree] = (await git(worktree, ["rev-parse", `${source.commit}^{commit}`, `${source.commit}^{tree}`])).trim().split("\n");
-  return { commit: commit!, tree: tree! };
+  const commit = await revision(worktree, `${source.commit}^{commit}`);
+  return { commit, tree: await revision(worktree, `${commit}^{tree}`) };
 }

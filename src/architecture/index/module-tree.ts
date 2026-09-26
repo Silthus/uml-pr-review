@@ -1,5 +1,6 @@
 import { posix } from "node:path";
 import type { Language, ModuleKind } from "../contracts/index.ts";
+import { compareCodeUnits } from "./order.ts";
 
 export type ModuleNode = {
   path: string;
@@ -86,7 +87,7 @@ function draft(context: Context, path: string, labelBase: string, isRoot: boolea
     label: isRoot ? root : labelBase === root ? deepest.path : deepest.path.slice(labelBase.length + 1),
     kind: chain.map((folder) => context.kinds.get(folder)!).reduce(strongest),
     folders: transparent ? [...chain, transparent.path] : chain,
-    children: children.sort((a, b) => compare(a.path, b.path)),
+    children: children.sort((a, b) => compareCodeUnits(a.path, b.path)),
   };
 }
 
@@ -191,8 +192,4 @@ function sharedLayerNames(folders: Map<string, Folder>, family: Folder): Set<str
 
 function strongest(a: ModuleKind, b: ModuleKind): ModuleKind {
   return kindPriority.indexOf(a) <= kindPriority.indexOf(b) ? a : b;
-}
-
-function compare(a: string, b: string): number {
-  return a < b ? -1 : a > b ? 1 : 0;
 }

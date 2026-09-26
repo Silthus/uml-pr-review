@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { copyFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { git } from "./git.ts";
+import { git, hasRevision } from "./git.ts";
 
 export type Snapshotter = (worktree: string) => Promise<string>;
 
@@ -31,5 +31,6 @@ async function writeWorkingTree(worktree: string): Promise<string> {
 async function seedIndex(worktree: string, temporaryIndex: string, environment: Record<string, string>) {
   const realIndex = (await git(worktree, ["rev-parse", "--path-format=absolute", "--git-path", "index"])).trim();
   if (await Bun.file(realIndex).exists()) await copyFile(realIndex, temporaryIndex);
-  else await git(worktree, ["read-tree", "HEAD"], environment);
+  else if (await hasRevision(worktree, "HEAD")) await git(worktree, ["read-tree", "HEAD"], environment);
+  else await git(worktree, ["read-tree", "--empty"], environment);
 }

@@ -57,9 +57,9 @@ export class PythonResolver {
   }
 
   private moduleAt(modulePath: string): PythonModule | undefined {
-    const prefix = modulePath === root ? "" : `${modulePath}/`;
-    const candidates = modulePath === root ? [] : [`${modulePath}.py`, `${modulePath}.pyi`];
-    const file = [...candidates, `${prefix}__init__.py`, `${prefix}__init__.pyi`].find((candidate) => this.repository.files.has(candidate));
+    const packageFile = modulePath === root ? "__init__" : `${modulePath}/__init__`;
+    const candidates = modulePath === root ? [`${packageFile}.py`, `${packageFile}.pyi`] : [`${modulePath}.py`, `${packageFile}.py`, `${modulePath}.pyi`, `${packageFile}.pyi`];
+    const file = candidates.find((candidate) => this.repository.files.has(candidate));
     if (file) return { file };
     return this.repository.directories.has(modulePath) ? { file: undefined } : undefined;
   }

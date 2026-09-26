@@ -153,13 +153,25 @@ describe("unplanned-module", () => {
       const findings = findingsOf({
         plan: planOf({ modules: [modifyLogic] }),
         both: { [testUser]: [team], [user]: [team] },
-        head: { [user]: [team, { to: flagsApi, line: 3 }] },
+        head: { [testUser]: [team, { to: featureFlag, line: 5 }], [user]: [team, { to: flagsApi, line: 3 }] },
         changes: [modified(issues), modified(testUser, 5)],
       });
 
       expect(findings.map(({ severity, file, line, test, message }) => ({ severity, file, line, test, message }))).toEqual([
         { severity: "violation", file: user, line: 3, test: false, message: reconfigured(user, 3, flagsApi, 1) },
       ]);
+    });
+
+    test("stays silent when the import moves to another file of the same module", () => {
+      const organization = "posthog/models/organization.py";
+      const findings = findingsOf({
+        plan: planOf({ modules: [modifyLogic] }),
+        both: { [user]: [team], [organization]: [] },
+        head: { [user]: [organization] },
+        changes: [modified(issues)],
+      });
+
+      expect(findings).toEqual([]);
     });
 
     test("stays silent when the import moves to another file of a module it already depends on", () => {

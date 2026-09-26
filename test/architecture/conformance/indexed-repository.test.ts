@@ -94,7 +94,6 @@ test("a tsconfig alias retargeted without a source change touches the importing 
   const report = await finalCheck({
     committed: {
       "app/use.ts": 'import { api } from "@api";\nexport const value = api;\n',
-      "app/tests/test_use.py": "def test_use(): pass\n",
       "good/api.ts": "export const api = 1;\n",
       "bad/api.ts": "export const api = 2;\n",
       "tsconfig.json": aliasTo("./good/api.ts"),
@@ -112,7 +111,7 @@ test("a tsconfig alias retargeted without a source change touches the importing 
       line: 1,
       subject: { kind: "module", path: "app" },
       message:
-        "app/use.ts:1 now imports `bad/api.ts` through a configuration change, not a source change, in module `app`, which the plan does not touch (1 changed import there).",
+        "app/use.ts:1 in module `app`, which the plan does not touch, now imports `bad/api.ts`: a new dependency on `bad` through a configuration change, not a source change (1 reconfigured import there).",
       fix: "Revert the configuration change behind the import, or ask the human to unlock the plan and add `app` as a modified module.",
     },
   ]);

@@ -1,5 +1,5 @@
 import type { ArchitecturePlan, ChangedFile, PlannedModule, Seam } from "../contracts/index.ts";
-import type { FileImport, UnresolvedImport } from "./change.ts";
+import type { FileImport, ReconfiguredImport, UnresolvedImport } from "./change.ts";
 
 export type Feedback = { message: string; fix: string };
 
@@ -19,9 +19,9 @@ export function unplannedModule(first: ChangedFile, leaf: string, changedFiles: 
   };
 }
 
-export function reconfiguredModule(first: FileImport, leaf: string, changedImports: number, existsAtBase: boolean, status: PlanStatus): Feedback {
+export function reconfiguredModule(first: ReconfiguredImport, leaf: string, reconfiguredImports: number, existsAtBase: boolean, status: PlanStatus): Feedback {
   return {
-    message: `${at(first.file, first.line)} now imports ${code(first.target)} through a configuration change, not a source change, in module ${code(leaf)}, which the plan does not touch (${counted(changedImports, "changed import")} there).`,
+    message: `${at(first.file, first.line)} in module ${code(leaf)}, which the plan does not touch, now imports ${code(first.target)}: a new dependency on ${code(first.farEnd)} through a configuration change, not a source change (${counted(reconfiguredImports, "reconfigured import")} there).`,
     fix: `Revert the configuration change behind the import, or ${addModuleHint(leaf, existsAtBase, status)}.`,
   };
 }

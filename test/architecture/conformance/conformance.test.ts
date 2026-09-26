@@ -107,27 +107,83 @@ describe("unplanned-module", () => {
     ]);
   });
 
-  test("is a warning when only test files there gain a dependency without a source change", () => {
-    const testFile = "posthog/models/test/test_team.py";
-    const findings = findingsOf({
-      plan: planOf({ modules: [modifyLogic] }),
-      both: { [testFile]: [team] },
-      head: { [testFile]: [featureFlag] },
-      changes: [modified(issues)],
+  describe("when unchanged files there gain a dependency through configuration", () => {
+    const user = "posthog/models/user.py";
+    const testUser = "posthog/models/test_user.py";
+    const reconfigured = (file: string, line: number, target: string, count: number) =>
+      `${file}:${line} in module \`posthog/models\`, which the plan does not touch, now imports \`${target}\`: a new dependency on \`products\` through a configuration change, not a source change (${count} reconfigured import${count === 1 ? "" : "s"} there).`;
+    const addModelsHint = "Revert the configuration change behind the import, or ask the human to unlock the plan and add `posthog/models` as a modified module.";
+
+    test("reports the module once, at its first production import", () => {
+      const findings = findingsOf({
+        plan: planOf({ modules: [modifyLogic] }),
+        both: { [testUser]: [team], [user]: [team] },
+        head: { [testUser]: [team, { to: featureFlag, line: 2 }], [user]: [team, { to: flagsApi, line: 3 }] },
+        changes: [modified(issues)],
+      });
+
+      expect(findings).toEqual([
+        {
+          rule: "unplanned-module",
+          severity: "violation",
+          file: user,
+          line: 3,
+          subject: { kind: "module", path: "posthog/models" },
+          test: false,
+          message: reconfigured(user, 3, flagsApi, 2),
+          fix: addModelsHint,
+        },
+      ]);
     });
 
-    expect(findings).toEqual([
-      {
-        rule: "unplanned-module",
-        severity: "warning",
-        file: testFile,
-        line: 1,
-        subject: { kind: "module", path: "posthog/models/test" },
-        test: true,
-        message: `${testFile}:1 now imports \`${featureFlag}\` through a configuration change, not a source change, in module \`posthog/models/test\`, which the plan does not touch (1 changed import there).`,
-        fix: "Revert the configuration change behind the import, or ask the human to unlock the plan and add `posthog/models/test` as a modified module.",
-      },
-    ]);
+    test("is a warning when only test files gain the dependency", () => {
+      const findings = findingsOf({
+        plan: planOf({ modules: [modifyLogic] }),
+        both: { [testUser]: [team] },
+        head: { [testUser]: [team, { to: featureFlag, line: 2 }] },
+        changes: [modified(issues)],
+      });
+
+      expect(findings.map(({ severity, file, line, test, message }) => ({ severity, file, line, test, message }))).toEqual([
+        { severity: "warning", file: testUser, line: 2, test: true, message: reconfigured(testUser, 2, featureFlag, 1) },
+      ]);
+    });
+
+    test("is a violation at the production import even when only test files there changed", () => {
+      const findings = findingsOf({
+        plan: planOf({ modules: [modifyLogic] }),
+        both: { [testUser]: [team], [user]: [team] },
+        head: { [user]: [team, { to: flagsApi, line: 3 }] },
+        changes: [modified(issues), modified(testUser, 5)],
+      });
+
+      expect(findings.map(({ severity, file, line, test, message }) => ({ severity, file, line, test, message }))).toEqual([
+        { severity: "violation", file: user, line: 3, test: false, message: reconfigured(user, 3, flagsApi, 1) },
+      ]);
+    });
+
+    test("stays silent when the import moves to another file of a module it already depends on", () => {
+      const findings = findingsOf({
+        plan: planOf({ modules: [modifyLogic] }),
+        both: { [user]: [featureFlag] },
+        head: { [user]: [`${flagsModels}/feature_flag/__init__.py`] },
+        changes: [modified(issues)],
+      });
+
+      expect(findings).toEqual([]);
+    });
+
+    test("leaves an import that now resolves to a file the change adds to the module that gains the file", () => {
+      const link = "products/links/link.py";
+      const findings = findingsOf({
+        plan: planOf({ modules: [modifyLogic] }),
+        both: { [user]: [team] },
+        head: { [user]: [team, link], [link]: [] },
+        changes: [modified(issues), added(link)],
+      });
+
+      expect(findings.map(({ rule, file }) => ({ rule, file }))).toEqual([{ rule: "unplanned-module", file: link }]);
+    });
   });
 
   test("stays silent when every changed file is within a planned module", () => {

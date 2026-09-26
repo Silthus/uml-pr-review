@@ -1,5 +1,5 @@
 import type { ChangedFile, PlannedModule } from "../contracts/index.ts";
-import type { Change, FileImport, Location } from "./change.ts";
+import type { Change, FileImport, Location, ReconfiguredImport } from "./change.ts";
 import { type DraftFinding, draftOf, moduleSubject } from "./draft.ts";
 import * as feedback from "./feedback.ts";
 import { compare, isWithin } from "./paths.ts";
@@ -32,38 +32,59 @@ function plannedDraft(change: Change, rule: DraftFinding["rule"], module: Planne
   return draftOf({ rule, severity: "planned", ...location, subject: moduleSubject(module.path), test: change.isTest(location.file), ...text });
 }
 
+type Evidence = Location & feedback.Feedback;
+
 function unplannedModuleFindings(change: Change): DraftFinding[] {
-  const changedLeaves = unownedByLeaf(change, change.changes, ({ path }) => path);
-  const reconfiguredLeaves = unownedByLeaf(change, change.addedImports(), ({ file }) => file);
-  return [
-    ...[...changedLeaves].map(([leaf, changed]) => changedModuleDraft(change, leaf, changed)),
-    ...[...reconfiguredLeaves].filter(([leaf]) => !changedLeaves.has(leaf)).map(([leaf, imports]) => reconfiguredModuleDraft(change, leaf, imports)),
-  ];
+  const changedByLeaf = unownedByLeaf(change, change.changes, ({ path }) => path);
+  const reconfiguredByLeaf = reconfiguredDependenciesByLeaf(change);
+  const leaves = new Set([...changedByLeaf.keys(), ...reconfiguredByLeaf.keys()]);
+  return [...leaves].map((leaf) => unplannedModuleDraft(change, leaf, changedByLeaf.get(leaf) ?? [], reconfiguredByLeaf.get(leaf) ?? []));
 }
 
-function changedModuleDraft(change: Change, leaf: string, changed: ChangedFile[]): DraftFinding {
-  const first = changed.find(({ path }) => !change.isTest(path)) ?? changed[0]!;
-  return draftOf({
-    rule: "unplanned-module",
-    severity: "violation",
+function unplannedModuleDraft(change: Change, leaf: string, changed: ChangedFile[], reconfigured: ReconfiguredImport[]): DraftFinding {
+  const test = changed.every(({ path }) => change.isTest(path)) && reconfigured.every(({ test: fromTest }) => fromTest);
+  const changedFile = changed.find(({ path }) => test || !change.isTest(path));
+  const evidence = changedFile ? sourceChangeEvidence(change, leaf, changedFile, changed.length) : reconfigurationEvidence(change, leaf, reconfigured);
+  return draftOf({ rule: "unplanned-module", severity: "violation", subject: moduleSubject(leaf), test, ...evidence });
+}
+
+function sourceChangeEvidence(change: Change, leaf: string, first: ChangedFile, changedFiles: number): Evidence {
+  return {
     file: first.path,
     line: first.firstChangedLine,
-    subject: moduleSubject(leaf),
-    test: changed.every(({ path }) => change.isTest(path)),
-    ...feedback.unplannedModule(first, leaf, changed.length, existsAtBase(change, leaf), change.plan.status),
-  });
+    ...feedback.unplannedModule(first, leaf, changedFiles, existsAtBase(change, leaf), change.plan.status),
+  };
 }
 
-function reconfiguredModuleDraft(change: Change, leaf: string, imports: FileImport[]): DraftFinding {
-  const first = [...imports].sort(byProductionThenLocation)[0]!;
-  return draftOf({
-    rule: "unplanned-module",
-    severity: "violation",
+function reconfigurationEvidence(change: Change, leaf: string, reconfigured: ReconfiguredImport[]): Evidence {
+  const first = reconfigured.reduce((earliest, candidate) => (byProductionThenLocation(candidate, earliest) < 0 ? candidate : earliest));
+  return {
     file: first.file,
     line: first.line,
-    subject: moduleSubject(leaf),
-    test: imports.every(({ test }) => test),
-    ...feedback.reconfiguredModule(first, leaf, imports.length, existsAtBase(change, leaf), change.plan.status),
+    ...feedback.reconfiguredModule(first, leaf, reconfigured.length, existsAtBase(change, leaf), change.plan.status),
+  };
+}
+
+function reconfiguredDependenciesByLeaf(change: Change): Map<string, ReconfiguredImport[]> {
+  const byLeaf = new Map<string, ReconfiguredImport[]>();
+  for (const [leaf, imports] of unownedByLeaf(change, importsNoSourceChangeExplains(change), ({ file }) => file)) {
+    const dependencies = newDependenciesOf(change, leaf, imports);
+    if (dependencies.length > 0) byLeaf.set(leaf, dependencies);
+  }
+  return byLeaf;
+}
+
+function importsNoSourceChangeExplains(change: Change): FileImport[] {
+  const changedFiles = new Set(change.changes.map(({ path }) => path));
+  const addedFiles = new Set(change.changes.filter(({ status }) => status === "added").map(({ path }) => path));
+  return change.addedImports().filter(({ file, target }) => !changedFiles.has(file) && !addedFiles.has(target));
+}
+
+function newDependenciesOf(change: Change, leaf: string, imports: FileImport[]): ReconfiguredImport[] {
+  return imports.flatMap((imported) => {
+    if (isWithin(imported.target, leaf)) return [];
+    const farEnd = change.newDependencyOn(leaf, imported);
+    return farEnd === undefined ? [] : [{ ...imported, farEnd }];
   });
 }
 

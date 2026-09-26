@@ -5,10 +5,12 @@ import { execute } from "../../benchmark/lib/execute.ts";
 import type { ArchitecturePayload } from "../../src/architecture/contracts/index.ts";
 
 export type TestRun = { runner: "pytest" | "jest"; files: string[]; status: "passed" | "failed" | "not run"; reason: string | null; output: string };
+type PythonEnvironment = { pytest: string } | { unavailable: string; output?: string };
 
 const python = /\.py$/;
 const script = /\.[jt]sx?$/;
 const unreachableService = /(could not connect to server|connection refused|connection to server at .* failed|is the server running|error 61 connecting)/i;
+const failingTestsSummary = /\b\d+ failed\b.* in \d+(\.\d+)?s\b/;
 const noTestsFound = /No tests found/;
 const jestConfigs = ["jest.config.ts", "jest.config.js", "jest.config.mjs", "jest.config.cjs"];
 const outputTail = 2_000;
@@ -32,16 +34,56 @@ export async function runTests(workspace: string, mainCheckout: string, tests: s
 }
 
 async function pytest(workspace: string, mainCheckout: string, files: string[]): Promise<TestRun> {
-  const candidates = [workspace, mainCheckout].map((root) => join(root, ".flox", "cache", "venv", "bin", "pytest"));
-  const binary = candidates.find((candidate) => existsSync(candidate));
-  if (binary === undefined) return notRun("pytest", files, `no Python test environment: none of ${candidates.join(", ")} exists`);
-  const result = await execute(workspace, [binary, "-q", "-p", "no:cacheprovider", ...files], undefined, testTimeoutMs);
-  const output = `${result.stdout}\n${result.stderr}`;
+  const environment = await pythonEnvironment(workspace, mainCheckout);
+  if ("unavailable" in environment) return notRun("pytest", files, environment.unavailable, environment.output);
+  const result = await execute(workspace, [environment.pytest, "-q", "-p", "no:cacheprovider", ...files], undefined, testTimeoutMs);
+  const output = Bun.stripANSI(`${result.stdout}\n${result.stderr}`);
   if (result.code === 0) return { runner: "pytest", files, status: "passed", reason: null, output: tail(output) };
   const service = unreachableService.exec(output)?.[0];
-  if (result.code === 1 && service === undefined) return { runner: "pytest", files, status: "failed", reason: null, output: tail(output) };
   if (service !== undefined) return notRun("pytest", files, `a service the tests need is not reachable locally (${service})`, output);
-  return notRun("pytest", files, result.code === 5 ? "pytest collected no tests" : `pytest exited ${result.code}: ${lastLine(output)}`, output);
+  if (result.code === 1 && failingTestsSummary.test(output)) return { runner: "pytest", files, status: "failed", reason: null, output: tail(output) };
+  return notRun("pytest", files, result.code === 5 ? "pytest collected no tests" : `pytest ran no test (exit ${result.code}): ${lastLine(output)}`, output);
+}
+
+async function pythonEnvironment(workspace: string, mainCheckout: string): Promise<PythonEnvironment> {
+  const uv = lockDiffersFromMainCheckout(workspace, mainCheckout) ? uvBinary(workspace, mainCheckout) : null;
+  if (uv !== null) return syncedVenv(workspace, uv);
+  const candidates = borrowedPytests(workspace, mainCheckout);
+  const borrowed = candidates.find((candidate) => existsSync(candidate));
+  return borrowed === undefined ? { unavailable: `no Python test environment: none of ${candidates.join(", ")} exists` } : { pytest: borrowed };
+}
+
+function lockDiffersFromMainCheckout(workspace: string, mainCheckout: string): boolean {
+  const lock = join(workspace, "uv.lock");
+  const mainCheckoutLock = join(mainCheckout, "uv.lock");
+  return existsSync(lock) && (!existsSync(mainCheckoutLock) || !readFileSync(lock).equals(readFileSync(mainCheckoutLock)));
+}
+
+async function syncedVenv(workspace: string, uv: string): Promise<PythonEnvironment> {
+  const venv = join(workspace, ".venv");
+  const sync = await execute(workspace, ["env", "-u", "VIRTUAL_ENV", `UV_PROJECT_ENVIRONMENT=${venv}`, "GIT_CONFIG_GLOBAL=/dev/null", uv, "sync", "--quiet", "--frozen"], undefined, testTimeoutMs);
+  const output = Bun.stripANSI(sync.stderr);
+  if (sync.code !== 0) return { unavailable: `uv could not sync ${join(workspace, "uv.lock")}: ${uvError(output)}`, output };
+  const pytest = join(venv, "bin", "pytest");
+  return existsSync(pytest) ? { pytest } : { unavailable: `uv synced ${venv} without pytest` };
+}
+
+function uvError(stderr: string): string {
+  return stderr.split("\n").map((line) => line.trim()).find((line) => line.startsWith("×") || line.startsWith("error:")) ?? lastLine(stderr);
+}
+
+function uvBinary(workspace: string, mainCheckout: string): string | null {
+  const floxUv = [workspace, mainCheckout].flatMap(floxEnvironments).map((environment) => join(environment, "bin", "uv"));
+  return floxUv.find((candidate) => existsSync(candidate)) ?? Bun.which("uv");
+}
+
+function floxEnvironments(root: string): string[] {
+  const environments = join(root, ".flox", "run");
+  return existsSync(environments) ? readdirSync(environments).map((name) => join(environments, name)) : [];
+}
+
+function borrowedPytests(workspace: string, mainCheckout: string): string[] {
+  return [workspace, mainCheckout].map((root) => join(root, ".flox", "cache", "venv", "bin", "pytest"));
 }
 
 async function jest(workspace: string, mainCheckout: string, files: string[]): Promise<TestRun[]> {

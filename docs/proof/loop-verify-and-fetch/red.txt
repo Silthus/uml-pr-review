@@ -1,0 +1,264 @@
+# Red: the new outside-in tests against origin/main's test-runs.ts and sense.ts
+
+$ bun test test/coherence/loop-test-runs.test.ts test/coherence/loop-sense.test.ts
+
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/loop-sense.test.ts:
+78 |       const next = await advanceUpstream();
+79 |       const earlierCalls = (await gitCalls()).length;
+80 | 
+81 |       const sensed = await senseWithFetch(remoteUrl);
+82 | 
+83 |       expect(sensed).toMatchObject({ code: 0, json: { base: { ref: "upstream/main", commit: next } } });
+                          ^
+error: expect(received).toMatchObject(expected)
+
+@@ -1,8 +1,10 @@
+  {
+-   "code": 0,
++   "code": 1,
+    "json": {
+-     "base": {
+-       "commit": "15293f322ba043650acc9707a74f5103435c1f51",
+-       "ref": "upstream/main",
+-     },
++     "error": 
++ "git fetch --quiet upstream main failed (128): fatal: Could not read from remote repository.
++ 
++ Please make sure you have the correct access rights
++ and the repository exists."
++ ,
+    },
+
+- Expected  - 5
++ Received  + 7
+
+      at <anonymous> (<repo>/test/coherence/loop-sense.test.ts:83:22)
+(fail) sense --fetch > moves the base to the head of GitHub remote git@github.com:acme/app.git over HTTPS, without an SSH agent, despite a global rewrite to SSH [343.32ms]
+78 |       const next = await advanceUpstream();
+79 |       const earlierCalls = (await gitCalls()).length;
+80 | 
+81 |       const sensed = await senseWithFetch(remoteUrl);
+82 | 
+83 |       expect(sensed).toMatchObject({ code: 0, json: { base: { ref: "upstream/main", commit: next } } });
+                          ^
+error: expect(received).toMatchObject(expected)
+
+@@ -1,8 +1,5 @@
+  {
+-   "code": 0,
++   "code": 1,
+    "json": {
+-     "base": {
+-       "commit": "15293f322ba043650acc9707a74f5103435c1f51",
+-       "ref": "upstream/main",
+-     },
++     "error": "git fetch --quiet upstream main failed (128): fatal: ssh variant 'simple' does not support setting port",
+    },
+
+- Expected  - 5
++ Received  + 2
+
+      at <anonymous> (<repo>/test/coherence/loop-sense.test.ts:83:22)
+(fail) sense --fetch > moves the base to the head of GitHub remote ssh://git@github.com:22/acme/app over HTTPS, without an SSH agent, despite a global rewrite to SSH [76.46ms]
+78 |       const next = await advanceUpstream();
+79 |       const earlierCalls = (await gitCalls()).length;
+80 | 
+81 |       const sensed = await senseWithFetch(remoteUrl);
+82 | 
+83 |       expect(sensed).toMatchObject({ code: 0, json: { base: { ref: "upstream/main", commit: next } } });
+                          ^
+error: expect(received).toMatchObject(expected)
+
+@@ -1,8 +1,5 @@
+  {
+-   "code": 0,
++   "code": 1,
+    "json": {
+-     "base": {
+-       "commit": "15293f322ba043650acc9707a74f5103435c1f51",
+-       "ref": "upstream/main",
+-     },
++     "error": "git fetch --quiet upstream main failed (128): fatal: transport 'https' not allowed",
+    },
+
+- Expected  - 5
++ Received  + 2
+
+      at <anonymous> (<repo>/test/coherence/loop-sense.test.ts:83:22)
+(fail) sense --fetch > moves the base to the head of GitHub remote https://GitHub.com/acme/app/ over HTTPS, without an SSH agent, despite a global rewrite to SSH [63.90ms]
+91 |     "names the remote and the base when a remote outside GitHub cannot be reached over SSH",
+92 |     async () => {
+93 |       const sensed = await senseWithFetch("git@git.example.com:acme/app.git");
+94 | 
+95 |       expect(sensed.code).toBe(1);
+96 |       expect(sensed.json.error).toStartWith("could not fetch upstream/main from git@git.example.com:acme/app.git: ");
+                                     ^
+error: expect(received).toStartWith(expected)
+
+Expected to start with: "could not fetch upstream/main from git@git.example.com:acme/app.git: "
+Received: "git fetch --quiet upstream main failed (128): fatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+
+      at <anonymous> (<repo>/test/coherence/loop-sense.test.ts:96:33)
+(fail) sense --fetch > names the remote and the base when a remote outside GitHub cannot be reached over SSH [46.96ms]
+
+test/coherence/loop-test-runs.test.ts:
+39 |   test("a crash while loading conftest ran no test, so it is not run with the crash as the reason", async () => {
+40 |     await borrowedPytest(conftestCrash, 1);
+41 | 
+42 |     const [run] = await runTests(workspace, mainCheckout, [testFile]);
+43 | 
+44 |     expect(run).toMatchObject({ runner: "pytest", status: "not run", reason: expect.stringContaining("VersionError: Detected incompatible Protobuf") });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "reason": StringContaining "VersionError: Detected incompatible Protobuf",
++   "files": [
++     "products/a/backend/test/test_runner.py",
++   ],
++   "output": 
++ "$TMPDIR/coherence-main-GpRxEd/.flox/cache/venv/bin/pytest
++ Traceback (most recent call last):
++   File "posthog/conftest.py", line 3, in <module>
++ google.protobuf.runtime_version.VersionError: Detected incompatible Protobuf Gencode/Runtime versions when loading personhog/types/v1/common.proto: gencode 6.31.1 runtime 5.29.6."
++ ,
++   "reason": null,
+    "runner": "pytest",
+-   "status": "not run",
++   "status": "failed",
+  }
+
+- Expected  - 2
++ Received  + 11
+
+      at <anonymous> (<repo>/test/coherence/loop-test-runs.test.ts:44:17)
+(fail) pytest outcomes > a crash while loading conftest ran no test, so it is not run with the crash as the reason [145.14ms]
+47 |   test("a collection error interrupts pytest before any test runs", async () => {
+48 |     await borrowedPytest("ERROR collecting products/a/backend/test/test_runner.py\n!!! Interrupted: 1 error during collection !!!\n1 error in 0.21s", 2);
+49 | 
+50 |     const [run] = await runTests(workspace, mainCheckout, [testFile]);
+51 | 
+52 |     expect(run).toMatchObject({ status: "not run", reason: "pytest ran no test (exit 2): 1 error in 0.21s" });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+@@ -1,3 +1,13 @@
+  {
+-   "reason": "pytest ran no test (exit 2): 1 error in 0.21s",
++   "files": [
++     "products/a/backend/test/test_runner.py",
++   ],
++   "output": 
++ "$TMPDIR/coherence-main-lqOV8u/.flox/cache/venv/bin/pytest
++ ERROR collecting products/a/backend/test/test_runner.py
++ !!! Interrupted: 1 error during collection !!!
++ 1 error in 0.21s"
++ ,
++   "reason": "pytest exited 2: 1 error in 0.21s",
++   "runner": "pytest",
+    "status": "not run",
+
+- Expected  - 1
++ Received  + 11
+
+      at <anonymous> (<repo>/test/coherence/loop-test-runs.test.ts:52:17)
+(fail) pytest outcomes > a collection error interrupts pytest before any test runs [121.56ms]
+55 |   test("tests that only error in setup ran no assertion, so they are not run", async () => {
+56 |     await borrowedPytest("EEE\nE   FileNotFoundError: [Errno 2] No such file or directory: 'sqlx'\n3 errors in 16.94s", 1);
+57 | 
+58 |     const [run] = await runTests(workspace, mainCheckout, [testFile]);
+59 | 
+60 |     expect(run).toMatchObject({ status: "not run", reason: "pytest ran no test (exit 1): 3 errors in 16.94s" });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "reason": "pytest ran no test (exit 1): 3 errors in 16.94s",
+-   "status": "not run",
++   "files": [
++     "products/a/backend/test/test_runner.py",
++   ],
++   "output": 
++ "$TMPDIR/coherence-main-XcWwkr/.flox/cache/venv/bin/pytest
++ EEE
++ E   FileNotFoundError: [Errno 2] No such file or directory: 'sqlx'
++ 3 errors in 16.94s"
++ ,
++   "reason": null,
++   "runner": "pytest",
++   "status": "failed",
+  }
+
+- Expected  - 2
++ Received  + 12
+
+      at <anonymous> (<repo>/test/coherence/loop-test-runs.test.ts:60:17)
+(fail) pytest outcomes > tests that only error in setup ran no assertion, so they are not run [108.57ms]
+83 |     await locks("version = 2\n", "version = 1\n");
+84 |     await floxUv(`[ "$*" = "sync --quiet --frozen" ] || exit 9\nmkdir -p "$UV_PROJECT_ENVIRONMENT/bin"\nprintf '%s' '${pytestScript("2 passed in 0.30s", 0)}' > "$UV_PROJECT_ENVIRONMENT/bin/pytest"\nchmod +x "$UV_PROJECT_ENVIRONMENT/bin/pytest"`);
+85 | 
+86 |     const [run] = await runTests(workspace, mainCheckout, [testFile]);
+87 | 
+88 |     expect(run).toMatchObject({ status: "passed" });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "status": "passed",
++   "files": [
++     "products/a/backend/test/test_runner.py",
++   ],
++   "output": 
++ "$TMPDIR/coherence-main-zVKGgM/.flox/cache/venv/bin/pytest
++ Traceback (most recent call last):
++   File "posthog/conftest.py", line 3, in <module>
++ google.protobuf.runtime_version.VersionError: Detected incompatible Protobuf Gencode/Runtime versions when loading personhog/types/v1/common.proto: gencode 6.31.1 runtime 5.29.6."
++ ,
++   "reason": null,
++   "runner": "pytest",
++   "status": "failed",
+  }
+
+- Expected  - 1
++ Received  + 12
+
+      at <anonymous> (<repo>/test/coherence/loop-test-runs.test.ts:88:17)
+(fail) the Python test environment > a workspace whose uv lock differs from the main checkout's syncs a venv of its own, frozen [104.21ms]
+105 |     await locks("version = 2\n", "version = 1\n");
+106 |     await floxUv("echo '  × Failed to download and build `pytest-split`' >&2\necho 'hint: `pytest-split` was included because `posthog:dev` depends on it' >&2\nexit 1");
+107 | 
+108 |     const [run] = await runTests(workspace, mainCheckout, [testFile]);
+109 | 
+110 |     expect(run).toMatchObject({ status: "not run", reason: `uv could not sync ${join(workspace, "uv.lock")}: × Failed to download and build \`pytest-split\`` });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "reason": "uv could not sync $TMPDIR/coherence-workspace-UpmCI8/uv.lock: × Failed to download and build `pytest-split`",
+-   "status": "not run",
++   "files": [
++     "products/a/backend/test/test_runner.py",
++   ],
++   "output": 
++ "$TMPDIR/coherence-main-Wcgp8b/.flox/cache/venv/bin/pytest
++ Traceback (most recent call last):
++   File "posthog/conftest.py", line 3, in <module>
++ google.protobuf.runtime_version.VersionError: Detected incompatible Protobuf Gencode/Runtime versions when loading personhog/types/v1/common.proto: gencode 6.31.1 runtime 5.29.6."
++ ,
++   "reason": null,
++   "runner": "pytest",
++   "status": "failed",
+  }
+
+- Expected  - 2
++ Received  + 12
+
+      at <anonymous> (<repo>/test/coherence/loop-test-runs.test.ts:110:17)
+(fail) the Python test environment > a uv sync that fails is not run, with uv's error as the reason [110.93ms]
+
+ 3 pass
+ 9 fail
+ 14 expect() calls
+Ran 12 tests across 2 files. [1.60s]

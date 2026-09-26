@@ -1,0 +1,11 @@
+# Full local gate on the final tree
+
+$ bun run typecheck
+$ tsc --noEmit
+(exit 0, no output)
+
+$ bun test
+ 474 pass
+ 0 fail
+Ran 474 tests across 50 files. [33.20s]
+(exit 0)

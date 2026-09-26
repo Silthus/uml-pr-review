@@ -121,7 +121,7 @@ export function cachedClient(client: JevClient, cache: Map<string, Record<string
 
 export type RetryPolicy = { attempts: number; delayMs: (attempt: number) => number; sleep: (ms: number) => Promise<void> };
 
-const transientGatewayError = /temporarily unavailable|high demand|rate.?limit|too many requests|timed? ?out|\b50[234]\b|internal ?server ?error/i;
+const transientGatewayError = /temporarily unavailable|high demand|overloaded|rate.?limit|too many requests|timed? ?out|fetch failed|ECONNRESET|\b(?:429|50[234]|529)\b|internal ?server ?error/i;
 
 export const patientRetry: RetryPolicy = { attempts: 6, delayMs: (attempt) => Math.min(60_000, 5_000 * 2 ** attempt), sleep: Bun.sleep };
 
@@ -168,7 +168,7 @@ function truncated(text: string, budget = diffBudget): string {
   return text.length <= budget ? text : `${text.slice(0, budget)}\n[truncated: showing ${budget} of ${text.length} characters]`;
 }
 
-const oversizedRequest = /max_tokens_exceeded|status 400|context length|too long/i;
+const oversizedRequest = /max_tokens_exceeded|context length/i;
 
 function skipOversized(error: unknown, subject: string, skipped: SkippedUnit[]): undefined {
   if (!oversizedRequest.test(String(error))) throw error;

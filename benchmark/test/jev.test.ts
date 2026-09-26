@@ -89,4 +89,10 @@ describe("grading a diff with Jev", () => {
     expect(grade.tests).toHaveLength(1);
     expect(grade.fileQuality).toBeNull();
   });
+
+  test("does not mistake an ordinary bad request for an oversized file", async () => {
+    const rejecting: JevClient = { evaluate: async () => { throw new Error("typesafe returned status 400: unknown question type"); } };
+
+    await expect(gradeDiff(rejecting, "Search workflows.", patch, parsePatch(patch), async (path) => contents[path]!)).rejects.toThrow("unknown question type");
+  });
 });

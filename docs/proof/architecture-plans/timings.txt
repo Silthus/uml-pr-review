@@ -1,0 +1,7 @@
+request 1: http 200, 2512931 bytes, 6.637965s
+request 2: http 200, 2512931 bytes, 0.044122s
+restart request 1: http 200, 2512928 bytes, 1.009288s
+restart request 2: http 200, 2512928 bytes, 0.036566s
+check 1: http 200, 0.359300s
+check 2: http 200, 0.344775s
+check 3: http 200, 0.339943s

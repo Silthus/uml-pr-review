@@ -1,0 +1,15 @@
+bun test v1.4.2 (50a8a8387)
+
+test/architecture/model/lift-performance.test.ts:
+lift, one product opened: 6737 modules, 170000 imports, median 1.60 ms
+lift, every top-level module opened: 6737 modules, 170000 imports, median 9.80 ms
+
+test/architecture/conformance/performance.test.ts:
+checkConformance: 38400 files, 170250 imports, 50 changed files, median 8.89 ms
+
+ 295 pass
+ 0 fail
+ 714 expect() calls
+Ran 295 tests across 25 files. [9.52s]
+$ tsc --noEmit
+typecheck exit 0, on c632c43 (main b0008ee + this commit)

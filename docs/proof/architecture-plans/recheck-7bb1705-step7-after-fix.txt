@@ -1,0 +1,47 @@
+Plan feature-flag-usage-on-error-tracking-iss-7c5c revision 6 (locked), progress check of /private/tmp/posthog-proof at snapshot 5990cb0 against base f637db9: pending.
+0 violations, 13 pending, 0 warnings.
+
+pending missing-module frontend/src/lib/KeaDevTools.tsx:1
+  `frontend/src/lib` is unchanged; the plan modifies it to add ERROR_TRACKING_ISSUE_FEATURE_FLAGS to FEATURE_FLAGS in constants.tsx.
+  Fix: Make the planned change in `frontend/src/lib`, or ask the human to unlock the plan and drop `frontend/src/lib` from it.
+pending missing-module frontend/src/queries/schema/index.ts:1
+  `frontend/src/queries/schema` is unchanged; the plan modifies it to add NodeKind.ErrorTrackingIssueFeatureFlagsQuery, the query, response and row types; regenerate posthog/schema.py.
+  Fix: Make the planned change in `frontend/src/queries/schema`, or ask the human to unlock the plan and drop `frontend/src/queries/schema` from it.
+pending missing-module posthog/hogql_queries/__init__.py:1
+  `posthog/hogql_queries` is unchanged; the plan modifies it to register the ErrorTrackingIssueFeatureFlagsQuery kind in get_query_runner via a lazy import from the error tracking facade.
+  Fix: Make the planned change in `posthog/hogql_queries`, or ask the human to unlock the plan and drop `posthog/hogql_queries` from it.
+pending missing-module products/error_tracking/backend/facade/__init__.py:1
+  `products/error_tracking/backend/facade` is unchanged; the plan modifies it to export the new runner from queries.py so core query dispatch can reach it, like the other error tracking runners.
+  Fix: Make the planned change in `products/error_tracking/backend/facade`, or ask the human to unlock the plan and drop `products/error_tracking/backend/facade` from it.
+pending missing-module products/error_tracking/backend/hogql_queries/__init__.py:1
+  `products/error_tracking/backend/hogql_queries` is unchanged; the plan modifies it to new ErrorTrackingIssueFeatureFlagsQueryRunner: aggregates the issue's $exception events by `$feature/<key>` property into per-flag, per-variant counts (capped at N flags), then hands the keys to logic for enrichment. Imports no other product.
+  Fix: Make the planned change in `products/error_tracking/backend/hogql_queries`, or ask the human to unlock the plan and drop `products/error_tracking/backend/hogql_queries` from it.
+pending missing-seam products/error_tracking/backend/hogql_queries/__init__.py:1
+  No file in `products/error_tracking/backend/hogql_queries` imports `products/error_tracking/backend/logic/feature_flags.py` (symbols resolve_issue_flags, IssueFlagInfo) yet; the plan adds seam `products/error_tracking/backend/hogql_queries` -> `products/error_tracking/backend/logic`.
+  Fix: Import `products/error_tracking/backend/logic/feature_flags.py` (symbols resolve_issue_flags, IssueFlagInfo) where `products/error_tracking/backend/hogql_queries` needs it, for example in `products/error_tracking/backend/hogql_queries/__init__.py`.
+pending missing-module products/error_tracking/frontend/ErrorTracking.stories.tsx:1
+  `products/error_tracking/frontend` is unchanged; the plan modifies it to queries.ts gains errorTrackingIssueFeatureFlagsQuery builder next to errorTrackingReleasesQuery; the new IssueFeatureFlags logic uses it.
+  Fix: Make the planned change in `products/error_tracking/frontend`, or ask the human to unlock the plan and drop `products/error_tracking/frontend` from it.
+pending missing-module products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx:1
+  `products/error_tracking/frontend/components/IssueFeatureFlags` does not exist yet; the plan creates it to issueFeatureFlagsLogic (loads the query for the preview's issue and date range) and IssueFeatureFlagsPreview (rows per flag with variant split, linking to the flag).
+  Fix: Create `products/error_tracking/frontend/components/IssueFeatureFlags` with its first source file.
+pending missing-seam products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx:1
+  No file in `products/error_tracking/frontend/components/IssueFeatureFlags` imports `frontend/src/queries/schema/schema-general.ts` (symbols ErrorTrackingIssueFeatureFlagsQueryResponse, ErrorTrackingIssueFeatureFlag, DateRange) yet; the plan adds seam `products/error_tracking/frontend/components/IssueFeatureFlags` -> `frontend/src/queries/schema`.
+  Fix: Import `frontend/src/queries/schema/schema-general.ts` (symbols ErrorTrackingIssueFeatureFlagsQueryResponse, ErrorTrackingIssueFeatureFlag, DateRange) where `products/error_tracking/frontend/components/IssueFeatureFlags` needs it, for example in `products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx`.
+pending missing-seam products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx:1
+  No file in `products/error_tracking/frontend/components/IssueFeatureFlags` imports `frontend/src/scenes/urls.ts` or `frontend/src/scenes/teamLogic.tsx` (symbols urls, teamLogic) yet; the plan adds seam `products/error_tracking/frontend/components/IssueFeatureFlags` -> `frontend/src/scenes`.
+  Fix: Import `frontend/src/scenes/urls.ts` or `frontend/src/scenes/teamLogic.tsx` (symbols urls, teamLogic) where `products/error_tracking/frontend/components/IssueFeatureFlags` needs it, for example in `products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx`.
+pending missing-seam products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx:1
+  No file in `products/error_tracking/frontend/components/IssueFeatureFlags` imports `products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts` or `products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx` (symbols issueFilterPreviewLogic, PreviewPropertyFilter, IssueFilterPreviewHeader) yet; the plan adds seam `products/error_tracking/frontend/components/IssueFeatureFlags` -> `products/error_tracking/frontend/components/IssueFilterPreview`.
+  Fix: Import `products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts` or `products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx` (symbols issueFilterPreviewLogic, PreviewPropertyFilter, IssueFilterPreviewHeader) where `products/error_tracking/frontend/components/IssueFeatureFlags` needs it, for example in `products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx`.
+pending missing-module products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx:1
+  `products/error_tracking/frontend/components/IssueFilterPreview` is unchanged; the plan modifies it to add a 'Flags' tab to IssueFilterPreviewPanel behind the ERROR_TRACKING_ISSUE_FEATURE_FLAGS flag; clicking a variant adds a `$feature/<key>` property filter to the preview.
+  Fix: Make the planned change in `products/error_tracking/frontend/components/IssueFilterPreview`, or ask the human to unlock the plan and drop `products/error_tracking/frontend/components/IssueFilterPreview` from it.
+pending missing-seam products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx:10
+  No file in `products/error_tracking/frontend/components/IssueFilterPreview` imports `products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx` (symbols IssueFeatureFlagsPreview) yet; the plan adds seam `products/error_tracking/frontend/components/IssueFilterPreview` -> `products/error_tracking/frontend/components/IssueFeatureFlags`.
+  Fix: Import `products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx` (symbols IssueFeatureFlagsPreview) where `products/error_tracking/frontend/components/IssueFilterPreview` needs it, for example in `products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx`.
+
+The human changed the plan since your last edit:
+Revision 6: locked.
+Explorer: http://127.0.0.1:4633/?path=%2Fprivate%2Ftmp%2Fposthog-proof&plan=feature-flag-usage-on-error-tracking-iss-7c5c
+Next: The human changed the plan since your last edit; build on their changes, not over them. Do the planned work listed as pending, then call check_plan again; use final: true when you think you are done.

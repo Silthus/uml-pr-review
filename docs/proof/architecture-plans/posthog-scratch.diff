@@ -1,0 +1,243 @@
+diff --git a/frontend/src/lib/constants.tsx b/frontend/src/lib/constants.tsx
+index ddaa4520dec..4b985ea935f 100644
+--- a/frontend/src/lib/constants.tsx
++++ b/frontend/src/lib/constants.tsx
+@@ -309,6 +309,7 @@ export const FEATURE_FLAGS = {
+     ENGINEERING_ANALYTICS: 'engineering-analytics', // owner: #team-devex
+     ERROR_TRACKING_FINGERPRINT_MAP: 'error-tracking-fingerprint-map', // owner: #team-error-tracking
+     ERROR_TRACKING_ISSUE_CORRELATION: 'error-tracking-issue-correlation', // owner: @david #team-error-tracking
++    ERROR_TRACKING_ISSUE_FEATURE_FLAGS: 'error-tracking-issue-feature-flags', // owner: #team-error-tracking
+     ERROR_TRACKING_ISSUE_RELEASES: 'error-tracking-issue-releases', // owner: #team-error-tracking
+     ERROR_TRACKING_ISSUE_SPLITTING: 'error-tracking-issue-splitting', // owner: @david #team-error-tracking
+     ERROR_TRACKING_NEW_WIZARD: 'error-tracking-new-wizard', // owner: @ablaszkiewicz #team-error-tracking
+diff --git a/frontend/src/queries/schema/schema-general.ts b/frontend/src/queries/schema/schema-general.ts
+index 44fe15289f9..99be0187772 100644
+--- a/frontend/src/queries/schema/schema-general.ts
++++ b/frontend/src/queries/schema/schema-general.ts
+@@ -107,6 +107,7 @@ export enum NodeKind {
+     ErrorTrackingFingerprintProjectionQuery = 'ErrorTrackingFingerprintProjectionQuery',
+     ErrorTrackingBreakdownsQuery = 'ErrorTrackingBreakdownsQuery',
+     ErrorTrackingReleasesQuery = 'ErrorTrackingReleasesQuery',
++    ErrorTrackingIssueFeatureFlagsQuery = 'ErrorTrackingIssueFeatureFlagsQuery',
+     ErrorTrackingIssueCorrelationQuery = 'ErrorTrackingIssueCorrelationQuery',
+     LogsQuery = 'LogsQuery',
+     LogAttributesQuery = 'LogAttributesQuery',
+@@ -4293,6 +4294,24 @@ export interface ErrorTrackingIssueRelease extends ErrorTrackingReleaseSeries {
+     build: string | null
+ }
+ 
++export interface ErrorTrackingIssueFeatureFlag {
++    key: string
++    variant: string | null
++    occurrences: integer
++    flag_id: integer | null
++    name: string | null
++}
++
++export interface ErrorTrackingIssueFeatureFlagsQueryResponse extends AnalyticsQueryResponseBase {
++    results: ErrorTrackingIssueFeatureFlag[]
++}
++
++export interface ErrorTrackingIssueFeatureFlagsQuery extends DataNode<ErrorTrackingIssueFeatureFlagsQueryResponse> {
++    kind: NodeKind.ErrorTrackingIssueFeatureFlagsQuery
++    issueId: ErrorTrackingIssue['id']
++    dateRange?: DateRange
++}
++
+ export interface ErrorTrackingReleasesQueryResponse extends AnalyticsQueryResponseBase {
+     /** The releases returned on their own, in the requested order. */
+     results: ErrorTrackingIssueRelease[]
+diff --git a/posthog/hogql_queries/query_runner.py b/posthog/hogql_queries/query_runner.py
+index 62dc343271f..cbbcced1a30 100644
+--- a/posthog/hogql_queries/query_runner.py
++++ b/posthog/hogql_queries/query_runner.py
+@@ -1068,6 +1068,11 @@ def get_query_runner(
+             user=user,
+         )
+ 
++    if kind == "ErrorTrackingIssueFeatureFlagsQuery":
++        from products.error_tracking.backend.facade.queries import ErrorTrackingIssueFeatureFlagsQueryRunner
++
++        return ErrorTrackingIssueFeatureFlagsQueryRunner(query=query, team=team)
++
+     if kind == "ErrorTrackingReleasesQuery":
+         from products.error_tracking.backend.facade.queries import ErrorTrackingReleasesQueryRunner
+ 
+diff --git a/products/error_tracking/backend/facade/queries.py b/products/error_tracking/backend/facade/queries.py
+index 91ad408a12b..510552cd59c 100644
+--- a/products/error_tracking/backend/facade/queries.py
++++ b/products/error_tracking/backend/facade/queries.py
+@@ -23,6 +23,9 @@ from products.error_tracking.backend.hogql_queries.error_tracking_fingerprint_pr
+ from products.error_tracking.backend.hogql_queries.error_tracking_issue_correlation_query_runner import (
+     ErrorTrackingIssueCorrelationQueryRunner,
+ )
++from products.error_tracking.backend.hogql_queries.error_tracking_issue_feature_flags_query_runner import (
++    ErrorTrackingIssueFeatureFlagsQueryRunner,
++)
+ from products.error_tracking.backend.hogql_queries.error_tracking_query_runner import ErrorTrackingQueryRunner
+ from products.error_tracking.backend.hogql_queries.error_tracking_releases_query_runner import (
+     ErrorTrackingReleasesQueryRunner,
+@@ -35,6 +38,7 @@ __all__ = [
+     "ErrorTrackingBreakdownsQueryRunner",
+     "ErrorTrackingFingerprintProjectionQueryRunner",
+     "ErrorTrackingIssueCorrelationQueryRunner",
++    "ErrorTrackingIssueFeatureFlagsQueryRunner",
+     "ErrorTrackingQueryRunner",
+     "ErrorTrackingReleasesQueryRunner",
+     "ErrorTrackingSimilarIssuesQueryRunner",
+diff --git a/products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewPanel.tsx b/products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewPanel.tsx
+index 51bfd707a72..943c8034f7c 100644
+--- a/products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewPanel.tsx
++++ b/products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewPanel.tsx
+@@ -19,6 +19,7 @@ import {
+ import { errorTrackingIssueSceneLogic } from '../../scenes/ErrorTrackingIssueScene/errorTrackingIssueSceneLogic'
+ import { MiniBreakdowns } from '../Breakdowns/MiniBreakdowns'
+ import { FingerprintPreview } from '../FingerprintPreview/FingerprintPreview'
++import { IssueFeatureFlagsPreview } from '../IssueFeatureFlags/IssueFeatureFlagsPreview'
+ import { IssueReleasesPreview } from '../IssueReleases/IssueReleasesPreview'
+ import { IssueFilterPreview, issueFilterPreviewLogic } from './issueFilterPreviewLogic'
+ import { TimeFilterPreview } from './TimeFilterPreview'
+@@ -38,6 +39,7 @@ export function IssueFilterPreviewPanel({
+     const { setActivePreview } = useActions(issueFilterPreviewLogic)
+     const hasFingerprintMap = useFeatureFlag('ERROR_TRACKING_FINGERPRINT_MAP')
+     const hasReleases = useFeatureFlag('ERROR_TRACKING_ISSUE_RELEASES')
++    const hasFeatureFlags = useFeatureFlag('ERROR_TRACKING_ISSUE_FEATURE_FLAGS')
+     const previewEnabled: Record<IssueFilterPreview, boolean> = {
+         time: true,
+         properties: true,
+@@ -144,6 +146,11 @@ export function IssueFilterPreviewPanel({
+                                     <IssueReleasesPreview issueId={issueId} />
+                                 </TabsContent>
+                             )}
++                            {hasFeatureFlags && (
++                                <TabsContent value="flags" className="min-w-0 !flex-none flex-1">
++                                    <IssueFeatureFlagsPreview flags={[]} />
++                                </TabsContent>
++                            )}
+                         </Tabs>
+                     </TooltipProvider>
+                 </div>
+diff --git a/products/error_tracking/frontend/queries.ts b/products/error_tracking/frontend/queries.ts
+index 1159fc7cf55..652de6427e6 100644
+--- a/products/error_tracking/frontend/queries.ts
++++ b/products/error_tracking/frontend/queries.ts
+@@ -7,6 +7,7 @@ import {
+     ErrorTrackingBreakdownsQuery,
+     ErrorTrackingFingerprintProjectionQuery,
+     ErrorTrackingIssueCorrelationQuery,
++    ErrorTrackingIssueFeatureFlagsQuery,
+     ErrorTrackingPendingFingerprintIssueStateUpdate,
+     ErrorTrackingQuery,
+     ErrorTrackingQueryIssueSeverity,
+@@ -368,6 +369,16 @@ export const errorTrackingBreakdownsQuery = ({
+     })
+ }
+ 
++export const errorTrackingIssueFeatureFlagsQuery = ({
++    issueId,
++    dateRange,
++}: {
++    issueId: string
++    dateRange: DateRange
++}): ErrorTrackingIssueFeatureFlagsQuery => {
++    return setLatestVersionsOnQuery({ kind: NodeKind.ErrorTrackingIssueFeatureFlagsQuery, issueId, dateRange })
++}
++
+ export const errorTrackingReleasesQuery = ({
+     issueId,
+     dateRange,
+diff --git a/products/feature_flags/backend/facade/api.py b/products/feature_flags/backend/facade/api.py
+index 846e179a56d..f7a4aac81b7 100644
+--- a/products/feature_flags/backend/facade/api.py
++++ b/products/feature_flags/backend/facade/api.py
+@@ -24,6 +24,7 @@ signal the gate skips on (its policies target human-driven changes, and a reques
+ caller cannot surface a 409/change request), so ``ApprovalRequired`` is never raised.
+ """
+ 
++from dataclasses import dataclass
+ from datetime import datetime
+ from typing import Any, Literal
+ 
+@@ -348,3 +349,20 @@ def flag_is_active(key: str, *, team_id: int | None = None) -> bool:
+     if team_id is not None:
+         qs = qs.filter(team_id=team_id)
+     return qs.exists()
++
++
++@dataclass(frozen=True)
++class FlagSummary:
++    id: int
++    key: str
++    name: str
++    active: bool
++    deleted: bool
++
++
++def get_flag_summaries_by_key(team_id: int, keys: list[str]) -> list[FlagSummary]:
++    flags = FeatureFlag.objects.filter(team_id=team_id, key__in=keys)
++    return [
++        FlagSummary(id=flag.id, key=flag.key, name=flag.name, active=flag.active, deleted=flag.deleted)
++        for flag in flags
++    ]
+--- /dev/null
++++ b/products/error_tracking/backend/logic/feature_flags.py
+@@ -0,0 +1,20 @@
++from dataclasses import dataclass
++
++from products.feature_flags.backend.facade.api import FlagSummary, get_flag_summaries_by_key
++
++
++@dataclass(frozen=True)
++class IssueFlagInfo:
++    id: int
++    key: str
++    name: str
++    active: bool
++    deleted: bool
++
++
++def resolve_issue_flags(team_id: int, keys: list[str]) -> dict[str, IssueFlagInfo]:
++    return {summary.key: issue_flag_info(summary) for summary in get_flag_summaries_by_key(team_id, keys)}
++
++
++def issue_flag_info(summary: FlagSummary) -> IssueFlagInfo:
++    return IssueFlagInfo(id=summary.id, key=summary.key, name=summary.name, active=summary.active, deleted=summary.deleted)
+--- /dev/null
++++ b/products/error_tracking/backend/hogql_queries/error_tracking_issue_feature_flags_query_runner.py
+@@ -0,0 +1,12 @@
++from typing import Any
++
++from products.error_tracking.backend.logic.feature_flags import IssueFlagInfo, resolve_issue_flags
++
++
++class ErrorTrackingIssueFeatureFlagsQueryRunner:
++    def __init__(self, query: Any, team: Any) -> None:
++        self.query = query
++        self.team = team
++
++    def enrich(self, keys: list[str]) -> dict[str, IssueFlagInfo]:
++        return resolve_issue_flags(self.team.id, keys)
+--- /dev/null
++++ b/products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx
+@@ -0,0 +1,21 @@
++import { useValues } from 'kea'
++
++import { urls } from 'scenes/urls'
++
++import { ErrorTrackingIssueFeatureFlag } from '~/queries/schema/schema-general'
++
++import { issueFilterPreviewLogic } from '../IssueFilterPreview/issueFilterPreviewLogic'
++
++export function IssueFeatureFlagsPreview({ flags }: { flags: ErrorTrackingIssueFeatureFlag[] }): JSX.Element {
++    const { preview } = useValues(issueFilterPreviewLogic)
++    return (
++        <ul data-preview={preview}>
++            {flags.map((flag) => (
++                <li key={`${flag.key}:${flag.variant}`}>
++                    {flag.flag_id ? <a href={urls.featureFlag(flag.flag_id)}>{flag.key}</a> : flag.key}
++                    {flag.variant ? ` = ${flag.variant}` : null} · {flag.occurrences}
++                </li>
++            ))}
++        </ul>
++    )
++}

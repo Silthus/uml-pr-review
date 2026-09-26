@@ -1,0 +1,14 @@
+{
+  "status": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lines": 0
+  },
+  "head": {
+    "sha256": "7269a6deafedcb8efbd87b7aa8c5b02be7e15d6287dd8b5249a98bfc6ccc75ab",
+    "lines": 1
+  },
+  "worktrees": {
+    "sha256": "df270955004cc52772075eb2227e3f7046cea839ae538a0c077ebf139177c530",
+    "lines": 69
+  }
+}

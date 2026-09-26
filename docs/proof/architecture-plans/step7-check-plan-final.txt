@@ -1,0 +1,7 @@
+Plan feature-flag-usage-on-error-tracking-iss-7c5c revision 6 (locked), final check of /private/tmp/posthog-proof at snapshot cd88265 against base f637db9: conforming.
+0 violations, 0 pending, 0 warnings.
+
+The human changed the plan since your last edit:
+Revision 6: locked.
+Explorer: http://127.0.0.1:4633/?path=%2Fprivate%2Ftmp%2Fposthog-proof&plan=feature-flag-usage-on-error-tracking-iss-7c5c
+Next: The human changed the plan since your last edit; build on their changes, not over them. The implementation conforms to the plan.

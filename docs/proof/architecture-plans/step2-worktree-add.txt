@@ -1,0 +1,10 @@
+$ git -C ~/dev/posthog worktree add --detach /tmp/posthog-proof HEAD
+Preparing worktree (detached HEAD f637db96f1f)
+Updating files: 100% (51502/51502), done.
+HEAD is now at f637db96f1fc Merge branch 'PostHog:master' into master
+husky: light worktree. Commit hooks borrow the main clone's toolchain.
+husky: it has no node_modules or venv of its own. Run 'flox activate' to typecheck, test or run the app.
+
+(The progress lines "Updating files: N%" are collapsed to the final one. The same command ran three times: for the
+recorded run at 14:10, and for the two re-checks on main 7bb1705. The output above is the third run's captured output;
+the first run printed the same lines in the proof agent's session.)

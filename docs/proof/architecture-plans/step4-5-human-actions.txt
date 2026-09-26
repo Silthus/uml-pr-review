@@ -1,0 +1,54 @@
+The human side of steps 4, 5, and 7, simulated by the proof agent (Claude Opus 5.5) driving the real explorer with agent-browser.
+Transcribed from the proof agent's own shell calls in this session: each command exactly as run, followed by its literal output.
+Session: AGENT_BROWSER_SESSION=wf30-827103783544, viewport 1440x900, explorer at http://127.0.0.1:4633/?path=%2Ftmp%2Fposthog-proof&theme=light.
+
+## Step 4: comment on a seam (plan revision 4)
+
+$ agent-browser find role button click --name "add products/ error_tracking/ backend/ hogql_queries → products/ feature_flags/ backend/ facade"
+✓ Done
+$ agent-browser snapshot -i -c | grep -iE "textbox|Add comment|region \"seam" | head
+  - region "seam products/error_tracking/backend/hogql_queries → products/feature_flags/backend/facade" [ref=e18]
+    - textbox "Comment on seam products/error_tracking/backend/hogql_queries → products/feature_flags/backend/facade" [ref=e36]
+    - button "Add comment" [ref=e37]
+      - textbox "Comment on the plan" [ref=e54]
+      - button "Add comment" [ref=e55]
+$ agent-browser screenshot docs/proof/architecture-plans/05-light-seam-selected.png          # now step4-seam-selected.png
+✓ Screenshot saved to docs/proof/architecture-plans/05-light-seam-selected.png
+$ agent-browser fill @e36 "Keep the query runner free of other products. Put the flag enrichment in backend/logic, where issue business logic lives, and route logic -> feature_flags facade instead. Agree on event properties for v1."
+✓ Done
+$ agent-browser screenshot docs/proof/architecture-plans/05-light-human-comment-typed.png    # now step4-human-comment-typed.png
+✓ Screenshot saved to docs/proof/architecture-plans/05-light-human-comment-typed.png
+$ agent-browser click @e37
+✓ Done
+$ agent-browser screenshot docs/proof/architecture-plans/05-light-human-comment-posted.png   # now step4-human-comment-posted.png
+✓ Screenshot saved to docs/proof/architecture-plans/05-light-human-comment-posted.png
+$ date +%T
+14:19:53
+
+The store recorded it as revision 4: actor human, kind edit, note "Comment from the explorer" (the note the explorer's
+applyOperations sends), at 2026-09-26T12:19:50.151Z (14:19:50 CEST). See plan-file-on-disk.json.
+
+## Step 5: lock with the Lock plan button (plan revision 6)
+
+$ agent-browser find role button click --name "Lock plan"
+✓ Done
+$ agent-browser snapshot -i -c | grep -iE "Unlock|Lock plan"
+    - button "Unlock" [ref=e21]
+$ agent-browser screenshot docs/proof/architecture-plans/07-light-plan-locked.png            # now step5-plan-locked.png
+✓ Screenshot saved to docs/proof/architecture-plans/07-light-plan-locked.png
+$ date +%T
+14:21:26
+
+The store recorded it as revision 6: actor human, kind lock, no note, at 2026-09-26T12:21:21.867Z (14:21:21 CEST).
+A lock through MCP set_plan_lock is recorded as actor agent with the quoted humanRequest as its note (#36), so a human
+lock can only come from POST /api/plans/:id/lock. No curl or other REST client called that route during the run;
+the explorer's Lock plan button did.
+
+## Step 7: Final check button (REST check, after the agent's final check)
+
+$ agent-browser find role button click --name "Final check"
+$ agent-browser screenshot docs/proof/architecture-plans/10-light-final-conforming.png       # now step7-final-conforming-light.png
+✓ Screenshot saved to docs/proof/architecture-plans/10-light-final-conforming.png
+$ agent-browser find role button click --name "Switch to dark theme"
+$ agent-browser screenshot docs/proof/architecture-plans/10-dark-final-conforming.png        # now step7-final-conforming-dark.png
+✓ Screenshot saved to docs/proof/architecture-plans/10-dark-final-conforming.png

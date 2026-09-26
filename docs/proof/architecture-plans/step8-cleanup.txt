@@ -1,0 +1,26 @@
+Clean-up after the last re-check (the recorded run and the first re-check ended with the same commands).
+Every command as run by the proof agent, with its literal output ("(no output)" where it printed nothing).
+
+$ agent-browser close
+$ kill <server pid on 4633>; lsof -tiTCP:4633 -sTCP:LISTEN
+(no output: nothing listens on 4633)
+$ git -C ~/dev/posthog worktree remove --force /tmp/posthog-proof
+(no output)
+$ git -C ~/dev/posthog worktree prune
+(no output)
+$ test -d /tmp/posthog-proof && chmod -R u+w /tmp/posthog-proof && rm -rf /tmp/posthog-proof
+(no output: the directory was already gone; no flox cache is created because the agent skipped project settings)
+$ rm -rf /Users/mreichenbach/dev/posthog/.git/uml-pr-review
+$ ls -d /tmp/posthog-proof /Users/mreichenbach/dev/posthog/.git/uml-pr-review
+ls: /tmp/posthog-proof: No such file or directory
+ls: /Users/mreichenbach/dev/posthog/.git/uml-pr-review: No such file or directory
+$ bun scripts/proof/baseline.ts /Users/mreichenbach/dev/posthog docs/proof/architecture-plans/step1-baseline-before.json > /tmp/wf30/step8-compare.txt; echo "exit $?"; cat /tmp/wf30/step8-compare.txt
+exit 0
+git status --porcelain: identical (0 lines, sha256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+git rev-parse HEAD: identical (1 lines, sha256 7269a6deafedcb8efbd87b7aa8c5b02be7e15d6287dd8b5249a98bfc6ccc75ab)
+git worktree list: identical (69 lines, sha256 df270955004cc52772075eb2227e3f7046cea839ae538a0c077ebf139177c530)
+
+Not covered by these commands: every check wrote the working tree's snapshot as loose tree and blob objects into
+PostHog's object store (for example trees 22cf8ed, 5990cb0, cd88265 and the blobs of the edited files). They are
+unreachable, so git gc prunes them once they are older than gc.pruneExpire (two weeks by default). status, HEAD,
+and worktree list cannot see them.

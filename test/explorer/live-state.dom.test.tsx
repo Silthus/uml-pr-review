@@ -1,6 +1,6 @@
 import { useHappyDom } from "./happy-dom.ts";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { act, cleanup, configure, fireEvent, render, within } from "@testing-library/react";
+import { act, cleanup, configure, fireEvent, render, waitFor, within } from "@testing-library/react";
 import type { ArchitecturePlan, ConformanceResult, PlanSummary } from "../../src/architecture/contracts/index.ts";
 import { ExplorerApp } from "../../src/explorer/app.tsx";
 import { architectureOf } from "../support/architecture.ts";
@@ -29,6 +29,8 @@ const plan: ArchitecturePlan = {
   createdAt: at,
   updatedAt: at,
 };
+
+const secondPlan: ArchitecturePlan = { ...plan, id: "second-plan", title: "Second plan" };
 
 function revision(number: number, modules = plan.modules): ArchitecturePlan {
   const revisions = Array.from({ length: number }, (_, index) => (index === 0 ? plan.revisions[0]! : { number: index + 1, at: later, actor: "agent" as const, kind: "edit" as const, operations: [] }));
@@ -65,27 +67,37 @@ function checkEvent(result: ConformanceResult, seq: number) {
   return { seq, at: later, repositoryId: "/repo/.git", type: "conformance_result" as const, planId: result.planId, result };
 }
 
-function fakeServer({ initialPlan = plan, conformance = null }: { initialPlan?: ArchitecturePlan; conformance?: ConformanceResult | null } = {}) {
-  let current = initialPlan;
-  const pending: ((response: Response) => void)[] = [];
-  const detailReads: string[] = [];
+function fakeServer({ initialPlans = [plan], conformance = null }: { initialPlans?: ArchitecturePlan[]; conformance?: ConformanceResult | null } = {}) {
+  const plans = new Map(initialPlans.map((entry) => [entry.id, entry]));
+  const pendingWrites: ((response: Response) => void)[] = [];
+  const heldReads: (() => void)[] = [];
+  let holding = false;
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
-    if (init?.method === "POST") return new Promise<Response>((resolve) => pending.push(resolve));
+    if (init?.method === "POST") return new Promise<Response>((resolve) => pendingWrites.push(resolve));
+    if (holding) await new Promise<void>((resolve) => heldReads.push(resolve));
     if (url.startsWith("/api/architecture")) return Response.json(payload);
-    if (url.startsWith("/api/plans?")) return Response.json([summaryOf(current)]);
-    detailReads.push(url);
-    return Response.json({ plan: current, conformance });
+    if (url.startsWith("/api/plans?")) return Response.json([...plans.values()].map(summaryOf));
+    const requested = plans.get(url.slice("/api/plans/".length).split("?")[0] ?? "");
+    if (!requested) return Response.json({ error: "no such plan" }, { status: 404 });
+    return Response.json({ plan: requested, conformance: conformance?.planId === requested.id ? conformance : null });
   }) as typeof fetch;
   return {
-    detailReads,
     advanceTo(next: ArchitecturePlan) {
-      current = next;
+      plans.set(next.id, next);
     },
     respond(response: Response) {
-      const resolve = pending.shift();
+      const resolve = pendingWrites.shift();
       if (!resolve) throw new Error("No request is waiting for a response");
       resolve(response);
+    },
+    holdReads() {
+      holding = true;
+    },
+    async releaseReads() {
+      holding = false;
+      for (const resume of heldReads.splice(0)) resume();
+      await new Promise((resolve) => setTimeout(resolve, 20));
     },
   };
 }
@@ -130,14 +142,60 @@ describe("explorer live state", () => {
   test("reconnecting the event stream refetches the revision the stream missed", async () => {
     const server = fakeServer();
     const view = await renderExplorer();
-    const readsWhileLive = server.detailReads.length;
 
     await act(async () => FakeEventSource.latest.fail());
     server.advanceTo(revision(2));
     await act(async () => FakeEventSource.latest.open());
 
     expect(await view.findByText("Architecture plan · revision 2")).toBeTruthy();
-    expect(server.detailReads.length).toBeGreaterThan(readsWhileLive);
+  });
+
+  test("a plan patch that lands during a resync is not undone by the resync's older response", async () => {
+    const server = fakeServer();
+    const view = await renderExplorer();
+
+    server.holdReads();
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+    await act(async () => FakeEventSource.latest.emit(patchEvent(revision(3))));
+    expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+
+    server.advanceTo(revision(2));
+    await act(() => server.releaseReads());
+
+    expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+  });
+
+  test("choosing another plan opens it, and choosing no plan closes the panel", async () => {
+    fakeServer({ initialPlans: [plan, secondPlan] });
+    const view = await renderExplorer();
+
+    await act(async () => {
+      fireEvent.change(view.getByRole("combobox", { name: "Plan" }), { target: { value: secondPlan.id } });
+    });
+    expect(await view.findByRole("heading", { name: secondPlan.title })).toBeTruthy();
+
+    await act(async () => {
+      fireEvent.change(view.getByRole("combobox", { name: "Plan" }), { target: { value: "" } });
+    });
+    await waitFor(() => expect(view.queryByRole("region", { name: "Architecture plan" })).toBeNull());
+  });
+
+  test("a late load for a plan the human already left does not reopen it", async () => {
+    const server = fakeServer({ initialPlans: [plan, secondPlan] });
+    const view = await renderExplorer();
+
+    server.holdReads();
+    await act(async () => {
+      fireEvent.change(view.getByRole("combobox", { name: "Plan" }), { target: { value: secondPlan.id } });
+    });
+    await act(async () => {
+      fireEvent.change(view.getByRole("combobox", { name: "Plan" }), { target: { value: "" } });
+    });
+    await act(() => server.releaseReads());
+
+    expect(view.queryByRole("region", { name: "Architecture plan" })).toBeNull();
+    expect(view.queryByRole("heading", { name: secondPlan.title })).toBeNull();
   });
 
   test("a late mutation response never rolls the plan back behind a newer live revision", async () => {
@@ -187,7 +245,7 @@ describe("explorer live state", () => {
   });
 
   test("a check of another revision in another worktree is shown as outdated, with what it checked", async () => {
-    fakeServer({ initialPlan: revision(2, [...plan.modules, { path: "missing", action: "create", responsibility: "Must exist.", origin: "human" }]), conformance: checkOf(1, otherWorktree) });
+    fakeServer({ initialPlans: [revision(2, [...plan.modules, { path: "missing", action: "create", responsibility: "Must exist.", origin: "human" }])], conformance: checkOf(1, otherWorktree) });
     const view = await renderExplorer(2);
     const panel = planPanel(view);
 

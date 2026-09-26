@@ -15,10 +15,9 @@ export function currentConformance(check: CheckView | null): ConformanceResult |
 
 function checkProvenance(result: ConformanceResult, plan: ArchitecturePlan, repository: RepositoryRef): CheckProvenance {
   const since = [
-    result.planId !== plan.id ? `this is plan ${plan.id}` : null,
-    result.planId === plan.id && result.planRevision !== plan.revision ? `the plan moved to revision ${plan.revision}` : null,
-    result.worktree !== repository.root ? `this explorer shows ${repository.root}` : null,
-    result.baseCommit !== plan.baseCommit ? `the base commit moved to ${plan.baseCommit.slice(0, 7)}` : null,
+    result.planRevision !== plan.revision ? `The plan is now at revision ${plan.revision}.` : null,
+    result.worktree !== repository.root ? `It ran in ${result.worktree}, not in ${repository.root}.` : null,
+    result.baseCommit !== plan.baseCommit ? `The base commit is now ${plan.baseCommit.slice(0, 7)}.` : null,
   ].filter((reason): reason is string => reason !== null);
   return since.length === 0 ? { kind: "current" } : { kind: "outdated", since };
 }

@@ -267,7 +267,7 @@ describe("ExplorerApp", () => {
       operations: [{ op: "add_comment", target: { kind: "module", path: logic }, body: "Please keep this behind the facade." }],
       note: "Comment from the explorer",
     });
-    expect((await view.findAllByText(/the plan moved to revision 3/)).length).toBeGreaterThan(0);
+    expect((await view.findByRole("alert")).textContent).toContain("the plan is now at revision 3");
     expect(view.getByText("Architecture plan · revision 3")).toBeTruthy();
   });
 

@@ -1,15 +1,17 @@
-import type { ArchitecturePlan, ConformanceResult, PlanSummary } from "../../architecture/contracts/index.ts";
-import type { RepositoryState } from "../api.ts";
+import type { ArchitecturePayload, ArchitecturePlan, ConformanceResult, PlanSummary } from "../../architecture/contracts/index.ts";
+import type { PlansSnapshot, RepositoryState } from "../api.ts";
 
 export type PlanChoice = string | null | undefined;
 
-export function reconcileLoaded(current: RepositoryState | null, loaded: RepositoryState, choice: PlanChoice): RepositoryState {
-  if (!current) return loaded;
-  const payload = loaded.payload.tree === current.payload.tree ? current.payload : loaded.payload;
-  const merged = { ...current, payload, plans: mergeSummaries(current.plans, loaded.plans) };
+export function acceptArchitecture(state: RepositoryState, payload: ArchitecturePayload): RepositoryState {
+  return payload.tree === state.payload.tree ? state : { ...state, payload };
+}
+
+export function acceptPlans(state: RepositoryState, loaded: PlansSnapshot, choice: PlanChoice): RepositoryState {
+  const merged = { ...state, plans: mergeSummaries(state.plans, loaded.plans) };
   if (!loaded.plan) return choice === null ? { ...merged, plan: null, conformance: null } : merged;
   const withPlan = acceptPlan(merged, loaded.plan, choice);
-  return loaded.conformance ? acceptConformance(withPlan, loaded.conformance) : withPlan;
+  return loaded.conformance ? acceptStoredCheck(withPlan, loaded.conformance) : withPlan;
 }
 
 export function acceptPlan(state: RepositoryState, plan: ArchitecturePlan, choice: PlanChoice): RepositoryState {
@@ -19,11 +21,12 @@ export function acceptPlan(state: RepositoryState, plan: ArchitecturePlan, choic
   return { ...state, plans, plan, conformance };
 }
 
-export function acceptConformance(state: RepositoryState, result: ConformanceResult): RepositoryState {
-  const root = state.payload.repository.root;
-  if (!state.plan || result.planId !== state.plan.id || result.worktree !== root) return state;
-  if (state.conformance && state.conformance.worktree === root && !isNewerCheck(result, state.conformance)) return state;
-  return { ...state, conformance: result };
+export function acceptStoredCheck(state: RepositoryState, result: ConformanceResult): RepositoryState {
+  return isForOpenPlan(state, result) && outranks(result, state.conformance, state.payload.repository.root) ? { ...state, conformance: result } : state;
+}
+
+export function acceptLiveCheck(state: RepositoryState, result: ConformanceResult): RepositoryState {
+  return result.worktree === state.payload.repository.root ? acceptStoredCheck(state, result) : state;
 }
 
 function opensPlan(state: RepositoryState, plan: ArchitecturePlan, choice: PlanChoice): boolean {
@@ -31,7 +34,13 @@ function opensPlan(state: RepositoryState, plan: ArchitecturePlan, choice: PlanC
   return choice === plan.id || (choice === undefined && state.plan === null);
 }
 
-function isNewerCheck(next: ConformanceResult, current: ConformanceResult): boolean {
+function isForOpenPlan(state: RepositoryState, result: ConformanceResult): boolean {
+  return state.plan !== null && result.planId === state.plan.id;
+}
+
+function outranks(next: ConformanceResult, current: ConformanceResult | null, root: string): boolean {
+  if (!current) return true;
+  if ((next.worktree === root) !== (current.worktree === root)) return next.worktree === root;
   if (next.planRevision !== current.planRevision) return next.planRevision > current.planRevision;
   return next.checkedAt > current.checkedAt;
 }

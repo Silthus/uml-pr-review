@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { CommentTarget, PlanOperation, SelectionTarget } from "../architecture/contracts/index.ts";
+import type { ArchitecturePayload, CommentTarget, SelectionTarget } from "../architecture/contracts/index.ts";
 import { ArchitectureCanvas } from "./canvas/architecture-canvas.tsx";
 import { CanvasActionsContext } from "./canvas/canvas-actions.ts";
 import { buildVisibleGraph } from "./graph/visible-graph.ts";
@@ -18,6 +18,10 @@ import { useRepository } from "./state/use-repository.ts";
 import { useViewState } from "./state/use-view-state.ts";
 
 const emptyGraph: VisibleGraph = { mode: "map", nodes: [], edges: [] };
+
+function isNewerHead(payload: ArchitecturePayload, index: { root: string; commit: string | null; tree: string }): boolean {
+  return index.root === payload.repository.root && index.commit !== null && index.tree !== payload.tree;
+}
 
 function isTypingTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || (target instanceof HTMLElement && target.isContentEditable);
@@ -39,16 +43,16 @@ export function ExplorerApp() {
   };
   const live = useLiveEvents(repository.api, plan, {
     applyPlan: (patched) => followAccepted(repository.acceptPlan(patched)),
-    applyConformance: (result) => followAccepted(repository.acceptConformance(result)),
+    applyConformance: (result) => followAccepted(repository.acceptLiveCheck(result)),
     focus: (target: SelectionTarget) => {
       if (!view.followAgent) return;
       if (target.kind === "module") view.selectModule(target.path);
       else view.selectSeam(target.from, target.to);
     },
-    reindex: (tree) => {
-      if (repository.state && repository.state.payload.tree !== tree) repository.resync();
+    reindex: (index) => {
+      if (repository.state && isNewerHead(repository.state.payload, index)) repository.refreshArchitecture();
     },
-    resync: repository.resync,
+    resync: repository.resyncPlans,
   });
 
   const graph = useMemo(
@@ -78,7 +82,7 @@ export function ExplorerApp() {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
-  const noted = useCallback(
+  const notingFailures = useCallback(
     async (outcome: Promise<MutationOutcome>): Promise<MutationOutcome> => {
       const result = await outcome;
       if (!result.ok) live.note({ tone: "error", text: result.message });
@@ -87,7 +91,7 @@ export function ExplorerApp() {
     [live.note],
   );
 
-  const applyOperations = useCallback((operations: PlanOperation[], note: string) => noted(repository.applyOperations(operations, note)), [noted, repository.applyOperations]);
+  const applyOperations = repository.applyOperations;
 
   const actions: PlanActions = useMemo(
     () => ({
@@ -96,9 +100,9 @@ export function ExplorerApp() {
       dropModule: (path) => applyOperations([{ op: "drop_module", path }], `Explorer: dropped ${path}`),
       upsertSeam: (seam) => applyOperations([{ op: "upsert_seam", ...seam }], `Explorer: ${seam.action} seam ${seam.from} → ${seam.to}`),
       dropSeam: (from, to) => applyOperations([{ op: "drop_seam", from, to }], `Explorer: dropped seam ${from} → ${to}`),
-      setLocked: (locked) => noted(repository.setLock(locked)),
+      setLocked: (locked) => notingFailures(repository.setLock(locked)),
       check: async (final) => {
-        const outcome = await noted(repository.check(final));
+        const outcome = await notingFailures(repository.check(final));
         if (outcome.ok) {
           view.setPlanVisible(true);
           view.focusAll();
@@ -106,7 +110,7 @@ export function ExplorerApp() {
         return outcome;
       },
     }),
-    [applyOperations, noted, repository.setLock, repository.check, view.setPlanVisible],
+    [applyOperations, notingFailures, repository.setLock, repository.check, view.setPlanVisible],
   );
 
   const selectModule = useCallback(
@@ -152,7 +156,7 @@ export function ExplorerApp() {
           </div>
         </CanvasActionsContext.Provider>
         {repository.model ? (
-          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} check={overlay ? check : null} includeTests={view.includeTests} actions={actions} onSelectModule={selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={lensPath !== null} />
+          <Inspector model={repository.model} selection={view.selection} plan={overlay} check={overlay ? check : null} includeTests={view.includeTests} actions={actions} onSelectModule={selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={lensPath !== null} />
         ) : (
           <aside className="inspector" aria-label="Inspector"><section className="panel"><p className="muted">{repository.loadState === "loading" ? "Indexing the repository. A cold PostHog index takes a few seconds." : "Nothing loaded."}</p></section></aside>
         )}

@@ -82,10 +82,16 @@ function CheckProvenanceNote({ result, since }: { result: CheckView["result"]; s
   return (
     <p className="muted check-provenance">
       {`Checked revision ${result.planRevision} in ${result.worktree} `}
-      <time dateTime={result.checkedAt}>{`at ${shortTime(result.checkedAt)}`}</time>
-      {`: ${result.verdict} · ${result.phase}. Since then ${since.join(", and ")}. Check again to see the current state.`}
+      <time dateTime={result.checkedAt}>{checkedAtText(result.checkedAt)}</time>
+      {`: ${result.verdict} · ${result.phase}. ${since.join(" ")} Check again to see the current state.`}
     </p>
   );
+}
+
+function checkedAtText(checkedAt: string): string {
+  const at = new Date(checkedAt);
+  const sameDay = at.toDateString() === new Date().toDateString();
+  return sameDay ? `at ${shortTime(checkedAt)}` : `on ${at.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })} at ${shortTime(checkedAt)}`;
 }
 
 function StatusChip({ status }: { status: "conforming" | "pending" | "violating" | undefined }) {

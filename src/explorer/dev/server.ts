@@ -136,7 +136,7 @@ function checkResult(): ConformanceResult {
 }
 
 function outdatedCheck(): ConformanceResult {
-  return { ...checkResult(), planRevision: 1, worktree: "/Users/michael/dev/posthog-review", checkedAt: at };
+  return { ...checkResult(), planRevision: 1, worktree: "/fixtures/posthog-review", checkedAt: at };
 }
 
 async function routeScenario(request: Request): Promise<Response> {

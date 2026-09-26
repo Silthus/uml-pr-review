@@ -9,7 +9,7 @@ export type LiveHandlers = {
   applyPlan(plan: ArchitecturePlan): boolean;
   applyConformance(result: ConformanceResult): boolean;
   focus(target: SelectionTarget): void;
-  reindex(tree: string): void;
+  reindex(index: { root: string; commit: string | null; tree: string }): void;
   resync(): void;
 };
 
@@ -44,7 +44,7 @@ export function useLiveEvents(api: ExplorerApi | null, currentPlan: Architecture
       }
       if (event.type === "conformance_result") handlersRef.current.applyConformance(event.result);
       if (event.type === "selection_hint") handlersRef.current.focus(event.target);
-      if (event.type === "index_ready") handlersRef.current.reindex(event.tree);
+      if (event.type === "index_ready") handlersRef.current.reindex(event);
     }, (next) => {
       setStatus(next);
       if (next === "live") handlersRef.current.resync();

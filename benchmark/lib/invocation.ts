@@ -10,12 +10,13 @@ const planningInstruction = "Use the planning-architecture skill. You have stand
 const inheritedEnvironment = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "TERM", "LANG", "LC_ALL", "TMPDIR"];
 const blockedPushTarget = "file:///dev/null/pushes-are-blocked-in-benchmark-replays/";
 const githubPushPrefixes = ["git@github.com:", "ssh://git@github.com/", "https://github.com/"];
+export const githubPushGuard = gitConfigEnvironment(githubPushPrefixes.map((prefix) => [`url.${blockedPushTarget}.pushInsteadOf`, prefix]));
 const isolatedEnvironment = {
   CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1",
   GH_TOKEN: "blocked-by-benchmark",
   GIT_SSH_COMMAND: "false",
   GIT_TERMINAL_PROMPT: "0",
-  ...gitConfigEnvironment(githubPushPrefixes.map((prefix) => [`url.${blockedPushTarget}.pushInsteadOf`, prefix])),
+  ...githubPushGuard,
 };
 const githubSandbox = {
   sandbox: {

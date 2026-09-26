@@ -1,0 +1,105 @@
+diff --git a/products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx b/products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx
+new file mode 100644
+index 00000000000..cc46ae4a9ea
+--- /dev/null
++++ b/products/workflows/frontend/Workflows/hogflows/steps/HogFlowBranchCard.test.tsx
+@@ -0,0 +1,99 @@
++import '@testing-library/jest-dom'
++
++import { cleanup, fireEvent, render, screen } from '@testing-library/react'
++
++import type { useHogFlowBranchSelection } from '../HogFlowBranchSelection'
++import { HogFlowBranchCard } from './HogFlowBranchCard'
++
++const mockUseHogFlowBranchSelection = jest.fn<ReturnType<typeof useHogFlowBranchSelection>, []>()
++
++// HogFlowBranchSelection sits in an import cycle (via hogFlowEditorLogic and StepConditionalBranch), so jest runs this
++// factory twice; delegating lazily keeps both module instances on the one mock the tests configure.
++jest.mock('../HogFlowBranchSelection', () => ({
++    ...jest.requireActual('../HogFlowBranchSelection'),
++    useHogFlowBranchSelection: () => mockUseHogFlowBranchSelection(),
++}))
++
++describe('HogFlowBranchCard', () => {
++    let setSelectedBranch: jest.Mock
++
++    function renderCard(props: Partial<Parameters<typeof HogFlowBranchCard>[0]> = {}): {
++        onNameChange: jest.Mock
++        onRemove: jest.Mock
++        card: HTMLElement
++    } {
++        mockUseHogFlowBranchSelection.mockReturnValue({ selectedBranch: null, setSelectedBranch })
++        const onNameChange = jest.fn()
++        const onRemove = jest.fn()
++        const { container } = render(
++            <HogFlowBranchCard
++                actionId="action_1"
++                index={1}
++                name="Branch A"
++                onNameChange={onNameChange}
++                placeholder="Branch name"
++                ariaLabel="Name of branch 2"
++                onRemove={onRemove}
++                {...props}
++            >
++                <div>branch body</div>
++            </HogFlowBranchCard>
++        )
++        return { onNameChange, onRemove, card: container.firstElementChild as HTMLElement }
++    }
++
++    beforeEach(() => {
++        setSelectedBranch = jest.fn()
++    })
++
++    afterEach(() => {
++        cleanup()
++        jest.clearAllMocks()
++    })
++
++    it('renders the name input, header addon, and children', () => {
++        renderCard({ headerAddon: <span>addon</span> })
++
++        const input = screen.getByLabelText('Name of branch 2')
++        expect(input).toHaveValue('Branch A')
++        expect(input).toHaveAttribute('placeholder', 'Branch name')
++        expect(input).toHaveAttribute('data-attr', 'workflow-panel-select-branch')
++        expect(screen.getByText('addon')).toBeInTheDocument()
++        expect(screen.getByText('branch body')).toBeInTheDocument()
++    })
++
++    it('reports each name edit through onNameChange', () => {
++        const { onNameChange } = renderCard()
++
++        fireEvent.change(screen.getByLabelText('Name of branch 2'), { target: { value: 'Branch B' } })
++
++        expect(onNameChange).toHaveBeenCalledWith('Branch B')
++    })
++
++    it('calls onRemove when the remove button is clicked', () => {
++        const { onRemove } = renderCard()
++
++        fireEvent.click(screen.getByRole('button'))
++
++        expect(onRemove).toHaveBeenCalledTimes(1)
++    })
++
++    it('does not call onRemove while a removeDisabledReason is set', () => {
++        const { onRemove } = renderCard({ removeDisabledReason: 'A split needs at least two branches' })
++
++        fireEvent.click(screen.getByRole('button'))
++
++        expect(onRemove).not.toHaveBeenCalled()
++    })
++
++    it('selects its branch on focus and on pointer down', () => {
++        const { card } = renderCard()
++
++        fireEvent.focus(screen.getByLabelText('Name of branch 2'))
++        expect(setSelectedBranch).toHaveBeenLastCalledWith({ actionId: 'action_1', index: 1 })
++
++        setSelectedBranch.mockClear()
++        fireEvent.pointerDown(card)
++        expect(setSelectedBranch).toHaveBeenLastCalledWith({ actionId: 'action_1', index: 1 })
++    })
++})

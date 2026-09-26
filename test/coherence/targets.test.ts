@@ -28,6 +28,7 @@ const product: Files = {
   "products/a/backend/limits/check.py": branchy("allowed", 12),
   "products/a/backend/wip/__init__.py": "",
   "products/a/backend/wip/draft.py": "def draft():\n    return 1\n",
+  "products/a/backend/wip/sketch.py": "def sketch():\n    return 1\n",
   "products/a/backend/test/__init__.py": "",
   "products/a/backend/test/test_api.py": "from products.a.backend.facade.api import run\n\n\ndef test_run():\n    assert run(1) == 1\n",
   "products/a/backend/test/test_engine.py": "from products.a.backend.core.engine import step\n\n\ndef test_step():\n    assert step(1) == 2\n",
@@ -89,6 +90,14 @@ const ciSignals: SignalReport = {
   unavailable: [{ signal: "errors.occurrences", reason: "project 2 not reachable: switch-project returned 404" }],
 };
 
+const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
+
+const openPullRequests = [
+  { number: 42, updatedAt: daysAgo(2), files: ["products/a/backend/wip/draft.py"] },
+  { number: 43, updatedAt: daysAgo(5), files: ["products/a/backend/facade/api.py", "products/b/backend/consumer.py"] },
+  { number: 7, updatedAt: daysAgo(30), files: ["products/a/backend/jobs/runner.py"] },
+];
+
 let repository: TemporaryRepository;
 let fixtures: string;
 let head: string;
@@ -112,7 +121,7 @@ function request(overrides: Partial<TargetRequest> = {}): TargetRequest {
     commit: head,
     rules: join(fixtures, "rules.json"),
     signals: ciSignals,
-    openPullRequests: async () => ({ repository: "acme/app", pullRequests: [{ number: 42, files: ["products/a/backend/wip/draft.py"] }] }),
+    openPullRequests: async () => ({ repository: "acme/app", pullRequests: openPullRequests }),
     ...overrides,
   };
 }
@@ -174,13 +183,32 @@ describe("ranking", () => {
   );
 
   test(
-    "skips modules that open pull requests touch, and says which pull requests",
+    "marks the files that recently updated pull requests touch as busy and skips a module with only busy files",
     async () => {
       const report = await rankTargets(request());
 
-      expect(report.openPullRequests).toEqual({ repository: "acme/app", open: 1 });
-      expect(report.skipped).toEqual([{ module: "products/a/backend/wip", pullRequests: [42] }]);
-      expect(report.targets.map(({ module }) => module)).not.toContain("products/a/backend/wip");
+      expect(report.openPullRequests).toEqual({ repository: "acme/app", active: 2, activeDays: 14 });
+      expect(targetFor(report, "products/a/backend/wip").busyFiles).toEqual([{ path: "products/a/backend/wip/draft.py", pullRequests: [42] }]);
+      expect(report.skipped).toEqual([{ module: "products/a/backend/facade", pullRequests: [43] }]);
+      expect(report.busyFiles).toEqual([
+        { path: "products/a/backend/facade/api.py", pullRequests: [43] },
+        { path: "products/a/backend/wip/draft.py", pullRequests: [42] },
+        { path: "products/b/backend/consumer.py", pullRequests: [43] },
+      ]);
+      expect(report.targets.map(({ module }) => module)).not.toContain("products/a/backend/facade");
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "ignores pull requests nobody updated within the active days",
+    async () => {
+      const recent = await rankTargets(request());
+      const wider = await rankTargets(request({ activeDays: 60 }));
+
+      expect(targetFor(recent, "products/a/backend/jobs").busyFiles).toEqual([]);
+      expect(wider.skipped).toContainEqual({ module: "products/a/backend/jobs", pullRequests: [7] });
+      expect(wider.openPullRequests).toEqual({ repository: "acme/app", active: 3, activeDays: 60 });
     },
     toolTimeoutMs,
   );

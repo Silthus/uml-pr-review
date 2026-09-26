@@ -1,0 +1,94 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/targets.test.ts:
+126 |   };
+127 | }
+128 | 
+129 | function targetFor(report: TargetReport, module: string): Target {
+130 |   const target = report.targets.find((candidate) => candidate.module === module);
+131 |   if (!target) throw new Error(`${module} is not ranked: ${report.targets.map(({ module: ranked }) => ranked).join(", ")}`);
+                               ^
+error: products/a/backend/jobs is not ranked: products/a/backend/limits, products/a/backend/core, products/a/backend/store
+      at targetFor (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:131:26)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:155:20)
+(fail) ranking > scores a module as pressure × pain × safety from its churn, findings, complexity, and tests [162.29ms]
+185 |   test(
+186 |     "marks the files that recently updated pull requests touch as busy and skips a module with only busy files",
+187 |     async () => {
+188 |       const report = await rankTargets(request());
+189 | 
+190 |       expect(report.openPullRequests).toEqual({ repository: "acme/app", active: 2, activeDays: 14 });
+                                            ^
+error: expect(received).toEqual(expected)
+
+@@ -1,4 +1,3 @@
+  {
+-   "active": 2,
+-   "activeDays": 14,
++   "open": 3,
+    "repository": "acme/app",
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:190:39)
+(fail) ranking > marks the files that recently updated pull requests touch as busy and skips a module with only busy files [75.25ms]
+126 |   };
+127 | }
+128 | 
+129 | function targetFor(report: TargetReport, module: string): Target {
+130 |   const target = report.targets.find((candidate) => candidate.module === module);
+131 |   if (!target) throw new Error(`${module} is not ranked: ${report.targets.map(({ module: ranked }) => ranked).join(", ")}`);
+                               ^
+error: products/a/backend/jobs is not ranked: products/a/backend/limits, products/a/backend/core, products/a/backend/store
+      at targetFor (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:131:26)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:201:22)
+(fail) ranking > ignores pull requests nobody updated within the active days [72.58ms]
+212 |     async () => {
+213 |       const asked: Date[] = [];
+214 |       await rankTargets(request({ openPullRequests: async (since) => (asked.push(since), { repository: "acme/app", pullRequests: [] }) }));
+215 | 
+216 |       expect(asked).toHaveLength(1);
+217 |       expect(Date.now() - asked[0]!.getTime()).toBeCloseTo(14 * 86_400_000, -5);
+                                      ^
+TypeError: undefined is not an object (evaluating 'asked[0].getTime')
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:217:33)
+(fail) ranking > asks the pull request provider only for the active window [73.73ms]
+126 |   };
+127 | }
+128 | 
+129 | function targetFor(report: TargetReport, module: string): Target {
+130 |   const target = report.targets.find((candidate) => candidate.module === module);
+131 |   if (!target) throw new Error(`${module} is not ranked: ${report.targets.map(({ module: ranked }) => ranked).join(", ")}`);
+                               ^
+error: products/a/backend/jobs is not ranked: products/a/backend/limits, products/a/backend/core, products/a/backend/store
+      at targetFor (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:131:26)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:229:14)
+(fail) ranking > lifts PostHog signal rows to the module that owns their path [73.63ms]
+126 |   };
+127 | }
+128 | 
+129 | function targetFor(report: TargetReport, module: string): Target {
+130 |   const target = report.targets.find((candidate) => candidate.module === module);
+131 |   if (!target) throw new Error(`${module} is not ranked: ${report.targets.map(({ module: ranked }) => ranked).join(", ")}`);
+                               ^
+error: products/a/backend/jobs is not ranked: products/a/backend/limits, products/a/backend/core, products/a/backend/store
+      at targetFor (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:131:26)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:268:21)
+(fail) ranking > lowers the safety of a module that carries heavy traffic [72.40ms]
+126 |   };
+127 | }
+128 | 
+129 | function targetFor(report: TargetReport, module: string): Target {
+130 |   const target = report.targets.find((candidate) => candidate.module === module);
+131 |   if (!target) throw new Error(`${module} is not ranked: ${report.targets.map(({ module: ranked }) => ranked).join(", ")}`);
+                               ^
+error: products/a/backend/jobs is not ranked: products/a/backend/limits, products/a/backend/core, products/a/backend/store
+      at targetFor (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:131:26)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a85e24c322d6b12bc/test/coherence/targets.test.ts:320:34)
+(fail) next recipe step > writes characterisation tests for a module that no test references [75.07ms]
+
+ 11 pass
+ 7 fail
+ 34 expect() calls
+Ran 18 tests across 1 file. [1.64s]

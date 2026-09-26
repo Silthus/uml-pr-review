@@ -170,11 +170,7 @@ bun coherence/loop/session.ts --repo ~/dev/posthog --scope products/workflows --
 
 It launches a headless Claude Opus 5.5 session with the `coherence-loop` skill. `--fetch` updates `upstream/master` first. Without `--draft`, every push from the session is blocked. It takes about 5 minutes and $0.60 to $1.30. When it ends, it prints the transcript path and the agent's summary.
 
-⚠️ `--fetch` runs `git fetch upstream master` over SSH. If your SSH agent needs an approval that a headless process cannot give (1Password does), the fetch fails ([#86](https://github.com/Silthus/uml-pr-review/issues/86)); in the proof run the agent worked around it. To avoid it, fetch the public repository over HTTPS yourself, with your global URL rewrites off for that one command, and then run the command above without `--fetch`:
-
-```sh
-GIT_CONFIG_GLOBAL=/dev/null git -C ~/dev/posthog fetch --quiet https://github.com/PostHog/posthog.git +master:refs/remotes/upstream/master
-```
+`--fetch` fetches over HTTPS with your `gh` credentials, so it works headless even when your SSH agent needs an approval ([#86](https://github.com/Silthus/uml-pr-review/issues/86)).
 
 Where the output lands:
 

@@ -1,0 +1,5 @@
+# red: bun test test/explorer/explorer.dom.test.tsx -t breakdown, with src/explorer at origin/main 25201b0 and the new test
+TestingLibraryElementError: Unable to find an element with the text: Read issue flag usage.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+(fail) ExplorerApp > the plan panel reads as the plan's breakdown: responsibilities, seam interfaces, and rationale [60.18ms]
+ 0 pass
+ 1 fail

@@ -1,0 +1,6 @@
+# gate on the final tree: bun test && bun run typecheck
+ 334 pass
+ 0 fail
+Ran 334 tests across 26 files. [12.28s]
+$ tsc --noEmit
+typecheck exit: 0

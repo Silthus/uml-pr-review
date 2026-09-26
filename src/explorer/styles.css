@@ -1167,12 +1167,71 @@ a:hover {
   border-top: 0;
 }
 
-.plan-list .link {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
+.plan-list .plan-entry {
+  display: grid;
+  gap: 3px;
   width: 100%;
+}
+
+.plan-entry-head {
+  display: block;
+  line-height: 1.7;
+}
+
+.plan-entry-head > * + * {
+  margin-left: 6px;
+}
+
+.plan-entry-head .chip {
+  vertical-align: 1px;
+}
+
+.plan-entry-detail {
+  display: grid;
+  gap: 2px;
+}
+
+.plan-entry-text {
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.plan-entry-text.rationale {
+  color: var(--ink-3);
+}
+
+.plan-entry-via {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.plan-entry-via .module-path {
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
+
+.plan-entry-via .symbols {
+  color: var(--ink-3);
+}
+
+.goal.clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+button.link.goal-toggle {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: -2px;
 }
 
 .seam-ends {

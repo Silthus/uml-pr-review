@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { ArchitecturePlan, CommentTarget, PlanComment } from "../../architecture/contracts/index.ts";
+import { useId, useLayoutEffect, useRef, useState } from "react";
+import type { ArchitecturePlan, CommentTarget, ElementStatus, PlanComment, PlannedModule, Seam } from "../../architecture/contracts/index.ts";
 import { statusGlyph } from "../canvas/package-node.tsx";
 import { currentConformance, type CheckView } from "../state/check-provenance.ts";
 import { CommentList, CommentThread, shortTime } from "./comments.tsx";
@@ -20,7 +20,7 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
     <section className="panel plan" aria-label="Architecture plan">
       <p className="eyebrow">{`Architecture plan · revision ${plan.revision}`}</p>
       <h2>{plan.title}</h2>
-      <p className="goal">{plan.goal}</p>
+      <Goal key={`${plan.id}:${plan.goal}`} text={plan.goal} />
       <div className="plan-state">
         <span className={`chip chip-lock ${plan.status}`}>{locked ? "Locked" : "Draft"}</span>
         <CheckChip check={check} />
@@ -34,13 +34,7 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
       <h3>Modules <span className="count">{plan.modules.length}</span></h3>
       <ul className="plan-list">
         {plan.modules.map((module) => (
-          <li key={module.path}>
-            <button type="button" className="link" onClick={() => onSelectModule(module.path)}>
-              <span className={`chip chip-action action-${module.action}`}>{module.action}</span>
-              <ModulePath path={module.path} />
-              <StatusChip status={moduleStatus.get(module.path)} />
-            </button>
-          </li>
+          <PlannedModuleEntry key={module.path} module={module} status={moduleStatus.get(module.path)} onSelect={onSelectModule} />
         ))}
       </ul>
       {locked ? null : creating ? (
@@ -51,13 +45,7 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
       <h3>Seams <span className="count">{plan.seams.length}</span></h3>
       <ul className="plan-list">
         {plan.seams.map((seam) => (
-          <li key={`${seam.from}->${seam.to}`}>
-            <button type="button" className="link" onClick={() => onSelectSeam(seam.from, seam.to)}>
-              <span className={`chip chip-action seam-${seam.action}`}>{seam.action}</span>
-              <span className="seam-ends"><ModulePath path={seam.from} /> <span className="arrow">→</span> <ModulePath path={seam.to} /></span>
-              <StatusChip status={seamStatus.get(`${seam.from}->${seam.to}`)} />
-            </button>
-          </li>
+          <PlannedSeamEntry key={`${seam.from}->${seam.to}`} seam={seam} status={seamStatus.get(`${seam.from}->${seam.to}`)} onSelect={onSelectSeam} />
         ))}
       </ul>
       {outsideThreads.length > 0 ? (
@@ -78,6 +66,76 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
       <CommentThread comments={planComments} target={{ kind: "plan" }} actions={actions} label="the plan" />
     </section>
   );
+}
+
+function Goal({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [clamped, setClamped] = useState(false);
+  const paragraph = useRef<HTMLParagraphElement>(null);
+  useLayoutEffect(() => {
+    const element = paragraph.current;
+    setClamped(element !== null && element.scrollHeight > element.clientHeight);
+  }, []);
+  return (
+    <>
+      <p ref={paragraph} className={`goal ${expanded ? "" : "clamped"}`}>{text}</p>
+      {clamped || expanded ? <button type="button" className="link goal-toggle" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>{expanded ? "Show less" : "Show more"}</button> : null}
+    </>
+  );
+}
+
+function PlannedModuleEntry({ module, status, onSelect }: { module: PlannedModule; status: ElementStatus | undefined; onSelect(path: string): void }) {
+  const detailId = useId();
+  return (
+    <li>
+      <button type="button" className="link plan-entry" aria-label={`${module.action} ${module.path}`} aria-describedby={detailId} onClick={() => onSelect(module.path)}>
+        <span className="plan-entry-head">
+          <span className={`chip chip-action action-${module.action}`}>{module.action}</span>
+          <ModulePath path={module.path} />
+          <StatusChip status={status} />
+        </span>
+        <span id={detailId} className="plan-entry-text">{module.responsibility}</span>
+      </button>
+    </li>
+  );
+}
+
+function PlannedSeamEntry({ seam, status, onSelect }: { seam: Seam; status: ElementStatus | undefined; onSelect(from: string, to: string): void }) {
+  const detailId = useId();
+  return (
+    <li>
+      <button type="button" className="link plan-entry" aria-label={`${seam.action} ${seam.from} → ${seam.to}`} aria-describedby={detailId} onClick={() => onSelect(seam.from, seam.to)}>
+        <span className="plan-entry-head">
+          <span className={`chip chip-action seam-${seam.action}`}>{seam.action}</span>
+          <span className="seam-ends"><ModulePath path={seam.from} /> <span className="arrow">→</span> <ModulePath path={seam.to} /></span>
+          <StatusChip status={status} />
+        </span>
+        <span id={detailId} className="plan-entry-detail">
+          {seam.interface ? <SeamInterface files={seam.interface.files} symbols={seam.interface.symbols} within={seam.to} /> : null}
+          {seam.rationale ? <span className="plan-entry-text rationale">{seam.rationale}</span> : null}
+        </span>
+      </button>
+    </li>
+  );
+}
+
+function SeamInterface({ files, symbols, within }: { files: string[]; symbols: string[]; within: string }) {
+  return (
+    <span className="plan-entry-via">
+      {"via "}
+      {files.map((file, index) => (
+        <span key={index}>
+          {index > 0 ? ", " : ""}
+          <ModulePath path={relativeTo(file, within)} title={file} />
+        </span>
+      ))}
+      {symbols.length > 0 ? <span className="symbols">{` (${symbols.join(", ")})`}</span> : null}
+    </span>
+  );
+}
+
+function relativeTo(file: string, module: string): string {
+  return file.startsWith(`${module}/`) ? file.slice(module.length + 1) : file;
 }
 
 type ElementTarget = Exclude<CommentTarget, { kind: "plan" }>;
@@ -152,7 +210,7 @@ function checkedAtText(checkedAt: string): string {
   return sameDay ? `at ${shortTime(checkedAt)}` : `on ${at.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })} at ${shortTime(checkedAt)}`;
 }
 
-function StatusChip({ status }: { status: "conforming" | "pending" | "violating" | undefined }) {
+function StatusChip({ status }: { status: ElementStatus | undefined }) {
   if (!status) return null;
   return <span className={`chip chip-status status-${status}`}>{statusGlyph(status)} {status}</span>;
 }

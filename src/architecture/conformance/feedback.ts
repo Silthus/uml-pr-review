@@ -13,14 +13,16 @@ const changeVerbs: Record<ChangedFile["status"], string> = {
 };
 
 export function unplannedModule(first: ChangedFile, leaf: string, changedFiles: number, existsAtBase: boolean, status: PlanStatus): Feedback {
-  const action = existsAtBase ? "modify" : "create";
   return {
     message: `${at(first.path, first.firstChangedLine)} ${changeVerbs[first.status]} module ${code(leaf)}, which the plan does not touch (${counted(changedFiles, "changed file")} there).`,
-    fix: `Revert the changes in ${code(leaf)}, or ${planEditHint(status, {
-      draft: "add it to the plan",
-      operation: { op: "upsert_module", path: leaf, action, responsibility: "…" },
-      locked: `add ${code(leaf)} as a ${existsAtBase ? "modified" : "created"} module`,
-    })}.`,
+    fix: `Revert the changes in ${code(leaf)}, or ${addModuleHint(leaf, existsAtBase, status)}.`,
+  };
+}
+
+export function reconfiguredModule(first: FileImport, leaf: string, changedImports: number, existsAtBase: boolean, status: PlanStatus): Feedback {
+  return {
+    message: `${at(first.file, first.line)} now imports ${code(first.target)} through a configuration change, not a source change, in module ${code(leaf)}, which the plan does not touch (${counted(changedImports, "changed import")} there).`,
+    fix: `Revert the configuration change behind the import, or ${addModuleHint(leaf, existsAtBase, status)}.`,
   };
 }
 
@@ -133,6 +135,14 @@ function unplannedDependencyMessage(imported: FileImport, owner: string, farEnd:
 
 function seamName({ from, to }: Pick<Seam, "from" | "to">): string {
   return `${code(from)} -> ${code(to)}`;
+}
+
+function addModuleHint(leaf: string, existsAtBase: boolean, status: PlanStatus): string {
+  return planEditHint(status, {
+    draft: "add it to the plan",
+    operation: { op: "upsert_module", path: leaf, action: existsAtBase ? "modify" : "create", responsibility: "…" },
+    locked: `add ${code(leaf)} as a ${existsAtBase ? "modified" : "created"} module`,
+  });
 }
 
 function planEditHint(status: PlanStatus, edit: PlanEdit): string {

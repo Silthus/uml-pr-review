@@ -17,6 +17,7 @@ export class Change {
   readonly #presentPaths: string[];
   readonly #seamImports = new Map<Seam, FileImport[]>();
   readonly #baseTargetsOf = new Map<string, string[]>();
+  #addedImports: FileImport[] | undefined;
 
   constructor({ plan, base, head, changes }: { plan: ArchitecturePlan; base: ArchitectureModel; head: ArchitectureModel; changes: ChangedFile[] }) {
     this.plan = plan;
@@ -45,12 +46,8 @@ export class Change {
   }
 
   addedImports(): FileImport[] {
-    const { payload } = this.head;
-    const atBase = counterpartImports(payload, this.base.payload);
-    return payload.imports.flatMap((tuple, index) => {
-      const names = namesIfAdded(tuple[4], atBase[index]?.[4]);
-      return names ? [{ ...fileImportOf(payload, tuple), names }] : [];
-    });
+    this.#addedImports ??= addedImportsBetween(this.base.payload, this.head.payload);
+    return this.#addedImports;
   }
 
   addedUnresolvedImports(): UnresolvedImport[] {
@@ -112,6 +109,14 @@ export class Change {
     this.#baseTargetsOf.set(key, targets);
     return targets;
   }
+}
+
+function addedImportsBetween(base: ArchitecturePayload, head: ArchitecturePayload): FileImport[] {
+  const atBase = counterpartImports(head, base);
+  return head.imports.flatMap((tuple, index) => {
+    const names = namesIfAdded(tuple[4], atBase[index]?.[4]);
+    return names ? [{ ...fileImportOf(head, tuple), names }] : [];
+  });
 }
 
 function namesIfAdded(headNames: string[], baseNames: string[] | undefined): string[] | undefined {

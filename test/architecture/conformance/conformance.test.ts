@@ -107,6 +107,29 @@ describe("unplanned-module", () => {
     ]);
   });
 
+  test("is a warning when only test files there gain a dependency without a source change", () => {
+    const testFile = "posthog/models/test/test_team.py";
+    const findings = findingsOf({
+      plan: planOf({ modules: [modifyLogic] }),
+      both: { [testFile]: [team] },
+      head: { [testFile]: [featureFlag] },
+      changes: [modified(issues)],
+    });
+
+    expect(findings).toEqual([
+      {
+        rule: "unplanned-module",
+        severity: "warning",
+        file: testFile,
+        line: 1,
+        subject: { kind: "module", path: "posthog/models/test" },
+        test: true,
+        message: `${testFile}:1 now imports \`${featureFlag}\` through a configuration change, not a source change, in module \`posthog/models/test\`, which the plan does not touch (1 changed import there).`,
+        fix: "Revert the configuration change behind the import, or ask the human to unlock the plan and add `posthog/models/test` as a modified module.",
+      },
+    ]);
+  });
+
   test("stays silent when every changed file is within a planned module", () => {
     expect(findingsOf({ plan: planOf({ modules: [modifyLogic] }), changes: [modified(issues), modified(fingerprint)] })).toEqual([]);
   });

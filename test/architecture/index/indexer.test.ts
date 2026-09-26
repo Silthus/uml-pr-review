@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { mkdtemp, realpath, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readdir, realpath, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ArchitecturePayload } from "../../../src/architecture/contracts/index.ts";
@@ -9,6 +9,9 @@ import { CommandError } from "../../../src/git.ts";
 import { importsOf, temporaryRepository, type TemporaryRepository } from "./repository.ts";
 
 const repositories: TemporaryRepository[] = [];
+const installations: string[] = [];
+const projectRoot = new URL("../../../", import.meta.url).pathname;
+const indexerEntry = join(projectRoot, "src/architecture/index/index.ts");
 
 async function repositoryOf(files: Record<string, string>) {
   const repository = await temporaryRepository(files);
@@ -18,7 +21,27 @@ async function repositoryOf(files: Record<string, string>) {
 
 afterEach(async () => {
   await Promise.all(repositories.splice(0).map((repository) => repository.cleanup()));
+  await Promise.all(installations.splice(0).map((installation) => rm(installation, { recursive: true, force: true })));
 });
+
+function indexInFreshProcess(entry: string, repositoryDir: string) {
+  const script = `const { createRepositoryIndexer } = await import(${JSON.stringify(entry)});
+    const payload = await createRepositoryIndexer().index(${JSON.stringify(repositoryDir)}, { commit: "HEAD" });
+    console.log(JSON.stringify(payload.stats));`;
+  const child = Bun.spawnSync(["bun", "--eval", script], { stdout: "pipe", stderr: "pipe" });
+  return { exitCode: child.exitCode, stdout: child.stdout.toString(), stderr: child.stderr.toString() };
+}
+
+async function installationWithoutGrammars(): Promise<string> {
+  const installation = await mkdtemp(join(tmpdir(), "uml-pr-review-no-grammars-"));
+  installations.push(installation);
+  await cp(join(projectRoot, "src"), join(installation, "src"), { recursive: true });
+  await mkdir(join(installation, "node_modules"));
+  for (const dependency of await readdir(join(projectRoot, "node_modules"))) {
+    if (dependency !== "@vscode") await symlink(join(projectRoot, "node_modules", dependency), join(installation, "node_modules", dependency));
+  }
+  return join(installation, "src/architecture/index/index.ts");
+}
 
 const threeFiles = { "app/a.py": "from app import b\n", "app/b.py": "from app import c\n", "app/c.py": "" };
 
@@ -67,14 +90,22 @@ describe("extraction cache", () => {
     const repository = await repositoryOf(threeFiles);
     await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
 
-    const entry = new URL("../../../src/architecture/index/index.ts", import.meta.url).pathname;
-    const script = `const { createRepositoryIndexer } = await import(${JSON.stringify(entry)});
-      const payload = await createRepositoryIndexer().index(${JSON.stringify(repository.dir)}, { commit: "HEAD" });
-      console.log(JSON.stringify(payload.stats));`;
-    const child = Bun.spawnSync(["bun", "--eval", script], { stdout: "pipe", stderr: "pipe" });
+    const child = indexInFreshProcess(indexerEntry, repository.dir);
 
-    expect(child.stderr.toString()).toBe("");
-    expect(JSON.parse(child.stdout.toString())).toMatchObject({ parsed: 0, cacheHits: 3 });
+    expect(child.stderr).toBe("");
+    expect(JSON.parse(child.stdout)).toMatchObject({ parsed: 0, cacheHits: 3 });
+  });
+
+  test("caches nothing from a run whose grammars could not load, so the next healthy run parses every file", async () => {
+    const repository = await repositoryOf(threeFiles);
+
+    const withoutGrammars = indexInFreshProcess(await installationWithoutGrammars(), repository.dir);
+    const healthy = await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+
+    expect(healthy.stats).toMatchObject({ parsed: 3, cacheHits: 0, failed: 0 });
+    expect(importsOf(healthy)).toEqual(["app/a.py:1 -> app/b.py static", "app/b.py:1 -> app/c.py static"]);
+    expect(withoutGrammars.exitCode).not.toBe(0);
+    expect(withoutGrammars.stderr).toContain("could not load the tree-sitter grammars");
   });
 
   test("parses with at least one worker when asked for none", async () => {
@@ -110,6 +141,20 @@ describe("extraction cache", () => {
 
     expect(extractorsIn()).toEqual(["imports-v3/python"]);
     cache.close();
+  });
+
+  test("drops the parse failures an earlier indexer cached, so a poisoned cache heals when it opens", async () => {
+    const repository = await repositoryOf(threeFiles);
+    await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+    const poisoned = (await repository.git("rev-parse", "HEAD:app/a.py")).trim();
+    const cache = new Database(join(repository.dir, ".git/uml-pr-review/index-cache.sqlite"));
+    cache.run("UPDATE extraction SET data = 'null' WHERE sha = ?", [poisoned]);
+    cache.close();
+
+    const healed = await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+
+    expect(healed.stats).toMatchObject({ parsed: 1, cacheHits: 2, failed: 0 });
+    expect(importsOf(healed)).toEqual(["app/a.py:1 -> app/b.py static", "app/b.py:1 -> app/c.py static"]);
   });
 
   test("parses only the blobs a new tree adds, and each distinct blob once", async () => {

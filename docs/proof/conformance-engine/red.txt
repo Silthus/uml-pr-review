@@ -1,0 +1,67 @@
+bun test v1.4.2 (50a8a8387)
+
+test/architecture/conformance/posthog-facade.test.ts:
+39 | 
+40 | describe("PostHog: error tracking logic reaching feature flags", () => {
+41 |   test("an import of the feature flag models from the logic is one bypass of the facade seam", () => {
+42 |     const { findings } = checkWithIssuesImporting(`${flagsModels}/feature_flag.py`);
+43 | 
+44 |     expect(findings.filter(({ severity }) => severity === "violation")).toEqual([
+                                                                             ^
+error: expect(received).toEqual(expected)
+
+- [
+-   {
+-     "file": "products/error_tracking/backend/logic/issues.py",
+-     "fix": "Import it through `products/feature_flags/backend/facade/api.py` instead. If that interface does not offer it yet, add it there first.",
+-     "id": "bypasses-seam|products/error_tracking/backend/logic/issues.py|3|products/feature_flags/backend/models/feature_flag.py",
+-     "line": 3,
+-     "message": "products/error_tracking/backend/logic/issues.py:3 imports `products/feature_flags/backend/models/feature_flag.py` from `products/feature_flags/backend/models` directly, but the plan routes `products/error_tracking/backend/logic` to `products/feature_flags` through `products/feature_flags/backend/facade`.",
+-     "rule": "bypasses-seam",
+-     "severity": "violation",
+-     "subject": {
+-       "from": "products/error_tracking/backend/logic",
+-       "kind": "seam",
+-       "to": "products/feature_flags/backend/facade",
+-     },
+-     "target": "products/feature_flags/backend/models/feature_flag.py",
+-     "test": false,
+-   },
+- ]
++ []
+
+- Expected  - 18
++ Received  + 1
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a98f4ecd60f5fc782/test/architecture/conformance/posthog-facade.test.ts:44:73)
+(fail) PostHog: error tracking logic reaching feature flags > an import of the feature flag models from the logic is one bypass of the facade seam [1.53ms]
+59 | 
+60 |   test("routing the same import through the facade leaves no violation", () => {
+61 |     const report = checkWithIssuesImporting(`${flagsFacade}/api.py`);
+62 | 
+63 |     expect(report.counts.violations).toBe(0);
+64 |     expect(report.seams).toEqual([{ from: logic, to: flagsFacade, action: "add", status: "conforming", imports: 1 }]);
+                              ^
+error: expect(received).toEqual(expected)
+
+- [
+-   {
+-     "action": "add",
+-     "from": "products/error_tracking/backend/logic",
+-     "imports": 1,
+-     "status": "conforming",
+-     "to": "products/feature_flags/backend/facade",
+-   },
+- ]
++ []
+
+- Expected  - 9
++ Received  + 1
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a98f4ecd60f5fc782/test/architecture/conformance/posthog-facade.test.ts:64:26)
+(fail) PostHog: error tracking logic reaching feature flags > routing the same import through the facade leaves no violation [0.22ms]
+
+ 0 pass
+ 2 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [20.00ms]

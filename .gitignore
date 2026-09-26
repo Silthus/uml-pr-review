@@ -7,3 +7,4 @@ src/explorer/dev/*.fixture.json
 benchmark/.cache/
 benchmark/runs/*/*/transcript.jsonl
 benchmark/runs/*/*/trace.jsonl
+!docs/coherence/*.html

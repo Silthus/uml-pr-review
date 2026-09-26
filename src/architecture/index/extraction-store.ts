@@ -9,11 +9,13 @@ export type Extracted = ImportRef[] | null;
 export type ExtractionCounts = { parsed: number; cacheHits: number; failed: number };
 export type ExtractionResult = { refsOf: (blob: BlobToExtract) => Extracted; counts: ExtractionCounts };
 
+type Parsed = [BlobToExtract, ImportRef[]];
+
 const currentExtractors = `${extractorVersion}/`;
 
 export class ExtractionStore {
   private readonly database: Database;
-  private readonly remembered = new Map<string, Extracted>();
+  private readonly remembered = new Map<string, ImportRef[]>();
 
   constructor(databasePath: string) {
     mkdirSync(dirname(databasePath), { recursive: true });
@@ -21,7 +23,7 @@ export class ExtractionStore {
     this.database.run("PRAGMA journal_mode = WAL");
     this.database.run("PRAGMA synchronous = NORMAL");
     this.database.run("CREATE TABLE IF NOT EXISTS extraction (sha TEXT, extractor TEXT, data TEXT, PRIMARY KEY (sha, extractor)) WITHOUT ROWID");
-    this.database.run("DELETE FROM extraction WHERE substr(extractor, 1, length(?1)) <> ?1", [currentExtractors]);
+    this.dropRowsOfOtherExtractors();
   }
 
   async extract(cwd: string, blobs: BlobToExtract[], workerCount: number): Promise<ExtractionResult> {
@@ -32,25 +34,29 @@ export class ExtractionStore {
       misses.map(({ sha, language }) => ({ sha, language })),
       workerCount,
     );
-    this.remember(extractions.map(({ blob, refs }) => [blob, refs]));
-    const failed = extractions.filter(({ refs }) => refs === null).length;
+    const parsed = extractions.flatMap(({ blob, refs }): Parsed[] => (refs === null ? [] : [[blob, refs]]));
+    this.remember(parsed);
     return {
       refsOf: (blob) => this.remembered.get(keyOf(blob)) ?? null,
-      counts: { parsed: extractions.length - failed, cacheHits: unique.length - misses.length, failed },
+      counts: { parsed: parsed.length, cacheHits: unique.length - misses.length, failed: extractions.length - parsed.length },
     };
+  }
+
+  private dropRowsOfOtherExtractors() {
+    this.database.run("DELETE FROM extraction WHERE substr(extractor, 1, length(?1)) <> ?1", [currentExtractors]);
   }
 
   private recall(blob: BlobToExtract): boolean {
     if (this.remembered.has(keyOf(blob))) return true;
     const row = this.database
-      .query<{ data: string }, [string, string]>("SELECT data FROM extraction WHERE sha = ? AND extractor = ?")
+      .query<{ data: string }, [string, string]>("SELECT data FROM extraction WHERE sha = ? AND extractor = ? AND data <> 'null'")
       .get(blob.sha, extractorOf(blob));
     if (!row) return false;
-    this.remembered.set(keyOf(blob), JSON.parse(row.data) as Extracted);
+    this.remembered.set(keyOf(blob), JSON.parse(row.data) as ImportRef[]);
     return true;
   }
 
-  private remember(entries: [BlobToExtract, Extracted][]) {
+  private remember(entries: Parsed[]) {
     if (entries.length === 0) return;
     const insert = this.database.query("INSERT OR REPLACE INTO extraction (sha, extractor, data) VALUES (?, ?, ?)");
     this.database.transaction(() => {

@@ -26,7 +26,7 @@ export function languageOf(path: string): LanguageId | null {
 
 let parsers: Promise<Map<LanguageId, Parser>> | undefined;
 
-function loadParsers(): Promise<Map<LanguageId, Parser>> {
+export function loadParsers(): Promise<Map<LanguageId, Parser>> {
   parsers ??= (async () => {
     const wasmDirectory = new URL("../../node_modules/@vscode/tree-sitter-wasm/wasm/", import.meta.url).pathname;
     await Parser.init();

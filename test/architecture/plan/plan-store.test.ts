@@ -1,9 +1,9 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ArchitecturePlanSchema, type PlanOperation } from "../../../src/architecture/contracts/index.ts";
-import { openPlanStore } from "../../../src/architecture/plan/index.ts";
-import { at, base, baseCommit, draft, flagsApi, flagsFacade, freshStore, logic, minuteClock } from "./store-fixture.ts";
+import { openPlanStore, type PlanChange } from "../../../src/architecture/plan/index.ts";
+import { at, base, baseCommit, draft, errorTrackingModels, flagsApi, flagsFacade, freshStore, logic, minuteClock } from "./store-fixture.ts";
 
 describe("create", () => {
   test("starts a draft at revision 1 with an id from the title", async () => {
@@ -40,6 +40,24 @@ describe("create", () => {
 
     expect(plan.id).toMatch(new RegExp(`^${slug}-[0-9a-f]{4}$`));
   });
+
+  test("draws another id when the first one is taken", async () => {
+    const { store } = await freshStore();
+    const draws = [[0x3f, 0x2a], [0x3f, 0x2a], [0x3f, 0x2b]];
+    const random = spyOn(crypto, "getRandomValues").mockImplementation(<T extends ArrayBufferView | null>(array: T): T => {
+      if (array instanceof Uint8Array && array.length === 2) array.set(draws.shift()!);
+      return array;
+    });
+    try {
+      const first = await draft(store);
+      const second = await draft(store);
+
+      expect([first.id, second.id]).toEqual(["feature-flags-on-issues-3f2a", "feature-flags-on-issues-3f2b"]);
+      expect(await store.get(first.id)).toEqual(first);
+    } finally {
+      random.mockRestore();
+    }
+  });
 });
 
 describe("apply", () => {
@@ -51,6 +69,7 @@ describe("apply", () => {
       { op: "upsert_seam", from: logic, to: flagsFacade, action: "keep", interface: { files: [flagsApi], symbols: ["flags_for"] }, rationale: "Issues show flags" },
       { op: "upsert_module", path: logic, action: "modify", responsibility: "Show flags on issues" },
       { op: "upsert_module", path: "products/error_tracking/backend/flags", action: "create", responsibility: "Load flags for an issue" },
+      { op: "upsert_seam", from: logic, to: errorTrackingModels, action: "keep" },
     ];
 
     const outcome = await store.apply(id, { expectedRevision: 1, actor: "agent", client: "claude-code@2.1.0", note: "First draft", operations }, base);
@@ -60,11 +79,12 @@ describe("apply", () => {
     expect(outcome.plan.revision).toBe(2);
     expect(outcome.revision).toEqual({ number: 2, at: at(1), actor: "agent", client: "claude-code@2.1.0", kind: "edit", note: "First draft", operations });
     expect(outcome.plan.modules.map(({ path }) => path)).toEqual(["products/error_tracking/backend/flags", logic]);
+    expect(outcome.plan.seams.map(({ to }) => to)).toEqual([errorTrackingModels, flagsFacade]);
     expect(outcome.plan.updatedAt).toBe(at(1));
 
     const bytes = await readFile(join(directory, `${id}.json`), "utf8");
     const reloaded = await openPlanStore(directory, minuteClock()).get(id);
-    expect(reloaded).toEqual(outcome.plan);
+    expect(reloaded).toStrictEqual(outcome.plan);
     expect(bytes).toBe(`${JSON.stringify(reloaded, null, 2)}\n`);
     expect(ArchitecturePlanSchema.parse(JSON.parse(bytes))).toEqual(outcome.plan);
     expect(Object.keys(JSON.parse(bytes))).toEqual(Object.keys(ArchitecturePlanSchema.shape));
@@ -122,6 +142,28 @@ describe("apply", () => {
     ]);
   });
 
+  test("keeps comments in number order past c9", async () => {
+    const { store, directory } = await freshStore();
+    const { id } = await draft(store);
+    const comments = Array.from({ length: 11 }, (_, index): PlanOperation => ({ op: "add_comment", target: { kind: "plan" }, body: `Note ${index + 1}` }));
+
+    await store.apply(id, { expectedRevision: 1, actor: "human", operations: comments }, base);
+
+    const stored = JSON.parse(await readFile(join(directory, `${id}.json`), "utf8"));
+    expect(stored.comments.map(({ id: commentId }: { id: string }) => commentId)).toEqual(["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11"]);
+  });
+
+  test("rejects an edit that does not match the operation schema", async () => {
+    const { store } = await freshStore();
+    const { id } = await draft(store);
+
+    expect(await store.apply(id, { expectedRevision: 1, actor: "agent", operations: [] }, base)).toEqual({
+      ok: false,
+      reason: "invalid",
+      message: "The edit does not match the edit_plan input schema, so nothing was applied.\n✖ Send at least one operation.\n  → at operations",
+    });
+  });
+
   test("rejects an edit against an older revision and says what changed since", async () => {
     const { store } = await freshStore();
     const { id } = await draft(store);
@@ -152,7 +194,7 @@ describe("apply", () => {
 
   test("tells the caller which plans exist when the id is unknown", async () => {
     const { store } = await freshStore();
-    const edit = { expectedRevision: 1, actor: "agent" as const, operations: [] };
+    const edit: PlanChange = { expectedRevision: 1, actor: "agent", operations: [{ op: "add_comment", target: { kind: "plan" }, body: "Hello" }] };
 
     expect(await store.apply("feature-flags-1234", edit, base)).toEqual({
       ok: false,
@@ -167,6 +209,18 @@ describe("apply", () => {
     });
     expect(await store.get("../../escape")).toBeUndefined();
   });
+
+  test("skips an unreadable plan file in the list and names it on access", async () => {
+    const { store, directory } = await freshStore();
+    const readable = await draft(store);
+    const broken = join(directory, "broken-0000.json");
+    await writeFile(broken, "{\"version\": 2");
+    const unreadable = `The plan file ${broken} cannot be read as a plan (JSON Parse error: Expected '}'). Restore or delete that file, or start a new plan with create_plan.`;
+
+    expect((await store.list()).map(({ id }) => id)).toEqual([readable.id]);
+    await expect(store.get("broken-0000")).rejects.toThrow(unreadable);
+    expect(await store.setLock("broken-0000", { locked: true, actor: "human" })).toEqual({ ok: false, reason: "invalid", message: unreadable });
+  });
 });
 
 describe("lock", () => {
@@ -177,7 +231,7 @@ describe("lock", () => {
     return { ...fixture, id, locked };
   }
 
-  test("records a lock revision with the human's words as its note", async () => {
+  test("records a lock revision whose note quotes the human's request", async () => {
     const { locked } = await lockedPlan();
 
     expect(locked).toMatchObject({

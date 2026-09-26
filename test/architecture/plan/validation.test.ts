@@ -8,13 +8,23 @@ import { base, base7, baseCommit, draft, errorTrackingModels, flags, flagsApi, f
 const backend = "products/error_tracking/backend";
 const flagsLoader = `${backend}/flags`;
 const typoedFacade = "products/feature_flags/facade";
-const nothingApplied = "Nothing was applied. Fix these operations and send the whole batch again with expectedRevision 1.";
+const nothingApplied = "Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 1.";
 
 async function edit(operations: PlanOperation[], model = base) {
   const { store } = await freshStore();
   const before = await draft(store);
   const outcome = await store.apply(before.id, { expectedRevision: 1, actor: "agent", operations }, model);
   return { outcome, before, stored: await store.get(before.id) };
+}
+
+async function editAfter(setup: PlanOperation[], operations: PlanOperation[], model = base) {
+  const { store } = await freshStore();
+  const { id } = await draft(store);
+  const prepared = await store.apply(id, { expectedRevision: 1, actor: "agent", operations: setup }, base);
+  if (!prepared.ok) throw new Error(prepared.message);
+  const outcome = await store.apply(id, { expectedRevision: 2, actor: "agent", operations }, model);
+  expect(await store.get(id)).toEqual(outcome.ok ? outcome.plan : prepared.plan);
+  return outcome;
 }
 
 async function rejectionOf(operations: PlanOperation[]) {
@@ -35,7 +45,7 @@ describe("planned modules", () => {
   test.each(["modify", "remove"] as const)("rejects %s of a path that is not a module at base and suggests close modules", async (action) => {
     expect(await rejectionOf([{ op: "upsert_module", path: typoedFacade, action, responsibility: "Serve flags" }])).toBe(
       [
-        `Operation 1 (upsert_module): No module \`${typoedFacade}\` at base commit ${base7}. Did you mean \`${flagsFacade}\`, \`${flags}\`, or \`${flags}/backend\`?`,
+        `Operation 1 (upsert_module): No module \`${typoedFacade}\` at base commit ${base7}. Did you mean \`${flagsFacade}\`, \`${flags}\`, or \`${flags}/backend\`? Use search_modules to find module paths.`,
         nothingApplied,
       ].join("\n"),
     );
@@ -44,6 +54,30 @@ describe("planned modules", () => {
   test("points to search_modules when nothing comes close", async () => {
     expect(await rejectionOf([{ op: "upsert_module", path: "billing/invoices", action: "modify", responsibility: "Bill" }])).toBe(
       [`Operation 1 (upsert_module): No module \`billing/invoices\` at base commit ${base7}. Use search_modules to find module paths.`, nothingApplied].join("\n"),
+    );
+  });
+
+  test("offers two close modules as alternatives", async () => {
+    expect(await rejectionOf([{ op: "upsert_module", path: "posthog/modelz", action: "modify", responsibility: "Teams" }])).toBe(
+      [
+        `Operation 1 (upsert_module): No module \`posthog/modelz\` at base commit ${base7}. Did you mean \`posthog\` or \`posthog/models\`? Use search_modules to find module paths.`,
+        nothingApplied,
+      ].join("\n"),
+    );
+  });
+
+  test("refuses to remove the repository root or to create a module where a file is", async () => {
+    expect(
+      await rejectionOf([
+        { op: "upsert_module", path: ".", action: "remove", responsibility: "Start over" },
+        { op: "upsert_module", path: `${logic}/issues.py`, action: "create", responsibility: "Issues" },
+      ]),
+    ).toBe(
+      [
+        "Operation 1 (upsert_module): The repository root `.` cannot be removed; plan the modules inside it as removed instead.",
+        `Operation 2 (upsert_module): \`${logic}/issues.py\` is a file at ${base7}, not a module; plan the module that holds it as modify.`,
+        nothingApplied,
+      ].join("\n"),
     );
   });
 
@@ -58,18 +92,18 @@ describe("seams", () => {
   test("rejects an endpoint that is neither a module at base nor within a planned created module", async () => {
     expect(await rejectionOf([{ op: "upsert_seam", from: logic, to: typoedFacade, action: "add" }])).toBe(
       [
-        `Operation 1 (upsert_seam): No module \`${typoedFacade}\` at base commit ${base7}. Did you mean \`${flagsFacade}\`, \`${flags}\`, or \`${flags}/backend\`?`,
+        `Operation 1 (upsert_seam): No module \`${typoedFacade}\` at base commit ${base7}. Did you mean \`${flagsFacade}\`, \`${flags}\`, or \`${flags}/backend\`? Use search_modules to find module paths.`,
         nothingApplied,
       ].join("\n"),
     );
   });
 
-  test("accepts an endpoint within a module the batch created earlier, and not before it", async () => {
+  test("accepts an endpoint within a module the batch creates, in any order", async () => {
     const createLoader: PlanOperation = { op: "upsert_module", path: flagsLoader, action: "create", responsibility: "Load flags for an issue" };
     const seamFromLoader: PlanOperation = { op: "upsert_seam", from: `${flagsLoader}/queries`, to: flagsFacade, action: "add" };
 
     expect(await warningsOf([createLoader, seamFromLoader])).toEqual([]);
-    expect(await rejectionOf([seamFromLoader, createLoader])).toStartWith(`Operation 1 (upsert_seam): No module \`${flagsLoader}/queries\` at base commit ${base7}.`);
+    expect(await warningsOf([seamFromLoader, createLoader])).toEqual([]);
   });
 
   test.each([
@@ -145,7 +179,7 @@ describe("dropping and resolving", () => {
       message: [
         `Operation 1 (drop_module): The plan has no module \`${errorTrackingModels}\` to drop. Its modules are \`${logic}\`.`,
         `Operation 2 (drop_seam): The plan has no seam \`${logic} -> ${flagsModels}\` to drop. Its seams are \`${logic} -> ${flagsFacade}\`.`,
-        "Nothing was applied. Fix these operations and send the whole batch again with expectedRevision 2.",
+        "Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 2.",
       ].join("\n"),
     });
   });
@@ -207,6 +241,84 @@ describe("base commit", () => {
     const other = new ArchitectureModel(architectureOf({ [flagsApi]: [] }, { commit: nextCommit }));
 
     await expect(edit([{ op: "set_summary", title: "Flags" }], other)).rejects.toThrow(`apply validates against the architecture of ${baseCommit}, but got the architecture of ${nextCommit}.`);
+  });
+});
+
+describe("the plan after the batch", () => {
+  const createLoader: PlanOperation = { op: "upsert_module", path: flagsLoader, action: "create", responsibility: "Load flags for an issue" };
+  const seamFromLoader: PlanOperation = { op: "upsert_seam", from: flagsLoader, to: flagsFacade, action: "add" };
+
+  test("rejects dropping a created module that a seam still needs", async () => {
+    const outcome = await editAfter([createLoader, seamFromLoader], [{ op: "drop_module", path: flagsLoader }]);
+
+    expect(outcome).toMatchObject({
+      ok: false,
+      reason: "invalid",
+      message: [
+        `Seam \`${flagsLoader} -> ${flagsFacade}\`: \`${flagsLoader}\` is no longer a module the plan creates. Drop the seam in the same batch, or keep the module.`,
+        "Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 2.",
+      ].join("\n"),
+    });
+  });
+
+  test("rejects a seam to a module that the same batch creates and then drops", async () => {
+    expect(await rejectionOf([createLoader, seamFromLoader, { op: "drop_module", path: flagsLoader }])).toBe(
+      [
+        `Operation 2 (upsert_seam): \`${flagsLoader}\` is no longer a module the plan creates. Drop the seam in the same batch, or keep the module.`,
+        nothingApplied,
+      ].join("\n"),
+    );
+  });
+
+  test("accepts dropping a created module together with its seams", async () => {
+    const outcome = await editAfter([createLoader, seamFromLoader], [{ op: "drop_module", path: flagsLoader }, { op: "drop_seam", from: flagsLoader, to: flagsFacade }]);
+
+    expect(outcome).toMatchObject({ ok: true, plan: { modules: [], seams: [] } });
+  });
+
+  test("checks every module and seam again against a new base commit", async () => {
+    const nextCommit = "c".repeat(40);
+    const next = new ArchitectureModel(architectureOf({ [`${flagsFacade}/queries.py`]: [], "posthog/models/team.py": [`${flagsFacade}/queries.py`] }, { commit: nextCommit }));
+
+    const outcome = await editAfter(
+      [
+        { op: "upsert_module", path: logic, action: "modify", responsibility: "Show flags" },
+        { op: "upsert_seam", from: "posthog/models", to: flagsFacade, action: "keep", interface: { files: [`${flagsFacade}/queries.py`], symbols: [] } },
+        { op: "upsert_seam", from: logic, to: flagsFacade, action: "keep" },
+      ],
+      [{ op: "set_base_commit", commit: nextCommit }],
+      next,
+    );
+
+    expect(outcome).toMatchObject({
+      ok: false,
+      reason: "invalid",
+      message: [
+        `Module \`${logic}\`: No module \`${logic}\` at base commit ccccccc. Did you mean \`products\`, \`products/feature_flags\`, or \`products/feature_flags/backend\`? Use search_modules to find module paths.`,
+        `Seam \`${logic} -> ${flagsFacade}\`: No module \`${logic}\` at base commit ccccccc. Did you mean \`products\`, \`products/feature_flags\`, or \`products/feature_flags/backend\`? Use search_modules to find module paths.`,
+        "Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 2.",
+      ].join("\n"),
+    });
+  });
+
+  test("warns about the plan's seams again after a base commit change, and only about seams that survive the batch", async () => {
+    const nextCommit = "c".repeat(40);
+    const next = new ArchitectureModel(architectureOf({ [`${logic}/issues.py`]: [], [flagsApi]: [] }, { commit: nextCommit }));
+
+    const outcome = await editAfter(
+      [{ op: "upsert_seam", from: logic, to: flagsFacade, action: "keep", interface: { files: [flagsApi], symbols: [] } }],
+      [
+        { op: "set_base_commit", commit: nextCommit },
+        { op: "upsert_seam", from: logic, to: "posthog/models", action: "remove" },
+        { op: "drop_seam", from: logic, to: "posthog/models" },
+      ],
+      next,
+    );
+
+    expect(outcome).toMatchObject({
+      ok: true,
+      warnings: [`No file in \`${logic}\` imports \`${flagsFacade}\` at ccccccc; a keep seam expects an existing dependency.`],
+    });
   });
 });
 

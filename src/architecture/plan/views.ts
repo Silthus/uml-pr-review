@@ -1,4 +1,5 @@
 import type { ArchitecturePlan, PlanComment, PlanOperation, PlanSummary, PlanView, Revision } from "../contracts/index.ts";
+import { shortCommit } from "./paths.ts";
 
 export function pendingHumanComments(plan: Pick<ArchitecturePlan, "comments">): PlanComment[] {
   return plan.comments.filter((comment) => comment.author === "human" && !comment.resolution);
@@ -35,7 +36,7 @@ function operationTallies(operations: PlanOperation[]): string[] {
     tally("+", count("upsert_seam"), "seam"),
     tally("-", count("drop_seam"), "seam"),
     count("set_summary") > 0 ? "summary" : "",
-    baseCommit ? `base commit ${baseCommit.commit.slice(0, 7)}` : "",
+    baseCommit ? `base commit ${shortCommit(baseCommit.commit)}` : "",
     tally("", count("add_comment"), "comment"),
     tally("", count("resolve_comment"), "resolved comment"),
   ].filter(Boolean);

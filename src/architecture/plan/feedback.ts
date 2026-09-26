@@ -1,21 +1,30 @@
-import type { ArchitecturePlan, PlanComment, PlanOperation, Revision } from "../contracts/index.ts";
+import type { ArchitecturePlan, PlanOperation, Revision } from "../contracts/index.ts";
+import { seamLabel, shortCommit } from "./paths.ts";
 import { describeRevision } from "./views.ts";
 
-export function shortCommit(commit: string): string {
-  return commit.slice(0, 7);
-}
-
 export function unknownModule(path: string, base7: string, suggestions: string[]): string {
-  const nextStep = suggestions.length > 0 ? `Did you mean ${alternatives(suggestions)}?` : "Use search_modules to find module paths.";
-  return `No module \`${path}\` at base commit ${base7}. ${nextStep}`;
+  const didYouMean = suggestions.length > 0 ? ` Did you mean ${alternatives(suggestions)}?` : "";
+  return `No module \`${path}\` at base commit ${base7}.${didYouMean} Use search_modules to find module paths.`;
 }
 
 export function moduleAlreadyExists(path: string, base7: string): string {
   return `\`${path}\` already exists at ${base7}; plan it as modify.`;
 }
 
+export function fileIsNotModule(path: string, base7: string): string {
+  return `\`${path}\` is a file at ${base7}, not a module; plan the module that holds it as modify.`;
+}
+
+export function rootRemoval(): string {
+  return "The repository root `.` cannot be removed; plan the modules inside it as removed instead.";
+}
+
 export function seamWithinItself(outer: string, inner: string): string {
   return `A seam connects two separate modules; \`${outer}\` contains \`${inner}\`.`;
+}
+
+export function noLongerCreated(endpoint: string): string {
+  return `\`${endpoint}\` is no longer a module the plan creates. Drop the seam in the same batch, or keep the module.`;
 }
 
 export function interfaceFileOutside(file: string, to: string): string {
@@ -52,9 +61,20 @@ export function missingCommit(commit: string): string {
   return `Commit \`${shortCommit(commit)}\` does not exist in this repository. Pass the full 40-character SHA of an existing commit, for example the output of git rev-parse HEAD.`;
 }
 
-export function rejectedBatch(problems: { index: number; operation: PlanOperation; error: string }[], revision: number): string {
-  const lines = problems.map(({ index, operation, error }) => `Operation ${index + 1} (${operation.op}): ${error}`);
-  return [...lines, `Nothing was applied. Fix these operations and send the whole batch again with expectedRevision ${revision}.`].join("\n");
+export function operationProblem(index: number, op: PlanOperation["op"], error: string): string {
+  return `Operation ${index + 1} (${op}): ${error}`;
+}
+
+export function rejectedBatch(problems: string[], revision: number): string {
+  return [...problems, `Nothing was applied. Fix these problems and send the whole batch again with expectedRevision ${revision}.`].join("\n");
+}
+
+export function malformedChange(details: string): string {
+  return `The edit does not match the edit_plan input schema, so nothing was applied.\n${details}`;
+}
+
+export function unreadablePlan(file: string, reason: string): string {
+  return `The plan file ${file} cannot be read as a plan (${reason}). Restore or delete that file, or start a new plan with create_plan.`;
 }
 
 export function unknownPlan(id: string, ids: string[]): string {
@@ -80,12 +100,8 @@ export function notLocked(id: string): string {
 }
 
 function openComments(plan: ArchitecturePlan): string {
-  const open = plan.comments.filter((comment: PlanComment) => !comment.resolution);
+  const open = plan.comments.filter((comment) => !comment.resolution);
   return open.length > 0 ? `Open comments: ${codeList(open.map(({ id }) => id))}.` : "It has no open comments.";
-}
-
-function seamLabel({ from, to }: { from: string; to: string }): string {
-  return `${from} -> ${to}`;
 }
 
 function codeList(items: string[]): string {

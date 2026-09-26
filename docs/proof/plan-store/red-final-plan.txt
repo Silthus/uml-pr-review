@@ -1,0 +1,334 @@
+bun test v1.4.2 (50a8a8387)
+
+test/architecture/plan/validation.test.ts:
+225 |   const seamFromLoader: PlanOperation = { op: "upsert_seam", from: flagsLoader, to: flagsFacade, action: "add" };
+226 | 
+227 |   test("rejects dropping a created module that a seam still needs", async () => {
+228 |     const outcome = await editAfter([createLoader, seamFromLoader], [{ op: "drop_module", path: flagsLoader }]);
+229 | 
+230 |     expect(outcome).toMatchObject({
+                          ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "message": 
+- "Seam `products/error_tracking/backend/flags -> products/feature_flags/backend/facade`: `products/error_tracking/backend/flags` is no longer a module the plan creates. Drop the seam in the same batch, or keep the module.
+- Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 2."
+- ,
+-   "ok": false,
+-   "reason": "invalid",
++   "ok": true,
++   "plan": {
++     "baseCommit": "b0a1c2d3e4f5061728394a5b6c7d8e9f00112233",
++     "comments": [],
++     "createdAt": "2026-09-26T10:00:00.000Z",
++     "goal": "Show feature flag usage on error tracking issues.",
++     "id": "feature-flags-on-issues-5b7d",
++     "modules": [],
++     "revision": 3,
++     "revisions": [
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:00:00.000Z",
++         "client": "claude-code@2.1.0",
++         "kind": "create",
++         "number": 1,
++         "operations": [],
++       },
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:01:00.000Z",
++         "kind": "edit",
++         "number": 2,
++         "operations": [
++           {
++             "action": "create",
++             "op": "upsert_module",
++             "path": "products/error_tracking/backend/flags",
++             "responsibility": "Load flags for an issue",
++           },
++           {
++             "action": "add",
++             "from": "products/error_tracking/backend/flags",
++             "op": "upsert_seam",
++             "to": "products/feature_flags/backend/facade",
++           },
++         ],
++       },
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:02:00.000Z",
++         "client": undefined,
++         "kind": "edit",
++         "note": undefined,
++         "number": 3,
++         "operations": [
++           {
++             "op": "drop_module",
++             "path": "products/error_tracking/backend/flags",
++           },
++         ],
++       },
++     ],
++     "seams": [
++       {
++         "action": "add",
++         "from": "products/error_tracking/backend/flags",
++         "origin": "agent",
++         "to": "products/feature_flags/backend/facade",
++       },
++     ],
++     "status": "draft",
++     "title": "Feature flags on issues",
++     "updatedAt": "2026-09-26T10:02:00.000Z",
++     "version": 1,
++   },
++   "revision": {
++     "actor": "agent",
++     "at": "2026-09-26T10:02:00.000Z",
++     "client": undefined,
++     "kind": "edit",
++     "note": undefined,
++     "number": 3,
++     "operations": [
++       {
++         "op": "drop_module",
++         "path": "products/error_tracking/backend/flags",
++       },
++     ],
++   },
++   "warnings": [],
+  }
+
+- Expected  - 6
++ Received  + 81
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/validation.test.ts:230:21)
+(fail) the plan after the batch > rejects dropping a created module that a seam still needs [4.43ms]
+255 |       ],
+256 |       [{ op: "set_base_commit", commit: nextCommit }],
+257 |       next,
+258 |     );
+259 | 
+260 |     expect(outcome).toMatchObject({
+                          ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "message": 
+- "Module `products/error_tracking/backend/logic`: No module `products/error_tracking/backend/logic` at base commit ccccccc. Did you mean `products`, `products/feature_flags`, or `products/feature_flags/backend`? Use search_modules to find module paths.
+- Seam `products/error_tracking/backend/logic -> products/feature_flags/backend/facade`: No module `products/error_tracking/backend/logic` at base commit ccccccc. Did you mean `products`, `products/feature_flags`, or `products/feature_flags/backend`? Use search_modules to find module paths.
+- Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 2."
+- ,
+-   "ok": false,
+-   "reason": "invalid",
++   "ok": true,
++   "plan": {
++     "baseCommit": "cccccccccccccccccccccccccccccccccccccccc",
++     "comments": [],
++     "createdAt": "2026-09-26T10:00:00.000Z",
++     "goal": "Show feature flag usage on error tracking issues.",
++     "id": "feature-flags-on-issues-cec2",
++     "modules": [
++       {
++         "action": "modify",
++         "origin": "agent",
++         "path": "products/error_tracking/backend/logic",
++         "responsibility": "Show flags",
++       },
++     ],
++     "revision": 3,
++     "revisions": [
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:00:00.000Z",
++         "client": "claude-code@2.1.0",
++         "kind": "create",
++         "number": 1,
++         "operations": [],
++       },
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:01:00.000Z",
++         "kind": "edit",
++         "number": 2,
++         "operations": [
++           {
++             "action": "modify",
++             "op": "upsert_module",
++             "path": "products/error_tracking/backend/logic",
++             "responsibility": "Show flags",
++           },
++           {
++             "action": "keep",
++             "from": "posthog/models",
++             "interface": {
++               "files": [
++                 "products/feature_flags/backend/facade/queries.py",
++               ],
++               "symbols": [],
++             },
++             "op": "upsert_seam",
++             "to": "products/feature_flags/backend/facade",
++           },
++           {
++             "action": "keep",
++             "from": "products/error_tracking/backend/logic",
++             "op": "upsert_seam",
++             "to": "products/feature_flags/backend/facade",
++           },
++         ],
++       },
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:02:00.000Z",
++         "client": undefined,
++         "kind": "edit",
++         "note": undefined,
++         "number": 3,
++         "operations": [
++           {
++             "commit": "cccccccccccccccccccccccccccccccccccccccc",
++             "op": "set_base_commit",
++           },
++         ],
++       },
++     ],
++     "seams": [
++       {
++         "action": "keep",
++         "from": "posthog/models",
++         "interface": {
++           "files": [
++             "products/feature_flags/backend/facade/queries.py",
++           ],
++           "symbols": [],
++         },
++         "origin": "agent",
++         "to": "products/feature_flags/backend/facade",
++       },
++       {
++         "action": "keep",
++         "from": "products/error_tracking/backend/logic",
++         "origin": "agent",
++         "to": "products/feature_flags/backend/facade",
++       },
++     ],
++     "status": "draft",
++     "title": "Feature flags on issues",
++     "updatedAt": "2026-09-26T10:02:00.000Z",
++     "version": 1,
++   },
++   "revision": {
++     "actor": "agent",
++     "at": "2026-09-26T10:02:00.000Z",
++     "client": undefined,
++     "kind": "edit",
++     "note": undefined,
++     "number": 3,
++     "operations": [
++       {
++         "commit": "cccccccccccccccccccccccccccccccccccccccc",
++         "op": "set_base_commit",
++       },
++     ],
++   },
++   "warnings": [],
+  }
+
+- Expected  - 7
++ Received  + 112
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/validation.test.ts:260:21)
+(fail) the plan after the batch > checks every module and seam again against a new base commit [2.20ms]
+280 |         { op: "drop_seam", from: logic, to: "posthog/models" },
+281 |       ],
+282 |       next,
+283 |     );
+284 | 
+285 |     expect(outcome).toMatchObject({
+                          ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "ok": true,
+-   "warnings": [
+-     "No file in `products/error_tracking/backend/logic` imports `products/feature_flags/backend/facade` at ccccccc; a keep seam expects an existing dependency.",
+-   ],
++   "message": 
++ "Operation 2 (upsert_seam): No module `posthog/models` at base commit ccccccc. Use search_modules to find module paths.
++ Operation 3 (drop_seam): The plan has no seam `products/error_tracking/backend/logic -> posthog/models` to drop. Its seams are `products/error_tracking/backend/logic -> products/feature_flags/backend/facade`.
++ Nothing was applied. Fix these operations and send the whole batch again with expectedRevision 2."
++ ,
++   "ok": false,
++   "plan": {
++     "baseCommit": "b0a1c2d3e4f5061728394a5b6c7d8e9f00112233",
++     "comments": [],
++     "createdAt": "2026-09-26T10:00:00.000Z",
++     "goal": "Show feature flag usage on error tracking issues.",
++     "id": "feature-flags-on-issues-0851",
++     "modules": [],
++     "revision": 2,
++     "revisions": [
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:00:00.000Z",
++         "client": "claude-code@2.1.0",
++         "kind": "create",
++         "number": 1,
++         "operations": [],
++       },
++       {
++         "actor": "agent",
++         "at": "2026-09-26T10:01:00.000Z",
++         "kind": "edit",
++         "number": 2,
++         "operations": [
++           {
++             "action": "keep",
++             "from": "products/error_tracking/backend/logic",
++             "interface": {
++               "files": [
++                 "products/feature_flags/backend/facade/api.py",
++               ],
++               "symbols": [],
++             },
++             "op": "upsert_seam",
++             "to": "products/feature_flags/backend/facade",
++           },
++         ],
++       },
++     ],
++     "seams": [
++       {
++         "action": "keep",
++         "from": "products/error_tracking/backend/logic",
++         "interface": {
++           "files": [
++             "products/feature_flags/backend/facade/api.py",
++           ],
++           "symbols": [],
++         },
++         "origin": "agent",
++         "to": "products/feature_flags/backend/facade",
++       },
++     ],
++     "status": "draft",
++     "title": "Feature flags on issues",
++     "updatedAt": "2026-09-26T10:01:00.000Z",
++     "version": 1,
++   },
++   "reason": "invalid",
+  }
+
+- Expected  - 4
++ Received  + 64
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a5586643d7d8b1bb1/test/architecture/plan/validation.test.ts:285:21)
+(fail) the plan after the batch > warns about the plan's seams again after a base commit change, and only about seams that survive the batch [1.60ms]
+
+ 1 pass
+ 21 filtered out
+ 3 fail
+ 8 expect() calls
+Ran 4 tests across 1 file. [36.00ms]

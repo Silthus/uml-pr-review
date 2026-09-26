@@ -1,10 +1,10 @@
 import { Database } from "bun:sqlite";
 import { Glob } from "bun";
 import { homedir } from "node:os";
-import { basename, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { z } from "zod";
 
-export type SessionSource = "t3" | "claude-code" | "codex";
+type SessionSource = "t3" | "claude-code" | "codex";
 
 export type UserTurn = { source: SessionSource; sessionId: string; turnId: string; at: string; context: string; text: string };
 
@@ -51,7 +51,8 @@ const claudeEntrySchema = z.object({
 
 async function claudeTurns(projectsDirectory: string, hint: string): Promise<UserTurn[]> {
   const turns: UserTurn[] = [];
-  for (const path of new Glob(`*${hint}*/*.jsonl`).scanSync({ cwd: projectsDirectory, absolute: true, onlyFiles: true })) {
+  for (const path of new Glob("*/*.jsonl").scanSync({ cwd: projectsDirectory, absolute: true, onlyFiles: true })) {
+    if (!basename(dirname(path)).toLowerCase().includes(hint.toLowerCase())) continue;
     for (const entry of await jsonLines(path, claudeEntrySchema)) {
       if (entry.type !== "user" || entry.isSidechain || entry.isMeta || !entry.message) continue;
       const text = typeof entry.message.content === "string" ? entry.message.content : entry.message.content.flatMap(({ type, text }) => (type === "text" && text ? [text] : [])).join("\n");
@@ -73,7 +74,7 @@ async function codexTurns(sessionsDirectory: string, hint: string): Promise<User
   for (const path of new Glob("**/*.jsonl").scanSync({ cwd: sessionsDirectory, absolute: true, onlyFiles: true })) {
     const entries = await jsonLines(path, codexEntrySchema);
     const meta = entries.find(({ type }) => type === "session_meta")?.payload;
-    if (!meta?.cwd?.includes(hint) || meta.thread_source !== "user") continue;
+    if (!meta?.cwd?.toLowerCase().includes(hint.toLowerCase()) || meta.thread_source !== "user") continue;
     entries.forEach((entry, index) => {
       if (entry.type !== "response_item" || entry.payload.type !== "message" || entry.payload.role !== "user") return;
       const text = (entry.payload.content ?? []).flatMap(({ type, text }) => (type === "input_text" && text ? [text] : [])).join("\n");

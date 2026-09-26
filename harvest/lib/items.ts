@@ -1,15 +1,15 @@
 import { z } from "zod";
 
-export const itemSources = ["review", "bot-review", "session", "doc"] as const;
-export type ItemSource = (typeof itemSources)[number];
+const itemSources = ["review", "bot-review", "session", "doc"] as const;
 
-export const harvestItemSchema = z.object({
+const harvestItemSchema = z.object({
   id: z.string(),
   source: z.enum(itemSources),
   origin: z.string(),
   url: z.string(),
   author: z.string(),
   isBot: z.boolean(),
+  byPullRequestAuthor: z.boolean(),
   path: z.string().nullable(),
   line: z.number().int().nullable(),
   body: z.string(),
@@ -17,8 +17,8 @@ export const harvestItemSchema = z.object({
 });
 export type HarvestItem = z.infer<typeof harvestItemSchema>;
 
-export const dropSchema = z.object({ source: z.string(), reason: z.string(), count: z.number().int() });
-export type Drop = z.infer<typeof dropSchema>;
+const dropSchema = z.object({ source: z.string(), reason: z.string(), count: z.number().int() });
+type Drop = z.infer<typeof dropSchema>;
 
 export const harvestSchema = z.object({
   repo: z.string(),

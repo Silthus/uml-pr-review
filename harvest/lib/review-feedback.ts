@@ -16,6 +16,7 @@ const reviewCommentSchema = z.object({
 export const pullRequestFeedbackSchema = z.object({
   number: z.number().int(),
   url: z.string(),
+  author: actorSchema,
   files: z.object({ totalCount: z.number().int(), nodes: z.array(z.object({ path: z.string() })) }),
   reviews: z.object({ nodes: z.array(z.object({ author: actorSchema, body: z.string(), url: z.string(), submittedAt: z.string().nullable() })) }),
   reviewThreads: z.object({ nodes: z.array(z.object({ comments: z.object({ nodes: z.array(reviewCommentSchema) }) })) }),
@@ -24,36 +25,41 @@ export type PullRequestFeedback = z.infer<typeof pullRequestFeedbackSchema>;
 
 type Actor = z.infer<typeof actorSchema>;
 
-const knownReviewBots = /^(coderabbitai|greptile|graphite-app|copilot|chatgpt-codex-connector|cursor|sourcery-ai|ellipsis-dev|korbit-ai|qodo|github-actions|hex-security-app|posthog-bot|mendral)/i;
+const knownReviewBots = /^(coderabbitai|greptile-apps|graphite-app|copilot-pull-request-reviewer|chatgpt-codex-connector|sourcery-ai|ellipsis-dev|github-actions)$/i;
 const minimumReviewBodyScopeShare = 0.3;
 const minimumMeaningfulLength = 20;
 const acknowledgement = /^\s*(lgtm|looks good|nice|thanks|thank you|approved?|ship it|done|fixed|\+1|:shipit:|🚀|👍)[\s.!:)]*$/i;
 
-export function isBotActor(actor: Actor): boolean {
-  if (!actor) return false;
+export type ReviewWindow = { scopes: readonly string[]; since: string };
+
+function isBotActor(actor: Actor): boolean {
+  if (!actor) return true;
   return actor.__typename === "Bot" || /\[bot\]$/i.test(actor.login) || knownReviewBots.test(actor.login);
 }
 
-export function reviewFeedback(pullRequest: PullRequestFeedback, scopes: readonly string[], drops: DropLedger): HarvestItem[] {
-  const origin = `pr#${pullRequest.number}`;
+export function reviewFeedback(pullRequest: PullRequestFeedback, { scopes, since }: ReviewWindow, drops: DropLedger): HarvestItem[] {
+  const itemOf = itemFactory(pullRequest);
   const inline = pullRequest.reviewThreads.nodes.flatMap(({ comments }) => comments.nodes);
   const scopedInline = inline.filter(({ path }) => inScope(path, scopes));
   drops.record("review", "inline comment on a file outside the scope", inline.length - scopedInline.length);
-  const inlineItems = scopedInline.map((comment) => itemOf(origin, comment.author, comment.body, comment.url, comment.path, comment.line ?? comment.originalLine, comment.createdAt));
+  const inlineItems = scopedInline.map((comment) => itemOf(comment.author, comment.body, comment.url, comment.path, comment.line ?? comment.originalLine, comment.createdAt));
   const bodies = pullRequest.reviews.nodes.filter(({ body }) => body.trim().length > 0);
   const share = scopeShare(pullRequest, scopes);
-  if (share < minimumReviewBodyScopeShare) {
-    drops.record("review", `review body on a PR with under ${minimumReviewBodyScopeShare * 100}% of its files in scope`, bodies.length);
-    return meaningful(inlineItems, drops);
-  }
-  const bodyItems = bodies.map((review) => itemOf(origin, review.author, review.body, review.url, null, null, review.submittedAt));
-  return meaningful([...inlineItems, ...bodyItems], drops);
+  if (share < minimumReviewBodyScopeShare) drops.record("review", `review body on a PR with under ${minimumReviewBodyScopeShare * 100}% of its files in scope`, bodies.length);
+  const bodyItems = share < minimumReviewBodyScopeShare ? [] : bodies.map((review) => itemOf(review.author, review.body, review.url, null, null, review.submittedAt));
+  return meaningful(recent([...inlineItems, ...bodyItems], since, drops), drops);
 }
 
-export function scopeShare(pullRequest: PullRequestFeedback, scopes: readonly string[]): number {
+function scopeShare(pullRequest: PullRequestFeedback, scopes: readonly string[]): number {
   const paths = pullRequest.files.nodes.map(({ path }) => path);
   if (paths.length === 0) return 0;
   return paths.filter((path) => inScope(path, scopes)).length / Math.max(paths.length, pullRequest.files.totalCount);
+}
+
+function recent(items: HarvestItem[], since: string, drops: DropLedger): HarvestItem[] {
+  const kept = items.filter(({ at }) => at === null || at >= since);
+  drops.record("review", "comment written before --since", items.length - kept.length);
+  return kept;
 }
 
 function meaningful(items: HarvestItem[], drops: DropLedger): HarvestItem[] {
@@ -67,9 +73,13 @@ function isMeaningful(body: string): boolean {
   return text.length >= minimumMeaningfulLength && !acknowledgement.test(text);
 }
 
-function itemOf(origin: string, author: Actor, body: string, url: string, path: string | null, line: number | null, at: string | null): HarvestItem {
-  const isBot = isBotActor(author);
-  return { id: idOf(url), source: isBot ? "bot-review" : "review", origin, url, author: author?.login ?? "ghost", isBot, path, line, body: body.trim(), at };
+function itemFactory(pullRequest: PullRequestFeedback) {
+  const origin = `pr#${pullRequest.number}`;
+  return (author: Actor, body: string, url: string, path: string | null, line: number | null, at: string | null): HarvestItem => {
+    const isBot = isBotActor(author);
+    const byPullRequestAuthor = author !== null && author.login === pullRequest.author?.login;
+    return { id: idOf(url), source: isBot ? "bot-review" : "review", origin, url, author: author?.login ?? "ghost", isBot, byPullRequestAuthor, path, line, body: body.trim(), at };
+  };
 }
 
 function idOf(url: string): string {

@@ -1,9 +1,9 @@
 import { z } from "zod";
 import type { Harvest, HarvestItem } from "./items.ts";
 
-export const ruleKinds = ["guarantee", "paved-path", "boundary", "vocabulary", "caveat"] as const;
-export const ladder = ["review-only", "documented", "linted", "structural"] as const;
-export type Level = (typeof ladder)[number];
+const ruleKinds = ["guarantee", "paved-path", "boundary", "vocabulary", "caveat"] as const;
+const ladder = ["review-only", "documented", "linted", "structural"] as const;
+type Level = (typeof ladder)[number];
 
 const levelSchema = z.enum(ladder);
 const scaleSchema = z.number().int().min(1).max(5);
@@ -35,9 +35,9 @@ export const theoryDraftSchema = z.object({
 });
 export type TheoryDraft = z.input<typeof theoryDraftSchema>;
 
-export type Evidence = { url: string; origin: string; author: string; source: HarvestItem["source"]; quote: string };
-export type Rule = Omit<z.infer<typeof ruleDraftSchema>, "evidence"> & { evidence: Evidence[]; occurrences: number; authors: number; humanAuthors: number };
-export type Caveat = { statement: string; evidence: Evidence[] };
+export type Evidence = { url: string; origin: string; author: string; source: HarvestItem["source"]; byPullRequestAuthor: boolean; quote: string };
+export type Rule = Omit<z.infer<typeof ruleDraftSchema>, "evidence"> & { evidence: Evidence[]; occurrences: number; humanAuthors: number; reviewers: number };
+type Caveat = { statement: string; evidence: Evidence[] };
 export type Theory = Omit<z.infer<typeof theoryDraftSchema>, "rules" | "caveats"> & {
   source: { repo: string; commit: string; scopes: string[]; since: string; harvestedAt: string };
   rules: Rule[];
@@ -68,22 +68,27 @@ export function assembleTheory(input: unknown, harvest: Harvest): Theory {
   };
 }
 
-export function backlogOf(rules: readonly Rule[]): string[] {
+function backlogOf(rules: readonly Rule[]): string[] {
   return rules
     .filter((rule) => levelIndex(rule.proposedLevel) > levelIndex(rule.currentLevel))
     .sort((a, b) => b.value / b.effort - a.value / a.effort || b.occurrences - a.occurrences || a.id.localeCompare(b.id))
     .map(({ id }) => id);
 }
 
-export function levelIndex(level: Level): number {
+function levelIndex(level: Level): number {
   return ladder.indexOf(level);
 }
 
 function ruleOf(draft: z.infer<typeof ruleDraftSchema>, evidence: Evidence[], problems: string[]): Rule {
   if (levelIndex(draft.proposedLevel) < levelIndex(draft.currentLevel)) problems.push(`${draft.id}: proposed level ${draft.proposedLevel} is below its current level ${draft.currentLevel}`);
   const origins = new Set(evidence.map(({ origin }) => origin));
-  const humans = new Set(evidence.filter(({ source }) => source !== "bot-review" && source !== "doc").map(({ author }) => author));
-  return { ...draft, evidence, occurrences: origins.size, authors: new Set(evidence.map(({ author }) => author)).size, humanAuthors: humans.size };
+  const humans = evidence.filter(({ source }) => source === "review" || source === "session");
+  const reviewers = humans.filter(({ source, byPullRequestAuthor }) => source === "review" && !byPullRequestAuthor);
+  return { ...draft, evidence, occurrences: origins.size, humanAuthors: distinctAuthors(humans), reviewers: distinctAuthors(reviewers) };
+}
+
+function distinctAuthors(evidence: readonly Evidence[]): number {
+  return new Set(evidence.map(({ author }) => author)).size;
 }
 
 function resolvedEvidence(owner: string, ref: z.infer<typeof evidenceRefSchema>, items: ReadonlyMap<string, HarvestItem>, problems: string[]): Evidence[] {
@@ -100,7 +105,7 @@ function resolvedEvidence(owner: string, ref: z.infer<typeof evidenceRefSchema>,
     problems.push(`${owner}: the quote from ${ref.id} looks like it carries a credential`);
     return [];
   }
-  return [{ url: item.url, origin: item.origin, author: item.author, source: item.source, quote: ref.quote }];
+  return [{ url: item.url, origin: item.origin, author: item.author, source: item.source, byPullRequestAuthor: item.byPullRequestAuthor, quote: ref.quote }];
 }
 
 function duplicateIds(rules: readonly Rule[]): string[] {

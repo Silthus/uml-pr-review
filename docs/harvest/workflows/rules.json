@@ -8,7 +8,7 @@
       "nodejs/src/cdp/services/hogflows"
     ],
     "since": "2026-03-01",
-    "harvestedAt": "2026-09-26T19:39:31.973Z"
+    "harvestedAt": "2026-09-26T19:55:31.910Z"
   },
   "vocabulary": [
     {
@@ -287,6 +287,7 @@
           "origin": "pr#81905",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "a stage_draft content save on an active workflow now validates leniently like every other draft"
         }
       ]
@@ -299,6 +300,7 @@
           "origin": "pr#63583",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Scoped the hard validation to just the new /graph endpoint, where the graph is clean by construction."
         },
         {
@@ -306,6 +308,7 @@
           "origin": "pr#63583",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "a handful of active flows have non-exit nodes with no outgoing edge today"
         }
       ]
@@ -318,6 +321,7 @@
           "origin": "pr#72913",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Failing closed would drop every flow in the batch on a transient key issue"
         },
         {
@@ -325,18 +329,20 @@
           "origin": "pr#72913",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "If decrypt fails we warn and carry on, but the secret's already stripped from `actions`, so the step runs without it"
         }
       ]
     },
     {
-      "statement": "The web builder is exempt from the blast-radius confirm token; only programmatic (non-WEB) dispatch must present one.",
+      "statement": "Only agent callers (MCP, PostHog AI) must present the blast-radius confirm token. The web builder keeps its own confirm UI and headless API keys dispatch without one.",
       "evidence": [
         {
           "url": "https://github.com/PostHog/posthog/pull/73225#discussion_r3643942550",
           "origin": "pr#73225",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "If the web builder later adopts the token flow we can drop the exemption."
         }
       ]
@@ -349,6 +355,7 @@
           "origin": "doc:pyproject.toml",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "TODO: views still registered from backend/api/ — move them into presentation/ and drop the line"
         }
       ]
@@ -361,6 +368,7 @@
           "origin": "pr#74762",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Per-email send-time attribution isn't possible with counter metrics"
         },
         {
@@ -368,6 +376,7 @@
           "origin": "pr#78136",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "per-send attribution is not available in the app metrics data model"
         }
       ]
@@ -380,6 +389,7 @@
           "origin": "pr#89923",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "The batch audience cap is a dispatch-time pre-gate; adding an email step to a queued batch skips it"
         }
       ]
@@ -392,6 +402,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Per-unit caps are **silently clamped**"
         },
         {
@@ -399,6 +410,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "A date that **moves closer** is not: nothing wakes the run early"
         }
       ]
@@ -411,6 +423,7 @@
           "origin": "pr#85239",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the reload publish moved to transaction.on_commit"
         }
       ]
@@ -428,6 +441,7 @@
           "origin": "pr#59468",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "i think we should handle all of this on the serializer level btw"
         },
         {
@@ -435,6 +449,7 @@
           "origin": "pr#59468",
           "author": "Gilbert09",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "I moved enforcement to the serializer so the API, MCP, and frontend share one source of truth."
         },
         {
@@ -442,6 +457,7 @@
           "origin": "pr#60388",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "I think we could just add a validation into `HogFlowSerializer` when activating without the full graph"
         },
         {
@@ -449,6 +465,7 @@
           "origin": "pr#59468",
           "author": "Gilbert09",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "warehouse-triggered flows go through the same `hog_flows` serializer — which now enforces all the row-scoped constraints server-side"
         },
         {
@@ -456,6 +473,7 @@
           "origin": "pr#90938",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Added `_validate_run_scout_action` to `HogFlowSerializer`, wired into the existing per-template save-time validation dispatch"
         }
       ],
@@ -467,8 +485,8 @@
       "value": 4,
       "effort": 1,
       "occurrences": 3,
-      "authors": 4,
-      "humanAuthors": 4
+      "humanAuthors": 4,
+      "reviewers": 2
     },
     {
       "id": "row-scoped-triggers-reject-person-steps",
@@ -481,6 +499,7 @@
           "origin": "pr#59468",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "i think we should force the dwh triggered workflows to exit_only_at_end and not give the option to avoid things blowing up when folks assume there are person properties"
         },
         {
@@ -488,6 +507,7 @@
           "origin": "pr#59468",
           "author": "Gilbert09",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`data-warehouse-table` triggers are coerced to `exit_only_at_end`"
         },
         {
@@ -495,6 +515,7 @@
           "origin": "pr#84460",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "confirmed pre-existing across all three row-scoped triggers already shipped (data-warehouse-table/view, slack-message)"
         },
         {
@@ -502,6 +523,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Runs have no associated person, so person-dependent steps are unavailable."
         }
       ],
@@ -513,8 +535,8 @@
       "value": 3,
       "effort": 2,
       "occurrences": 3,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 2
     },
     {
       "id": "closed-type-sets-have-one-home",
@@ -527,6 +549,7 @@
           "origin": "pr#91572",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Mirroring the Python producer's _TRIGGERING_SUBTYPES set here would duplicate a Python-owned business rule across the language boundary"
         },
         {
@@ -534,20 +557,15 @@
           "origin": "pr#62649",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "agents follow whatever the schema says, so the two enums shouldn't disagree without a reason."
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/72506#discussion_r3621626836",
-          "origin": "pr#72506",
-          "author": "mayteio",
-          "source": "review",
-          "quote": "the scan now reads only config.inputs and config.mappings, matching the worker's render surface (hogflow-variable-usage.ts)"
         },
         {
           "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L40",
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Use **only** these `type` values — they are the complete supported set."
         }
       ],
@@ -558,9 +576,9 @@
       "confidence": "medium",
       "value": 4,
       "effort": 3,
-      "occurrences": 4,
-      "authors": 2,
-      "humanAuthors": 1
+      "occurrences": 3,
+      "humanAuthors": 1,
+      "reviewers": 1
     },
     {
       "id": "graph-structure-validated-on-every-write",
@@ -573,6 +591,7 @@
           "origin": "pr#62649",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "nothing actually enforces this index:0 convention."
         },
         {
@@ -580,6 +599,7 @@
           "origin": "pr#62649",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "any `wait_until_condition` without a branch edge at index 0 now raises"
         },
         {
@@ -587,6 +607,7 @@
           "origin": "pr#63583",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "We validate that edges point at real nodes - should we also validate that non-exit nodes have an outgoing edge?"
         },
         {
@@ -594,6 +615,7 @@
           "origin": "pr#72913",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "duplicate action ids are now a hard validation error on every write path, not just `/graph`"
         },
         {
@@ -601,6 +623,7 @@
           "origin": "pr#49947",
           "author": "sortafreel",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "workflow action IDs are externally supplied and not contract-validated for uniqueness/safe-key constraints"
         },
         {
@@ -608,6 +631,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "A `wait_until_condition` needs a `branch` edge at `index: 0` (resolution) **and** a `continue` edge (timeout)."
         }
       ],
@@ -619,8 +643,8 @@
       "value": 4,
       "effort": 3,
       "occurrences": 5,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 3
     },
     {
       "id": "server-compiles-all-bytecode",
@@ -633,6 +657,7 @@
           "origin": "pr#57847",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "we now strip any client-supplied `bytecode` from the stored filters, so a malformed draft can never carry executable bytecode into activation"
         },
         {
@@ -640,13 +665,15 @@
           "origin": "pr#63545",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "documenting the `{hash, ttl, threshold?}` shape (and that bytecode is server-compiled)"
         },
         {
           "url": "https://github.com/PostHog/posthog/pull/62649#pullrequestreview-4516516322",
           "origin": "pr#62649",
           "author": "ghost",
-          "source": "review",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
           "quote": "Bytecode stripping covers all paths correctly."
         },
         {
@@ -654,19 +681,20 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "**Never send `bytecode`.** The server compiles the expression at save time and discards anything the client sent."
         }
       ],
-      "currentLevel": "review-only",
-      "currentLevelBasis": "Stripping is done field by field (hog_flow.py L1888 delay_until, L2067 masking, L3328 conversion drafts) rather than at one chokepoint, so each new filter-bearing field relies on the reviewer. No semgrep rule or enumerating test found at 57ca357.",
+      "currentLevel": "documented",
+      "currentLevelBasis": "graph-schema.md L190 tells callers never to send bytecode. Stripping is done field by field (hog_flow.py L1888 delay_until, L2067 masking, L3328 conversion drafts) rather than at one chokepoint, so each new filter-bearing field relies on the reviewer. No semgrep rule or enumerating test found at 57ca357.",
       "proposedLevel": "structural",
       "howToEnforce": "Strip every client bytecode/bytecode_error key recursively once in HogFlowSerializer.to_internal_value (like _without_bytecode_contracts), plus one test that posts bytecode into every filter slot and asserts the stored value is server-compiled.",
       "confidence": "high",
       "value": 4,
       "effort": 2,
       "occurrences": 4,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 2,
+      "reviewers": 0
     },
     {
       "id": "active-workflows-change-only-through-publish",
@@ -679,6 +707,7 @@
           "origin": "pr#81905",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "publish still revalidates strictly before promoting"
         },
         {
@@ -686,6 +715,7 @@
           "origin": "pr#70823",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Publish fully revalidates regardless, so a malformed draft can never promote"
         },
         {
@@ -693,6 +723,7 @@
           "origin": "pr#60388",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "We don't want the agent to be able to create rogue edits and disrupt this."
         },
         {
@@ -700,6 +731,7 @@
           "origin": "pr#81323",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "I think it's easy to miss now considering before saving would already publish."
         },
         {
@@ -707,6 +739,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Editing an active workflow stages a **draft** instead of changing what's running: nothing reaches real people until you publish."
         }
       ],
@@ -718,8 +751,8 @@
       "value": 4,
       "effort": 3,
       "occurrences": 5,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 1
     },
     {
       "id": "stale-writes-fence-on-the-loaded-stamp",
@@ -732,6 +765,7 @@
           "origin": "pr#81323",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`discard_draft` now bumps the live `updated_at`"
         },
         {
@@ -739,6 +773,7 @@
           "origin": "pr#81323",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "a concurrent metadata edit that bumped `updated_at` now 409s instead of being silently overwritten"
         },
         {
@@ -746,6 +781,7 @@
           "origin": "pr#101505",
           "author": "luke-belton",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "A save that clears the draft now fences on the newer of `updated_at` and `draft_updated_at`"
         },
         {
@@ -753,6 +789,7 @@
           "origin": "pr#85239",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "bumps updated_at for live changes and draft_updated_at for draft-only changes, so the editor's stale-write fence rejects a tab opened before the cleanup"
         },
         {
@@ -760,6 +797,7 @@
           "origin": "pr#105625",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Launch now re-reads the broadcast before it touches schedules and stops with the edited-elsewhere notice if the saved copy moved"
         },
         {
@@ -767,6 +805,7 @@
           "origin": "pr#105625",
           "author": "coderabbitai",
           "source": "bot-review",
+          "byPullRequestAuthor": false,
           "quote": "The autosave sends `base_updated_at` so an unseen assistant save is not overwritten."
         }
       ],
@@ -778,8 +817,8 @@
       "value": 5,
       "effort": 3,
       "occurrences": 4,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 0
     },
     {
       "id": "backfills-lock-rows-and-bump-stamps",
@@ -792,6 +831,7 @@
           "origin": "pr#62355",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "It would probably just be better to default to management commands unless there's a good reason not to"
         },
         {
@@ -799,6 +839,7 @@
           "origin": "pr#62355",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "We do that per flow so that will be n-db queries and each one will require a lock."
         },
         {
@@ -806,6 +847,7 @@
           "origin": "pr#85239",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the live-run now re-reads each row with select_for_update inside transaction.atomic and strips the locked value, matching the rewrite_email_asset_url pattern"
         },
         {
@@ -813,6 +855,7 @@
           "origin": "pr#85239",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "even after running it, there might be some placeholders present, if customers have workflow editor opened with the old version and save after this command is executed"
         },
         {
@@ -820,6 +863,7 @@
           "origin": "pr#89924",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "The backfill write is now compare-and-set against the state the decision was computed from"
         }
       ],
@@ -831,8 +875,8 @@
       "value": 3,
       "effort": 3,
       "occurrences": 3,
-      "authors": 3,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 2
     },
     {
       "id": "secrets-masked-in-every-representation",
@@ -845,6 +889,7 @@
           "origin": "pr#72913",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "`trigger` is its own serialized field and doesn't get masked, so I think a function-shaped trigger's secret goes out in plaintext"
         },
         {
@@ -852,6 +897,7 @@
           "origin": "pr#72913",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "The trigger masking was gated behind the `actions` branch, so the summary serializer (which returns `trigger` but omits `actions`) skipped it."
         },
         {
@@ -859,6 +905,7 @@
           "origin": "pr#80639",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "redactWorkflowSecretInputs strips secret values (and their compiled bytecode) from function steps, webhook/manual/pixel triggers, and mappings before the editor state is serialized"
         },
         {
@@ -866,6 +913,7 @@
           "origin": "pr#70823",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "HogFlow's draft field is now in field_with_masked_contents, so activity entries record that a draft was staged/published/discarded but never its contents"
         },
         {
@@ -873,6 +921,7 @@
           "origin": "pr#70823",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "2996a5b redacts configuration from both the hog function and hog flow invocation log lines"
         },
         {
@@ -880,6 +929,7 @@
           "origin": "pr#83804",
           "author": "greptile-apps",
           "source": "bot-review",
+          "byPullRequestAuthor": false,
           "quote": "**Trigger-only secrets remain plaintext**"
         }
       ],
@@ -891,8 +941,8 @@
       "value": 5,
       "effort": 2,
       "occurrences": 4,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 1
     },
     {
       "id": "child-rows-take-team-from-their-workflow",
@@ -905,6 +955,7 @@
           "origin": "pr#72572",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "HogFlowRevision.save() now pins team_id to hog_flow.team_id before RootTeamMixin's canonicalization"
         },
         {
@@ -912,6 +963,7 @@
           "origin": "pr#72543",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "derives `team_id` from the workflow row itself"
         },
         {
@@ -919,6 +971,7 @@
           "origin": "pr#68133",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "add a cross-team isolation test, it's the core security property of this endpoint"
         },
         {
@@ -926,6 +979,7 @@
           "origin": "pr#72573",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "none of the append tests would catch a regression in the endpoint itself (team scoping, ordering, content leak)"
         },
         {
@@ -933,6 +987,7 @@
           "origin": "pr#50191",
           "author": "sortafreel",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Revision join does not enforce team/flow ownership, allowing cross-tenant content mix on FK corruption"
         },
         {
@@ -940,19 +995,20 @@
           "origin": "pr#91572",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`isOwnSlackMessage` now also checks the resolved integration's `team_id` against the invoking workflow's team"
         }
       ],
-      "currentLevel": "linted",
-      "currentLevelBasis": "Root AGENTS.md L170 lints team_id presence ([lint: idor-lookup-without-team, check-idor-model-coverage.py]; .semgrep/rules/security/idor-team-scoped-models.yaml). Derivation from the parent is structural only in HogFlowRevision.save (models/hog_flow_revision.py L31-35); batch jobs, schedules and reputation snapshots rely on their writer at 57ca357.",
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Root AGENTS.md L170 lints only that tenant models have team_id (idor-lookup-without-team, check-idor-model-coverage.py). Taking team_id from the parent workflow is held by review, except HogFlowRevision.save, which pins it.",
       "proposedLevel": "structural",
       "howToEnforce": "A HogFlowChildMixin whose save() pins team_id from hog_flow, applied to every model with a hog_flow FK, plus a test enumerating those models via apps.get_models().",
       "confidence": "high",
       "value": 4,
       "effort": 2,
       "occurrences": 6,
-      "authors": 4,
-      "humanAuthors": 4
+      "humanAuthors": 4,
+      "reviewers": 3
     },
     {
       "id": "custom-actions-declare-scopes-and-object-access",
@@ -965,6 +1021,7 @@
           "origin": "pr#73522",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "batch_jobs and schedules POST now require hog_flow:write plus person:read (matching the user_blast_radius / invocation_results / assets precedent in this viewset)"
         },
         {
@@ -972,6 +1029,7 @@
           "origin": "pr#61655",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Shouldn't this one also include `group:read`?"
         },
         {
@@ -979,6 +1037,7 @@
           "origin": "pr#68133",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the per-workflow breakdown is now intersected with `user_access_control.filter_queryset_by_access_level(...)` (same pattern as `metrics_global`)"
         },
         {
@@ -986,6 +1045,7 @@
           "origin": "pr#83342",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the fallback skipped the object-level check entirely because there's no row left to check against"
         },
         {
@@ -993,6 +1053,7 @@
           "origin": "pr#75237",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`aws` is now gated behind the same `can_read_all_workflows` check as `reputation`"
         },
         {
@@ -1000,6 +1061,7 @@
           "origin": "pr#73522",
           "author": "veria-ai",
           "source": "bot-review",
+          "byPullRequestAuthor": false,
           "quote": "**High: Write-only keys can export person data**"
         }
       ],
@@ -1011,12 +1073,12 @@
       "value": 4,
       "effort": 2,
       "occurrences": 5,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 1
     },
     {
       "id": "dispatch-requires-a-previewed-audience",
-      "statement": "A programmatic batch or schedule dispatch needs an active workflow and a confirm token bound to the stored trigger filters it will send to.",
+      "statement": "Every dispatch to a batch audience, from any caller, first previews the audience and presents the confirm token bound to it.",
       "kind": "guarantee",
       "component": "Batch and schedule dispatcher",
       "evidence": [
@@ -1025,6 +1087,7 @@
           "origin": "pr#73225",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the token is now validated against the stored trigger filters (the audience that actually dispatches), and the job's filters field is a server-side snapshot rather than caller input"
         },
         {
@@ -1032,6 +1095,7 @@
           "origin": "pr#61001",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "a run on a non-active workflow now 400s instead of minting a queued job the consumer would just drop"
         },
         {
@@ -1039,6 +1103,7 @@
           "origin": "pr#73225",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the schedules POST now rejects non-active workflows for programmatic callers before the token check"
         },
         {
@@ -1046,6 +1111,7 @@
           "origin": "pr#93383",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Converting a workflow's live trigger to `batch` now pauses every active schedule on it, on all three paths that change the live config: update, graph edit, and publish."
         },
         {
@@ -1053,6 +1119,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "scheduling it needs the `workflows-blast-radius` preview and its confirm token"
         },
         {
@@ -1060,19 +1127,20 @@
           "origin": "pr#105625",
           "author": "posthog",
           "source": "bot-review",
+          "byPullRequestAuthor": false,
           "quote": "The batch job can then send an email the user did not review."
         }
       ],
-      "currentLevel": "structural",
-      "currentLevelBasis": "_require_audience_confirm_token (hog_flow.py L4843) guards batch_jobs and schedules POST for non-WEB callers, with mint_audience_confirm_token (L3964) signing team, filters, group_type_index and dedupe key at 57ca357. The web builder is exempt (see caveats).",
+      "currentLevel": "documented",
+      "currentLevelBasis": "The building-workflows skill documents the preview and token. In code, _require_audience_confirm_token guards batch_jobs and schedules POST only when get_event_source(request) is in AGENT_EVENT_SOURCES (hog_flow.py L5768, L5874 at 57ca357); the web builder has its own confirm UI and headless API keys stay token-free by design, and a new dispatch path can skip the guard.",
       "proposedLevel": "structural",
-      "howToEnforce": "Keep the chokepoint; move the web builder onto the token flow so the WEB exemption can go.",
+      "howToEnforce": "One dispatch chokepoint that takes a BlastRadiusConfirmation value only the preview can mint, used by every batch and schedule path; decide as a team whether headless callers keep their exemption.",
       "confidence": "medium",
       "value": 4,
       "effort": 3,
       "occurrences": 5,
-      "authors": 3,
-      "humanAuthors": 1
+      "humanAuthors": 1,
+      "reviewers": 0
     },
     {
       "id": "lifecycle-changes-are-explicit",
@@ -1085,6 +1153,7 @@
           "origin": "pr#91486",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "A form save no longer sends `status` at all."
         },
         {
@@ -1092,6 +1161,7 @@
           "origin": "pr#60388",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Opted for explicit workflow-enable, workflow-disable, workflow-archive tools."
         },
         {
@@ -1099,6 +1169,7 @@
           "origin": "pr#60388",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "I think we should also enforce this check for creation of active workflows and deletion"
         },
         {
@@ -1106,6 +1177,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Don't enable on your own initiative."
         },
         {
@@ -1113,6 +1185,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "`workflows-create` — create a workflow. Always created as a `draft`."
         }
       ],
@@ -1124,8 +1197,8 @@
       "value": 3,
       "effort": 3,
       "occurrences": 4,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 1
     },
     {
       "id": "registry-owns-trigger-and-step-types",
@@ -1134,17 +1207,11 @@
       "component": "Step and trigger registry",
       "evidence": [
         {
-          "url": "https://github.com/PostHog/posthog/pull/47035#discussion_r2832048095",
-          "origin": "pr#47035",
-          "author": "meikelmosby",
-          "source": "review",
-          "quote": "The whole point of the registry pattern (as documented in CONTRIBUTING.md) is that teams can add trigger types without modifying shared workflow logic."
-        },
-        {
           "url": "https://github.com/PostHog/posthog/pull/47035#discussion_r2877422332",
           "origin": "pr#47035",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "would be cool to move this into `registry/triggers/`"
         },
         {
@@ -1152,6 +1219,7 @@
           "origin": "pr#91466",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "no way to keep this dynamic? I'm about to add github as a trigger in support of loops."
         },
         {
@@ -1159,6 +1227,7 @@
           "origin": "pr#59468",
           "author": "Gilbert09",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "a registered trigger's `ConfigComponent` was only mounted for `type === 'event'` configs"
         },
         {
@@ -1166,6 +1235,7 @@
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Registration is done via module side effects. Your trigger file must be imported by the workflows frontend bundle."
         },
         {
@@ -1173,6 +1243,7 @@
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "**Forgot the side-effect import**: triggers/actions must be imported by their `index.ts`"
         }
       ],
@@ -1184,8 +1255,8 @@
       "value": 4,
       "effort": 2,
       "occurrences": 4,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 2
     },
     {
       "id": "configs-are-typed-unions",
@@ -1194,17 +1265,11 @@
       "component": "Step and trigger registry",
       "evidence": [
         {
-          "url": "https://github.com/PostHog/posthog/pull/47035#discussion_r2776266522",
-          "origin": "pr#47035",
-          "author": "havenbarnes",
-          "source": "review",
-          "quote": "typing the `config` to `Extract<HogFlowAction['config'], { type: 'event' }>`"
-        },
-        {
           "url": "https://github.com/PostHog/posthog/pull/100259#discussion_r4006503486",
           "origin": "pr#100259",
           "author": "gantoine",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "so adding a template with a trigger that has no fixture config is a compile error instead of an invalid fixture"
         },
         {
@@ -1212,6 +1277,7 @@
           "origin": "pr#103843",
           "author": "Silthus",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`tests/types.test-d.ts` fails the build if a conversion variant compiles again"
         },
         {
@@ -1219,6 +1285,7 @@
           "origin": "pr#57470",
           "author": "pauldambra",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "ties the two ends together so a future SimpleOption shape change surfaces here as a type error rather than as a silently empty UI"
         }
       ],
@@ -1229,9 +1296,9 @@
       "confidence": "medium",
       "value": 3,
       "effort": 3,
-      "occurrences": 4,
-      "authors": 4,
-      "humanAuthors": 4
+      "occurrences": 3,
+      "humanAuthors": 3,
+      "reviewers": 1
     },
     {
       "id": "template-ids-resolve-and-fixed-channels-are-server-checked",
@@ -1244,6 +1311,7 @@
           "origin": "pr#78208",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`template_id` on these three step types is a constant fully determined by the step type"
         },
         {
@@ -1251,6 +1319,7 @@
           "origin": "pr#89923",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the serializer rejects a fixed-template step carrying another channel's literal template on user-driven saves, so the mislabeled step cannot be authored anymore"
         },
         {
@@ -1258,6 +1327,7 @@
           "origin": "pr#89923",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "The detector now treats any step carrying template-email as an email step"
         },
         {
@@ -1265,6 +1335,7 @@
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "**Template id mismatch**: `config.template_id` in the frontend must exactly match `template.id` in the backend."
         },
         {
@@ -1272,6 +1343,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "their `template_id` is the fixed literal `template-email` / `template-twilio` / `template-native-push`"
         }
       ],
@@ -1283,8 +1355,8 @@
       "value": 3,
       "effort": 2,
       "occurrences": 4,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 0
     },
     {
       "id": "test-runs-share-production-trigger-predicates",
@@ -1297,6 +1369,7 @@
           "origin": "pr#91572",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "mirroring the warehouse-events consumer's eligibilityFn"
         },
         {
@@ -1304,6 +1377,7 @@
           "origin": "pr#91572",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`TriggerHandler` now takes an integration lookup and mirrors the consumer's own-app exclusion"
         },
         {
@@ -1311,6 +1385,7 @@
           "origin": "pr#91572",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "We could use `isOwnGithubEvent` here instead of the manual check (like in the consumer)"
         },
         {
@@ -1318,6 +1393,7 @@
           "origin": "pr#61480",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Could that make a group condition match in the test run but not in prod?"
         },
         {
@@ -1325,6 +1401,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "`status=skipped` means this payload would not fire the trigger"
         }
       ],
@@ -1336,8 +1413,8 @@
       "value": 3,
       "effort": 2,
       "occurrences": 3,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 1
     },
     {
       "id": "unroutable-steps-fail-the-run-visibly",
@@ -1350,6 +1427,7 @@
           "origin": "pr#73577",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "silently picking a branch arm would send everyone down one A/B path with no assignment logic"
         },
         {
@@ -1357,6 +1435,7 @@
           "origin": "pr#82920",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "In all of them the run ends there, marked failed, and the next step never runs."
         },
         {
@@ -1364,6 +1443,7 @@
           "origin": "pr#73577",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "made the runtime's cumulative sum NaN and silently routed everyone to the last cohort rather than blocking execution"
         },
         {
@@ -1371,6 +1451,7 @@
           "origin": "pr#82920",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "what are the use-cases of a delay that could not work out when to continue?"
         },
         {
@@ -1378,6 +1459,7 @@
           "origin": "pr#70740",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "A miss on an untouched flow keeps the failure log, `failed` metric, and `result.error`, so malformed definitions stay visible"
         }
       ],
@@ -1389,8 +1471,8 @@
       "value": 3,
       "effort": 2,
       "occurrences": 3,
-      "authors": 3,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 1
     },
     {
       "id": "silent-degradations-emit-a-counter",
@@ -1403,6 +1485,7 @@
           "origin": "pr#72913",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Should it fail closed here, or at least worth a metric so we can alert on this?"
         },
         {
@@ -1410,6 +1493,7 @@
           "origin": "pr#72913",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "added a `cdp_hogflow_encrypted_inputs_decrypt_failed` counter so rotation skew is alertable"
         },
         {
@@ -1417,6 +1501,7 @@
           "origin": "pr#94051",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "the whole thing is ignored and it returns null without any err log or indication why things broke here"
         },
         {
@@ -1424,6 +1509,7 @@
           "origin": "pr#92672",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Right now it's the only signal that a workflow asked for a longer window than it got."
         },
         {
@@ -1431,6 +1517,7 @@
           "origin": "pr#55282",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Adding an app metric here would pollute the per-workflow metrics with ghost run data."
         },
         {
@@ -1438,6 +1525,7 @@
           "origin": "pr#49947",
           "author": "sortafreel",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Decryption failure handling can trigger log storms without alertable telemetry"
         }
       ],
@@ -1449,8 +1537,8 @@
       "value": 3,
       "effort": 1,
       "occurrences": 5,
-      "authors": 4,
-      "humanAuthors": 4
+      "humanAuthors": 4,
+      "reviewers": 3
     },
     {
       "id": "post-run-metrics-carry-the-message-version",
@@ -1463,6 +1551,7 @@
           "origin": "pr#75100",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "conversions are the exception here - they credit the run-start version, steps/emails credit execution time"
         },
         {
@@ -1470,20 +1559,15 @@
           "origin": "pr#75100",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "it's actually the run-start version, only the same thing if nothing republishes mid-run"
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/48961#discussion_r2885765597",
-          "origin": "pr#48961",
-          "author": "havenbarnes",
-          "source": "review",
-          "quote": "For hogflows, this should always be the action's ID"
         },
         {
           "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L341",
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "the version has to come from whatever the message carried, never from a fresh lookup of the workflow."
         },
         {
@@ -1491,6 +1575,7 @@
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "reading it on arrival would blame the newest version for the previous one's sends"
         }
       ],
@@ -1501,9 +1586,9 @@
       "confidence": "medium",
       "value": 3,
       "effort": 3,
-      "occurrences": 3,
-      "authors": 3,
-      "humanAuthors": 2
+      "occurrences": 2,
+      "humanAuthors": 1,
+      "reviewers": 1
     },
     {
       "id": "one-duration-grammar",
@@ -1516,41 +1601,15 @@
           "origin": "pr#81114",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "both share one `_duration_error()` message so the documented parity is enforced rather than asserted"
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/104871#discussion_r4087643233",
-          "origin": "pr#104871",
-          "author": "dmarchuk",
-          "source": "review",
-          "quote": "One helper now answers it for both callers:"
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/94051#discussion_r3967997808",
-          "origin": "pr#94051",
-          "author": "meikelmosby",
-          "source": "review",
-          "quote": "if something is slightly malformed here e.g. 190min instead of 190m"
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/60388#discussion_r3316448116",
-          "origin": "pr#60388",
-          "author": "mayteio",
-          "source": "review",
-          "quote": "it'd try 20s, which doesn't pass validation"
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/92672#discussion_r3914469107",
-          "origin": "pr#92672",
-          "author": "dmarchuk",
-          "source": "review",
-          "quote": "a bare `window_minutes` can't be trusted to be minutes now (flawed field from the beginning)"
         },
         {
           "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L164",
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "a number plus unit `s` | `m` | `h` | `d`"
         }
       ],
@@ -1558,12 +1617,12 @@
       "currentLevelBasis": "backend/utils/durations.py and nodejs/src/cdp/services/hogflows/duration.ts each declare the regex with a header comment saying they must match; test_durations.py and duration.test.ts test separately with no shared cases at 57ca357.",
       "proposedLevel": "linted",
       "howToEnforce": "A shared JSON fixture of valid and invalid durations (with expected seconds) read by both test_durations.py and duration.test.ts.",
-      "confidence": "high",
+      "confidence": "medium",
       "value": 3,
       "effort": 1,
-      "occurrences": 6,
-      "authors": 4,
-      "humanAuthors": 3
+      "occurrences": 2,
+      "humanAuthors": 1,
+      "reviewers": 0
     },
     {
       "id": "stored-payloads-are-size-bounded",
@@ -1576,6 +1635,7 @@
           "origin": "pr#68133",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "cap the per-workflow section - it's unbounded"
         },
         {
@@ -1583,6 +1643,7 @@
           "origin": "pr#71844",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "action ids now have max_length=200 at the serializer"
         },
         {
@@ -1590,6 +1651,7 @@
           "origin": "pr#78272",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "materialized content is now capped cumulatively per save at `DATA_UPLOAD_MAX_MEMORY_SIZE` (20 MB)"
         },
         {
@@ -1597,6 +1659,7 @@
           "origin": "pr#91581",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "merged variable overrides are now capped at 5KB, reusing the existing constant that already bounds variable definitions"
         },
         {
@@ -1604,6 +1667,7 @@
           "origin": "pr#97303",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "Django caps at 4096 bytes total and 1500 characters per string"
         },
         {
@@ -1611,6 +1675,7 @@
           "origin": "pr#84460",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Agreed a bounded schema is the right fix eventually"
         }
       ],
@@ -1622,8 +1687,8 @@
       "value": 3,
       "effort": 3,
       "occurrences": 6,
-      "authors": 1,
-      "humanAuthors": 1
+      "humanAuthors": 1,
+      "reviewers": 1
     },
     {
       "id": "flags-gate-adoption-not-execution",
@@ -1636,6 +1701,7 @@
           "origin": "pr#85511",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "The serializer seeds the stored action ids that already reference a flag-gated template and the gate skips them"
         },
         {
@@ -1643,6 +1709,7 @@
           "origin": "pr#94051",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "The handler now honors an existing wait even when the flag is off. The flag only controls new waits."
         },
         {
@@ -1650,6 +1717,7 @@
           "origin": "pr#87647",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "A test run echoing a stored or draft-staged limit now passes the gate regardless of flag state, while new adoption stays flag-gated."
         },
         {
@@ -1657,6 +1725,7 @@
           "origin": "pr#102233",
           "author": "posthog",
           "source": "bot-review",
+          "byPullRequestAuthor": false,
           "quote": "matching the two grandfather clauses this file already carries for the same reason"
         }
       ],
@@ -1668,8 +1737,8 @@
       "value": 3,
       "effort": 2,
       "occurrences": 4,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 0
     },
     {
       "id": "stored-configs-stay-readable",
@@ -1682,6 +1751,7 @@
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Keep configs serializable and stable: configs are persisted as part of the workflow."
         },
         {
@@ -1689,6 +1759,7 @@
           "origin": "pr#72576",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the worker's zod schema now accepts a bare string (both standalone and inside a list) and transforms it to {key}, so pre-existing rows parse into the canonical shape"
         },
         {
@@ -1696,6 +1767,7 @@
           "origin": "pr#73225",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "with a trigger fallback only for callers predating the field, so deploys in either order stay safe"
         },
         {
@@ -1703,6 +1775,7 @@
           "origin": "pr#97929",
           "author": "arthurdedeus",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the mixed-version deploy is fine, all workflows using this trigger are either in draft or being tested."
         },
         {
@@ -1710,6 +1783,7 @@
           "origin": "pr#86672",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "no stored configs use the old trigger type in either region yet"
         },
         {
@@ -1717,6 +1791,7 @@
           "origin": "doc:products/workflows/CONTRIBUTING.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "The tracking-code layouts are compatible in one direction only, so this rolled out in two phases"
         }
       ],
@@ -1728,8 +1803,8 @@
       "value": 4,
       "effort": 3,
       "occurrences": 5,
-      "authors": 4,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 1
     },
     {
       "id": "editor-schema-accepts-what-the-server-stores",
@@ -1742,6 +1817,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "a malformed node saves but then **breaks the editor view** for the whole workflow"
         },
         {
@@ -1749,6 +1825,7 @@
           "origin": "pr#62649",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "a test there stops a future patch-path refactor from silently bringing the editor crash back"
         },
         {
@@ -1756,6 +1833,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Treat the shapes below as required, not advisory."
         },
         {
@@ -1763,6 +1841,7 @@
           "origin": "pr#63583",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "there's a chance active workflows that users used to be able to save, they won't be able to save now"
         }
       ],
@@ -1774,8 +1853,8 @@
       "value": 5,
       "effort": 4,
       "occurrences": 4,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 2
     },
     {
       "id": "dispatch-is-idempotent",
@@ -1788,6 +1867,7 @@
           "origin": "pr#91581",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the run action now accepts an `Idempotency-Key` header, backed by a cache-based reservation, so a retry returns the first result instead of firing a second AI task"
         },
         {
@@ -1795,6 +1875,7 @@
           "origin": "pr#105480",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the same audience would have received the email again at the scheduled time"
         },
         {
@@ -1802,14 +1883,8 @@
           "origin": "pr#82953",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "so a run is still counted exactly once and the double-count the watcher split was built to avoid cannot happen"
-        },
-        {
-          "url": "https://github.com/PostHog/posthog/pull/52776#discussion_r3011733145",
-          "origin": "pr#52776",
-          "author": "havenbarnes",
-          "source": "review",
-          "quote": "How far apart can ghost runs actually be from each other?"
         }
       ],
       "currentLevel": "review-only",
@@ -1819,9 +1894,9 @@
       "confidence": "medium",
       "value": 4,
       "effort": 3,
-      "occurrences": 4,
-      "authors": 3,
-      "humanAuthors": 3
+      "occurrences": 3,
+      "humanAuthors": 2,
+      "reviewers": 0
     },
     {
       "id": "facade-is-the-only-way-in",
@@ -1834,6 +1909,7 @@
           "origin": "doc:tach.toml",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "Facade-only: the Run scout action's endpoint starts a scout run through"
         },
         {
@@ -1841,6 +1917,7 @@
           "origin": "pr#104871",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`products/workflows/backend/facade/api.py` has no backfill surface at all."
         },
         {
@@ -1848,19 +1925,20 @@
           "origin": "pr#76015",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "`products.messaging` is now declared in `products.workflows`' `depends_on` in tach.toml"
         }
       ],
       "currentLevel": "review-only",
-      "currentLevelBasis": "tach.toml L1088-1105 declares products.workflows depends_on with 'Facade-only' comments for signals and tasks, but products.workflows is absent from the canonical [[interfaces]] block (L1109-1117) and package.json has no backend:contract-check, so core imports internals directly (posthog/api/team.py, posthog/models/team/team.py, products/signals/backend/scout_harness/profile/builders.py and warehouse_sources cdp_producer.py import products.workflows.backend.models) at 57ca357.",
+      "currentLevelBasis": "tach.toml L1088-1105 lints which modules products.workflows may import, and products.tasks sits in the canonical [[interfaces]] block, so workflows reaching tasks goes through its facade. The other direction is open: products.workflows is not in that block, so core and other products import workflows models directly and only review holds it.",
       "proposedLevel": "linted",
       "howToEnforce": "Add products.workflows to the canonical tach [[interfaces]] block with a legacy-leaks block listing today's model imports, add backend:contract-check to products/workflows/package.json, and shrink the leak list.",
       "confidence": "high",
       "value": 3,
       "effort": 4,
       "occurrences": 3,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 0
     },
     {
       "id": "agent-facing-text-matches-runtime",
@@ -1873,6 +1951,7 @@
           "origin": "pr#73577",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "the help_text now states an unallocated remainder routes to the last cohort, matching the runtime"
         },
         {
@@ -1880,6 +1959,7 @@
           "origin": "pr#61655",
           "author": "dmarchuk",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "probably better to keep it consistent for agents too"
         },
         {
@@ -1887,6 +1967,7 @@
           "origin": "pr#74195",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "take `workflow_id` while the other 26 tools take `id`"
         },
         {
@@ -1894,6 +1975,7 @@
           "origin": "pr#91572",
           "author": "mayteio",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "a skip now reads as 'fix a fabricated payload, but treat a skip on a real, copied payload as a broken trigger filter instead'"
         },
         {
@@ -1901,6 +1983,7 @@
           "origin": "pr#101588",
           "author": "meikelmosby",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "worth adding something to the mcp for agents to tell them what is allowed and what not"
         }
       ],
@@ -1912,8 +1995,8 @@
       "value": 3,
       "effort": 1,
       "occurrences": 5,
-      "authors": 3,
-      "humanAuthors": 3
+      "humanAuthors": 3,
+      "reviewers": 2
     },
     {
       "id": "say-workflow-not-hog-flow",
@@ -1926,6 +2009,7 @@
           "origin": "pr#49670",
           "author": "skoob13",
           "source": "review",
+          "byPullRequestAuthor": false,
           "quote": "Do we refer to workflows as hogflows? I've heard this naming for the first time."
         },
         {
@@ -1933,6 +2017,7 @@
           "origin": "pr#49670",
           "author": "VojtechBartos",
           "source": "review",
+          "byPullRequestAuthor": true,
           "quote": "removed the HogFlow(s) references from the descriptions since docs not mentioning it at all"
         },
         {
@@ -1940,6 +2025,7 @@
           "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
           "author": "repository",
           "source": "doc",
+          "byPullRequestAuthor": false,
           "quote": "\"Hog flow\" is the internal code name (`HogFlow`), not a user-facing term."
         }
       ],
@@ -1951,8 +2037,8 @@
       "value": 2,
       "effort": 1,
       "occurrences": 2,
-      "authors": 3,
-      "humanAuthors": 2
+      "humanAuthors": 2,
+      "reviewers": 1
     },
     {
       "id": "code-managed-workflows-are-read-only",
@@ -1965,6 +2051,7 @@
           "origin": "session:t3/896884be-14e4-4a9e-9da4-397fff67c0b0",
           "author": "Silthus",
           "source": "session",
+          "byPullRequestAuthor": false,
           "quote": "For code, they should be read-only."
         },
         {
@@ -1972,6 +2059,7 @@
           "origin": "session:t3/896884be-14e4-4a9e-9da4-397fff67c0b0",
           "author": "Silthus",
           "source": "session",
+          "byPullRequestAuthor": false,
           "quote": "every workflow needs to get a type: type code, type GUI, type MCP, maybe even"
         },
         {
@@ -1979,6 +2067,7 @@
           "origin": "session:t3/ba683255-9f48-4b95-825b-e696fab60ab9",
           "author": "Silthus",
           "source": "session",
+          "byPullRequestAuthor": false,
           "quote": "I would see it, actually, as the note panel being disabled as a read-only thing, but then with a link to the actual code also in the header."
         }
       ],
@@ -1990,15 +2079,15 @@
       "value": 3,
       "effort": 3,
       "occurrences": 2,
-      "authors": 1,
-      "humanAuthors": 1
+      "humanAuthors": 1,
+      "reviewers": 0
     }
   ],
   "backlog": [
     "constraints-live-in-the-serializer",
-    "one-duration-grammar",
     "agent-facing-text-matches-runtime",
     "silent-degradations-emit-a-counter",
+    "one-duration-grammar",
     "secrets-masked-in-every-representation",
     "child-rows-take-team-from-their-workflow",
     "custom-actions-declare-scopes-and-object-access",
@@ -2011,29 +2100,30 @@
     "test-runs-share-production-trigger-predicates",
     "unroutable-steps-fail-the-run-visibly",
     "active-workflows-change-only-through-publish",
+    "dispatch-requires-a-previewed-audience",
     "graph-structure-validated-on-every-write",
     "stored-configs-stay-readable",
     "closed-type-sets-have-one-home",
     "dispatch-is-idempotent",
     "editor-schema-accepts-what-the-server-stores",
     "stored-payloads-are-size-bounded",
-    "configs-are-typed-unions",
     "lifecycle-changes-are-explicit",
     "backfills-lock-rows-and-bump-stamps",
-    "post-run-metrics-carry-the-message-version",
+    "configs-are-typed-unions",
     "code-managed-workflows-are-read-only",
+    "post-run-metrics-carry-the-message-version",
     "facade-is-the-only-way-in"
   ],
   "sourceNotes": [
-    "715 human comments across 211 PRs; mayteio (299), dmarchuk (140) and meikelmosby (92) dominate. Many human-account comments are agent-written replies to bot findings (Claude Code, talyn.dev); they were used as evidence of the rule the author accepted, not as independent reviewers.",
+    "680 human review comments from 206 PRs; mayteio (299), dmarchuk (140) and meikelmosby (87) dominate. Many human-account comments are agent-written replies to bot findings (Claude Code, talyn.dev); they were used as evidence of the rule the author accepted, not as independent reviewers.",
     "About 190 'Fixed in / Thanks / LGTM' replies and one-off findings (UI copy, layout nits, SES metric math, rrule picker state, papaparse pinning) were ignored unless the same class recurred across PRs.",
-    "Of 1520 bot comments (posthog 663, greptile 377, coderabbit 152, stamphog 95, veria 92), a handful were cited where they corroborated a human rule: secret masking, base_updated_at fencing, person:read scopes, blast-radius review.",
+    "Of 1518 bot comments (posthog 663, greptile 367, coderabbit 152, stamphog 95, veria 92), a handful were cited where they corroborated a human rule: secret masking, base_updated_at fencing, person:read scopes, blast-radius review.",
     "Code checks at 57ca357 found no workflows-specific semgrep or oxlint rules; most cross-language invariants (action types, row-scoped triggers, durations, trigger eligibility) are held by 'Keep in sync' comments, and products.workflows has no tach interface block.",
     "The 12 session turns are mostly workflows-as-code planning; one turn that was mostly a pasted teammate Slack message was not quoted, and only the read-only code-managed rule came from sessions.",
     "Scope: `products/workflows` plus `nodejs/src/cdp/services/hogflows`, the workflow runtime. CODEOWNERS gives team-workflows all of `nodejs/src/cdp`; the rest of CDP (destinations, hog functions) was left out to keep the draft about workflows.",
-    "Sessions: T3 threads that run Claude also write the Claude Code store, so the same turn shows up twice and is counted once. Codex sessions started by an orchestrator (subagents) were skipped; only sessions Michael started count.",
+    "Sessions: T3 threads that run Claude also write the Claude Code store, so the same turn shows up twice and is counted once. Codex subagent sessions and Claude Code sidechains were skipped, but a T3 or Claude session an orchestrator started can still slip in, so every cited session quote was checked by hand to be Michael's own words.",
     "Jev on the AI gateway allowed 5 requests a minute, so it only classified session turns (5 per call). Review comments went to the Opus clustering pass unfiltered.",
-    "Two caveats that describe possible security gaps were left out of this public draft and handed to the team directly.",
-    "Shape: the #project-coherence discussion (Danilo, @daniloc, and Marce Coll) argued for a project glossary and theory-first development, with a THEORY.md of vocabulary, abstractions, invariants, boundaries, and non-goals, and for component roles that carry guarantees. The ladder is Coherence's: convention, totality-checked, enshrined."
+    "Shape: PostHog's internal Coherence discussion (@daniloc and Marce Coll) argued for a project glossary and theory-first development, with a THEORY.md of vocabulary, abstractions, invariants, boundaries, and non-goals, and for component roles that carry guarantees. The ladder is Coherence's: convention, totality-checked, enshrined.",
+    "Counts: an occurrence is one PR or session. Independent reviewers exclude the PR's own author, so a PR author accepting a bot finding counts as an occurrence but not as a reviewer. Authorless reviews (deleted accounts, some GitHub Apps) count as bots."
   ]
 }

@@ -11,7 +11,7 @@ import { keepConstrainingTurns } from "./lib/relevance.ts";
 import { filesUnder, headCommit } from "./lib/repository.ts";
 import { pullRequestFeedbackSchema, reviewFeedback } from "./lib/review-feedback.ts";
 import { defaultSessionLocations, userTurns } from "./lib/sessions.ts";
-import { configBlocks, documentStatements, isGuidanceDocument, moduleNamesOf, statementItems } from "./lib/written-rules.ts";
+import { ancestorGuidancePaths, configStatements, documentStatements, isGuidanceDocument, moduleNamesOf, statementItems } from "./lib/written-rules.ts";
 
 const optionsSchema = z.object({
   repo: z.string().regex(/^[\w.-]+\/[\w.-]+$/),
@@ -19,12 +19,12 @@ const optionsSchema = z.object({
   since: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   out: z.string().min(1),
   term: z.array(z.string()).default([]),
-  config: z.array(z.string()).default(["tach.toml", "pyproject.toml", ".importlinter"]),
+  config: z.array(z.string()).default(["tach.toml", "pyproject.toml", ".importlinter", ".oxlintrc.json", "eslint.config.mjs", ".eslintrc.js", ".semgrep.yml", "CODEOWNERS", ".github/CODEOWNERS"]),
   jev: z.boolean().default(true),
 });
 type Options = z.infer<typeof optionsSchema>;
 
-const crawlSchema = z.object({ merged: z.array(z.number().int()), closed: z.array(z.number().int()), feedback: z.array(pullRequestFeedbackSchema) });
+const crawlSchema = z.object({ key: z.string(), merged: z.array(z.number().int()), closed: z.array(z.number().int()), feedback: z.array(pullRequestFeedbackSchema) });
 type Crawl = z.infer<typeof crawlSchema>;
 
 const usage = "Usage: bun harvest/run.ts --repo owner/name --scope <path> [--scope <path>] --since YYYY-MM-DD --out <dir> [--term <word>] [--config <root file>] [--no-jev]";
@@ -52,18 +52,20 @@ async function harvestReviews(options: Options): Promise<HarvestItem[]> {
   collected["closed, unmerged pull requests touching the scope"] = closed.length;
   collected["inline review comments on those pull requests"] = feedback.reduce((sum, pr) => sum + pr.reviewThreads.nodes.reduce((threads, { comments }) => threads + comments.nodes.length, 0), 0);
   collected["non-empty review bodies on those pull requests"] = feedback.reduce((sum, pr) => sum + pr.reviews.nodes.filter(({ body }) => body.trim().length > 0).length, 0);
-  return feedback.flatMap((pullRequest) => reviewFeedback(pullRequest, options.scope, drops));
+  return feedback.flatMap((pullRequest) => reviewFeedback(pullRequest, { scopes: options.scope, since: options.since }, drops));
 }
 
 async function cachedCrawl({ repo, scope, since, out }: Options): Promise<Crawl> {
   const cache = Bun.file(join(out, "pull-requests.json"));
-  if (await cache.exists()) return crawlSchema.parse(await cache.json());
+  const key = JSON.stringify({ repo, scope, since, terms });
+  const cached = (await cache.exists()) ? crawlSchema.safeParse(await cache.json()) : undefined;
+  if (cached?.success && cached.data.key === key) return cached.data;
   const merged = new Set<number>();
   for (const path of scope) for (const number of await mergedPullRequestNumbers(repo, path, since)) merged.add(number);
   const closed = (await closedUnmergedPullRequestNumbers(repo, scope, since, terms)).filter((number) => !merged.has(number));
   const numbers = [...merged, ...closed];
   const feedback = await pullRequestFeedback(repo, numbers, (done) => console.error(`review feedback: ${done}/${numbers.length} pull requests`));
-  const crawl = { merged: [...merged], closed, feedback };
+  const crawl = { key, merged: [...merged], closed, feedback };
   await Bun.write(cache, JSON.stringify(crawl));
   return crawl;
 }
@@ -85,17 +87,19 @@ async function harvestSessions({ repo }: Options): Promise<HarvestItem[]> {
 async function harvestWrittenRules({ repo, scope, config }: Options): Promise<HarvestItem[]> {
   const items: HarvestItem[] = [];
   const documents = (await Promise.all(scope.map((path) => filesUnder(repo, commit, path)))).flat().filter(isGuidanceDocument);
-  collected["guidance documents in the scope"] = documents.length;
-  for (const path of documents) {
+  const ancestors = [...new Set(scope.flatMap(ancestorGuidancePaths))];
+  for (const path of [...ancestors, ...documents]) {
     const text = await rawContent(repo, `${path}?ref=${commit}`);
-    if (text !== null) items.push(...statementItems(repo, commit, path, documentStatements(text)));
+    if (text === null) continue;
+    count(ancestors.includes(path) ? "agent guides above the scope" : "guidance documents in the scope");
+    items.push(...statementItems(repo, commit, path, documentStatements(text)));
   }
   const moduleNames = scope.flatMap(moduleNamesOf);
   for (const path of config) {
     const text = await rawContent(repo, `${path}?ref=${commit}`);
     if (text === null) continue;
     count("root config files read");
-    items.push(...statementItems(repo, commit, path, configBlocks(text, moduleNames)));
+    items.push(...statementItems(repo, commit, path, configStatements(path, text, moduleNames)));
   }
   return items;
 }

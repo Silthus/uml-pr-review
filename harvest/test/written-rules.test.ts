@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { configBlocks, documentStatements, isGuidanceDocument, moduleNamesOf } from "../lib/written-rules.ts";
+import { ancestorGuidancePaths, configStatements, documentStatements, isGuidanceDocument, moduleNamesOf } from "../lib/written-rules.ts";
 
 describe("documentStatements", () => {
   test("keeps normative lines with their line numbers and skips headings, prose, and code", () => {
@@ -21,11 +21,23 @@ describe("documentStatements", () => {
   });
 });
 
-describe("configBlocks", () => {
+describe("configStatements", () => {
   test("returns the TOML tables that name the scope's module", () => {
     const toml = ['[[modules]]', 'path = "products.cohorts"', 'depends_on = ["posthog"]', "", '[[modules]]', 'path = "products.workflows"', 'depends_on = ["posthog", "products.cdp"]'].join("\n");
 
-    expect(configBlocks(toml, moduleNamesOf("products/workflows"))).toEqual([{ line: 5, text: '[[modules]]\npath = "products.workflows"\ndepends_on = ["posthog", "products.cdp"]' }]);
+    expect(configStatements("tach.toml", toml, moduleNamesOf("products/workflows"))).toEqual([{ line: 5, text: '[[modules]]\npath = "products.workflows"\ndepends_on = ["posthog", "products.cdp"]' }]);
+  });
+
+  test("returns the lines that name the scope in any other config format", () => {
+    const ini = ["[importlinter:contract:facade]", "source_modules = products.cohorts", "ignore_imports = products.workflows.backend.routes -> products.workflows.backend.api"].join("\n");
+
+    expect(configStatements(".importlinter", ini, moduleNamesOf("products/workflows"))).toEqual([{ line: 3, text: "ignore_imports = products.workflows.backend.routes -> products.workflows.backend.api" }]);
+  });
+});
+
+describe("ancestorGuidancePaths", () => {
+  test("lists the agent guides that apply to the scope from the root down", () => {
+    expect(ancestorGuidancePaths("products/workflows")).toEqual(["AGENTS.md", "CLAUDE.md", "products/AGENTS.md", "products/CLAUDE.md"]);
   });
 });
 

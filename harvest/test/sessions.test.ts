@@ -22,7 +22,7 @@ afterAll(async () => {
 
 describe("userTurns", () => {
   test("reads the human turns of sessions in the repository from all three stores", async () => {
-    const turns = await userTurns(locations, "posthog");
+    const turns = await userTurns(locations, "PostHog");
 
     expect(turns.map(({ source, sessionId, text, context }) => ({ source, sessionId, text, context }))).toEqual([
       { source: "t3", sessionId: "thread-1", text: "Keep the executor free of Django.", context: "Workflows wait node workflows/wait /work/posthog-wt" },

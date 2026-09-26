@@ -3,7 +3,7 @@ import type { Harvest, HarvestItem } from "../lib/items.ts";
 import { assembleTheory, type TheoryDraft } from "../lib/theory.ts";
 
 function item(id: string, overrides: Partial<HarvestItem>): HarvestItem {
-  return { id, source: "review", origin: "pr#1", url: `https://github.com/PostHog/posthog/pull/1#${id}`, author: "reviewer", isBot: false, path: null, line: null, body: "", at: null, ...overrides };
+  return { id, source: "review", origin: "pr#1", url: `https://github.com/PostHog/posthog/pull/1#${id}`, author: "reviewer", isBot: false, byPullRequestAuthor: false, path: null, line: null, body: "", at: null, ...overrides };
 }
 
 const harvest: Harvest = {
@@ -17,7 +17,7 @@ const harvest: Harvest = {
   drops: [],
   items: [
     item("gh:1:1", { origin: "pr#1", author: "alice", body: "Please go through the facade here,\nnot the model." }),
-    item("gh:1:2", { origin: "pr#1", author: "bob", body: "Agree, facade only." }),
+    item("gh:1:2", { origin: "pr#1", author: "bob", byPullRequestAuthor: true, body: "Agree, facade only." }),
     item("gh:2:3", { origin: "pr#2", author: "coderabbitai", source: "bot-review", isBot: true, body: "Import the facade instead of the model." }),
     item("session:t3/a#m", { source: "session", origin: "session:t3/a", author: "Silthus", url: "local:t3/a#m", body: "Put it in the facade, token ghp_abcdefghijklmnopqrstuvwxyz123456" }),
   ],
@@ -50,7 +50,7 @@ function draft(rules: TheoryDraft["rules"]): TheoryDraft {
 }
 
 describe("assembleTheory", () => {
-  test("resolves evidence to links and counts independent occurrences and human authors", () => {
+  test("resolves evidence to links and counts occurrences, human authors, and reviewers other than the PR author", () => {
     const [assembled] = assembleTheory(draft([rule()]), harvest).rules;
 
     expect(assembled?.evidence.map(({ url, author }) => ({ url, author }))).toEqual([
@@ -58,7 +58,7 @@ describe("assembleTheory", () => {
       { url: "https://github.com/PostHog/posthog/pull/1#gh:1:2", author: "bob" },
       { url: "https://github.com/PostHog/posthog/pull/1#gh:2:3", author: "coderabbitai" },
     ]);
-    expect({ occurrences: assembled?.occurrences, authors: assembled?.authors, humanAuthors: assembled?.humanAuthors }).toEqual({ occurrences: 2, authors: 3, humanAuthors: 2 });
+    expect({ occurrences: assembled?.occurrences, humanAuthors: assembled?.humanAuthors, reviewers: assembled?.reviewers }).toEqual({ occurrences: 2, humanAuthors: 2, reviewers: 1 });
   });
 
   test("rejects a quote that is not verbatim in its evidence", () => {

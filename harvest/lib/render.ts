@@ -52,7 +52,7 @@ export function renderTheory(theory: Theory): string {
 
 export function renderSources(harvest: Harvest, theory: Theory): string {
   const kept = countBy(harvest.items.map(({ source }) => source));
-  const cited = countBy(theory.rules.flatMap(({ evidence }) => evidence.map(({ source }) => source)));
+  const cited = countBy([...theory.rules, ...theory.caveats].flatMap(({ evidence }) => evidence.map(({ source }) => source)));
   return [
     `# Sources for the ${theory.product} theory draft`,
     "",
@@ -89,7 +89,7 @@ function ruleLine(rule: Rule): string {
   const sources = distinctOrigins(rule.evidence).slice(0, linksPerRule).map(link);
   const more = rule.occurrences - sources.length;
   const evidence = `${sources.join(", ")}${more > 0 ? `, and ${more} more` : ""}`;
-  return `- **\`${rule.id}\`**: ${rule.statement} _${rule.component}; ${rule.currentLevel} → ${rule.proposedLevel}; ${rule.confidence} confidence; ${rule.occurrences} ${plural(rule.occurrences, "occurrence")}, ${rule.humanAuthors} human ${plural(rule.humanAuthors, "author")}: ${evidence}._`;
+  return `- **\`${rule.id}\`**: ${rule.statement} _${rule.component}; ${rule.currentLevel} → ${rule.proposedLevel}; ${rule.confidence} confidence; ${rule.occurrences} ${plural(rule.occurrences, "occurrence")}, ${rule.reviewers} independent ${plural(rule.reviewers, "reviewer")}: ${evidence}._`;
 }
 
 function distinctOrigins(evidence: readonly Evidence[]): Evidence[] {
@@ -102,7 +102,7 @@ function link(evidence: Evidence): string {
 }
 
 function label({ source, origin, author, url }: Evidence): string {
-  if (source === "session") return `${author}, agent session`;
+  if (source === "session") return `${author}, agent session ${origin.split("/").pop()?.slice(0, 8)}`;
   const line = url.match(/#L(\d+)$/)?.[1];
   if (source === "doc") return line ? `${basename(origin)} L${line}` : basename(origin);
   return `${origin} ${author}${source === "bot-review" ? " (bot)" : ""}`;

@@ -24,7 +24,18 @@ export function documentStatements(markdown: string): Statement[] {
   return statements;
 }
 
-export function configBlocks(toml: string, moduleNames: readonly string[]): Statement[] {
+export function configStatements(path: string, text: string, moduleNames: readonly string[]): Statement[] {
+  if (path.endsWith(".toml")) return tomlBlocks(text, moduleNames);
+  return text.split("\n").flatMap((line, index) => (moduleNames.some((name) => line.includes(name)) ? [{ line: index + 1, text: line.trim() }] : []));
+}
+
+export function ancestorGuidancePaths(scope: string): string[] {
+  const segments = scope.replace(/\/$/, "").split("/").slice(0, -1);
+  const directories = ["", ...segments.map((_, index) => `${segments.slice(0, index + 1).join("/")}/`)];
+  return directories.flatMap((directory) => [`${directory}AGENTS.md`, `${directory}CLAUDE.md`]);
+}
+
+function tomlBlocks(toml: string, moduleNames: readonly string[]): Statement[] {
   const lines = toml.split("\n");
   const starts = lines.flatMap((line, index) => (tableHeader.test(line) ? [index] : []));
   return starts.flatMap((start, position) => {
@@ -48,6 +59,7 @@ export function statementItems(repo: string, commit: string, path: string, state
     url: `https://github.com/${repo}/blob/${commit}/${path}#L${line}`,
     author: "repository",
     isBot: false,
+    byPullRequestAuthor: false,
     path,
     line,
     body: text,

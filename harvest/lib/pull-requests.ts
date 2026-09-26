@@ -19,7 +19,7 @@ export async function mergedPullRequestNumbers(repo: string, scope: string, sinc
   return [...numbers];
 }
 
-export function squashedPullRequestNumber(message: string): number | undefined {
+function squashedPullRequestNumber(message: string): number | undefined {
   const match = message.split("\n")[0]?.match(/\(#(\d+)\)\s*$/);
   return match?.[1] ? Number(match[1]) : undefined;
 }
@@ -60,7 +60,7 @@ export async function closedUnmergedPullRequestNumbers(repo: string, scopes: rea
   return [...numbers];
 }
 
-const pullRequestFields = `number url
+const pullRequestFields = `number url author { login __typename }
   files(first: 100) { totalCount nodes { path } }
   reviews(first: 50) { nodes { author { login __typename } body url submittedAt } }
   reviewThreads(first: 100) { nodes { comments(first: 30) { nodes { author { login __typename } body url path line originalLine createdAt } } } }`;

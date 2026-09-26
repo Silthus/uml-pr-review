@@ -10,7 +10,7 @@ const constraintMarker = /\b(don'?t|do not|never|instead|rather than|shouldn'?t|
 const minimumLength = 12;
 const maximumLength = 4000;
 
-export function cleanTurnText(text: string): string {
+function cleanTurnText(text: string): string {
   return text.replace(injectedBlock, "").replace(agentsPreamble, "").replace(unwrappedTags, "").replace(imagePlaceholder, "").replace(skillInvocation, "").trim();
 }
 
@@ -19,7 +19,7 @@ export function correctionCandidates(turns: readonly UserTurn[], scopeTerms: rea
   const substantive = cleaned.filter(({ text }) => text.length >= minimumLength);
   drops.record("session", "empty after removing injected context (skills, reminders, notifications)", cleaned.length - substantive.length);
   const unique = distinctTurns(substantive);
-  drops.record("session", "duplicate of a turn seen in another session store", substantive.length - unique.length);
+  drops.record("session", "repeat of an earlier turn, in the same session or another store", substantive.length - unique.length);
   const bounded = unique.filter(({ text }) => text.length <= maximumLength);
   drops.record("session", `longer than ${maximumLength} characters (pasted plan or document)`, unique.length - bounded.length);
   const constraining = bounded.filter(({ text }) => constraintMarker.test(text));
@@ -32,7 +32,7 @@ export function correctionCandidates(turns: readonly UserTurn[], scopeTerms: rea
 function distinctTurns(turns: readonly UserTurn[]): UserTurn[] {
   const seen = new Set<string>();
   return turns.filter(({ text }) => {
-    const key = text.toLowerCase().replace(/\s+/g, " ").slice(0, 500);
+    const key = text.toLowerCase().replace(/\s+/g, " ");
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -46,5 +46,5 @@ function mentionsAny(text: string, terms: readonly string[]): boolean {
 
 function itemOf(turn: UserTurn, author: string): HarvestItem {
   const origin = `session:${turn.source}/${turn.sessionId}`;
-  return { id: `${origin}#${turn.turnId}`, source: "session", origin, url: `local:${turn.source}/${turn.sessionId}#${turn.turnId}`, author, isBot: false, path: null, line: null, body: turn.text, at: turn.at || null };
+  return { id: `${origin}#${turn.turnId}`, source: "session", origin, url: `local:${turn.source}/${turn.sessionId}#${turn.turnId}`, author, isBot: false, byPullRequestAuthor: false, path: null, line: null, body: turn.text, at: turn.at || null };
 }

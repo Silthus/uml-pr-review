@@ -23,6 +23,7 @@ describe("correctionCandidates", () => {
         url: "local:t3/thread-1#message-1",
         author: "Silthus",
         isBot: false,
+        byPullRequestAuthor: false,
         path: null,
         line: null,
         body: "Don't import the HogFlow model in the workflows API, go through the facade.",
@@ -64,7 +65,7 @@ describe("correctionCandidates", () => {
     expect(items.map(({ body }) => body)).toEqual([correction]);
     expect(drops.entries()).toEqual([
       { source: "session", reason: "empty after removing injected context (skills, reminders, notifications)", count: 1 },
-      { source: "session", reason: "duplicate of a turn seen in another session store", count: 1 },
+      { source: "session", reason: "repeat of an earlier turn, in the same session or another store", count: 1 },
       { source: "session", reason: "no correcting or constraining language", count: 1 },
     ]);
   });

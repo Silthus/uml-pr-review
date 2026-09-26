@@ -722,6 +722,18 @@ a:hover {
   color: var(--red);
 }
 
+.status-outdated {
+  background: var(--line);
+  color: var(--ink-muted);
+}
+
+.check-provenance {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .package.fresh .package-body,
 .package.fresh .package-tab {
   animation: fresh-pulse 2.4s ease-out;

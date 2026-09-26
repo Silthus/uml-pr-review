@@ -1,12 +1,13 @@
 import type { ArchitecturePlan, ConformanceResult } from "../../architecture/contracts/index.ts";
 import type { ArchitectureModel } from "../../architecture/model/index.ts";
 import type { Selection } from "../graph/types.ts";
+import type { CheckView } from "../state/check-provenance.ts";
 import type { PlanActions } from "./plan-actions.ts";
 import { PlanPanel } from "./plan-panel.tsx";
 import { SelectedModule } from "./selected-module.tsx";
 import { SelectedSeam } from "./selected-seam.tsx";
 
-export function Inspector({ model, selection, plan, conformance, includeTests, actions, onSelectModule, onSelectSeam, onFocusConnections, lensOpen }: { model: ArchitectureModel; selection: Selection | null; plan: ArchitecturePlan | null; conformance: ConformanceResult | null; includeTests: boolean; actions: PlanActions; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void; onFocusConnections(path: string): void; lensOpen: boolean }) {
+export function Inspector({ model, selection, plan, conformance, check, includeTests, actions, onSelectModule, onSelectSeam, onFocusConnections, lensOpen }: { model: ArchitectureModel; selection: Selection | null; plan: ArchitecturePlan | null; conformance: ConformanceResult | null; check: CheckView | null; includeTests: boolean; actions: PlanActions; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void; onFocusConnections(path: string): void; lensOpen: boolean }) {
   const selectedModule = selection?.kind === "module" ? model.module(selection.path) : undefined;
   return (
     <aside className="inspector" aria-label="Inspector">
@@ -26,7 +27,7 @@ export function Inspector({ model, selection, plan, conformance, includeTests, a
           </dl>
         </section>
       )}
-      {plan ? <PlanPanel plan={plan} conformance={conformance} actions={actions} onSelectModule={onSelectModule} onSelectSeam={onSelectSeam} /> : null}
+      {plan ? <PlanPanel plan={plan} check={check} actions={actions} onSelectModule={onSelectModule} onSelectSeam={onSelectSeam} /> : null}
     </aside>
   );
 }

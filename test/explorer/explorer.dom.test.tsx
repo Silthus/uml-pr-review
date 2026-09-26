@@ -1,9 +1,10 @@
-import "./happy-dom.ts";
-import { beforeEach, describe, expect, test } from "bun:test";
-import { act, configure, fireEvent, render, waitFor, within } from "@testing-library/react";
-import type { ArchitectureEvent, ArchitecturePlan, ConformanceResult, PlanSummary } from "../../src/architecture/contracts/index.ts";
+import { useHappyDom } from "./happy-dom.ts";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { act, cleanup, configure, fireEvent, render, waitFor, within } from "@testing-library/react";
+import type { ArchitecturePlan, ConformanceResult, PlanSummary } from "../../src/architecture/contracts/index.ts";
 import { ExplorerApp } from "../../src/explorer/app.tsx";
 import { architectureOf } from "../support/architecture.ts";
+import { FakeEventSource } from "./fake-event-source.ts";
 
 const root = "/repo";
 const at = "2026-09-26T10:15:00.000Z";
@@ -86,23 +87,6 @@ const conformance: ConformanceResult = {
   checkedAt: at,
 };
 
-class FakeEventSource extends EventTarget {
-  static instances: FakeEventSource[] = [];
-  readonly url: string;
-
-  constructor(url: string) {
-    super();
-    this.url = url;
-    FakeEventSource.instances.push(this);
-  }
-
-  close() {}
-
-  emit(event: ArchitectureEvent) {
-    this.dispatchEvent(new MessageEvent(event.type, { data: JSON.stringify(event) }));
-  }
-}
-
 function installFetch(statusByUrl = new Map<string, number>(), plans: PlanSummary[] = [summary]) {
   const calls: { url: string; init?: RequestInit }[] = [];
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -137,14 +121,16 @@ async function settle() {
   });
 }
 
+useHappyDom();
 configure({ asyncUtilTimeout: 5000 });
 
 beforeEach(() => {
   document.body.innerHTML = "";
-  FakeEventSource.instances = [];
-  globalThis.EventSource = FakeEventSource as unknown as typeof EventSource;
+  FakeEventSource.install();
   localStorage.clear();
 });
+
+afterEach(cleanup);
 
 describe("ExplorerApp", () => {
   test("loads the architecture over REST and opens packages in place", async () => {
@@ -281,7 +267,7 @@ describe("ExplorerApp", () => {
       operations: [{ op: "add_comment", target: { kind: "module", path: logic }, body: "Please keep this behind the facade." }],
       note: "Comment from the explorer",
     });
-    expect(await view.findByText(/rejected: the plan changed to revision 3/)).toBeTruthy();
+    expect((await view.findAllByText(/the plan moved to revision 3/)).length).toBeGreaterThan(0);
     expect(view.getByText("Architecture plan · revision 3")).toBeTruthy();
   });
 

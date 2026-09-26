@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CommentTarget, PlanOperation, SelectionTarget } from "../architecture/contracts/index.ts";
-import { StalePlanError } from "./api.ts";
 import { ArchitectureCanvas } from "./canvas/architecture-canvas.tsx";
 import { CanvasActionsContext } from "./canvas/canvas-actions.ts";
 import { buildVisibleGraph } from "./graph/visible-graph.ts";
 import type { VisibleGraph } from "./graph/types.ts";
 import { Inspector } from "./inspector/inspector.tsx";
-import type { PlanActions } from "./inspector/plan-actions.ts";
+import type { MutationOutcome, PlanActions } from "./inspector/plan-actions.ts";
 import { ActivityFeed } from "./shell/activity-feed.tsx";
 import { Header } from "./shell/header.tsx";
 import { RepositoryPicker } from "./shell/repository-picker.tsx";
+import { checkView, currentConformance } from "./state/check-provenance.ts";
 import { initialTheme, rememberTheme, type Theme } from "./state/theme.ts";
 import { readUrlState, writeUrlState } from "./state/url-state.ts";
 import { useLayout } from "./state/use-layout.ts";
@@ -29,28 +29,26 @@ export function ExplorerApp() {
   const repository = useRepository(url.path, url.plan);
   const view = useViewState(url.focus, url.expanded, url.lens ? "lens" : "map");
   const plan = repository.state?.plan ?? null;
-  const conformance = repository.state?.conformance ?? null;
+  const check = checkView(repository.state?.conformance ?? null, plan, repository.state?.payload.repository);
+  const conformance = currentConformance(check);
   const overlay = view.planVisible ? plan : null;
 
+  const followAccepted = (accepted: boolean) => {
+    if (accepted && view.followAgent && view.planVisible) view.focusAll();
+    return accepted;
+  };
   const live = useLiveEvents(repository.api, plan, {
-    applyPlan: (patched) => {
-      if (repository.planId && patched.id !== repository.planId) return;
-      repository.replacePlan(patched);
-      if (view.followAgent && view.planVisible) view.focusAll();
-    },
-    applyConformance: (result) => {
-      if (repository.planId && result.planId !== repository.planId) return;
-      repository.replaceConformance(result);
-      if (view.followAgent && view.planVisible) view.focusAll();
-    },
+    applyPlan: (patched) => followAccepted(repository.acceptPlan(patched)),
+    applyConformance: (result) => followAccepted(repository.acceptConformance(result)),
     focus: (target: SelectionTarget) => {
       if (!view.followAgent) return;
       if (target.kind === "module") view.selectModule(target.path);
       else view.selectSeam(target.from, target.to);
     },
     reindex: (tree) => {
-      if (repository.state && repository.state.payload.tree !== tree) repository.reload();
+      if (repository.state && repository.state.payload.tree !== tree) repository.resync();
     },
+    resync: repository.resync,
   });
 
   const graph = useMemo(
@@ -80,22 +78,16 @@ export function ExplorerApp() {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
-  const applyOperations = useCallback(
-    async (operations: PlanOperation[], note: string) => {
-      if (!repository.api || !plan) return;
-      try {
-        repository.replacePlan(await repository.api.applyOperations(plan.id, plan.revision, operations, note));
-      } catch (caught) {
-        if (caught instanceof StalePlanError) {
-          if (caught.plan) repository.replacePlan(caught.plan);
-          live.note({ tone: "error", text: `Your edit was rejected: the plan changed to revision ${caught.plan?.revision ?? "?"} meanwhile. Reloaded the plan, please try again.` });
-          return;
-        }
-        live.note({ tone: "error", text: caught instanceof Error ? caught.message : String(caught) });
-      }
+  const noted = useCallback(
+    async (outcome: Promise<MutationOutcome>): Promise<MutationOutcome> => {
+      const result = await outcome;
+      if (!result.ok) live.note({ tone: "error", text: result.message });
+      return result;
     },
-    [repository.api, plan, live.note],
+    [live.note],
   );
+
+  const applyOperations = useCallback((operations: PlanOperation[], note: string) => noted(repository.applyOperations(operations, note)), [noted, repository.applyOperations]);
 
   const actions: PlanActions = useMemo(
     () => ({
@@ -104,27 +96,17 @@ export function ExplorerApp() {
       dropModule: (path) => applyOperations([{ op: "drop_module", path }], `Explorer: dropped ${path}`),
       upsertSeam: (seam) => applyOperations([{ op: "upsert_seam", ...seam }], `Explorer: ${seam.action} seam ${seam.from} → ${seam.to}`),
       dropSeam: (from, to) => applyOperations([{ op: "drop_seam", from, to }], `Explorer: dropped seam ${from} → ${to}`),
-      setLocked: async (locked) => {
-        if (!repository.api || !plan) return;
-        try {
-          repository.replacePlan(await repository.api.setLock(plan.id, plan.revision, locked));
-        } catch (caught) {
-          if (caught instanceof StalePlanError && caught.plan) repository.replacePlan(caught.plan);
-          live.note({ tone: "error", text: caught instanceof Error ? caught.message : String(caught) });
-        }
-      },
+      setLocked: (locked) => noted(repository.setLock(locked)),
       check: async (final) => {
-        if (!repository.api || !plan) return;
-        try {
-          repository.replaceConformance(await repository.api.check(plan.id, final));
+        const outcome = await noted(repository.check(final));
+        if (outcome.ok) {
           view.setPlanVisible(true);
           view.focusAll();
-        } catch (caught) {
-          live.note({ tone: "error", text: caught instanceof Error ? caught.message : String(caught) });
         }
+        return outcome;
       },
     }),
-    [applyOperations, repository.api, plan, live.note, view.setPlanVisible],
+    [applyOperations, noted, repository.setLock, repository.check, view.setPlanVisible],
   );
 
   const selectModule = useCallback(
@@ -170,7 +152,7 @@ export function ExplorerApp() {
           </div>
         </CanvasActionsContext.Provider>
         {repository.model ? (
-          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} includeTests={view.includeTests} actions={actions} onSelectModule={selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={lensPath !== null} />
+          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} check={overlay ? check : null} includeTests={view.includeTests} actions={actions} onSelectModule={selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={lensPath !== null} />
         ) : (
           <aside className="inspector" aria-label="Inspector"><section className="panel"><p className="muted">{repository.loadState === "loading" ? "Indexing the repository. A cold PostHog index takes a few seconds." : "Nothing loaded."}</p></section></aside>
         )}

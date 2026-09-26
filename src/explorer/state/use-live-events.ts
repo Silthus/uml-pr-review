@@ -6,10 +6,11 @@ import { edgeId } from "../graph/nodes.ts";
 export type Activity = { id: string; at: string; tone: "agent" | "human" | "system" | "error"; text: string };
 
 export type LiveHandlers = {
-  applyPlan(plan: ArchitecturePlan): void;
-  applyConformance(result: ConformanceResult): void;
+  applyPlan(plan: ArchitecturePlan): boolean;
+  applyConformance(result: ConformanceResult): boolean;
   focus(target: SelectionTarget): void;
   reindex(tree: string): void;
+  resync(): void;
 };
 
 export type LiveState = { status: EventStatus; activity: Activity[]; fresh: ReadonlySet<string>; note(entry: Omit<Activity, "id" | "at">): void };
@@ -36,14 +37,18 @@ export function useLiveEvents(api: ExplorerApi | null, currentPlan: Architecture
       if (entry) setActivity((current) => [entry, ...current].slice(0, activityLimit));
       if (event.type === "plan_patch") {
         const changed = changedElements(planRef.current, event.plan);
-        handlersRef.current.applyPlan(event.plan);
-        setFresh(changed);
-        timers.push(setTimeout(() => setFresh(new Set()), freshMilliseconds));
+        if (handlersRef.current.applyPlan(event.plan)) {
+          setFresh(changed);
+          timers.push(setTimeout(() => setFresh(new Set()), freshMilliseconds));
+        }
       }
       if (event.type === "conformance_result") handlersRef.current.applyConformance(event.result);
       if (event.type === "selection_hint") handlersRef.current.focus(event.target);
       if (event.type === "index_ready") handlersRef.current.reindex(event.tree);
-    }, setStatus);
+    }, (next) => {
+      setStatus(next);
+      if (next === "live") handlersRef.current.resync();
+    });
     return () => {
       stop();
       for (const timer of timers) clearTimeout(timer);

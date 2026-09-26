@@ -1,0 +1,308 @@
+{
+  "status": "graded",
+  "model": "typesafe-ai/jev",
+  "gradedAt": "2026-09-26T18:48:17.050Z",
+  "runs": {
+    "A": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+          "answers": {
+            "readability": 0.79,
+            "singleResponsibility": 0.84,
+            "namingClarity": 0.87,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+          "answers": {
+            "readability": 0.8,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.96,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts",
+          "answers": {
+            "readability": 0.82,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.91,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.9
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+          "answers": {
+            "readability": 0.81,
+            "singleResponsibility": 0.83,
+            "namingClarity": 0.92,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+          "answers": {
+            "readability": 0.83,
+            "singleResponsibility": 0.87,
+            "namingClarity": 0.96,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeEditor.stories.tsx",
+          "answers": {
+            "readability": 0.93,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.97,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.98
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.06,
+          "staysOnTask": 0.87,
+          "explicitInterfaces": 0.77
+        }
+      },
+      "skipped": [],
+      "fileQuality": 90.6,
+      "score": 87.5
+    },
+    "B-1": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+          "answers": {
+            "readability": 0.88,
+            "singleResponsibility": 0.84,
+            "namingClarity": 0.9,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+          "answers": {
+            "readability": 0.82,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.96,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+          "answers": {
+            "readability": 0.82,
+            "singleResponsibility": 0.81,
+            "namingClarity": 0.93,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+          "answers": {
+            "readability": 0.88,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.95,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.96
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.06,
+          "staysOnTask": 0.74,
+          "explicitInterfaces": 0.74
+        }
+      },
+      "skipped": [],
+      "fileQuality": 91.1,
+      "score": 85.9
+    },
+    "B-2": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+          "answers": {
+            "readability": 0.92,
+            "singleResponsibility": 0.86,
+            "namingClarity": 0.92,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+          "answers": {
+            "readability": 0.82,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.96,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+          "answers": {
+            "readability": 0.92,
+            "singleResponsibility": 0.9,
+            "namingClarity": 0.96,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.95
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+          "answers": {
+            "readability": 0.88,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.95,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.96
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.02,
+          "staysOnTask": 0.83,
+          "explicitInterfaces": 0.76
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.6,
+      "score": 87.5
+    },
+    "C-1": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+          "answers": {
+            "readability": 0.84,
+            "singleResponsibility": 0.84,
+            "namingClarity": 0.71,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.92
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+          "answers": {
+            "readability": 0.81,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.97,
+            "errorHandling": 0.96,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+          "answers": {
+            "readability": 0.78,
+            "singleResponsibility": 0.8,
+            "namingClarity": 0.92,
+            "errorHandling": 0.92,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+          "answers": {
+            "readability": 0.91,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.96,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.96
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.05,
+          "staysOnTask": 0.73,
+          "explicitInterfaces": 0.71
+        }
+      },
+      "skipped": [],
+      "fileQuality": 89.6,
+      "score": 84.4
+    },
+    "C-2": {
+      "files": [
+        {
+          "subject": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+          "answers": {
+            "readability": 0.91,
+            "singleResponsibility": 0.86,
+            "namingClarity": 0.92,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.94
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+          "answers": {
+            "readability": 0.86,
+            "singleResponsibility": 0.89,
+            "namingClarity": 0.96,
+            "errorHandling": 0.9,
+            "idiomaticFit": 0.98
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+          "answers": {
+            "readability": 0.86,
+            "singleResponsibility": 0.89,
+            "namingClarity": 0.94,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.96
+          }
+        },
+        {
+          "subject": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+          "answers": {
+            "readability": 0.9,
+            "singleResponsibility": 0.91,
+            "namingClarity": 0.97,
+            "errorHandling": 0.93,
+            "idiomaticFit": 0.96
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.02,
+          "staysOnTask": 0.76,
+          "explicitInterfaces": 0.77
+        }
+      },
+      "skipped": [],
+      "fileQuality": 92.2,
+      "score": 86.9
+    }
+  },
+  "skipped": {}
+}

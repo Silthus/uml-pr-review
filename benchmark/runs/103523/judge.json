@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T17:40:05.276Z",
+  "verdicts": {
+    "C-2": {
+      "seams": {
+        "score": 10,
+        "justification": "Extends the existing SuggestionTopic configuration in frontend/src/scenes/max/suggestionTopics.tsx without adding a new interface or crossing a product boundary."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "The Workflows topic and its prompts live together in HOMEPAGE_SUGGESTION_TOPICS, which owns homepage suggestion content."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "suggestionTopics.tsx adds only declarative data, with no imports, service dependencies, or access to workflow internals."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "The frontend configuration change introduces none of the backend model crossings or facade bypasses prohibited by products/architecture.md."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "This is a small, cohesive extension of the existing configuration mechanism in suggestionTopics.tsx, with no additional architectural machinery."
+      }
+    },
+    "B-1": {
+      "seams": {
+        "score": 10,
+        "justification": "Uses the existing SuggestionTopic configuration in frontend/src/scenes/max/suggestionTopics.tsx, including its established fill-in prompt fields."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "All added content belongs to HOMEPAGE_SUGGESTION_TOPICS and stays together in suggestionTopics.tsx."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "The change adds no imports or runtime dependencies; workflow requests remain prompt strings in suggestionTopics.tsx."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "This frontend-only configuration extension preserves the product boundaries documented in products/architecture.md."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The implementation uses the existing extension point without introducing new layers or dependencies. Its wording differences from X do not change its architecture."
+      }
+    },
+    "B-2": {
+      "seams": {
+        "score": 10,
+        "justification": "Adds a topic through the existing HOMEPAGE_SUGGESTION_TOPICS interface in frontend/src/scenes/max/suggestionTopics.tsx."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "Workflow suggestion content remains in the module that owns homepage topics, with no unrelated responsibilities added."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "suggestionTopics.tsx gains configuration data only, introducing no dependencies on workflow implementation details."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "The diff does not cross backend product boundaries or require new facade contracts under products/architecture.md."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "The change is appropriately scoped to the existing suggestion configuration. The different onboarding prompt does not materially distinguish its architecture from X or Y."
+      }
+    },
+    "C-1": {
+      "seams": {
+        "score": 10,
+        "justification": "Production code extends HOMEPAGE_SUGGESTION_TOPICS, while homepageSuggestions.test.ts exercises the existing topicSuggestionItems conversion interface."
+      },
+      "cohesion": {
+        "score": 10,
+        "justification": "Content stays in suggestionTopics.tsx, and the conversion assertions live in the homepage consumer's existing homepageSuggestions.test.ts."
+      },
+      "coupling": {
+        "score": 10,
+        "justification": "There are no new production dependencies. The test imports the topic configuration and its consumer function without reaching into workflow product internals."
+      },
+      "fit": {
+        "score": 10,
+        "justification": "Both changed files remain within frontend suggestion concerns and introduce no prohibited backend crossings under products/architecture.md."
+      },
+      "overall": {
+        "score": 10,
+        "justification": "W retains the same narrow production architecture as X, Y, and Z. The additional consumer test does not create a new architectural layer or product dependency."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 3,
+        "justification": "ee/hogai/context/entity_search/context.py imports HogFlow directly from products.workflows.backend.models and passes the model class into ENTITY_MAP. This bypasses a workflow-owned facade and exposes an unrestricted ORM class."
+      },
+      "cohesion": {
+        "score": 4,
+        "justification": "The frontend topic and search-tool descriptions are appropriately placed, but context.py owns workflow field selection and draft/active filtering. Under the documented ownership rule, workflow querying and domain policy belong inside the workflows product."
+      },
+      "coupling": {
+        "score": 2,
+        "justification": "The HogFlow import couples core entity search to workflow model identity, field names, and State values. test_context.py adds another direct model dependency through HogFlow.objects.acreate."
+      },
+      "fit": {
+        "score": 2,
+        "justification": "The direct products.workflows.backend.models import violates the explicit prohibition on importing another product's models. HogFlow is not a named model-crossing exception, and registering it in ENTITY_MAP does not qualify as an approved behavioral wiring interface."
+      },
+      "overall": {
+        "score": 3,
+        "justification": "The frontend configuration is straightforward, but the backend extension creates the model coupling products/architecture.md explicitly rejects. Workflow search should be owned by the product and exposed through a narrow facade returning contracts."
+      }
+    }
+  }
+}

@@ -1,0 +1,2928 @@
+{
+  "pr": 102897,
+  "baseCommit": "3b30c939a7aedfd89eb3285ffb0e02410c954377",
+  "scoredAt": "2026-09-26T16:28:17.852Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+        "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+        "products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+        "products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeEditor.stories.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 101,
+        "linesRemoved": 8,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 2,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 54,
+          "maxCcn": 58,
+          "meanCcn": 3.1,
+          "overTen": 2,
+          "ccnDelta": 34
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 54
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 34
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 9,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 52
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 39
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputSchemaControls",
+            "signature": "CyclotronJobInputSchemaControls ( value , onChange , onDone , configuration , parentConfiguration , sampleGlobalsWithInputs , CyclotronJobInputSchemaControlsProps )",
+            "ccn": 58,
+            "nloc": 297,
+            "params": 7,
+            "tokens": 1317
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 27,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 66,
+            "params": 0,
+            "tokens": 180
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 26
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous) ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 20
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 19
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "PanelStory",
+            "signature": "PanelStory ( mode , selectedNodeId , layout PanelStoryProps )",
+            "ccn": 2,
+            "nloc": 25,
+            "params": 3,
+            "tokens": 135
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "Template",
+            "signature": "Template ( args )",
+            "ccn": 1,
+            "nloc": 23,
+            "params": 1,
+            "tokens": 290
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 12,
+            "params": 0,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "HogFlowEditorPanelBuildDetail",
+            "signature": "HogFlowEditorPanelBuildDetail ( )",
+            "ccn": 17,
+            "nloc": 77,
+            "params": 0,
+            "tokens": 338
+          }
+        ],
+        "duplication": {
+          "clones": 4,
+          "duplicatedLines": 82,
+          "percentage": 2.2
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 101,
+        "testRatio": 0,
+        "subjects": [
+          "CyclotronJobInputSchemaControls",
+          "HogFlowEditorPanelBuildDetail",
+          "PanelStory",
+          "Template",
+          "useEffect"
+        ],
+        "unreferenced": [
+          "CyclotronJobInputSchemaControls",
+          "HogFlowEditorPanelBuildDetail",
+          "PanelStory",
+          "Template",
+          "useEffect"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 54.8,
+      "alignment": null,
+      "process": {
+        "toolCalls": 183,
+        "edits": 27,
+        "toolCallsBeforeFirstEdit": 27,
+        "secondsBeforeFirstEdit": 246,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 2,
+        "wallSeconds": 9390,
+        "costUsd": null
+      }
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+        "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 4,
+        "linesAdded": 112,
+        "linesRemoved": 30,
+        "modulesTouched": 3,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 54,
+          "maxCcn": 57,
+          "meanCcn": 3,
+          "overTen": 2,
+          "ccnDelta": 31
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 54
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 34
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputs",
+            "signature": "CyclotronJobInputs ( configuration , parentConfiguration , onInputSchemaChange , onInputChange , errors , warnings , emailFieldErrors , emailLiveChanges , emailSaveIndicator , showSource , sampleGlobalsWithInputs , CyclotronJobInputsProps )",
+            "ccn": 4,
+            "nloc": 35,
+            "params": 12,
+            "tokens": 144
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "isEmailSchema",
+            "signature": "isEmailSchema ( schema CyclotronJobInputSchemaType )",
+            "ccn": 2,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 9,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 52
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 39
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputSchemaControls",
+            "signature": "CyclotronJobInputSchemaControls ( value , onChange , onDone , configuration , parentConfiguration , sampleGlobalsWithInputs , CyclotronJobInputSchemaControlsProps )",
+            "ccn": 57,
+            "nloc": 297,
+            "params": 7,
+            "tokens": 1309
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 27,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 66,
+            "params": 0,
+            "tokens": 180
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 26
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous) ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 20
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "PanelStory",
+            "signature": "PanelStory ( mode , selectedNodeId , docked PanelStoryProps )",
+            "ccn": 2,
+            "nloc": 28,
+            "params": 3,
+            "tokens": 133
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "Template",
+            "signature": "Template ( args )",
+            "ccn": 1,
+            "nloc": 25,
+            "params": 1,
+            "tokens": 315
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 12,
+            "params": 0,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "HogFlowEditorPanelBuildDetail",
+            "signature": "HogFlowEditorPanelBuildDetail ( )",
+            "ccn": 17,
+            "nloc": 77,
+            "params": 0,
+            "tokens": 338
+          }
+        ],
+        "duplication": {
+          "clones": 3,
+          "duplicatedLines": 72,
+          "percentage": 2.4
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 112,
+        "testRatio": 0,
+        "subjects": [
+          "CyclotronJobInputSchemaControls",
+          "CyclotronJobInputs",
+          "HogFlowEditorPanelBuildDetail",
+          "PanelStory",
+          "Template",
+          "isEmailSchema",
+          "useEffect"
+        ],
+        "unreferenced": [
+          "CyclotronJobInputSchemaControls",
+          "CyclotronJobInputs",
+          "HogFlowEditorPanelBuildDetail",
+          "PanelStory",
+          "Template",
+          "isEmailSchema",
+          "useEffect"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 83.2,
+      "alignment": {
+        "modules": 1,
+        "files": 0.67
+      },
+      "process": {
+        "toolCalls": 85,
+        "edits": 10,
+        "toolCallsBeforeFirstEdit": 27,
+        "secondsBeforeFirstEdit": 120,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 92,
+        "wallSeconds": 823,
+        "costUsd": 2.7782711999999994
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+        "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 4,
+        "linesAdded": 65,
+        "linesRemoved": 5,
+        "modulesTouched": 3,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 54,
+          "maxCcn": 58,
+          "meanCcn": 3.1,
+          "overTen": 2,
+          "ccnDelta": 32
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "isEmailInputSchema",
+            "signature": "isEmailInputSchema ( schema CyclotronJobInputSchemaType )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 29
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 54
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 34
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputs",
+            "signature": "CyclotronJobInputs ( configuration , parentConfiguration , onInputSchemaChange , onInputChange , errors , warnings , emailFieldErrors , emailLiveChanges , emailSaveIndicator , showSource , sampleGlobalsWithInputs , CyclotronJobInputsProps )",
+            "ccn": 5,
+            "nloc": 37,
+            "params": 12,
+            "tokens": 150
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 9,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 52
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 39
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputSchemaControls",
+            "signature": "CyclotronJobInputSchemaControls ( value , onChange , onDone , configuration , parentConfiguration , sampleGlobalsWithInputs , CyclotronJobInputSchemaControlsProps )",
+            "ccn": 58,
+            "nloc": 297,
+            "params": 7,
+            "tokens": 1312
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 27,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 66,
+            "params": 0,
+            "tokens": 180
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 26
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous) ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 20
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "Template",
+            "signature": "Template ( args )",
+            "ccn": 1,
+            "nloc": 23,
+            "params": 1,
+            "tokens": 286
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 12,
+            "params": 0,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "HogFlowEditorPanelBuildDetail",
+            "signature": "HogFlowEditorPanelBuildDetail ( )",
+            "ccn": 17,
+            "nloc": 77,
+            "params": 0,
+            "tokens": 338
+          }
+        ],
+        "duplication": {
+          "clones": 3,
+          "duplicatedLines": 72,
+          "percentage": 2.4
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 65,
+        "testRatio": 0,
+        "subjects": [
+          "CyclotronJobInputSchemaControls",
+          "CyclotronJobInputs",
+          "HogFlowEditorPanelBuildDetail",
+          "Template",
+          "isEmailInputSchema",
+          "useEffect"
+        ],
+        "unreferenced": [
+          "CyclotronJobInputSchemaControls",
+          "CyclotronJobInputs",
+          "HogFlowEditorPanelBuildDetail",
+          "Template",
+          "isEmailInputSchema",
+          "useEffect"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 1,
+        "files": 0.67
+      },
+      "process": {
+        "toolCalls": 91,
+        "edits": 15,
+        "toolCallsBeforeFirstEdit": 29,
+        "secondsBeforeFirstEdit": 146,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 99,
+        "wallSeconds": 1495,
+        "costUsd": 2.9257947999999994
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+        "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 4,
+        "linesAdded": 94,
+        "linesRemoved": 9,
+        "modulesTouched": 3,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 52,
+          "maxCcn": 58,
+          "meanCcn": 3.1,
+          "overTen": 2,
+          "ccnDelta": 30
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 54
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 34
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 9,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 52
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 39
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputSchemaControls",
+            "signature": "CyclotronJobInputSchemaControls ( value , onChange , onDone , configuration , parentConfiguration , sampleGlobalsWithInputs , CyclotronJobInputSchemaControlsProps )",
+            "ccn": 58,
+            "nloc": 297,
+            "params": 7,
+            "tokens": 1316
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 27,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 66,
+            "params": 0,
+            "tokens": 180
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 26
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous) ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 20
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "PanelStory",
+            "signature": "PanelStory ( mode , selectedNodeId , layout PanelStoryProps )",
+            "ccn": 2,
+            "nloc": 28,
+            "params": 3,
+            "tokens": 137
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "Template",
+            "signature": "Template ( args )",
+            "ccn": 1,
+            "nloc": 23,
+            "params": 1,
+            "tokens": 290
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 12,
+            "params": 0,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "HogFlowEditorPanelBuildDetail",
+            "signature": "HogFlowEditorPanelBuildDetail ( )",
+            "ccn": 17,
+            "nloc": 77,
+            "params": 0,
+            "tokens": 338
+          }
+        ],
+        "duplication": {
+          "clones": 3,
+          "duplicatedLines": 72,
+          "percentage": 2.4
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 94,
+        "testRatio": 0,
+        "subjects": [
+          "CyclotronJobInputSchemaControls",
+          "HogFlowEditorPanelBuildDetail",
+          "PanelStory",
+          "Template",
+          "useEffect"
+        ],
+        "unreferenced": [
+          "CyclotronJobInputSchemaControls",
+          "HogFlowEditorPanelBuildDetail",
+          "PanelStory",
+          "Template",
+          "useEffect"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 89.4,
+      "alignment": {
+        "modules": 1,
+        "files": 0.67
+      },
+      "process": {
+        "toolCalls": 122,
+        "edits": 19,
+        "toolCallsBeforeFirstEdit": 13,
+        "secondsBeforeFirstEdit": 47,
+        "architectureToolCalls": 13,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 124,
+        "wallSeconds": 1282,
+        "costUsd": 3.681904400000002
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+        "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+        "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 4,
+        "linesAdded": 114,
+        "linesRemoved": 29,
+        "modulesTouched": 3,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 54,
+          "maxCcn": 57,
+          "meanCcn": 3.4,
+          "overTen": 3,
+          "ccnDelta": 28
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "isGrowingInput",
+            "signature": "isGrowingInput ( schema CyclotronJobInputSchemaType )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 54
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 19,
+            "params": 0,
+            "tokens": 34
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputs",
+            "signature": "CyclotronJobInputs ( configuration , parentConfiguration , onInputSchemaChange , onInputChange , errors , warnings , emailFieldErrors , emailLiveChanges , emailSaveIndicator , showSource , sampleGlobalsWithInputs , CyclotronJobInputsProps )",
+            "ccn": 4,
+            "nloc": 35,
+            "params": 12,
+            "tokens": 144
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 1
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 17
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 9,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 9
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 52
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 8,
+            "params": 0,
+            "tokens": 39
+          },
+          {
+            "file": "frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx",
+            "name": "CyclotronJobInputSchemaControls",
+            "signature": "CyclotronJobInputSchemaControls ( value , onChange , onDone , configuration , parentConfiguration , sampleGlobalsWithInputs , CyclotronJobInputSchemaControlsProps )",
+            "ccn": 57,
+            "nloc": 297,
+            "params": 7,
+            "tokens": 1309
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 11,
+            "params": 0,
+            "tokens": 18
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 27,
+            "params": 0,
+            "tokens": 58
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 72,
+            "params": 0,
+            "tokens": 182
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 26
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous) ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 7
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "NativeEmailTemplaterForm",
+            "signature": "NativeEmailTemplaterForm ( mode , fieldsHidden , mode EmailEditorMode fieldsHidden )",
+            "ccn": 21,
+            "nloc": 217,
+            "params": 3,
+            "tokens": 661
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 10
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 7,
+            "params": 0,
+            "tokens": 22
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 2,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 21
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "useEffect",
+            "signature": "useEffect ( ( )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 20
+          },
+          {
+            "file": "frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 28
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 16
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx",
+            "name": "Template",
+            "signature": "Template ( args )",
+            "ccn": 1,
+            "nloc": 23,
+            "params": 1,
+            "tokens": 286
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 4,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 14
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 12,
+            "params": 0,
+            "tokens": 60
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 27
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx",
+            "name": "HogFlowEditorPanelBuildDetail",
+            "signature": "HogFlowEditorPanelBuildDetail ( )",
+            "ccn": 17,
+            "nloc": 77,
+            "params": 0,
+            "tokens": 338
+          }
+        ],
+        "duplication": {
+          "clones": 3,
+          "duplicatedLines": 78,
+          "percentage": 2.6
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 114,
+        "testRatio": 0,
+        "subjects": [
+          "CyclotronJobInputSchemaControls",
+          "CyclotronJobInputs",
+          "HogFlowEditorPanelBuildDetail",
+          "NativeEmailTemplaterForm",
+          "Template",
+          "isGrowingInput",
+          "useEffect"
+        ],
+        "unreferenced": [
+          "CyclotronJobInputSchemaControls",
+          "CyclotronJobInputs",
+          "HogFlowEditorPanelBuildDetail",
+          "NativeEmailTemplaterForm",
+          "Template",
+          "isGrowingInput",
+          "useEffect"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 83.1,
+      "alignment": {
+        "modules": 1,
+        "files": 0.67
+      },
+      "process": {
+        "toolCalls": 110,
+        "edits": 21,
+        "toolCallsBeforeFirstEdit": 16,
+        "secondsBeforeFirstEdit": 58,
+        "architectureToolCalls": 7,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 3,
+        "wallSeconds": 1478,
+        "costUsd": 3.355029200000002
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 1,
+      "files": 1
+    },
+    "C": {
+      "modules": 1,
+      "files": 1
+    }
+  }
+}

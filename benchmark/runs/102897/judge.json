@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T17:39:59.166Z",
+  "verdicts": {
+    "C-1": {
+      "seams": {
+        "score": 9,
+        "justification": "HogFlowEditorPanelBuildDetail.tsx uses the existing contentClassName interface, while CyclotronJobInputs.tsx and EmailTemplater.tsx manage their own wrappers. No workflow-specific API enters the shared components."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "Each layout adjustment lives with the component owning that element. Email fixtures and the docked layout remain in HogFlowEditorPanel.stories.tsx."
+      },
+      "coupling": {
+        "score": 8,
+        "justification": "No production imports are added, but unconditional grow in CyclotronJobInputs.tsx changes layout behavior for non-email configurations too. The story also duplicates the editor's responsive container structure."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The change preserves the existing frontend ownership split between shared email components and workflows. It introduces no backend imports or crossings governed by products/architecture.md."
+      },
+      "overall": {
+        "score": 8,
+        "justification": "The production fix uses existing component interfaces and keeps layout ownership local. Unconditional input-list growth and duplicated editor layout in the story slightly broaden its maintenance impact."
+      }
+    },
+    "B-1": {
+      "seams": {
+        "score": 9,
+        "justification": "HogFlowEditorPanelBuildDetail.tsx passes layout through contentClassName, and CyclotronJobInputs.tsx keeps email sizing behind a local isEmailSchema predicate. No new public interface is needed."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "CyclotronJobInputs.tsx owns schema-dependent wrapper growth, while EmailTemplater.tsx owns preview sizing. Story fixtures and layout options stay together in HogFlowEditorPanel.stories.tsx."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "Growth of the shared input list is restricted to visible email schemas, limiting effects on unrelated callers. The main additional coupling is the story's copy of the editor's responsive layout."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The changes respect existing frontend component boundaries and add no production dependencies. The Django facade and contract rules in products/architecture.md are unaffected."
+      },
+      "overall": {
+        "score": 9,
+        "justification": "This is a focused layout change with clear ownership and a small reusable predicate. The docked story duplicates some production layout, but does not create a new runtime dependency."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 7,
+        "justification": "Production code uses the existing contentClassName seam appropriately. However, HogFlowEditorPanel.stories.tsx reaches into the panel's immediate child DOM with [&>div]:!w-full and !max-w-full, bypassing its layout interface."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "WORKFLOW_EMAIL_STEP_MOCKS centralizes fixtures used by editor, panel, and tree stories. Placing that shared concern in editor/workflowEditorStoryFixtures.ts makes sibling stories depend on an editor-specific fixture module."
+      },
+      "coupling": {
+        "score": 7,
+        "justification": "Panel and tree stories gain imports from workflowEditorStoryFixtures.ts, and the panel story depends on internal DOM structure. CyclotronJobInputs.tsx also applies flex-1 to every input list rather than limiting it to email configurations."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "All new fixture sharing remains within workflows, and production changes stay in the existing frontend owners. No backend facade, model, or isolation rules are implicated."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The production layout changes are straightforward, and sharing email mocks avoids duplication. The DOM overrides in HogFlowEditorPanel.stories.tsx make the supporting architecture more brittle than necessary."
+      }
+    },
+    "C-2": {
+      "seams": {
+        "score": 9,
+        "justification": "The workflow panel uses contentClassName, while shared components handle their own growth. EmailTemplater.tsx places the minimum preview height directly on the iframe that needs it."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "CyclotronJobInputs.tsx owns the local isGrowingInput decision, and EmailTemplater.tsx owns preview dimensions. HogFlowEditorPanel.stories.tsx keeps fixtures and responsive story sizing local."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "Input-list growth is conditional on visible email schemas, and no production imports are added. The story uses a responsive outer wrapper without targeting panel internals or copying the docked editor layout."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The implementation preserves existing frontend ownership and product boundaries. It introduces no backend dependencies or changes to the contracts covered by products/architecture.md."
+      },
+      "overall": {
+        "score": 9,
+        "justification": "Layout responsibilities remain local, conditional growth limits shared-component impact, and the iframe owns its minimum height. The change achieves this through existing interfaces without additional architectural layers."
+      }
+    },
+    "B-2": {
+      "seams": {
+        "score": 9,
+        "justification": "HogFlowEditorPanelBuildDetail.tsx uses contentClassName, and CyclotronJobInputs.tsx handles growth internally. The !editing guard keeps wrapper expansion tied to rendering the input rather than its schema editor."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "Layout changes reside in their owning components, and fixtures remain in HogFlowEditorPanel.stories.tsx. The isEmailInputSchema helper also checks visibility, combining two distinct concerns under a type-oriented name."
+      },
+      "coupling": {
+        "score": 8,
+        "justification": "Production changes add no dependencies and restrict growth to email inputs. However, the story-wide hog_function_templates mock supplies only EMAIL_TEMPLATE, coupling existing stories to a reduced shared template catalog."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The diff stays within established frontend component and workflow boundaries. No backend model, facade, or presentation dependencies are introduced."
+      },
+      "overall": {
+        "score": 8,
+        "justification": "The production change is small and appropriately scoped, including the editing-state guard. The predicate's mixed responsibility and replacement of the story-wide template catalog modestly weaken its architecture."
+      }
+    }
+  }
+}

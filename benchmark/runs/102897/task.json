@@ -1,0 +1,81 @@
+{
+  "pr": 102897,
+  "title": "fix(workflows): let the email preview fill the step panel",
+  "url": "https://github.com/PostHog/posthog/pull/102897",
+  "session": {
+    "source": "t3code (claudeAgent provider; transcript is the Claude Code JSONL)",
+    "threadId": "e5eabba4-9489-48fb-bb5a-65561a67cd08",
+    "title": "Expand Workflow Email Preview",
+    "originalModel": "claude-fable-5-1",
+    "worktree": "<local path>"
+  },
+  "baseCommit": "3b30c939a7aedfd89eb3285ffb0e02410c954377",
+  "finalHead": "305928868acf2039a9ee48080acc4b6af2e7c0d6",
+  "firstPushHead": "b4b2004ade6c9c5128ea27d1aa547fabfdb00e83",
+  "taskStatement": "There seems to be a bug where the email preview in workflows does not expand to fill the available space: ![image.png](t3-context://v1/image/image_057e3901-b33a-4afa-885b-f346966b814f) \n- Fix it and prove the fix with a screenshot.\n- Make sure that you also attach screenshots for a mobile view so it doesn't break there for various screen sizes.",
+  "diffStat": {
+    "final": {
+      "base": "3b30c939a7aedfd89eb3285ffb0e02410c954377",
+      "head": "305928868acf2039a9ee48080acc4b6af2e7c0d6",
+      "files": 5,
+      "additions": 54,
+      "deletions": 4,
+      "modules": [
+        "frontend/src/lib",
+        "frontend/src/scenes",
+        "products/workflows/frontend"
+      ]
+    },
+    "firstPush": {
+      "base": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+      "head": "b4b2004ade6c9c5128ea27d1aa547fabfdb00e83",
+      "files": 6,
+      "additions": 101,
+      "deletions": 8,
+      "modules": [
+        "frontend/src/lib",
+        "frontend/src/scenes",
+        "products/workflows/frontend"
+      ]
+    }
+  },
+  "whyChosen": "A layout bug whose fix spans a shared component (frontend/src/lib CyclotronJobInputs), the hog-functions email templater and the workflows product panel, so it tests whether the fix lands in the shared seam or leaks product-specific patches.",
+  "state": "CLOSED",
+  "baseCheck": {
+    "command": "git diff --stat 3b30c939a7aedfd89eb3285ffb0e02410c954377 305928868acf2039a9ee48080acc4b6af2e7c0d6",
+    "files": 5,
+    "prChangedFiles": 5,
+    "matches": true
+  },
+  "taskStatementSources": [
+    {
+      "messageId": "403f2664-ebf0-4de3-865f-3d9e90b6f8c0",
+      "createdAt": "2026-09-18T10:55:00.971Z",
+      "excerpts": [
+        "There seems to be a bug where the email preview in workflows does not expand to fill the available space: ![image.png](t3-context://v1/image/image_057e3901-b33a-4afa-885b-f346966b814f) \n- Fix it and prove the fix with a screenshot.",
+        "- Make sure that you also attach screenshots for a mobile view so it doesn't break there for various screen sizes."
+      ]
+    }
+  ],
+  "imageTokens": {
+    "t3-context://v1/image/image_057e3901-b33a-4afa-885b-f346966b814f": "<local path>"
+  },
+  "sessionAnswerDiff": {
+    "base": "3b30c939a7aedfd89eb3285ffb0e02410c954377",
+    "head": "08049e6f212b34748d6073109ad719d36038b03b",
+    "files": 6,
+    "additions": 101,
+    "deletions": 8,
+    "modules": [
+      "frontend/src/lib",
+      "frontend/src/scenes",
+      "products/workflows/frontend"
+    ]
+  },
+  "landedAs": {
+    "pr": 102974,
+    "url": "https://github.com/PostHog/posthog/pull/102974",
+    "author": "meikelmosby",
+    "mergeCommit": "973f6b6f2564c46a228786dde88687c1b9436321"
+  }
+}

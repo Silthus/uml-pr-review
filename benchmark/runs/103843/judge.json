@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T17:40:08.017Z",
+  "verdicts": {
+    "B-1": {
+      "seams": {
+        "score": 8,
+        "justification": "steps.ts separates authoring values from definition.ts wire types, while workflow.ts hides graph construction behind emit(). SecretRef appears in the wire-contract module and passes through emission unchanged, leaving secret resolution to an unspecified downstream boundary."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "The five source modules have clear responsibilities. The private Compiler in workflow.ts keeps placement identity, collision detection and edge construction together without exposing compilation state."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "Source imports stay within the package, with no runtime dependencies or imports into backend internals. Serializer-specific duration and variable-size rules are localized, although their manual correspondence with Python remains a maintenance dependency."
+      },
+      "fit": {
+        "score": 8,
+        "justification": "The SDK stays inside the workflows product and introduces no Django or cross-product boundary violations. pnpm-workspace.yaml registers the exact package, but pnpm-lock.yaml exceeds the explicitly permitted write scope."
+      },
+      "overall": {
+        "score": 8,
+        "justification": "steps.ts and the private Compiler provide a compact architecture with a small public operation and well-contained graph state. The main boundary weakness is the unresolved secret marker included in the purported API definition."
+      }
+    },
+    "B-2": {
+      "seams": {
+        "score": 7,
+        "justification": "index.ts explicitly selects exports, and workflow.ts hides compilation behind emit(). However, claimId conflates a reusable step value with a graph placement, forcing callers to manage placement identity through explicit overrides."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "definition.ts, steps.ts and errors.ts each own a distinct concern. workflow.ts keeps graph generation and validation together in a straightforward implementation, with its Graph interface remaining private."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "Production code depends only on package-local modules, and Vitest is confined to development. Secret references pass through emit unchanged, creating an implicit expectation that a later consumer understands their representation."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "All changes stay within the permitted package and workspace files, and pnpm-workspace.yaml names the package explicitly. The standalone TypeScript boundary avoids backend internals without adding irrelevant Django facade machinery."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The module structure is restrained and easy to navigate. The placement model in claimId makes callers compensate for an internal identity decision, weakening the central authoring abstraction despite otherwise clean boundaries."
+      }
+    },
+    "C-2": {
+      "seams": {
+        "score": 7,
+        "justification": "workflow.ts defines authoring values and emit.ts owns their translation, with injectable environment values providing a useful external-state boundary. index.ts also exposes validate(), whose limited checks give callers a broader-looking validation interface than the implementation supports."
+      },
+      "cohesion": {
+        "score": 8,
+        "justification": "Authoring, emission, errors and definition validation have distinct modules. Ids stays private to emit.ts, though validation is split between graph construction and validate.ts, requiring both locations to understand the complete invariant set."
+      },
+      "coupling": {
+        "score": 8,
+        "justification": "There are no cross-product imports or production library dependencies. emit.ts introduces a Node environment dependency through process.env, but EmitOptions allows callers and tests to supply that dependency explicitly."
+      },
+      "fit": {
+        "score": 8,
+        "justification": "The source remains within the workflows product, and the workspace entry identifies the exact nested package. pnpm-lock.yaml is outside the locked write scope; no backend isolation or selective-testing claims are introduced."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The authoring-to-emission flow is understandable and graph state stays encapsulated. The additional public validate() surface and split invariant ownership add maintenance obligations beyond the otherwise compact design."
+      }
+    },
+    "C-1": {
+      "seams": {
+        "score": 8,
+        "justification": "workflow.ts exposes a narrow emit interface with explicit environment injection, while steps.ts returns specific discriminated step types. EmailOptions uses template_uuid?: never to enforce the inline-content boundary even when options arrive through a variable."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "Authoring values, wire types and errors have clear homes. Email wire construction lives in steps.ts while other action translation lives in workflow.ts, and Ids maintains parallel owner maps for closely related state."
+      },
+      "coupling": {
+        "score": 7,
+        "justification": "Runtime imports remain package-local, and environment access is injectable. package.json, tsconfig.cjs.json and write-cjs-entry.mjs introduce a second build and generated entrypoint protocol that must remain coordinated with the ESM build."
+      },
+      "fit": {
+        "score": 8,
+        "justification": "Changes stay within the allowed paths and preserve the workflows product boundary. The custom CommonJS output arrangement adds packaging machinery beyond the requested copied export-map convention."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The author-facing API and encapsulated graph compilation are strong. The dual-build machinery and divided ownership of wire conversion make this design more expensive to maintain than its small domain requires."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 5,
+        "justification": "index.ts exports every module, exposing compile(), CompileOptions and isSecretRef alongside the authoring API. EmitResult adds deployment-oriented secret metadata, while WorkflowError.print() places output formatting inside the domain error contract."
+      },
+      "cohesion": {
+        "score": 6,
+        "justification": "triggers.ts and steps.ts group related authoring behavior, but workflow.ts largely translates WorkflowOptions into a nearly identical CompileOptions. emit.ts combines graph construction, validation, environment resolution and metadata for future change detection."
+      },
+      "coupling": {
+        "score": 6,
+        "justification": "The implementation avoids backend imports and runtime library dependencies. However, secretInputs, WorkflowError.print() and wildcard exports couple future consumers to deployment concerns and compiler internals that could remain private."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "Code remains product-local, but pnpm-workspace.yaml admits every workflows/packages child rather than explicitly registering this package, and pnpm-lock.yaml exceeds the write scope. The webhook helper, condition factories and configurable exit conditions expand the surface beyond the requested minimal SDK."
+      },
+      "overall": {
+        "score": 5,
+        "justification": "The graph compiler has recognizable internal structure, but the public API exposes too many implementation and future deployment concepts. Duplicate option contracts, wildcard exports and extra authoring helpers create avoidable maintenance commitments."
+      }
+    }
+  }
+}

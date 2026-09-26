@@ -1,0 +1,78 @@
+diff --git a/frontend/src/scenes/max/suggestionTopics.tsx b/frontend/src/scenes/max/suggestionTopics.tsx
+index f732cf76d2de..899bb757d690 100644
+--- a/frontend/src/scenes/max/suggestionTopics.tsx
++++ b/frontend/src/scenes/max/suggestionTopics.tsx
+@@ -293,5 +293,34 @@ export const HOMEPAGE_SUGGESTION_TOPICS: SuggestionTopic[] = [
+             },
+         ],
+     },
++    {
++        key: 'workflows',
++        label: 'Workflows',
++        iconType: 'workflows',
++        suggestions: [
++            {
++                title: 'See your workflows',
++                description: "What's live, what's in draft, and what each one does",
++                content: 'List my workflows and summarize which are active and what each one does',
++            },
++            {
++                title: 'Check recent email sends',
++                description: 'The latest messages your workflows sent',
++                content: 'Show me the most recent email sends from my workflows and whether any failed',
++            },
++            {
++                title: 'Create a workflow',
++                description: 'Automate emails and actions for your users',
++                content: 'Create a workflow that',
++                requiresUserInput: true,
++                hint: 'describe who it should reach and what it should do',
++            },
++            {
++                title: 'Review workflow performance',
++                description: 'Sends, failures, and trends across workflows',
++                content: 'How are my workflows performing? Summarize sends and failures over the last 30 days',
++            },
++        ],
++    },
+     LEARN_TOPIC,
+ ]
+diff --git a/frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts b/frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts
+index 7e3f3ec77565..da40747a9d4b 100644
+--- a/frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts
++++ b/frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts
+@@ -1,7 +1,9 @@
++import { HOMEPAGE_SUGGESTION_TOPICS } from 'scenes/max/suggestionTopics'
++
+ import { FileSystemEntry } from '~/queries/schema/schema-general'
+ import { Conversation, ConversationStatus, ConversationType } from '~/types'
+ 
+-import { SUGGESTIONS_LIMIT, buildSuggestionItems } from './homepageSuggestions'
++import { SUGGESTIONS_LIMIT, buildSuggestionItems, topicSuggestionItems } from './homepageSuggestions'
+ 
+ const conversation: Conversation = {
+     id: 'conv-1',
+@@ -52,3 +54,23 @@ describe('buildSuggestionItems', () => {
+         expect(items.every((item) => item.source === 'static')).toBe(true)
+     })
+ })
++
++describe('topicSuggestionItems', () => {
++    it('offers the Workflows badge with its prompts, the create prompt as a fill-in', () => {
++        const topic = HOMEPAGE_SUGGESTION_TOPICS.find((t) => t.key === 'workflows')
++        expect(topic).toBeDefined()
++
++        const items = topicSuggestionItems(topic!)
++
++        expect(items).toHaveLength(SUGGESTIONS_LIMIT)
++        expect(items.every((item) => item.itemType === 'workflows')).toBe(true)
++        expect(items.map((item) => item.label)).toEqual([
++            'See your workflows',
++            'Check recent email sends',
++            'Create a workflow',
++            'Review workflow performance',
++        ])
++        expect(items[2]).toMatchObject({ prompt: 'Create a workflow that', fillInHint: expect.any(String) })
++        expect(items.filter((item) => item.fillInHint)).toHaveLength(1)
++    })
++})

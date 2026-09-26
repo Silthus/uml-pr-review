@@ -1,0 +1,17 @@
+{
+  "pr": 104202,
+  "arm": "A",
+  "model": "claude-fable-5-1",
+  "sessionId": null,
+  "sessionSource": "wayfinder-ticket",
+  "turns": null,
+  "costUsd": null,
+  "wallSeconds": null,
+  "startedAt": null,
+  "exit": {
+    "reason": "historical",
+    "code": null
+  },
+  "baseCommit": "17a27588b77bd7789d7fa6d6e99dcb7246e15e54",
+  "diffFrom": "17a27588b77bd7789d7fa6d6e99dcb7246e15e54"
+}

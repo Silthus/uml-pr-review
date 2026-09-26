@@ -1,0 +1,16 @@
+{
+  "pr": 104202,
+  "arm": "B-1",
+  "model": "claude-opus-5-5",
+  "sessionId": "2fa23cc6-a85b-4490-b90a-6e68cafed612",
+  "turns": 107,
+  "costUsd": 3.8691284000000006,
+  "wallSeconds": 478,
+  "startedAt": "2026-09-26T17:04:07.367Z",
+  "exit": {
+    "reason": "completed",
+    "code": 0
+  },
+  "baseCommit": "17a27588b77bd7789d7fa6d6e99dcb7246e15e54",
+  "planIds": []
+}

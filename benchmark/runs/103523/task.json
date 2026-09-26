@@ -1,0 +1,98 @@
+{
+  "pr": 103523,
+  "title": "feat(ai): let the agent search and list workflows",
+  "url": "https://github.com/PostHog/posthog/pull/103523",
+  "session": {
+    "source": "t3code (claudeAgent provider; transcript is the Claude Code JSONL)",
+    "threadId": "4f139124-bbbb-4054-8257-b79675b4c611",
+    "title": "Add workflows quick entry point",
+    "originalModel": "claude-fable-5-1",
+    "worktree": "<local path>",
+    "followUpSession": {
+      "source": "codex",
+      "transcript": "<local path>",
+      "model": "gpt-5.6-sol",
+      "role": "Sub-agent of the T3 thread 'Audit Open PRs and Issues' (7f1c73c8-4f6e-4a8b-b5ff-8a57103912ce) that wrote 335c502 after Michael asked to route the workflows import through the product facade."
+    }
+  },
+  "baseCommit": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+  "finalHead": "45ea0221e13233e854f72c06bb3dcc296bc6a5a4",
+  "firstPushHead": "e39a5bc53762677e867bb267f0bddc209b8b6de3",
+  "taskStatement": "![image.png](t3-context://v1/image/image_fd0a47cc-4bd9-4139-b4be-163b45289f9e) \nAdd a workflows quick button under the home screen search box, and let's also brainstorm some suggestions here, which you could query for:\n- Getting a list of existing workflows\n- Maybe last email runs\n- Creating new workflows\nWe give a new entry point for users and potentially increase growth and onboarding to our workflows product.",
+  "diffStat": {
+    "final": {
+      "base": "8872766beaada4ca8611d8a501b573c19fdf971e",
+      "head": "45ea0221e13233e854f72c06bb3dcc296bc6a5a4",
+      "files": 6,
+      "additions": 157,
+      "deletions": 5,
+      "modules": [
+        "ee/hogai/context",
+        "ee/hogai/tools",
+        "products/workflows/backend",
+        "tach.toml"
+      ]
+    },
+    "firstPush": {
+      "base": "29bb275923ba5fa96e337ac54f99264f04ac089a",
+      "head": "e39a5bc53762677e867bb267f0bddc209b8b6de3",
+      "files": 5,
+      "additions": 83,
+      "deletions": 2,
+      "modules": [
+        "ee/hogai/context",
+        "ee/hogai/tools",
+        "frontend/src/scenes"
+      ]
+    }
+  },
+  "whyChosen": "Crosses a product boundary: the AI agent (ee/hogai) gains a workflows entity, and its first commit imported workflows models directly instead of going through products/workflows/backend/facade (fixed in 335c502).",
+  "state": "MERGED",
+  "baseCheck": {
+    "command": "git diff --stat cea129a217b5267ac1fec3d14db26c9a742968ee 45ea0221e13233e854f72c06bb3dcc296bc6a5a4",
+    "files": 3980,
+    "prChangedFiles": 6,
+    "matches": false,
+    "explanation": "The branch merged master three times (776833d, 4714eac, 45ea022), so cea129a..finalHead also carries those upstream changes. The PR's own diff is merge-base(baseRefOid 8872766, finalHead)..finalHead, recorded in diffStat.final: 6 files."
+  },
+  "taskStatementSources": [
+    {
+      "messageId": "f30441f1-12a0-48e0-a266-abbf624babcc",
+      "createdAt": "2026-09-21T03:56:47.839Z",
+      "excerpts": "whole message"
+    }
+  ],
+  "imageTokens": {
+    "t3-context://v1/image/image_fd0a47cc-4bd9-4139-b4be-163b45289f9e": "<local path>"
+  },
+  "sessionAnswerDiff": {
+    "base": "29bb275923ba5fa96e337ac54f99264f04ac089a",
+    "head": "e39a5bc53762677e867bb267f0bddc209b8b6de3",
+    "files": 5,
+    "additions": 83,
+    "deletions": 2,
+    "modules": [
+      "ee/hogai/context",
+      "ee/hogai/tools",
+      "frontend/src/scenes"
+    ]
+  },
+  "companionPrs": [
+    {
+      "pr": 103522,
+      "url": "https://github.com/PostHog/posthog/pull/103522",
+      "title": "feat(homepage): add a workflows topic to the PostHog AI suggestions",
+      "finalHead": "3eac6c164dac5d4901554f873befcd3ce34b2e9f",
+      "finalDiffBase": "4b49bd8db2cb4be7c4dfe29d3bc5524f7470a675"
+    }
+  ],
+  "otherCommits": {
+    "firstCommitAfterSplit": "d8e4fa0b0c82f0ac8fdb6b3d44a50bd33a6d0cdc",
+    "firstCommitAfterSplitParent": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+    "facadeFix": "335c5020114981fb80473eef4881b79124087408",
+    "githubBaseRefOid": "8872766beaada4ca8611d8a501b573c19fdf971e",
+    "mergeCommit": "4b49bd8db2cb4be7c4dfe29d3bc5524f7470a675",
+    "companionFirstPushCommit": "cffe971c0226a5e34a5cd2b3627097f960ce2252",
+    "sessionWorktreeStart": "f637db96f1fc853ea6a83694f02b94ab690bdcaf"
+  }
+}

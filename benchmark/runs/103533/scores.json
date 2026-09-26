@@ -1,0 +1,1232 @@
+{
+  "pr": 103533,
+  "baseCommit": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+  "scoredAt": "2026-09-26T16:26:52.775Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_email_reputation.py",
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx",
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+        "products/workflows/frontend/generated/api.schemas.ts",
+        "services/mcp/src/api/generated.ts"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 186,
+        "linesRemoved": 5,
+        "modulesTouched": 5,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 2,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 22,
+          "maxCcn": 123,
+          "meanCcn": 10.4,
+          "overTen": 2,
+          "ccnDelta": 63
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_team_email_sending_allowance",
+            "signature": "_team_email_sending_allowance( team_id : int )",
+            "ccn": 3,
+            "nloc": 21,
+            "params": 1,
+            "tokens": 162
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_email_reputation.py",
+            "name": "test_reputation_endpoint_returns_empty_shape_when_nothing_was_sent",
+            "signature": "test_reputation_endpoint_returns_empty_shape_when_nothing_was_sent( self )",
+            "ccn": 2,
+            "nloc": 26,
+            "params": 1,
+            "tokens": 164
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 13,
+            "params": 0,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 5
+          }
+        ],
+        "duplication": {
+          "clones": 14,
+          "duplicatedLines": 150,
+          "percentage": 1.5
+        }
+      },
+      "tests": {
+        "testLinesAdded": 8,
+        "productionLinesAdded": 178,
+        "testRatio": 0.04,
+        "subjects": [
+          "EmailSendingTierLimitsSerializer",
+          "_team_email_sending_allowance",
+          "render",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "EmailSendingTierLimitsSerializer",
+          "_team_email_sending_allowance",
+          "render",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 36.6,
+      "alignment": null,
+      "process": {
+        "toolCalls": 170,
+        "edits": 24,
+        "toolCallsBeforeFirstEdit": 11,
+        "secondsBeforeFirstEdit": 131,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 8,
+        "wallSeconds": 18033,
+        "costUsd": null
+      }
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/test/test_email_reputation.py",
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx",
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+        "products/workflows/frontend/generated/api.schemas.ts"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 136,
+        "linesRemoved": 9,
+        "modulesTouched": 4,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 2,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 24,
+          "maxCcn": 123,
+          "meanCcn": 10,
+          "overTen": 3,
+          "ccnDelta": 78
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 2,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 123,
+            "nloc": 293,
+            "params": 2,
+            "tokens": 2165
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , attrs )",
+            "ccn": 5,
+            "nloc": 8,
+            "params": 2,
+            "tokens": 81
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data : dict )",
+            "ccn": 3,
+            "nloc": 4,
+            "params": 2,
+            "tokens": 41
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "to_internal_value",
+            "signature": "to_internal_value( self , data )",
+            "ccn": 9,
+            "nloc": 6,
+            "params": 2,
+            "tokens": 116
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 4,
+            "nloc": 5,
+            "params": 2,
+            "tokens": 45
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 9,
+            "nloc": 24,
+            "params": 2,
+            "tokens": 236
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "update",
+            "signature": "update( self , instance , validated_data )",
+            "ccn": 4,
+            "nloc": 6,
+            "params": 3,
+            "tokens": 63
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "_team_email_sending_allowance",
+            "signature": "_team_email_sending_allowance( team_id : int )",
+            "ccn": 3,
+            "nloc": 21,
+            "params": 1,
+            "tokens": 159
+          },
+          {
+            "file": "products/workflows/backend/api/hog_flow.py",
+            "name": "validate",
+            "signature": "validate( self , data )",
+            "ccn": 49,
+            "nloc": 99,
+            "params": 2,
+            "tokens": 863
+          },
+          {
+            "file": "products/workflows/backend/api/test/test_email_reputation.py",
+            "name": "test_reputation_endpoint_returns_empty_shape_when_nothing_was_sent",
+            "signature": "test_reputation_endpoint_returns_empty_shape_when_nothing_was_sent( self )",
+            "ccn": 2,
+            "nloc": 22,
+            "params": 1,
+            "tokens": 170
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 13,
+            "params": 0,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 13
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "SendingTierHoverCard",
+            "signature": "SendingTierHoverCard ( allowance allowance EmailSendingAllowanceApi )",
+            "ccn": 2,
+            "nloc": 214,
+            "params": 1,
+            "tokens": 103
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "TeamRatesCard",
+            "signature": "TeamRatesCard ( reputation , aws , isps , sharedDomains , withheldDomains , reputation EmailSendingRatesApi null aws AwsTenantReputationApi null isps readonly IspSendingHealthApi sharedDomains readonly withheldDomains readonly )",
+            "ccn": 11,
+            "nloc": 84,
+            "params": 6,
+            "tokens": 298
+          }
+        ],
+        "duplication": {
+          "clones": 14,
+          "duplicatedLines": 150,
+          "percentage": 1.5
+        }
+      },
+      "tests": {
+        "testLinesAdded": 5,
+        "productionLinesAdded": 131,
+        "testRatio": 0.04,
+        "subjects": [
+          "EmailSendingTierSerializer",
+          "SendingTierHoverCard",
+          "TeamRatesCard",
+          "_team_email_sending_allowance",
+          "render",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "unreferenced": [
+          "EmailSendingTierSerializer",
+          "SendingTierHoverCard",
+          "TeamRatesCard",
+          "_team_email_sending_allowance",
+          "render",
+          "to_internal_value",
+          "update",
+          "validate"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 41.6,
+      "alignment": {
+        "modules": 0.67,
+        "files": 0.83
+      },
+      "process": {
+        "toolCalls": 36,
+        "edits": 2,
+        "toolCallsBeforeFirstEdit": 23,
+        "secondsBeforeFirstEdit": 237,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "The allowance docstring ended up above my new interface.",
+        "turns": 38,
+        "wallSeconds": 339,
+        "costUsd": 1.2037250000000002
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 61,
+        "linesRemoved": 4,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 12,
+          "maxCcn": 11,
+          "meanCcn": 2.3,
+          "overTen": 1,
+          "ccnDelta": 21
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 13,
+            "params": 0,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "SendingTiersHelp",
+            "signature": "SendingTiersHelp ( allowance allowance EmailSendingAllowanceApi )",
+            "ccn": 2,
+            "nloc": 204,
+            "params": 1,
+            "tokens": 120
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "TeamRatesCard",
+            "signature": "TeamRatesCard ( reputation , aws , isps , sharedDomains , withheldDomains , reputation EmailSendingRatesApi null aws AwsTenantReputationApi null isps readonly IspSendingHealthApi sharedDomains readonly withheldDomains readonly )",
+            "ccn": 11,
+            "nloc": 70,
+            "params": 6,
+            "tokens": 258
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 61,
+        "testRatio": 0,
+        "subjects": [
+          "SendingTiersHelp",
+          "TeamRatesCard",
+          "render"
+        ],
+        "unreferenced": [
+          "SendingTiersHelp",
+          "TeamRatesCard",
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 92.4,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.17
+      },
+      "process": {
+        "toolCalls": 29,
+        "edits": 2,
+        "toolCallsBeforeFirstEdit": 18,
+        "secondsBeforeFirstEdit": 140,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 31,
+        "wallSeconds": 185,
+        "costUsd": 0.7932416
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 44,
+        "linesRemoved": 6,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 12,
+          "maxCcn": 11,
+          "meanCcn": 2.3,
+          "overTen": 1,
+          "ccnDelta": 20
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 13,
+            "params": 0,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 13
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "SendingTiersHoverCard",
+            "signature": "SendingTiersHoverCard ( maxTier maxTier )",
+            "ccn": 2,
+            "nloc": 179,
+            "params": 1,
+            "tokens": 95
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "TeamRatesCard",
+            "signature": "TeamRatesCard ( reputation , aws , isps , sharedDomains , withheldDomains , reputation EmailSendingRatesApi null aws AwsTenantReputationApi null isps readonly IspSendingHealthApi sharedDomains readonly withheldDomains readonly )",
+            "ccn": 11,
+            "nloc": 84,
+            "params": 6,
+            "tokens": 298
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 44,
+        "testRatio": 0,
+        "subjects": [
+          "SendingTiersHoverCard",
+          "TeamRatesCard",
+          "render"
+        ],
+        "unreferenced": [
+          "SendingTiersHoverCard",
+          "TeamRatesCard",
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 83.3,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.17
+      },
+      "process": {
+        "toolCalls": 33,
+        "edits": 3,
+        "toolCallsBeforeFirstEdit": 21,
+        "secondsBeforeFirstEdit": 142,
+        "architectureToolCalls": 6,
+        "architectureExplorationBeforeEdit": 5,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Now to map the seam.",
+        "turns": 35,
+        "wallSeconds": 211,
+        "costUsd": 0.914915
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 51,
+        "linesRemoved": 6,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 12,
+          "maxCcn": 11,
+          "meanCcn": 2.3,
+          "overTen": 1,
+          "ccnDelta": 20
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 6,
+            "nloc": 13,
+            "params": 0,
+            "tokens": 53
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , row IspSendingHealthApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 13
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "SendingTiersHoverCard",
+            "signature": "SendingTiersHoverCard ( maxTier maxTier )",
+            "ccn": 2,
+            "nloc": 188,
+            "params": 1,
+            "tokens": 158
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 1,
+            "tokens": 21
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "render",
+            "signature": "render ( , snapshot WorkflowEmailSendingRatesApi )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 1,
+            "tokens": 9
+          },
+          {
+            "file": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+            "name": "TeamRatesCard",
+            "signature": "TeamRatesCard ( reputation , aws , isps , sharedDomains , withheldDomains , reputation EmailSendingRatesApi null aws AwsTenantReputationApi null isps readonly IspSendingHealthApi sharedDomains readonly withheldDomains readonly )",
+            "ccn": 11,
+            "nloc": 84,
+            "params": 6,
+            "tokens": 298
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 51,
+        "testRatio": 0,
+        "subjects": [
+          "SendingTiersHoverCard",
+          "TeamRatesCard",
+          "render"
+        ],
+        "unreferenced": [
+          "SendingTiersHoverCard",
+          "TeamRatesCard",
+          "render"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 79.3,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.17
+      },
+      "process": {
+        "toolCalls": 39,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 23,
+        "secondsBeforeFirstEdit": 208,
+        "architectureToolCalls": 11,
+        "architectureExplorationBeforeEdit": 7,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Next I'm adding its module and seam, then locking it, as you pre-approved.",
+        "turns": 41,
+        "wallSeconds": 285,
+        "costUsd": 1.0372727999999998
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 0.5,
+      "files": 0.2
+    },
+    "C": {
+      "modules": 1,
+      "files": 1
+    }
+  }
+}

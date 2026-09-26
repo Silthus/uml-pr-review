@@ -1,0 +1,338 @@
+diff --git a/products/workflows/backend/api/hog_flow.py b/products/workflows/backend/api/hog_flow.py
+index bc7c11c3fbf..edbc4cffbb5 100644
+--- a/products/workflows/backend/api/hog_flow.py
++++ b/products/workflows/backend/api/hog_flow.py
+@@ -195,7 +195,13 @@ from products.workflows.backend.utils.durations import (
+     is_duration,
+     is_signed_duration,
+ )
+-from products.workflows.backend.utils.email_sending_tiers import max_email_sending_tier, resolve_team_email_sending_tier
++from products.workflows.backend.utils.email_sending_tiers import (
++    MIN_EMAIL_SENDING_TIER,
++    EmailSendingTierLimits,
++    get_email_sending_tier_limits,
++    max_email_sending_tier,
++    resolve_team_email_sending_tier,
++)
+ from products.workflows.backend.utils.rrule_utils import compute_next_occurrences, validate_rrule
+ 
+ logger = structlog.get_logger(__name__)
+@@ -2207,6 +2213,8 @@ class EmailSendingAllowance:
+     emails_sent_last_hour: int
+     emails_sent_last_day: int
+     enforced: bool
++    # Every tier's caps, lowest first, so the UI can show what the next tier unlocks.
++    tiers: tuple[EmailSendingTierLimits, ...]
+ 
+ 
+ def _team_email_sending_allowance(team_id: int) -> EmailSendingAllowance:
+@@ -2215,22 +2223,26 @@ def _team_email_sending_allowance(team_id: int) -> EmailSendingAllowance:
+     what the rest of this page reports. Cached briefly because the endpoint reloads on every search
+     keystroke while these two aggregations do not depend on the search.
+     """
+-    cache_key = f"workflows_email_sending_allowance_{team_id}"
++    # Versioned so an entry cached before `tiers` existed is rebuilt rather than served incomplete.
++    cache_key = f"workflows_email_sending_allowance_v2_{team_id}"
+     cached = cache.get(cache_key)
+     if cached is not None:
+         return cached
+ 
+     resolved = resolve_team_email_sending_tier(team_id)
++    # An emptied tier table reads as top tier -1; clamp so the UI still gets one row of fallback caps.
++    top_tier = max(max_email_sending_tier(), MIN_EMAIL_SENDING_TIER)
+     now = timezone.now()
+     allowance = EmailSendingAllowance(
+         tier=resolved.tier,
+-        max_tier=max_email_sending_tier(),
++        max_tier=top_tier,
+         emails_per_hour=resolved.limits.per_hour,
+         emails_per_day=resolved.limits.per_day,
+         max_batch_audience=resolved.limits.max_batch_audience,
+         emails_sent_last_hour=_team_email_sends_since(team_id, now - timedelta(hours=1)),
+         emails_sent_last_day=_team_email_sends_since(team_id, now - timedelta(days=1)),
+         enforced=resolved.enforced,
++        tiers=tuple(get_email_sending_tier_limits(tier) for tier in range(top_tier + 1)),
+     )
+     cache.set(cache_key, allowance, SENDING_ALLOWANCE_CACHE_SECONDS)
+     return allowance
+@@ -2611,6 +2623,17 @@ class IspSendingHealthSerializer(serializers.Serializer):
+     )
+ 
+ 
++class EmailSendingTierLimitsSerializer(serializers.Serializer):
++    """The caps one sending tier grants."""
++
++    tier = serializers.IntegerField(read_only=True, help_text="The tier these caps belong to, starting at 0.")
++    per_hour = serializers.IntegerField(read_only=True, help_text="How many emails this tier allows per hour.")
++    per_day = serializers.IntegerField(read_only=True, help_text="How many emails this tier allows per day.")
++    max_batch_audience = serializers.IntegerField(
++        read_only=True, help_text="The largest audience this tier allows for a single batch send."
++    )
++
++
+ class EmailSendingAllowanceSerializer(serializers.Serializer):
+     """How much workflow email this project may send, and how much of that it has used."""
+ 
+@@ -2636,6 +2659,11 @@ class EmailSendingAllowanceSerializer(serializers.Serializer):
+         read_only=True,
+         help_text="True when these allowances are applied to sends. False while they are only being measured.",
+     )
++    tiers = EmailSendingTierLimitsSerializer(
++        many=True,
++        read_only=True,
++        help_text="The caps of every tier, lowest tier first, so a project can see what the next tier unlocks.",
++    )
+ 
+ 
+ class TeamEmailReputationResponseSerializer(serializers.Serializer):
+diff --git a/products/workflows/backend/api/test/test_email_reputation.py b/products/workflows/backend/api/test/test_email_reputation.py
+index 8618cdb5f33..a41d5c4a0c9 100644
+--- a/products/workflows/backend/api/test/test_email_reputation.py
++++ b/products/workflows/backend/api/test/test_email_reputation.py
+@@ -79,6 +79,14 @@ class TestEmailReputationAPI(APIBaseTest):
+         assert allowance["enforced"] is False
+         assert allowance["emails_sent_last_hour"] == 0
+         assert allowance["emails_sent_last_day"] == 0
++        tiers = allowance["tiers"]
++        assert [entry["tier"] for entry in tiers] == list(range(allowance["max_tier"] + 1))
++        assert tiers[allowance["tier"]] == {
++            "tier": allowance["tier"],
++            "per_hour": allowance["emails_per_hour"],
++            "per_day": allowance["emails_per_day"],
++            "max_batch_audience": allowance["max_batch_audience"],
++        }
+         assert data == {
+             "aws": None,
+             "reputation": None,
+diff --git a/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx b/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx
+index e799f785098..82ce088ea55 100644
+--- a/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx
++++ b/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx
+@@ -102,6 +102,13 @@ const baseResponse: TeamEmailReputationResponseApi = {
+         emails_sent_last_hour: 1200,
+         emails_sent_last_day: 18400,
+         enforced: true,
++        tiers: [
++            { tier: 0, per_hour: 50, per_day: 100, max_batch_audience: 100 },
++            { tier: 1, per_hour: 500, per_day: 5000, max_batch_audience: 2500 },
++            { tier: 2, per_hour: 5000, per_day: 50000, max_batch_audience: 25000 },
++            { tier: 3, per_hour: 20000, per_day: 200000, max_batch_audience: 100000 },
++            { tier: 4, per_hour: 60000, per_day: 600000, max_batch_audience: 300000 },
++        ],
+     },
+     email_sending_suspended: false,
+     email_sending_suspended_at: null,
+diff --git a/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx b/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx
+index fbf2922c55e..08c5257b734 100644
+--- a/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx
++++ b/products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx
+@@ -1,8 +1,20 @@
+ import { useActions, useValues } from 'kea'
++import { useState } from 'react'
+ 
+-import { LemonBanner, LemonInput, LemonTable, LemonTag, LemonTagType, Link, Tooltip } from '@posthog/lemon-ui'
++import { IconInfo } from '@posthog/icons'
++import {
++    LemonBanner,
++    LemonButton,
++    LemonInput,
++    LemonTable,
++    LemonTag,
++    LemonTagType,
++    Link,
++    Tooltip,
++} from '@posthog/lemon-ui'
+ 
+ import { LemonProgress } from 'lib/lemon-ui/LemonProgress'
++import { Popover } from 'lib/lemon-ui/Popover'
+ import { humanFriendlyNumber, percentage } from 'lib/utils/numbers'
+ import { urls } from 'scenes/urls'
+ 
+@@ -11,6 +23,7 @@ import type {
+     AwsTenantReputationHealthEnumApi,
+     EmailSendingAllowanceApi,
+     EmailSendingRatesApi,
++    EmailSendingTierLimitsApi,
+     IspSendingHealthApi,
+     WorkflowEmailSendingRatesApi,
+ } from 'products/workflows/frontend/generated/api.schemas'
+@@ -414,6 +427,95 @@ function TeamRatesCard({
+     )
+ }
+ 
++const SENDING_TIER_DOCS_URL = 'https://posthog.com/docs/workflows/sending-reputation#sending-allowance-tiers'
++
++function SendingTierTable({
++    tiers,
++    currentTier,
++}: {
++    tiers: readonly EmailSendingTierLimitsApi[]
++    currentTier: number
++}): JSX.Element {
++    return (
++        <div className="w-96 space-y-2" data-attr="workflows-sending-tier-table">
++            <h4 className="mb-0">Sending tiers</h4>
++            <LemonTable
++                dataSource={[...tiers]}
++                rowKey="tier"
++                size="small"
++                embedded
++                rowClassName={(limits) => (limits.tier === currentTier ? 'font-semibold bg-fill-highlight-50' : null)}
++                columns={[
++                    {
++                        title: 'Tier',
++                        key: 'tier',
++                        render: (_, limits) => (limits.tier === currentTier ? `${limits.tier} (current)` : limits.tier),
++                    },
++                    {
++                        title: 'Per hour',
++                        key: 'per_hour',
++                        align: 'right',
++                        render: (_, limits) => humanFriendlyNumber(limits.per_hour),
++                    },
++                    {
++                        title: 'Per day',
++                        key: 'per_day',
++                        align: 'right',
++                        render: (_, limits) => humanFriendlyNumber(limits.per_day),
++                    },
++                    {
++                        title: 'Batch audience',
++                        key: 'max_batch_audience',
++                        align: 'right',
++                        render: (_, limits) => humanFriendlyNumber(limits.max_batch_audience),
++                    },
++                ]}
++            />
++            <p className="text-secondary text-xs mb-0">
++                A project moves up one tier at a time by sending with low bounce and complaint rates.{' '}
++                <Link to={SENDING_TIER_DOCS_URL} target="_blank">
++                    Read the docs
++                </Link>
++            </p>
++        </div>
++    )
++}
++
++function SendingTierInfo({ allowance }: { allowance: EmailSendingAllowanceApi }): JSX.Element {
++    const [visible, setVisible] = useState(false)
++    return (
++        <Popover
++            visible={visible}
++            overlay={<SendingTierTable tiers={allowance.tiers} currentTier={allowance.tier} />}
++            onMouseEnterInside={() => setVisible(true)}
++            onMouseLeaveInside={() => setVisible(false)}
++            onClickOutside={() => setVisible(false)}
++            placement="bottom-start"
++            showArrow
++        >
++            {/* The overlay renders in a portal, so blur cannot decide when to close: a keyboard user
++                who tabs toward the docs link would blur the trigger first. Enter or Space pins the
++                popover open until Escape or a click outside. */}
++            <LemonButton
++                icon={<IconInfo />}
++                size="xsmall"
++                type="tertiary"
++                aria-label="Show what each sending tier allows"
++                aria-expanded={visible}
++                onMouseEnter={() => setVisible(true)}
++                onMouseLeave={() => setVisible(false)}
++                onClick={() => setVisible(true)}
++                onKeyDown={(event) => {
++                    if (event.key === 'Escape') {
++                        setVisible(false)
++                    }
++                }}
++                data-attr="workflows-sending-tier-info"
++            />
++        </Popover>
++    )
++}
++
+ function SendingAllowanceCard({ allowance }: { allowance: EmailSendingAllowanceApi }): JSX.Element {
+     const hourlyPercent = Math.min(100, (allowance.emails_sent_last_hour / allowance.emails_per_hour) * 100)
+     const dailyPercent = Math.min(100, (allowance.emails_sent_last_day / allowance.emails_per_day) * 100)
+@@ -426,10 +528,14 @@ function SendingAllowanceCard({ allowance }: { allowance: EmailSendingAllowanceA
+                         Tier {allowance.tier} of {allowance.max_tier}
+                     </LemonTag>
+                 </Tooltip>
++                <SendingTierInfo allowance={allowance} />
+             </div>
+             <p className="text-secondary mt-2 mb-0">
+                 Your allowance grows as your workflows keep sending with low bounce and spam complaint rates. Emails
+-                above the allowance are not dropped, they are sent later.
++                above the allowance are not dropped, they are sent later.{' '}
++                <Link to={SENDING_TIER_DOCS_URL} target="_blank" data-attr="workflows-sending-allowance-docs-link">
++                    See what each tier allows and how to move up
++                </Link>
+             </p>
+             <div className="flex flex-wrap gap-8 mt-3">
+                 <div className="min-w-48">
+diff --git a/products/workflows/frontend/generated/api.schemas.ts b/products/workflows/frontend/generated/api.schemas.ts
+index 9161204324f..7a6f0374a81 100644
+--- a/products/workflows/frontend/generated/api.schemas.ts
++++ b/products/workflows/frontend/generated/api.schemas.ts
+@@ -1638,6 +1638,20 @@ export interface IspSendingHealthApi {
+     readonly unavailable: readonly string[]
+ }
+ 
++/**
++ * The caps one sending tier grants.
++ */
++export interface EmailSendingTierLimitsApi {
++    /** The tier these caps belong to, starting at 0. */
++    readonly tier: number
++    /** How many emails this tier allows per hour. */
++    readonly per_hour: number
++    /** How many emails this tier allows per day. */
++    readonly per_day: number
++    /** The largest audience this tier allows for a single batch send. */
++    readonly max_batch_audience: number
++}
++
+ /**
+  * How much workflow email this project may send, and how much of that it has used.
+  */
+@@ -1658,6 +1672,8 @@ export interface EmailSendingAllowanceApi {
+     readonly emails_sent_last_day: number
+     /** True when these allowances are applied to sends. False while they are only being measured. */
+     readonly enforced: boolean
++    /** The caps of every tier, lowest tier first, so a project can see what the next tier unlocks. */
++    readonly tiers: readonly EmailSendingTierLimitsApi[]
+ }
+ 
+ export interface TeamEmailReputationResponseApi {
+diff --git a/services/mcp/src/api/generated.ts b/services/mcp/src/api/generated.ts
+index 7ddd9455c52..65d17942085 100644
+--- a/services/mcp/src/api/generated.ts
++++ b/services/mcp/src/api/generated.ts
+@@ -33000,6 +33000,20 @@ export namespace Schemas {
+       name: string;
+     }
+ 
++    /**
++     * The caps one sending tier grants.
++     */
++    export interface EmailSendingTierLimits {
++      /** The tier these caps belong to, starting at 0. */
++      readonly tier: number;
++      /** How many emails this tier allows per hour. */
++      readonly per_hour: number;
++      /** How many emails this tier allows per day. */
++      readonly per_day: number;
++      /** The largest audience this tier allows for a single batch send. */
++      readonly max_batch_audience: number;
++    }
++
+     /**
+      * How much workflow email this project may send, and how much of that it has used.
+      */
+@@ -33020,6 +33034,8 @@ export namespace Schemas {
+       readonly emails_sent_last_day: number;
+       /** True when these allowances are applied to sends. False while they are only being measured. */
+       readonly enforced: boolean;
++      /** The caps of every tier, lowest tier first, so a project can see what the next tier unlocks. */
++      readonly tiers: readonly EmailSendingTierLimits[];
+     }
+ 
+     /**

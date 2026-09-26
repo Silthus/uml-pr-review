@@ -1,6 +1,6 @@
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { cachedClient, gradeDiff, type JevAnswer, type JevGrade, type JevReport } from "./lib/jev.ts";
+import { cachedClient, gradeDiff, retryingClient, type JevAnswer, type JevGrade, type JevReport } from "./lib/jev.ts";
 import { gatewayJev, jevModel } from "./lib/jev-gateway.ts";
 import type { RunMeta } from "./lib/meta.ts";
 import { parsePatch } from "./lib/patch.ts";
@@ -24,7 +24,7 @@ async function grade(): Promise<JevReport> {
   if (!process.env.AI_GATEWAY_API_KEY) return { status: "unavailable", reason: "AI_GATEWAY_API_KEY is not set" };
   const task = await loadRunTask(taskDir);
   const cache = new Map(Object.entries((await readJson<Record<string, Record<string, JevAnswer>>>(cachePath)) ?? {}));
-  const client = cachedClient(gatewayJev(), cache);
+  const client = cachedClient(retryingClient(gatewayJev()), cache);
   const runs: Record<string, JevGrade> = {};
   const skipped: Record<string, string> = {};
   try {

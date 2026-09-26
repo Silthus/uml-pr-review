@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T17:46:18.567Z",
+  "verdicts": {
+    "C-2": {
+      "seams": {
+        "score": 7,
+        "justification": "hog_flow.py uses the shared authenticator, action allowlist and throttle bases as deliberate integration points. Its local activity adapter keeps callers simple, but recreates part of log_activity_from_viewset instead of sharing its behavior."
+      },
+      "cohesion": {
+        "score": 6,
+        "justification": "Authentication and throttling belong beside HogFlowViewSet, and the scope entry belongs in posthog/scopes.py. Synthetic-user handling is scattered across validation, creation and revision writing, with different checks at each site."
+      },
+      "coupling": {
+        "score": 5,
+        "justification": "hog_flow.py duplicates default throttle rates and reaches through successful_authenticator to obtain the key. The new test also imports MOCK_NODE_TEMPLATES from products.cdp.backend.api.test, coupling workflow tests to another product's private test implementation."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "The change retains shared DRF permission machinery and keeps behavior tests inside workflows. It extends the existing backend/api implementation without improving its facade boundary, and the CDP test import conflicts with the documented product isolation direction; a full migration would exceed this ticket's scope."
+      },
+      "overall": {
+        "score": 6,
+        "justification": "The integration in hog_flow.py is localized and understandable. Repeated actor policy, copied throttle configuration and a separate audit implementation introduce maintenance costs that keep it from being a particularly clean architectural change."
+      }
+    },
+    "B-1": {
+      "seams": {
+        "score": 7,
+        "justification": "hog_flow.py declares authentication, allowed actions and throttles through existing framework interfaces. _log_write_activity provides a narrow call site and reuses ACTIVITY_TYPES and changes_between, although it still duplicates the shared activity helper's orchestration."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "The added components in hog_flow.py concern request authentication, attribution and rate limiting, so their placement at the HTTP boundary is reasonable. Actor normalization remains duplicated between serializer creation and revision writing."
+      },
+      "coupling": {
+        "score": 6,
+        "justification": "Using BurstRateThrottle.rate and SustainedRateThrottle.rate avoids copying rate policy. Dependencies on successful_authenticator.project_secret_api_key, core activity-log details and products.cdp.backend.api.test still expose implementation details across module boundaries."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "The shared DRF stack continues to own access policy, consistent with products/architecture.md. The change remains within the legacy backend/api structure and adds a private CDP test dependency rather than strengthening facade-based isolation."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "Y keeps the endpoint additions declarative and derives throttle configuration from existing policy. The main architectural liabilities are duplicated audit orchestration and repeated synthetic-user handling in hog_flow.py."
+      }
+    },
+    "B-2": {
+      "seams": {
+        "score": 7,
+        "justification": "_acting_user in hog_flow.py gives creation and revision writing a typed, narrow actor interface. Authentication and throttling use existing extension points, while _log_write_activity still builds its own adapter around core audit internals."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "The actor helper consolidates a shared attribution rule, and the throttle classes remain presentation concerns. Importing AccessMethod from posthog.clickhouse.query_tagging to identify an audit trigger connects two separate concerns unnecessarily."
+      },
+      "coupling": {
+        "score": 5,
+        "justification": "hog_flow.py derives rates from existing throttles, but couples activity logging to ClickHouse query-tagging terminology and the concrete ProjectSecretAPIKeyUser representation. The MOCK_NODE_TEMPLATES import also reaches into another product's private test module."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "Z preserves shared DRF authorization and introduces no new production dependency on another product's models or logic. Its legacy backend/api placement and private CDP test import nevertheless leave the documented presentation and product boundaries unsealed."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The typed _acting_user helper and reused throttle configuration make the local design reasonably coherent. The unrelated AccessMethod dependency and duplicated audit construction add avoidable coupling."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 7,
+        "justification": "_actor in hog_flow.py exposes a clear Optional[User] boundary, and the authenticator check narrows access to PSAK metadata explicitly. _log_activity broadens the adapter to deletion even though PSAK deletion is excluded, increasing its responsibility beyond the needed write paths."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "Actor normalization, authentication declarations and throttle classes are grouped coherently in hog_flow.py. Routing perform_destroy through the new activity adapter expands the change's reach without helping the requested PSAK integration."
+      },
+      "coupling": {
+        "score": 5,
+        "justification": "The throttle classes copy default scopes and rates, creating configuration that can drift. Tests import both private CDP fixtures and PSAK_TRIGGER_JOB_TYPE from the view module, tying assertions to implementation details."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "W keeps request authorization in the shared DRF stack and tests within workflows, matching those parts of products/architecture.md. It retains the legacy presentation structure and adds a cross-product private test dependency."
+      },
+      "overall": {
+        "score": 6,
+        "justification": "The typed actor helper is a useful simplification in hog_flow.py. Copied rate policy, a broader activity adapter and the unnecessary deletion-path change make this less tightly bounded than it could be."
+      }
+    },
+    "C-1": {
+      "seams": {
+        "score": 6,
+        "justification": "hog_flow.py centralizes actor normalization, but _real_user accepts and returns Any, while _log_write_activity hides its options behind **kwargs. get_throttles also introduces procedural policy composition where the other integrations use a declarative throttle list."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "_real_user is reused across owner validation, creation and revision writing, giving the attribution rule one home. The additional auth_method analytics property and action-dependent throttle assembly enlarge the endpoint's responsibilities."
+      },
+      "coupling": {
+        "score": 5,
+        "justification": "get_throttles combines inherited throttles with PersonalOrProjectSecretApiKeyRateThrottle instances, making behavior depend on both configurations and potentially adding overlapping personal-key budgets. The private CDP test-fixture import and direct audit construction add further implementation coupling."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "Authentication and rate limiting remain at the HTTP boundary, and shared permissions retain authorization ownership. The change adds more orchestration to the legacy backend/api module and retains the same private cross-product test dependency rather than advancing facade isolation."
+      },
+      "overall": {
+        "score": 6,
+        "justification": "V consolidates actor handling more consistently across hog_flow.py. Weak helper types and layered throttle composition make its interfaces and runtime policy harder to reason about than the declarative alternatives."
+      }
+    }
+  }
+}

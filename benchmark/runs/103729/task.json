@@ -1,0 +1,88 @@
+{
+  "pr": 103729,
+  "title": "chore(error-tracking): share the git link composer across the frontend",
+  "url": "https://github.com/PostHog/posthog/pull/103729",
+  "session": {
+    "source": "wayfinder-ticket",
+    "originalModel": "claude-opus-5",
+    "ticket": {
+      "number": 89,
+      "url": "https://github.com/Silthus/posthog/issues/89",
+      "title": "Promote the git link composer to a shared location",
+      "bodyLastEditedAt": null
+    },
+    "map": "https://github.com/Silthus/posthog/issues/68",
+    "worker": {
+      "name": "wf68-89-implement",
+      "transcript": "<local path>",
+      "dispatchMessageUuid": "7a8dba5a-7230-429f-b937-3ab350148393",
+      "dispatchedAt": "2026-09-21T12:23:24.288Z",
+      "model": "claude-opus-5"
+    },
+    "orchestrator": {
+      "t3ThreadId": "ba683255-9f48-4b95-825b-e696fab60ab9",
+      "t3ThreadTitle": "Drive Wayfinder Map 68",
+      "transcript": "<local path>",
+      "t3Database": "<local path>"
+    }
+  },
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "finalHead": "e9994205f91f8a1042f48e8689b9d55dbb3c60a0",
+  "firstPushHead": "017637483d657016a58264c502b42202b011c2ef",
+  "taskStatement": "Part of #68. Specified by #79 ([spec](https://github.com/Silthus/posthog/issues/79#issuecomment-5760343402)).\n\n## What to build\n\n`GitMetadataParser` becomes the one file in the repository that knows GitHub, GitLab and Bitbucket. It moves out of error tracking into a shared location and keeps its four importers working. Nothing changes on screen: a reader of the error tracking Releases surface sees the same pixels before and after. Three later tickets consume it, so it lands first.\n\n## Write scope\n\n- `frontend/src/lib/components/Git/**` (new home; the spec proposes this path, see Gap 3 on #79)\n- `products/error_tracking/frontend/components/ReleasesPreview/**`\n- `products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx`\n- `products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx`\n- `frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts`\n\nNo other ticket writes these paths.\n\n## Proof gate\n\n- [ ] `gitMetadataParser.spec.ts` moves with the file and passes with no change to an assertion\n- [ ] `pnpm --filter=@posthog/frontend typescript:check` passes\n- [ ] The error tracking Releases surface renders the same before and after, with both screenshots on the PR\n- [ ] No re-export shim is left behind (see `/writing-ui-components`)\n\n## Blocked by\n\nNothing. Starts immediately.\n\n## Stack base and ship target\n\n- Branch cut from `upstream/master`.\n- A PR against upstream `PostHog/posthog`, opened with `--head Silthus:<branch>`. Nothing merges into the fork's `master`.\n- Stacking rules from the repo `CLAUDE.md`: use `gh stack`, keep the stack shallow, merge the base before you extend it. Never run `gh stack merge`. Never force-push a branch that is in the merge queue, and that includes restacking a stack whose base is queued.\n- Invoke `/writing-ui-components`, `/writing-tests`, `/reviewing-with-coderabbit` and `/writing-pr-descriptions`.\n\n\n## Scope\nExactly what the ticket says: a pure move of the git link composer out of `products/error_tracking/frontend/` to the shared location the spec proposes (`frontend/src/lib/components/Git/`, confirm it against `/placing-product-frontend-code` and `/writing-ui-components`, and against `product:lint` isolation rules), update the importers, no behavior change, no new features, no widening. Keep existing comments. Minimal diff.",
+  "diffStat": {
+    "final": {
+      "base": "754fa69e9d80a13418543ede38875b6f084ab534",
+      "head": "e9994205f91f8a1042f48e8689b9d55dbb3c60a0",
+      "files": 6,
+      "additions": 4,
+      "deletions": 10,
+      "modules": [
+        "frontend/src/lib",
+        "products/error_tracking/frontend"
+      ]
+    },
+    "firstPush": {
+      "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+      "head": "017637483d657016a58264c502b42202b011c2ef",
+      "files": 6,
+      "additions": 4,
+      "deletions": 10,
+      "modules": [
+        "frontend/src/lib",
+        "products/error_tracking/frontend"
+      ]
+    }
+  },
+  "whyChosen": "A pure move across a product boundary: a git link composer leaves products/error_tracking for frontend/src/lib, and every importer must follow without a re-export shim.",
+  "state": "MERGED",
+  "baseCheck": {
+    "command": "git diff --stat c8357afb6ad184ba33a6e99e10fb0d6ef38ee715 e9994205f91f8a1042f48e8689b9d55dbb3c60a0",
+    "files": 4974,
+    "prChangedFiles": 6,
+    "matches": false,
+    "explanation": "baseCommit is the worker's branch point, not the parent of the PR's first own commit (prFirstOwnCommitParent), because the branch was rebased after the worker ran and that parent postdates the task. The branch was rebased onto newer upstream master on 2026-09-24, so base..finalHead also carries upstream changes. The PR's own diff is diffStat.final: 6 files, the same patch as the first push.",
+    "prFirstOwnCommitParent": "754fa69e9d80a13418543ede38875b6f084ab534"
+  },
+  "taskStatementSources": [
+    {
+      "kind": "ticketBody",
+      "url": "https://github.com/Silthus/posthog/issues/89",
+      "text": "whole body"
+    },
+    {
+      "kind": "dispatchPrompt",
+      "uuid": "7a8dba5a-7230-429f-b937-3ab350148393",
+      "excerpts": [
+        "## Scope\nExactly what the ticket says: a pure move of the git link composer out of `products/error_tracking/frontend/` to the shared location the spec proposes (`frontend/src/lib/components/Git/`, confirm it against `/placing-product-frontend-code` and `/writing-ui-components`, and against `product:lint` isolation rules), update the importers, no behavior change, no new features, no widening. Keep existing comments. Minimal diff."
+      ]
+    }
+  ],
+  "imageTokens": {},
+  "taskContext": {
+    "referencedIssues": [
+      "https://github.com/Silthus/posthog/issues/68 (map)",
+      "https://github.com/Silthus/posthog/issues/79#issuecomment-5760343402 (spec)"
+    ]
+  }
+}

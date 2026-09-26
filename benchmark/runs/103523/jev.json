@@ -1,0 +1,181 @@
+{
+  "status": "graded",
+  "model": "typesafe-ai/jev",
+  "gradedAt": "2026-09-26T18:49:45.120Z",
+  "runs": {
+    "A": {
+      "files": [
+        {
+          "subject": "ee/hogai/context/entity_search/context.py",
+          "answers": {
+            "readability": 0.86,
+            "singleResponsibility": 0.84,
+            "namingClarity": 0.97,
+            "errorHandling": 0.88,
+            "idiomaticFit": 0.97
+          }
+        },
+        {
+          "subject": "ee/hogai/tools/search.py",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.89,
+            "namingClarity": 0.98,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.98
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/max/suggestionTopics.tsx",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.94,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "ee/hogai/context/entity_search/test/test_context.py",
+          "answers": {
+            "assertsBehaviour": 0.88,
+            "edgeCases": 0.53
+          }
+        },
+        {
+          "subject": "frontend/src/scenes/max/suggestionTopics.test.ts",
+          "answers": {
+            "assertsBehaviour": 0.31,
+            "edgeCases": 0.34
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.74,
+          "staysOnTask": 0.81,
+          "explicitInterfaces": 0.7
+        }
+      },
+      "skipped": [],
+      "fileQuality": 94.3,
+      "score": 83.9
+    },
+    "B-1": {
+      "files": [
+        {
+          "subject": "frontend/src/scenes/max/suggestionTopics.tsx",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.98,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.93
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0,
+          "staysOnTask": 0.9,
+          "explicitInterfaces": 0.93
+        }
+      },
+      "skipped": [],
+      "fileQuality": 95.4,
+      "score": 82.5
+    },
+    "B-2": {
+      "files": [
+        {
+          "subject": "frontend/src/scenes/max/suggestionTopics.tsx",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.97,
+            "errorHandling": 0.97,
+            "idiomaticFit": 0.98
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0,
+          "staysOnTask": 0.9,
+          "explicitInterfaces": 0.93
+        }
+      },
+      "skipped": [],
+      "fileQuality": 96.4,
+      "score": 83.1
+    },
+    "C-1": {
+      "files": [
+        {
+          "subject": "frontend/src/scenes/max/suggestionTopics.tsx",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.98,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+          "answers": {
+            "assertsBehaviour": 0.69,
+            "edgeCases": 0.05
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.68,
+          "staysOnTask": 0.92,
+          "explicitInterfaces": 0.94
+        }
+      },
+      "skipped": [],
+      "fileQuality": 96.2,
+      "score": 80.9
+    },
+    "C-2": {
+      "files": [
+        {
+          "subject": "frontend/src/scenes/max/suggestionTopics.tsx",
+          "answers": {
+            "readability": 0.96,
+            "singleResponsibility": 0.93,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.91
+          }
+        }
+      ],
+      "tests": [],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0,
+          "staysOnTask": 0.91,
+          "explicitInterfaces": 0.93
+        }
+      },
+      "skipped": [],
+      "fileQuality": 95.4,
+      "score": 82.6
+    }
+  },
+  "skipped": {}
+}

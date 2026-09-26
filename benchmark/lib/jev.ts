@@ -12,11 +12,13 @@ export interface JevClient {
 }
 
 export type GradedUnit = { subject: string; answers: Record<string, number> };
-export type JevGrade = { files: GradedUnit[]; tests: GradedUnit[]; diff: GradedUnit; fileQuality: number | null; score: number };
+export type SkippedUnit = { subject: string; reason: string };
+export type JevGrade = { files: GradedUnit[]; tests: GradedUnit[]; diff: GradedUnit; skipped: SkippedUnit[]; fileQuality: number | null; score: number };
 export type JevReport = { status: "graded"; model: string; gradedAt: string; runs: Record<string, JevGrade>; skipped: Record<string, string> } | { status: "unavailable"; reason: string };
 
-const contextLines = 100;
-const diffBudget = 40_000;
+const contextLines = 60;
+const diffBudget = 16_000;
+const contextBudget = 12_000;
 
 export const productionFileQuestions: Questions = {
   readability: score("How easy is the changed code in this file to read for a developer who knows the codebase?", [
@@ -85,9 +87,13 @@ export async function gradeDiff(client: JevClient, taskStatement: string, patch:
   const changed = files.filter(({ status, hunks }) => status !== "deleted" && hunks.length > 0);
   const production = changed.filter(({ path }) => !isTestPath(path));
   const tests = changed.filter(({ path }) => isTestPath(path));
+  const skipped: SkippedUnit[] = [];
   const gradeFiles = async (subjects: PatchedFile[], questions: Questions) => {
     const units: GradedUnit[] = [];
-    for (const file of subjects) units.push(await grade(client, file.path, fileState(file, await contentOf(file.path)), questions));
+    for (const file of subjects) {
+      const unit = await grade(client, file.path, fileState(file, await contentOf(file.path)), questions).catch((error: unknown) => skipOversized(error, file.path, skipped));
+      if (unit) units.push(unit);
+    }
     return units;
   };
   const graded = {
@@ -97,7 +103,7 @@ export async function gradeDiff(client: JevClient, taskStatement: string, patch:
   };
   const fileAnswers = graded.files.flatMap(({ answers }) => Object.values(answers));
   const allAnswers = [...fileAnswers, ...graded.tests.flatMap(({ answers }) => Object.values(answers)), ...Object.values(graded.diff.answers)];
-  return { ...graded, fileQuality: fileAnswers.length > 0 ? round(100 * mean(fileAnswers)) : null, score: round(100 * mean(allAnswers)) };
+  return { ...graded, skipped, fileQuality: fileAnswers.length > 0 ? round(100 * mean(fileAnswers)) : null, score: round(100 * mean(allAnswers)) };
 }
 
 export function cachedClient(client: JevClient, cache: Map<string, Record<string, JevAnswer>>): JevClient {
@@ -109,6 +115,27 @@ export function cachedClient(client: JevClient, cache: Map<string, Record<string
       const answers = await client.evaluate(state, questions);
       cache.set(key, answers);
       return answers;
+    },
+  };
+}
+
+export type RetryPolicy = { attempts: number; delayMs: (attempt: number) => number; sleep: (ms: number) => Promise<void> };
+
+const transientGatewayError = /temporarily unavailable|high demand|overloaded|rate.?limit|too many requests|timed? ?out|fetch failed|ECONNRESET|\b(?:429|50[234]|529)\b|internal ?server ?error/i;
+
+export const patientRetry: RetryPolicy = { attempts: 6, delayMs: (attempt) => Math.min(60_000, 5_000 * 2 ** attempt), sleep: Bun.sleep };
+
+export function retryingClient(client: JevClient, policy: RetryPolicy = patientRetry): JevClient {
+  return {
+    async evaluate(state, questions) {
+      for (let attempt = 0; ; attempt++) {
+        try {
+          return await client.evaluate(state, questions);
+        } catch (error) {
+          if (attempt + 1 >= policy.attempts || !transientGatewayError.test(String(error))) throw error;
+          await policy.sleep(policy.delayMs(attempt));
+        }
+      }
     },
   };
 }
@@ -134,11 +161,19 @@ function fileState(file: PatchedFile, content: string) {
   const first = Math.min(...file.hunks.map(({ start }) => start));
   const last = Math.max(...file.hunks.map(({ start, length }) => start + length));
   const from = Math.max(0, first - 1 - contextLines);
-  return { path: file.path, status: file.status, diff: truncated(file.section), context: { fromLine: from + 1, code: lines.slice(from, last + contextLines).join("\n") } };
+  return { path: file.path, status: file.status, diff: truncated(file.section), context: { fromLine: from + 1, code: truncated(lines.slice(from, last + contextLines).join("\n"), contextBudget) } };
 }
 
-function truncated(text: string): string {
-  return text.length <= diffBudget ? text : `${text.slice(0, diffBudget)}\n[truncated: showing ${diffBudget} of ${text.length} characters]`;
+function truncated(text: string, budget = diffBudget): string {
+  return text.length <= budget ? text : `${text.slice(0, budget)}\n[truncated: showing ${budget} of ${text.length} characters]`;
+}
+
+const oversizedRequest = /max_tokens_exceeded|context length/i;
+
+function skipOversized(error: unknown, subject: string, skipped: SkippedUnit[]): undefined {
+  if (!oversizedRequest.test(String(error))) throw error;
+  skipped.push({ subject, reason: String(error instanceof Error ? error.message : error).slice(0, 200) });
+  return undefined;
 }
 
 function score(instructions: string, criteria: string[]): JevQuestion {

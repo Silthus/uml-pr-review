@@ -1,0 +1,647 @@
+{
+  "pr": 103523,
+  "baseCommit": "cea129a217b5267ac1fec3d14db26c9a742968ee",
+  "scoredAt": "2026-09-26T17:35:20.639Z",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "exit": {
+        "reason": "historical",
+        "code": null
+      },
+      "application": "clean",
+      "files": [
+        "ee/hogai/context/entity_search/context.py",
+        "ee/hogai/context/entity_search/test/test_context.py",
+        "ee/hogai/tools/search.py",
+        "frontend/src/scenes/max/suggestionTopics.test.ts",
+        "frontend/src/scenes/max/suggestionTopics.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [
+          {
+            "from": "ee/hogai/context/entity_search/context.py",
+            "to": "products/workflows/backend/models/__init__.py"
+          }
+        ],
+        "testFacadeBypasses": [
+          {
+            "from": "ee/hogai/context/entity_search/test/test_context.py",
+            "to": "products/workflows/backend/models/__init__.py"
+          }
+        ],
+        "newCrossProductDependencies": [
+          {
+            "from": "ee",
+            "to": "products.workflows",
+            "declared": false
+          }
+        ],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 5,
+        "linesAdded": 83,
+        "linesRemoved": 2,
+        "modulesTouched": 4,
+        "tachModulesTouched": 2,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 2
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 9,
+          "maxCcn": 14,
+          "meanCcn": 3,
+          "overTen": 1,
+          "ccnDelta": 12
+        },
+        "changedFunctions": [
+          {
+            "file": "ee/hogai/context/entity_search/context.py",
+            "name": "_build_url",
+            "signature": "_build_url( self , entity_type : str , result_id : str , team_id : int )",
+            "ccn": 14,
+            "nloc": 29,
+            "params": 4,
+            "tokens": 142
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_all_entity_types_respect_filters_exclude_deleted",
+            "signature": "test_all_entity_types_respect_filters_exclude_deleted( self )",
+            "ccn": 2,
+            "nloc": 25,
+            "params": 1,
+            "tokens": 248
+          },
+          {
+            "file": "ee/hogai/context/entity_search/test/test_context.py",
+            "name": "test_list_entities_workflow_surfaces_status_and_hides_archived",
+            "signature": "test_list_entities_workflow_surfaces_status_and_hides_archived( self )",
+            "ccn": 2,
+            "nloc": 16,
+            "params": 1,
+            "tokens": 154
+          },
+          {
+            "file": "frontend/src/scenes/max/suggestionTopics.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 3,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 11
+          },
+          {
+            "file": "frontend/src/scenes/max/suggestionTopics.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 8
+          },
+          {
+            "file": "frontend/src/scenes/max/suggestionTopics.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 13
+          },
+          {
+            "file": "frontend/src/scenes/max/suggestionTopics.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/scenes/max/suggestionTopics.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 40
+          },
+          {
+            "file": "frontend/src/scenes/max/suggestionTopics.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 5,
+            "params": 0,
+            "tokens": 48
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 42,
+        "productionLinesAdded": 41,
+        "testRatio": 1.02,
+        "subjects": [
+          "_build_url"
+        ],
+        "unreferenced": [],
+        "referenceCoverage": 1,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no PostHog Python environment at /Users/mreichenbach/dev/posthog/.venv/bin/python"
+        }
+      },
+      "hygiene": 50,
+      "focusScore": 41.6,
+      "alignment": null,
+      "process": {
+        "toolCalls": 114,
+        "edits": 18,
+        "toolCallsBeforeFirstEdit": 17,
+        "secondsBeforeFirstEdit": 209,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 5,
+        "wallSeconds": 6699,
+        "costUsd": null
+      }
+    },
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/scenes/max/suggestionTopics.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 29,
+        "linesRemoved": 0,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 0,
+          "maxCcn": 0,
+          "meanCcn": 0,
+          "overTen": 0,
+          "ccnDelta": 0
+        },
+        "changedFunctions": [],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 29,
+        "testRatio": 0,
+        "subjects": [],
+        "unreferenced": [],
+        "referenceCoverage": null,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.2
+      },
+      "process": {
+        "toolCalls": 14,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 10,
+        "secondsBeforeFirstEdit": 52,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 15,
+        "wallSeconds": 81,
+        "costUsd": 0.42106479999999996
+      }
+    },
+    "B-2": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/scenes/max/suggestionTopics.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 29,
+        "linesRemoved": 0,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 0,
+          "maxCcn": 0,
+          "meanCcn": 0,
+          "overTen": 0,
+          "ccnDelta": 0
+        },
+        "changedFunctions": [],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 29,
+        "testRatio": 0,
+        "subjects": [],
+        "unreferenced": [],
+        "referenceCoverage": null,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.2
+      },
+      "process": {
+        "toolCalls": 15,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 9,
+        "secondsBeforeFirstEdit": 45,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 0,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 16,
+        "wallSeconds": 75,
+        "costUsd": 0.35537299999999994
+      }
+    },
+    "C-1": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/scenes/max/suggestionTopics.tsx",
+        "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 2,
+        "linesAdded": 52,
+        "linesRemoved": 1,
+        "modulesTouched": 2,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 1
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 13,
+          "maxCcn": 2,
+          "meanCcn": 1.1,
+          "overTen": 0,
+          "ccnDelta": 1
+        },
+        "changedFunctions": [
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 18,
+            "params": 0,
+            "tokens": 215
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 2,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 12
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 6,
+            "params": 0,
+            "tokens": 63
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 4,
+            "params": 0,
+            "tokens": 36
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 6
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 1,
+            "params": 0,
+            "tokens": 4
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 15,
+            "params": 0,
+            "tokens": 124
+          },
+          {
+            "file": "frontend/src/scenes/project-homepage/ai-first/homepageSuggestions.test.ts",
+            "name": "(anonymous)",
+            "signature": "(anonymous)",
+            "ccn": 1,
+            "nloc": 3,
+            "params": 0,
+            "tokens": 11
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 23,
+        "productionLinesAdded": 29,
+        "testRatio": 0.79,
+        "subjects": [],
+        "unreferenced": [],
+        "referenceCoverage": null,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 74.1,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.17
+      },
+      "process": {
+        "toolCalls": 22,
+        "edits": 3,
+        "toolCallsBeforeFirstEdit": 16,
+        "secondsBeforeFirstEdit": 65,
+        "architectureToolCalls": 6,
+        "architectureExplorationBeforeEdit": 5,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Next I'll add the modules and seams to it, then lock it under your standing approval.",
+        "turns": 23,
+        "wallSeconds": 100,
+        "costUsd": 0.6092058
+      }
+    },
+    "C-2": {
+      "arm": "C",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "frontend/src/scenes/max/suggestionTopics.tsx"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 29,
+        "linesRemoved": 0,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 0,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 0,
+          "maxCcn": 0,
+          "meanCcn": 0,
+          "overTen": 0,
+          "ccnDelta": 0
+        },
+        "changedFunctions": [],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 29,
+        "testRatio": 0,
+        "subjects": [],
+        "unreferenced": [],
+        "referenceCoverage": null,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": {
+        "modules": 0.33,
+        "files": 0.2
+      },
+      "process": {
+        "toolCalls": 18,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 14,
+        "secondsBeforeFirstEdit": 63,
+        "architectureToolCalls": 5,
+        "architectureExplorationBeforeEdit": 4,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "Every surface reads its chips from `HOMEPAGE_SUGGESTION_TOPICS` in `scenes/max/suggestionTopics.tsx`, so this is a single-module change.",
+        "turns": 19,
+        "wallSeconds": 87,
+        "costUsd": 0.5427922
+      }
+    }
+  },
+  "consistency": {
+    "B": {
+      "modules": 1,
+      "files": 1
+    },
+    "C": {
+      "modules": 1,
+      "files": 0.5
+    }
+  }
+}

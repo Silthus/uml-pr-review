@@ -10,6 +10,5 @@
   "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
   "finalHead": "8872766beaada4ca8611d8a501b573c19fdf971e",
   "taskStatement": "In products/workflows/backend/facade/api.py, add a function `workflows_product_name() -> str` that returns the string \"workflows\". Keep it minimal: no tests, no other files, and do not run any test suites or linters.",
-  "attachments": [],
   "whyChosen": "Synthetic smoke task that proves the runner end to end cheaply."
 }

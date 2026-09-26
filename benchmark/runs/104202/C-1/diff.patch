@@ -1,0 +1,455 @@
+diff --git a/frontend/src/lib/scopes.tsx b/frontend/src/lib/scopes.tsx
+index e993b96d912..976c79e9e07 100644
+--- a/frontend/src/lib/scopes.tsx
++++ b/frontend/src/lib/scopes.tsx
+@@ -292,6 +292,8 @@ export const PROJECT_SECRET_API_KEY_ALLOWED_API_SCOPE_ACTION = [
+     'account:read',
+     'loop:write',
+     'experiment:read',
++    'hog_flow:read',
++    'hog_flow:write',
+ ] as const
+ 
+ export type ProjectSecretAPIKeyAllowedScope = (typeof PROJECT_SECRET_API_KEY_ALLOWED_API_SCOPE_ACTION)[number]
+diff --git a/posthog/scopes.py b/posthog/scopes.py
+index 9c6099c182a..1dc16e4b159 100644
+--- a/posthog/scopes.py
++++ b/posthog/scopes.py
+@@ -236,6 +236,10 @@ PROJECT_SECRET_API_KEY_ALLOWED_API_SCOPE_ACTION: list[tuple[APIScopeObject, APIS
+     # Read-only export of experiment definitions (list/retrieve), so services syncing
+     # experiments into a warehouse don't need a credential tied to one person's account.
+     ("experiment", "read"),
++    # Workflows pushed from CI: list/retrieve/create/update on hog_flows only. Deletes, publish and
++    # invocations are refused by the viewset's psak_allowed_actions, whatever the key's scopes are.
++    ("hog_flow", "read"),
++    ("hog_flow", "write"),
+ ]
+ 
+ # Server-side scope assignment string-set constants (see RFC: server-side scope
+diff --git a/products/workflows/CONTRIBUTING.md b/products/workflows/CONTRIBUTING.md
+index 45a376779c4..59225a78f1d 100644
+--- a/products/workflows/CONTRIBUTING.md
++++ b/products/workflows/CONTRIBUTING.md
+@@ -342,6 +342,10 @@ For anything emitted after the run has ended — a webhook, a callback — the v
+ 
+ Building a version picker? The list of versions that have metrics is `{flow.version} ∪ {revision versions}`, not just the revisions endpoint. A workflow that has never been edited has zero `HogFlowRevision` rows but still reports metrics under `<flow id>/1`.
+ 
++## Pushing workflows from CI
++
++A CI job that pushes workflows authenticates with a project secret API key (`phs_...`, sent as `Authorization: Bearer`) that has the `hog_flow:write` scope, or `hog_flow:read` for a read-only check. Do not use a personal API key: it stops working when its owner leaves the project, and it acts with that person's access. The key may only list, retrieve, create and update workflows. Deleting, publishing, running and every other workflow action refuse it. A workflow the key creates has no `created_by`, and its activity log rows have no user but name the key (label and masked value) in the row's trigger.
++
+ ## Common pitfalls
+ 
+ - **Forgot the side-effect import**: triggers/actions must be imported by their `index.ts`, and async functions must be imported by nodejs/src/cdp/async-functions/index.ts.
+diff --git a/products/workflows/backend/api/hog_flow.py b/products/workflows/backend/api/hog_flow.py
+index 4969d7f148e..fe273872361 100644
+--- a/products/workflows/backend/api/hog_flow.py
++++ b/products/workflows/backend/api/hog_flow.py
+@@ -71,7 +71,7 @@ from posthog.api.log_entries import LogEntryMixin
+ from posthog.api.routing import TeamAndOrgViewSetMixin
+ from posthog.api.shared import UserBasicSerializer
+ from posthog.api.utils import log_activity_from_viewset
+-from posthog.auth import InternalAPIAuthentication
++from posthog.auth import InternalAPIAuthentication, ProjectSecretAPIKeyAuthentication
+ from posthog.cdp.filters import compile_filters_expr
+ from posthog.cdp.flag_gated_templates import FLAG_GATED_TEMPLATE_IDS, gated_template_enabled
+ from posthog.cdp.validation import (
+@@ -85,9 +85,10 @@ from posthog.clickhouse.query_tagging import Feature, tag_queries
+ from posthog.dataclasses import frozen
+ from posthog.event_usage import AGENT_EVENT_SOURCES, EventSource, get_event_source, report_user_action
+ from posthog.models import Team
++from posthog.models.activity_logging.activity_log import Detail, Trigger, changes_between, log_activity
+ from posthog.models.filters import Filter
+ from posthog.models.integration import Integration
+-from posthog.permissions import posthog_feature_flag_enabled
++from posthog.permissions import is_authenticated_via_project_secret_api_key, posthog_feature_flag_enabled
+ from posthog.plugins.plugin_server_api import (
+     cancel_hog_flow_batch_job,
+     cancel_hog_flow_invocations,
+@@ -96,6 +97,12 @@ from posthog.plugins.plugin_server_api import (
+     get_hog_flow_in_flight_count,
+     rerun_hog_invocations,
+ )
++from posthog.rate_limit import (
++    BurstRateThrottle,
++    PersonalOrProjectSecretApiKeyRateThrottle,
++    ProjectSecretApiKeyTeamRateThrottle,
++    SustainedRateThrottle,
++)
+ from posthog.synthetic_user import SyntheticUser
+ from posthog.user_permissions import UserPermissions
+ from posthog.utils import relative_date_parse_with_delta_mapping
+@@ -201,6 +208,14 @@ from products.workflows.backend.utils.rrule_utils import compute_next_occurrence
+ logger = structlog.get_logger(__name__)
+ 
+ 
++def _real_user(user: Any) -> Any:
++    # A project secret API key authenticates as a SyntheticUser with no User row, so it can't be
++    # stored in a created_by foreign key or own a "Create AI task" step.
++    if user is None or not user.is_authenticated or isinstance(user, SyntheticUser):
++        return None
++    return user
++
++
+ # The content of a workflow: everything the draft cycle stages and publish promotes, and nothing
+ # else. Metadata (name, description) and lifecycle (status) always apply to the live row. The draft
+ # blob is a full snapshot of these fields so publish is a plain copy, not a merge.
+@@ -3042,13 +3057,11 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+ 
+         # Who a "Create AI task" step runs as: the existing creator for an update, or the
+         # requesting user for a brand-new flow (matches the `created_by` a create() actually
+-        # writes). None outside a request (internal re-saves), where the skills check is skipped.
++        # writes). None outside a request (internal re-saves) and for a project secret API key,
++        # where the skills check is skipped.
+         owner = instance.created_by if instance else None
+         if owner is None:
+-            request = self.context.get("request")
+-            user = getattr(request, "user", None)
+-            if user is not None and getattr(user, "is_authenticated", False):
+-                owner = user
++            owner = _real_user(getattr(self.context.get("request"), "user", None))
+         self.context["workflow_owner_id"] = owner.id if owner else None
+ 
+         # Wait conditions the live flow already carries, so per-action validation can tell a newly
+@@ -3344,7 +3357,7 @@ class HogFlowSerializer(HogFlowMinimalSerializer):
+     def create(self, validated_data: dict, *args, **kwargs) -> HogFlow:
+         request = self.context["request"]
+         team_id = self.context["team_id"]
+-        validated_data["created_by"] = request.user
++        validated_data["created_by"] = _real_user(request.user)
+         validated_data["team_id"] = team_id
+         self._strip_secret_inputs(validated_data)
+ 
+@@ -3897,6 +3910,29 @@ def mint_audience_confirm_token(
+ WRITABLE_DRAFT_CONTENT_FIELDS = frozenset(DRAFT_CONTENT_FIELDS) - frozenset(HogFlowSerializer.Meta.read_only_fields)
+ 
+ 
++class HogFlowProjectSecretApiKeyBurstThrottle(PersonalOrProjectSecretApiKeyRateThrottle):
++    # The default burst/sustained throttles skip PSAK requests, so a CI key gets the same per-key
++    # budget here that a personal API key gets from them.
++    scope = "hog_flow_psak_burst"
++    rate = BurstRateThrottle.rate
++
++
++class HogFlowProjectSecretApiKeySustainedThrottle(PersonalOrProjectSecretApiKeyRateThrottle):
++    scope = "hog_flow_psak_sustained"
++    rate = SustainedRateThrottle.rate
++
++
++class HogFlowProjectSecretApiKeyTeamBurstThrottle(ProjectSecretApiKeyTeamRateThrottle):
++    # Caps a project's total PSAK load at one key's budget, so minting more keys adds no capacity.
++    scope = "hog_flow_psak_team_burst"
++    rate = BurstRateThrottle.rate
++
++
++class HogFlowProjectSecretApiKeyTeamSustainedThrottle(ProjectSecretApiKeyTeamRateThrottle):
++    scope = "hog_flow_psak_team_sustained"
++    rate = SustainedRateThrottle.rate
++
++
+ @extend_schema(extensions={"x-product": "workflows"})
+ @extend_schema_view(
+     list=extend_schema(
+@@ -3935,6 +3971,10 @@ class HogFlowViewSet(
+     TeamAndOrgViewSetMixin, AccessControlViewSetMixin, LogEntryMixin, AppMetricsMixin, viewsets.ModelViewSet
+ ):
+     scope_object = "hog_flow"
++    authentication_classes = [ProjectSecretAPIKeyAuthentication]
++    # A CI push resolves, reads, creates and updates workflows. Deletes, publishing and anything
++    # that runs a workflow stay with people.
++    psak_allowed_actions = ["list", "retrieve", "create", "update", "partial_update"]
+     scope_object_read_actions = [
+         "list",
+         "retrieve",
+@@ -4022,6 +4062,17 @@ class HogFlowViewSet(
+             return ["hog_flow:write", "person:read", "group:read"]
+         return None
+ 
++    def get_throttles(self):
++        throttles = super().get_throttles()
++        if self.action in self.psak_allowed_actions:
++            throttles += [
++                HogFlowProjectSecretApiKeyBurstThrottle(),
++                HogFlowProjectSecretApiKeySustainedThrottle(),
++                HogFlowProjectSecretApiKeyTeamBurstThrottle(),
++                HogFlowProjectSecretApiKeyTeamSustainedThrottle(),
++            ]
++        return throttles
++
+     def get_serializer_class(self) -> type[BaseSerializer]:
+         if self.action == "list":
+             # MCP list ("workflows-list") is a discovery/summary tool — return metadata only so it
+@@ -4270,6 +4321,9 @@ class HogFlowViewSet(
+                     "workflow_name": instance.name,
+                     "team_id": str(self.team_id),
+                     "organization_id": str(self.organization.id),
++                    "auth_method": "project_secret_api_key"
++                    if is_authenticated_via_project_secret_api_key(self.request)
++                    else "user",
+                     **(extra_properties or {}),
+                 },
+                 team=self.team,
+@@ -4278,6 +4332,36 @@ class HogFlowViewSet(
+         except Exception as e:
+             logger.warning("Failed to capture workflow usage event", event=event, error=str(e))
+ 
++    def _log_write_activity(self, instance: HogFlow, previous: Optional[HogFlow] = None, **kwargs: Any) -> None:
++        authenticator = self.request.successful_authenticator
++        if not isinstance(authenticator, ProjectSecretAPIKeyAuthentication):
++            log_activity_from_viewset(self, instance, name=instance.name, previous=previous, **kwargs)
++            return
++        # log_activity_from_viewset writes request.user, and the PSAK's SyntheticUser has no User row,
++        # so the row would fail and be dropped. Write it with no user and name the key in the trigger.
++        psak = authenticator.project_secret_api_key
++        log_activity(
++            organization_id=self.organization.id,
++            team_id=self.team_id,
++            user=None,
++            was_impersonated=False,
++            item_id=str(instance.id),
++            scope="HogFlow",
++            activity="created" if self.action == "create" else "updated",
++            detail=Detail(
++                name=instance.name,
++                type=kwargs.get("detail_type"),
++                changes=changes_between("HogFlow", previous=previous, current=instance)
++                if previous is not None
++                else None,
++                trigger=Trigger(
++                    job_type="project_secret_api_key",
++                    job_id=str(psak.id),
++                    payload={"label": psak.label, "mask_value": psak.mask_value},
++                ),
++            ),
++        )
++
+     def perform_create(self, serializer):
+         if self._is_mcp_request(self.request) and serializer.validated_data.get("status") == HogFlow.State.ACTIVE:
+             raise exceptions.ValidationError(
+@@ -4286,7 +4370,7 @@ class HogFlowViewSet(
+             )
+ 
+         serializer.save()
+-        log_activity_from_viewset(self, serializer.instance, name=serializer.instance.name, detail_type="standard")
++        self._log_write_activity(serializer.instance, detail_type="standard")
+         self._emit_resource_edited(serializer.instance)
+ 
+         self._report_workflow_action(
+@@ -4427,7 +4511,7 @@ class HogFlowViewSet(
+         if not route_to_draft:
+             self._maybe_reschedule_timing_edits(before_update, serializer.instance)
+             self._pause_schedules_on_audience_change(before_update, serializer.instance)
+-        log_activity_from_viewset(self, serializer.instance, name=serializer.instance.name, previous=before_update)
++        self._log_write_activity(serializer.instance, previous=before_update)
+         self._emit_resource_edited(serializer.instance)
+ 
+         # PostHog capture for hog_flow activated (draft -> active)
+@@ -4508,7 +4592,7 @@ class HogFlowViewSet(
+             hog_flow=instance,
+             version=instance.version,
+             content=snapshot_flow_content(instance),
+-            created_by=self.request.user if self.request.user.is_authenticated else None,
++            created_by=_real_user(self.request.user),
+         )
+ 
+     def _write_draft(self, instance: HogFlow, locked: HogFlow, validated_data: dict) -> None:
+diff --git a/products/workflows/backend/api/test/test_hog_flow_psak_auth.py b/products/workflows/backend/api/test/test_hog_flow_psak_auth.py
+new file mode 100644
+index 00000000000..2a21373f903
+--- /dev/null
++++ b/products/workflows/backend/api/test/test_hog_flow_psak_auth.py
+@@ -0,0 +1,194 @@
++from posthog.test.base import APIBaseTest
++from unittest.mock import patch
++
++from parameterized import parameterized
++from rest_framework import status
++
++from posthog.cdp.templates.hog_function_template import sync_template_to_db
++from posthog.models import Organization, Team
++from posthog.models.activity_logging.activity_log import ActivityLog
++from posthog.models.project_secret_api_key import ProjectSecretAPIKey
++from posthog.models.utils import hash_key_value
++
++from products.cdp.backend.api.test.test_hog_function_templates import MOCK_NODE_TEMPLATES
++from products.workflows.backend.models.hog_flow.hog_flow import HogFlow
++from products.workflows.backend.models.hog_flow_revision import HogFlowRevision
++
++HOG_FLOW_SCOPES = ["hog_flow:read", "hog_flow:write"]
++
++
++def _make_psak(team: Team, label: str, scopes: list[str] = HOG_FLOW_SCOPES) -> tuple[str, ProjectSecretAPIKey]:
++    # The authenticator only accepts phs_ followed by alphanumerics.
++    suffix = "".join(c for c in label if c.isalnum())
++    token = "phs_" + ("a" * 35) + suffix
++    psak = ProjectSecretAPIKey.objects.create(
++        team=team,
++        label=label,
++        mask_value=f"phs_...{suffix[:4]}",
++        secure_value=hash_key_value(token),
++        scopes=scopes,
++    )
++    return token, psak
++
++
++def _trigger_action() -> dict:
++    return {
++        "id": "trigger_node",
++        "name": "trigger_1",
++        "type": "trigger",
++        "config": {
++            "type": "event",
++            "filters": {"events": [{"id": "$pageview", "name": "$pageview", "type": "events", "order": 0}]},
++        },
++    }
++
++
++def _webhook_action(url: str = "https://example.com") -> dict:
++    return {
++        "id": "action_1",
++        "name": "action_1",
++        "type": "function",
++        "config": {"template_id": "template-webhook", "inputs": {"url": {"value": url}}},
++    }
++
++
++class TestHogFlowPSAKAuth(APIBaseTest):
++    def setUp(self):
++        super().setUp()
++        sync_template_to_db(MOCK_NODE_TEMPLATES[0])
++        self.token, self.psak = _make_psak(self.team, "ci-push")
++        self.flow = HogFlow.objects.create(
++            team=self.team, name="Existing", created_by=self.user, actions=[_trigger_action()]
++        )
++        # Only the Bearer header may authenticate, so a session cookie cannot mask a refusal.
++        self.client.logout()
++
++    def _psak(self, token: str | None = None) -> dict:
++        return {"HTTP_AUTHORIZATION": f"Bearer {token or self.token}"}
++
++    def _url(self, team: Team | None = None, suffix: str = "") -> str:
++        return f"/api/projects/{(team or self.team).id}/hog_flows{suffix}"
++
++    def test_psak_lists_and_retrieves_workflows(self):
++        listed = self.client.get(self._url(), **self._psak())
++        assert listed.status_code == status.HTTP_200_OK, listed.content
++        assert [row["id"] for row in listed.json()["results"]] == [str(self.flow.id)]
++
++        retrieved = self.client.get(self._url(suffix=f"/{self.flow.id}"), **self._psak())
++        assert retrieved.status_code == status.HTTP_200_OK, retrieved.content
++        assert retrieved.json()["name"] == "Existing"
++
++    @patch("posthog.event_usage.posthoganalytics.capture")
++    def test_psak_create_stores_no_user_and_says_so_in_the_activity_log(self, mock_capture):
++        response = self.client.post(
++            self._url(),
++            {"name": "Pushed from CI", "actions": [_trigger_action(), _webhook_action()]},
++            content_type="application/json",
++            **self._psak(),
++        )
++
++        assert response.status_code == status.HTTP_201_CREATED, response.content
++        body = response.json()
++        assert body["name"] == "Pushed from CI"
++        assert body["created_by"] is None
++        assert HogFlow.objects.get(id=body["id"]).created_by is None
++
++        entry = ActivityLog.objects.get(scope="HogFlow", item_id=body["id"], activity="created")
++        assert entry.user is None
++        assert entry.detail is not None
++        assert entry.detail["trigger"] == {
++            "job_type": "project_secret_api_key",
++            "job_id": str(self.psak.id),
++            "payload": {"label": "ci-push", "mask_value": self.psak.mask_value},
++        }
++
++        created_events = [c for c in mock_capture.call_args_list if c.kwargs.get("event") == "hog_flow_created"]
++        assert len(created_events) == 1
++        assert created_events[0].kwargs["distinct_id"] == f"psak-{self.team.id}-{self.psak.id}"
++        assert created_events[0].kwargs["properties"]["auth_method"] == "project_secret_api_key"
++
++    @parameterized.expand([("patch",), ("put",)])
++    def test_psak_update_writes_revision_without_user(self, method: str):
++        # PSAK create does not write revision 1 on this base, so the update path's revision is the proof.
++        created = self.client.post(
++            self._url(),
++            {"name": "Revisioned", "actions": [_trigger_action(), _webhook_action()]},
++            content_type="application/json",
++            **self._psak(),
++        )
++        assert created.status_code == status.HTTP_201_CREATED, created.content
++        flow_id = created.json()["id"]
++
++        response = getattr(self.client, method)(
++            self._url(suffix=f"/{flow_id}"),
++            {"name": "Revisioned", "actions": [_trigger_action(), _webhook_action("https://changed.example.com")]},
++            content_type="application/json",
++            **self._psak(),
++        )
++
++        assert response.status_code == status.HTTP_200_OK, response.content
++        revisions = HogFlowRevision.objects.filter(hog_flow_id=flow_id).order_by("version")
++        assert [(r.version, r.created_by_id) for r in revisions] == [(1, None), (2, None)]
++
++        entry = ActivityLog.objects.get(scope="HogFlow", item_id=flow_id, activity="updated")
++        assert entry.user is None
++        assert entry.detail is not None
++        assert entry.detail["trigger"]["job_type"] == "project_secret_api_key"
++        assert entry.detail["changes"]
++
++    @parameterized.expand(
++        [
++            ("destroy", "delete", "/{id}", None),
++            ("bulk_delete", "post", "/bulk_delete", lambda flow_id: {"ids": [flow_id]}),
++            ("publish", "post", "/{id}/publish", lambda flow_id: {}),
++            ("revisions", "get", "/{id}/revisions", None),
++        ]
++    )
++    def test_psak_refused_on_actions_outside_the_push(self, _name, method, suffix, body):
++        self.flow.status = HogFlow.State.ARCHIVED
++        self.flow.save()
++        kwargs = {"content_type": "application/json", "data": body(str(self.flow.id))} if body is not None else {}
++
++        response = getattr(self.client, method)(
++            self._url(suffix=suffix.format(id=self.flow.id)), **kwargs, **self._psak()
++        )
++
++        assert response.status_code == status.HTTP_403_FORBIDDEN, response.content
++        assert HogFlow.objects.filter(id=self.flow.id).exists()
++
++    def test_psak_without_write_scope_cannot_create(self):
++        token, _ = _make_psak(self.team, "read-only", scopes=["hog_flow:read"])
++
++        response = self.client.post(self._url(), {"name": "Nope"}, content_type="application/json", **self._psak(token))
++
++        assert response.status_code == status.HTTP_403_FORBIDDEN, response.content
++
++    def test_psak_cannot_reach_another_teams_workflows(self):
++        other_team = Team.objects.create(organization=Organization.objects.create(name="Other"), name="Other")
++        other_flow = HogFlow.objects.create(team=other_team, name="Theirs", actions=[_trigger_action()])
++
++        responses = [
++            self.client.get(self._url(other_team), **self._psak()),
++            self.client.get(self._url(other_team, f"/{other_flow.id}"), **self._psak()),
++            self.client.post(
++                self._url(other_team), {"name": "Planted"}, content_type="application/json", **self._psak()
++            ),
++            self.client.patch(
++                self._url(other_team, f"/{other_flow.id}"),
++                {"name": "Hijacked"},
++                content_type="application/json",
++                **self._psak(),
++            ),
++            # Same key against its own team's URL but another team's workflow id.
++            self.client.patch(
++                self._url(suffix=f"/{other_flow.id}"),
++                {"name": "Hijacked"},
++                content_type="application/json",
++                **self._psak(),
++            ),
++        ]
++
++        assert [r.status_code for r in responses] == [403, 403, 403, 403, 404]
++        other_flow.refresh_from_db()
++        assert other_flow.name == "Theirs"
++        assert not HogFlow.objects.filter(team=other_team, name="Planted").exists()

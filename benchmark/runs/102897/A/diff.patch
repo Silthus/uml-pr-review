@@ -1,0 +1,274 @@
+diff --git a/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx b/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx
+index e8f9aa2182db..e67a52753e5c 100644
+--- a/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx
++++ b/frontend/src/lib/components/CyclotronJob/CyclotronJobInputs.tsx
+@@ -164,7 +164,7 @@ export function CyclotronJobInputs({
+                 }}
+             >
+                 <SortableContext disabled={!showSource} items={inputSchemaIds} strategy={verticalListSortingStrategy}>
+-                    <div className="flex flex-col gap-3">
++                    <div className="flex flex-1 flex-col gap-3">
+                         {configuration.inputs_schema
+                             ?.filter((i: CyclotronJobInputSchemaType) => !i.hidden)
+                             .map((schema: CyclotronJobInputSchemaType) => {
+@@ -974,9 +974,14 @@ function CyclotronJobInputWithSchema({
+         })
+     }
+ 
++    // The email preview is an iframe that only grows through a flex chain, so the email input is
++    // the one that claims the height its host leaves over.
++    const fillsAvailableHeight = schema.type === 'email' || schema.type === 'native_email'
++
+     return (
+         <div
+             ref={setNodeRef}
++            className={clsx(fillsAvailableHeight && 'flex flex-1 flex-col')}
+             // eslint-disable-next-line react/forbid-dom-props
+             style={{
+                 transform: CSS.Transform.toString(transform),
+@@ -985,7 +990,7 @@ function CyclotronJobInputWithSchema({
+         >
+             {!editing ? (
+                 <LemonField.Pure
+-                    className="gap-1"
++                    className={clsx('gap-1', fillsAvailableHeight && 'flex-1')}
+                     error={error}
+                     help={
+                         <>
+diff --git a/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx b/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx
+index 37cbb13d6970..175e48c65770 100644
+--- a/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx
++++ b/frontend/src/scenes/hog-functions/email-templater/EmailTemplater.tsx
+@@ -216,7 +216,7 @@ function DestinationEmailTemplaterForm({
+                         </div>
+                     </>
+                 ) : (
+-                    <LemonField name="html" className="flex relative flex-col">
++                    <LemonField name="html" className="flex relative flex-1 flex-col">
+                         {({ value }: ChildFunctionProps) => (
+                             <>
+                                 <div
+@@ -735,7 +735,7 @@ function NativeEmailTemplaterForm({
+                         </div>
+                     </>
+                 ) : (
+-                    <LemonField name="html" className="flex relative flex-col">
++                    <LemonField name="html" className="flex relative flex-1 flex-col">
+                         {({ value }: ChildFunctionProps) => (
+                             <>
+                                 <div
+diff --git a/products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts b/products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts
+index 6f4970bf31c6..e614ca8d283a 100644
+--- a/products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts
++++ b/products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts
+@@ -1,4 +1,5 @@
+ import { mswDecorator } from '~/mocks/browser'
++import _hogFunctionTemplatesDestinations from '~/mocks/fixtures/_hogFunctionTemplatesDestinations.json'
+ 
+ import { NEW_WORKFLOW } from '../../workflowLogic'
+ import { EXAMPLE_WORKFLOWS } from '../tree/exampleWorkflows'
+@@ -277,8 +278,46 @@ const PICKABLE_WORKFLOWS: Record<string, HogFlow> = {
+     ...EXAMPLE_WORKFLOWS,
+ }
+ 
++// The email template ships with `status: 'hidden'`, so the destinations fixture does not carry it.
++const EMAIL_TEMPLATE = {
++    id: 'template-email',
++    name: 'Email',
++    description: 'Sends an email via PostHog email service',
++    type: 'destination',
++    status: 'hidden',
++    free: false,
++    icon_url: '/static/posthog-icon.svg',
++    category: ['Custom'],
++    code: '',
++    code_language: 'hog',
++    inputs_schema: [
++        {
++            type: 'native_email',
++            key: 'email',
++            label: 'Email message',
++            integration: 'email',
++            required: true,
++            secret: false,
++            description: 'The email message to send. Configure the recipient, sender, subject, and content.',
++            templating: 'liquid',
++        },
++    ],
++}
++
++export const WORKFLOW_EMAIL_STEP_MOCKS = {
++    '/api/projects/:team_id/hog_function_templates': {
++        ..._hogFunctionTemplatesDestinations,
++        results: [EMAIL_TEMPLATE, ..._hogFunctionTemplatesDestinations.results],
++    },
++    // nosemgrep: no-environments-api-urls-frontend -- api.messaging has not migrated to generated project routes.
++    '/api/environments/:team_id/messaging_templates': { count: 0, results: [] },
++    // nosemgrep: no-environments-api-urls-frontend -- api.integrations has not migrated to generated project routes.
++    '/api/environments/:team_id/integrations/': { count: 0, results: [] },
++}
++
+ export const workflowEditorStoryDecorator = mswDecorator({
+     get: {
++        ...WORKFLOW_EMAIL_STEP_MOCKS,
+         // nosemgrep: no-environments-api-urls-frontend -- api.hogFlows has not migrated to generated project routes.
+         '/api/environments/:team_id/hog_flows/:id/': ({ params }) => [
+             200,
+diff --git a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx
+index 58ee4a581299..74cc05e2a727 100644
+--- a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx
++++ b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanel.stories.tsx
+@@ -1,5 +1,6 @@
+ import type { Meta, StoryFn } from '@storybook/react'
+ import { ReactFlowProvider } from '@xyflow/react'
++import clsx from 'clsx'
+ import { BindLogic, useActions, useValues } from 'kea'
+ import { useEffect } from 'react'
+ 
+@@ -8,12 +9,19 @@ import { FEATURE_FLAGS } from 'lib/constants'
+ import { mswDecorator } from '~/mocks/browser'
+ 
+ import { NEW_WORKFLOW, WorkflowLogicProps, workflowLogic } from '../../workflowLogic'
++import { WORKFLOW_EMAIL_STEP_MOCKS } from '../editor/workflowEditorStoryFixtures'
+ import { hogFlowEditorLogic, HogFlowEditorMode } from '../hogFlowEditorLogic'
+ import type { HogFlow, HogFlowAction } from '../types'
+ import { HogFlowEditorPanel } from './HogFlowEditorPanel'
+ 
+ const LOGIC_PROPS: WorkflowLogicProps = { id: 'storybook-configuration-panel' }
+ 
++const WELCOME_EMAIL_HTML = `<html><body style="font-family: sans-serif; margin: 0; padding: 24px;">
++<h1>Welcome to Example</h1>
++<p>Thanks for creating an account. Here are three things to try first.</p>
++<ul><li>Invite a teammate</li><li>Connect a data source</li><li>Build your first dashboard</li></ul>
++</body></html>`
++
+ const PANEL_WORKFLOW: HogFlow = {
+     ...NEW_WORKFLOW,
+     id: LOGIC_PROPS.id!,
+@@ -60,6 +68,28 @@ const PANEL_WORKFLOW: HogFlow = {
+                 },
+             },
+         },
++        {
++            id: 'email',
++            type: 'function_email',
++            name: 'Send welcome email',
++            description: 'Welcome the new account by email.',
++            config: {
++                template_id: 'template-email',
++                inputs: {
++                    email: {
++                        templating: 'liquid',
++                        value: {
++                            to: { name: '', email: '{{ person.properties.email }}' },
++                            from: {},
++                            subject: 'Welcome to Example',
++                            preheader: '',
++                            html: WELCOME_EMAIL_HTML,
++                            text: 'Thanks for creating an account.',
++                        },
++                    },
++                },
++            },
++        },
+         {
+             id: 'conditional',
+             type: 'conditional_branch',
+@@ -100,7 +130,8 @@ const PANEL_WORKFLOW: HogFlow = {
+     edges: [
+         { from: 'trigger', to: 'delay', type: 'continue' },
+         { from: 'delay', to: 'webhook', type: 'continue' },
+-        { from: 'webhook', to: 'conditional', type: 'continue' },
++        { from: 'webhook', to: 'email', type: 'continue' },
++        { from: 'email', to: 'conditional', type: 'continue' },
+         { from: 'conditional', to: 'cohort', type: 'branch', index: 0 },
+         { from: 'conditional', to: 'exit', type: 'branch', index: 1 },
+         { from: 'conditional', to: 'exit', type: 'continue' },
+@@ -113,6 +144,7 @@ const PANEL_WORKFLOW: HogFlow = {
+ type PanelStoryProps = {
+     mode: HogFlowEditorMode
+     selectedNodeId: string | null
++    layout?: 'floating' | 'panel'
+ }
+ 
+ const meta: Meta<typeof HogFlowEditorPanel> = {
+@@ -127,6 +159,7 @@ const meta: Meta<typeof HogFlowEditorPanel> = {
+             get: {
+                 '/api/environments/:team_id/hog_flows/:id/': PANEL_WORKFLOW,
+                 '/api/environments/:team_id/messaging_categories': { count: 0, results: [] },
++                ...WORKFLOW_EMAIL_STEP_MOCKS,
+             },
+             patch: {
+                 '/api/environments/:team_id/hog_flows/:id/': async ({ request }) => [
+@@ -157,7 +190,7 @@ const meta: Meta<typeof HogFlowEditorPanel> = {
+ }
+ export default meta
+ 
+-function PanelStory({ mode, selectedNodeId }: PanelStoryProps): JSX.Element {
++function PanelStory({ mode, selectedNodeId, layout = 'floating' }: PanelStoryProps): JSX.Element {
+     const { originalWorkflow } = useValues(workflowLogic(LOGIC_PROPS))
+     const { nodes } = useValues(hogFlowEditorLogic(LOGIC_PROPS))
+     const { setWorkflowValues } = useActions(workflowLogic(LOGIC_PROPS))
+@@ -180,8 +213,14 @@ function PanelStory({ mode, selectedNodeId }: PanelStoryProps): JSX.Element {
+         <ReactFlowProvider>
+             <BindLogic logic={workflowLogic} props={LOGIC_PROPS}>
+                 <BindLogic logic={hogFlowEditorLogic} props={LOGIC_PROPS}>
+-                    <div className="relative h-screen w-[37rem] overflow-hidden bg-surface-primary">
+-                        <HogFlowEditorPanel />
++                    <div
++                        className={clsx(
++                            'relative h-screen w-[37rem] overflow-hidden bg-surface-primary',
++                            // The docked panel sizes itself as a share of the editor; here it is the whole story.
++                            layout === 'panel' && '[&>div]:!w-full [&>div]:!max-w-full'
++                        )}
++                    >
++                        <HogFlowEditorPanel layout={layout} />
+                     </div>
+                 </BindLogic>
+             </BindLogic>
+@@ -203,6 +242,10 @@ Trigger.args = { mode: 'build', selectedNodeId: 'trigger' }
+ export const Webhook: StoryFn<PanelStoryProps> = Template.bind({})
+ Webhook.args = { mode: 'build', selectedNodeId: 'webhook' }
+ 
++// Docked, because only a panel with a fixed height shows whether the preview fills it.
++export const Email: StoryFn<PanelStoryProps> = Template.bind({})
++Email.args = { mode: 'build', selectedNodeId: 'email', layout: 'panel' }
++
+ export const ConditionalBranch: StoryFn<PanelStoryProps> = Template.bind({})
+ ConditionalBranch.args = { mode: 'build', selectedNodeId: 'conditional' }
+ 
+diff --git a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx
+index e934d0f8cee8..77b280dd5183 100644
+--- a/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx
++++ b/products/workflows/frontend/Workflows/hogflows/panel/HogFlowEditorPanelBuildDetail.tsx
+@@ -90,6 +90,10 @@ export function HogFlowEditorPanelBuildDetail(): JSX.Element | null {
+                 direction="vertical"
+                 className="flex-1 min-h-0"
+                 innerClassName="flex flex-col gap-2 p-3"
++                // The scroll area wraps children in its own content element, so the flex column
++                // above stops there. Growing that element lets a step (the email preview) fill
++                // the panel while a taller step still scrolls.
++                contentClassName="flex flex-1 flex-col"
+                 styledScrollbars
+             >
+                 <ErrorBoundary exceptionProps={{ feature: 'workflow-step-config' }}>
+diff --git a/products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeEditor.stories.tsx b/products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeEditor.stories.tsx
+index 32d09afa4db6..361535202034 100644
+--- a/products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeEditor.stories.tsx
++++ b/products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeEditor.stories.tsx
+@@ -9,6 +9,7 @@ import { mswDecorator } from '~/mocks/browser'
+ 
+ import { Workflow } from '../../Workflow'
+ import { NEW_WORKFLOW, workflowLogic } from '../../workflowLogic'
++import { WORKFLOW_EMAIL_STEP_MOCKS } from '../editor/workflowEditorStoryFixtures'
+ import type { HogFlow, HogFlowAction } from '../types'
+ import { EXAMPLE_WORKFLOWS } from './exampleWorkflows'
+ import { HogFlowTreeEditor } from './HogFlowTreeEditor'
+@@ -314,6 +315,7 @@ const meta: Meta<typeof HogFlowTreeEditor> = {
+         ),
+         mswDecorator({
+             get: {
++                ...WORKFLOW_EMAIL_STEP_MOCKS,
+                 '/api/environments/:team_id/hog_flows/:id/': ({ params }) => [
+                     200,
+                     PICKABLE_WORKFLOWS[String(params.id)] ?? COMPLEX_WORKFLOW,

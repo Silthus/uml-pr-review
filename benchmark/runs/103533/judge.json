@@ -1,0 +1,116 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T16:29:32.984Z",
+  "verdicts": {
+    "B-2": {
+      "seams": {
+        "score": 8,
+        "justification": "SendingTiersHelp encapsulates the interaction in WorkflowsReputation.tsx and uses the existing API shape. Passing the entire EmailSendingAllowanceApi gives it a broader interface than the displayed fields require."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "The help content, documentation URL, and badge integration remain together in the owning workflows reputation screen. No unrelated module acquires sending-tier responsibilities."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "The change reuses @posthog/lemon-ui and existing allowance data without adding backend dependencies or duplicating a tier-cap table. Its dependencies remain local presentation concerns."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The change stays inside products/workflows/frontend and consumes shared UI primitives. It introduces no backend boundary crossings or changes to isolation contracts."
+      },
+      "overall": {
+        "score": 8,
+        "justification": "This is a contained presentation change with a useful local component boundary. LemonDropdown provides shared interaction behavior, although the dedicated HoverCard abstraction shown in other diffs expresses this concern more directly."
+      }
+    },
+    "C-2": {
+      "seams": {
+        "score": 9,
+        "justification": "SendingTiersHoverCard accepts only maxTier, keeping its interface narrow. HoverCard, HoverCardContent, and HoverCardTrigger delegate interaction and surface rendering to shared UI components."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "WorkflowsReputation.tsx owns the contextual tier explanation and documentation link. The extracted component groups one coherent presentation responsibility without introducing an unnecessary shared module."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "The only new dependencies are shared icon and HoverCard primitives. The component neither reaches into backend internals nor expands the API to support explanatory content."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The implementation remains within the workflows frontend and uses the shared design system through lib/ui/HoverCard/HoverCard. The backend facade and isolation rules are unaffected."
+      },
+      "overall": {
+        "score": 9,
+        "justification": "A narrow component interface and shared HoverCard behavior make this a proportionate architectural change. WorkflowsReputation.tsx retains ownership of product-specific copy while shared UI owns the interaction."
+      }
+    },
+    "A": {
+      "seams": {
+        "score": 6,
+        "justification": "The serializer and generated schemas give the tier table an explicit wire shape. However, backend/api/hog_flow.py directly imports additional tier utilities and exposes EmailSendingTierLimits through its local response object instead of obtaining a facade contract."
+      },
+      "cohesion": {
+        "score": 6,
+        "justification": "SendingTierTable usefully separates table rendering from interaction. However, tier enumeration and fallback policy are added to the API module, while SendingTierInfo implements its own visibility lifecycle in WorkflowsReputation.tsx."
+      },
+      "coupling": {
+        "score": 6,
+        "justification": "Using get_email_sending_tier_limits avoids duplicating configured caps in production frontend code. The change nevertheless deepens the API module's dependency on backend.utils.email_sending_tiers and expands the response contract consumed by frontend and MCP generated types."
+      },
+      "fit": {
+        "score": 5,
+        "justification": "The documented direction requires presentation to reach business behavior through a facade. Although backend/api/hog_flow.py already follows a legacy arrangement, adding direct utility imports and tier fallback policy extends that bypass rather than containing it."
+      },
+      "overall": {
+        "score": 6,
+        "justification": "The explicit serialized tier data and separate table component are sound choices for showing configured limits. Architecture quality is reduced by placing more domain assembly in hog_flow.py and managing popover behavior locally rather than through the dedicated shared HoverCard."
+      }
+    },
+    "C-1": {
+      "seams": {
+        "score": 9,
+        "justification": "SendingTiersHoverCard exposes only a maxTier prop and composes the shared HoverCard interface. The parent screen needs no knowledge of the hover interaction's implementation."
+      },
+      "cohesion": {
+        "score": 9,
+        "justification": "The explanation, link, and trigger form one local component in WorkflowsReputation.tsx. Product-specific presentation stays beside the allowance card that uses it."
+      },
+      "coupling": {
+        "score": 9,
+        "justification": "The change adds only shared HoverCard and icon dependencies while retaining the existing allowance API. It introduces no product-internal backend dependencies or replicated tier-cap data."
+      },
+      "fit": {
+        "score": 9,
+        "justification": "The implementation respects the workflows frontend boundary and delegates card rendering to lib/ui/HoverCard/HoverCard. No backend contracts, model boundaries, or selective-testing assumptions change."
+      },
+      "overall": {
+        "score": 9,
+        "justification": "This is a focused change with a narrow interface and appropriate reuse of shared UI behavior. Its architectural structure is effectively equivalent to Y; differences in explanatory copy do not materially change the rating."
+      }
+    },
+    "B-1": {
+      "seams": {
+        "score": 7,
+        "justification": "EmailSendingTierSerializer and the generated EmailSendingTierApi establish an explicit data interface for configured limits. However, hog_flow.py obtains those limits directly from backend utilities rather than through a facade, and SendingTierHoverCard accepts the entire allowance object."
+      },
+      "cohesion": {
+        "score": 7,
+        "justification": "SendingTierHoverCard groups the badge, explanation, and tier table into one coherent presentation component and delegates interaction to shared HoverCard primitives. Tier enumeration still lives in backend/api/hog_flow.py instead of a domain-owned operation behind the facade."
+      },
+      "coupling": {
+        "score": 7,
+        "justification": "The frontend receives serialized data rather than importing or duplicating backend tier definitions. The added required tiers field broadens the allowance contract, and direct imports from backend.utils.email_sending_tiers deepen the existing presentation-to-internals dependency."
+      },
+      "fit": {
+        "score": 6,
+        "justification": "The frontend follows product ownership and shared design-system conventions through HoverCard and semantic tokens. The backend extends the legacy API module's direct access to internals, contrary to the documented thin-presentation and facade direction."
+      },
+      "overall": {
+        "score": 7,
+        "justification": "The configured tier table has an explicit wire shape, and shared HoverCard behavior keeps the frontend implementation contained. The main architectural weakness is assembling the new domain data directly in hog_flow.py rather than exposing it through a narrow facade operation."
+      }
+    }
+  }
+}

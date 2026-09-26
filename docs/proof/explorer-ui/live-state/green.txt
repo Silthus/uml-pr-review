@@ -1,6 +1,6 @@
 # test/explorer/live-state.dom.test.tsx after the change
 
 bun test v1.4.2 (50a8a8387)
- 9 pass
+ 12 pass
  0 fail
-Ran 9 tests across 1 file. [266.00ms]
+Ran 12 tests across 1 file. [375.00ms]

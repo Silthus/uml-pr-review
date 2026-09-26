@@ -7,6 +7,7 @@ import { counterpartImports, fileIndexOf, filesWithin, holds, type ImportTuple, 
 export type Location = { file: string; line: number };
 export type FileImport = { file: string; line: number; target: string; names: string[]; test: boolean };
 export type UnresolvedImport = { file: string; line: number; specifier: string };
+export type ReconfiguredImport = FileImport & { farEnd: string };
 
 export class Change {
   readonly plan: ArchitecturePlan;
@@ -17,6 +18,7 @@ export class Change {
   readonly #presentPaths: string[];
   readonly #seamImports = new Map<Seam, FileImport[]>();
   readonly #baseTargetsOf = new Map<string, string[]>();
+  #addedImports: FileImport[] | undefined;
 
   constructor({ plan, base, head, changes }: { plan: ArchitecturePlan; base: ArchitectureModel; head: ArchitectureModel; changes: ChangedFile[] }) {
     this.plan = plan;
@@ -45,12 +47,8 @@ export class Change {
   }
 
   addedImports(): FileImport[] {
-    const { payload } = this.head;
-    const atBase = counterpartImports(payload, this.base.payload);
-    return payload.imports.flatMap((tuple, index) => {
-      const names = namesIfAdded(tuple[4], atBase[index]?.[4]);
-      return names ? [{ ...fileImportOf(payload, tuple), names }] : [];
-    });
+    this.#addedImports ??= addedImportsBetween(this.base.payload, this.head.payload);
+    return this.#addedImports;
   }
 
   addedUnresolvedImports(): UnresolvedImport[] {
@@ -73,7 +71,16 @@ export class Change {
     return along;
   }
 
-  farEnd(owner: string, targetLeaf: string): string {
+  targetLeaf(imported: FileImport): string {
+    return this.leaf(imported.target) ?? imported.target;
+  }
+
+  newDependencyOn(owner: string, imported: FileImport): string | undefined {
+    const farEnd = this.#farEnd(owner, this.targetLeaf(imported));
+    return this.#baseDependsOn(owner, farEnd, imported.test) ? undefined : farEnd;
+  }
+
+  #farEnd(owner: string, targetLeaf: string): string {
     let child = targetLeaf;
     for (let ancestor: string | null = targetLeaf; ancestor !== null; ancestor = this.head.module(ancestor)?.parent ?? null) {
       if (isWithin(owner, ancestor)) return child;
@@ -82,7 +89,7 @@ export class Change {
     return child;
   }
 
-  baseDependsOn(owner: string, farEnd: string, { includeTests }: { includeTests: boolean }): boolean {
+  #baseDependsOn(owner: string, farEnd: string, includeTests: boolean): boolean {
     const targets = this.#baseTargetsLeaving(owner, includeTests);
     if (!isWithin(owner, farEnd)) return targets.some((target) => isWithin(target, farEnd));
     return targets.some((target) => this.base.moduleOfFile(target)?.path === farEnd);
@@ -112,6 +119,14 @@ export class Change {
     this.#baseTargetsOf.set(key, targets);
     return targets;
   }
+}
+
+function addedImportsBetween(base: ArchitecturePayload, head: ArchitecturePayload): FileImport[] {
+  const atBase = counterpartImports(head, base);
+  return head.imports.flatMap((tuple, index) => {
+    const names = namesIfAdded(tuple[4], atBase[index]?.[4]);
+    return names ? [{ ...fileImportOf(head, tuple), names }] : [];
+  });
 }
 
 function namesIfAdded(headNames: string[], baseNames: string[] | undefined): string[] | undefined {

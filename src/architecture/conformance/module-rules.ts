@@ -1,8 +1,8 @@
 import type { ChangedFile, PlannedModule } from "../contracts/index.ts";
-import type { Change, Location } from "./change.ts";
+import type { Change, FileImport, Location, ReconfiguredImport } from "./change.ts";
 import { type DraftFinding, draftOf, moduleSubject } from "./draft.ts";
 import * as feedback from "./feedback.ts";
-import { isWithin } from "./paths.ts";
+import { compare, isWithin } from "./paths.ts";
 
 export function moduleFindings(change: Change): DraftFinding[] {
   return [...change.plan.modules.flatMap((module) => plannedModuleFindings(change, module)), ...unplannedModuleFindings(change)];
@@ -32,29 +32,79 @@ function plannedDraft(change: Change, rule: DraftFinding["rule"], module: Planne
   return draftOf({ rule, severity: "planned", ...location, subject: moduleSubject(module.path), test: change.isTest(location.file), ...text });
 }
 
+type Evidence = Location & feedback.Feedback;
+
 function unplannedModuleFindings(change: Change): DraftFinding[] {
-  return [...unownedChangesByLeaf(change)].map(([leaf, changed]) => {
-    const first = changed.find(({ path }) => !change.isTest(path)) ?? changed[0]!;
-    return draftOf({
-      rule: "unplanned-module",
-      severity: "violation",
-      file: first.path,
-      line: first.firstChangedLine,
-      subject: moduleSubject(leaf),
-      test: changed.every(({ path }) => change.isTest(path)),
-      ...feedback.unplannedModule(first, leaf, changed.length, change.base.module(leaf) !== undefined, change.plan.status),
-    });
+  const changedByLeaf = unownedByLeaf(change, change.changes, ({ path }) => path);
+  const reconfiguredByLeaf = reconfiguredDependenciesByLeaf(change);
+  const leaves = new Set([...changedByLeaf.keys(), ...reconfiguredByLeaf.keys()]);
+  return [...leaves].map((leaf) => unplannedModuleDraft(change, leaf, changedByLeaf.get(leaf) ?? [], reconfiguredByLeaf.get(leaf) ?? []));
+}
+
+function unplannedModuleDraft(change: Change, leaf: string, changed: ChangedFile[], reconfigured: ReconfiguredImport[]): DraftFinding {
+  const test = changed.every(({ path }) => change.isTest(path)) && reconfigured.every(({ test: fromTest }) => fromTest);
+  const changedFile = changed.find(({ path }) => test || !change.isTest(path));
+  const evidence = changedFile ? sourceChangeEvidence(change, leaf, changedFile, changed.length) : reconfigurationEvidence(change, leaf, reconfigured);
+  return draftOf({ rule: "unplanned-module", severity: "violation", subject: moduleSubject(leaf), test, ...evidence });
+}
+
+function sourceChangeEvidence(change: Change, leaf: string, first: ChangedFile, changedFiles: number): Evidence {
+  return {
+    file: first.path,
+    line: first.firstChangedLine,
+    ...feedback.unplannedModule(first, leaf, changedFiles, existsAtBase(change, leaf), change.plan.status),
+  };
+}
+
+function reconfigurationEvidence(change: Change, leaf: string, reconfigured: ReconfiguredImport[]): Evidence {
+  const first = reconfigured.reduce((earliest, candidate) => (byProductionThenLocation(candidate, earliest) < 0 ? candidate : earliest));
+  return {
+    file: first.file,
+    line: first.line,
+    ...feedback.reconfiguredModule(first, leaf, reconfigured.length, existsAtBase(change, leaf), change.plan.status),
+  };
+}
+
+function reconfiguredDependenciesByLeaf(change: Change): Map<string, ReconfiguredImport[]> {
+  const byLeaf = new Map<string, ReconfiguredImport[]>();
+  for (const [leaf, imports] of unownedByLeaf(change, importsNoSourceChangeExplains(change), ({ file }) => file)) {
+    const dependencies = newDependenciesOf(change, leaf, imports);
+    if (dependencies.length > 0) byLeaf.set(leaf, dependencies);
+  }
+  return byLeaf;
+}
+
+function importsNoSourceChangeExplains(change: Change): FileImport[] {
+  const changedFiles = new Set(change.changes.map(({ path }) => path));
+  const addedFiles = new Set(change.changes.filter(({ status }) => status === "added").map(({ path }) => path));
+  return change.addedImports().filter(({ file, target }) => !changedFiles.has(file) && !addedFiles.has(target));
+}
+
+function newDependenciesOf(change: Change, leaf: string, imports: FileImport[]): ReconfiguredImport[] {
+  return imports.flatMap((imported) => {
+    if (isWithin(imported.target, leaf)) return [];
+    const farEnd = change.newDependencyOn(leaf, imported);
+    return farEnd === undefined ? [] : [{ ...imported, farEnd }];
   });
 }
 
-function unownedChangesByLeaf(change: Change): Map<string, ChangedFile[]> {
-  const byLeaf = new Map<string, ChangedFile[]>();
-  for (const changed of change.changes) {
-    const leaf = change.leaf(changed.path);
-    if (leaf === undefined || change.owner(changed.path)) continue;
+function byProductionThenLocation(a: FileImport, b: FileImport): number {
+  return Number(a.test) - Number(b.test) || compare(a.file, b.file) || a.line - b.line;
+}
+
+function existsAtBase(change: Change, leaf: string): boolean {
+  return change.base.module(leaf) !== undefined;
+}
+
+function unownedByLeaf<T>(change: Change, items: T[], fileOf: (item: T) => string): Map<string, T[]> {
+  const byLeaf = new Map<string, T[]>();
+  for (const item of items) {
+    const file = fileOf(item);
+    const leaf = change.leaf(file);
+    if (leaf === undefined || change.owner(file)) continue;
     const group = byLeaf.get(leaf);
-    if (group) group.push(changed);
-    else byLeaf.set(leaf, [changed]);
+    if (group) group.push(item);
+    else byLeaf.set(leaf, [item]);
   }
   return byLeaf;
 }

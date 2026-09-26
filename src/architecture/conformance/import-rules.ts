@@ -42,14 +42,13 @@ function offInterface(imported: FileImport, seam: Seam): DraftFinding[] {
 }
 
 function bypassesSeam(change: Change, imported: FileImport, seam: Seam): DraftFinding {
-  const targetLeaf = change.leaf(imported.target) ?? imported.target;
-  return importDraft(imported, "bypasses-seam", seamSubject(seam), feedback.bypassesSeam(imported, targetLeaf, seam, regionOf(seam)));
+  return importDraft(imported, "bypasses-seam", seamSubject(seam), feedback.bypassesSeam(imported, change.targetLeaf(imported), seam, regionOf(seam)));
 }
 
 function unplannedDependency(change: Change, imported: FileImport, owner: PlannedModule): DraftFinding[] {
-  const targetLeaf = change.leaf(imported.target) ?? imported.target;
-  const farEnd = change.farEnd(owner.path, targetLeaf);
-  if (change.baseDependsOn(owner.path, farEnd, { includeTests: imported.test })) return [];
+  const farEnd = change.newDependencyOn(owner.path, imported);
+  if (farEnd === undefined) return [];
+  const targetLeaf = change.targetLeaf(imported);
   const text = isWithin(owner.path, targetLeaf)
     ? feedback.unplannedDependencyOnEnclosingModule(imported, owner.path, farEnd)
     : feedback.unplannedDependency(imported, owner.path, farEnd, targetLeaf, change.plan.status);

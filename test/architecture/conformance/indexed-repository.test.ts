@@ -23,6 +23,10 @@ async function finalCheck({ committed, working, plan }: { committed: Files; work
   return checkConformance({ plan, base: new ArchitectureModel(base), head: new ArchitectureModel(head), changes, phase: "final" });
 }
 
+function aliasTo(target: string): string {
+  return JSON.stringify({ compilerOptions: { paths: { "@api": [target] } } });
+}
+
 test("a named import that gains a symbol outside the seam's interface is off-interface", async () => {
   const report = await finalCheck({
     committed: { "app/use.ts": 'import { good } from "../lib/api";\nexport const result = good;\n', "lib/api.ts": "export const good = 1;\nexport const bad = 2;\n" },
@@ -46,7 +50,6 @@ test("a named import that gains a symbol outside the seam's interface is off-int
 });
 
 test("a tsconfig alias retargeted without a source change is an unplanned dependency at the importing line", async () => {
-  const aliasTo = (target: string) => JSON.stringify({ compilerOptions: { paths: { "@api": [target] } } });
   const report = await finalCheck({
     committed: {
       "app/use.ts": 'import { api } from "@api";\nexport const value = api;\n',
@@ -83,6 +86,33 @@ test("a tsconfig alias retargeted without a source change is an unplanned depend
       line: 1,
       message: "`app/tests` is unchanged; the plan modifies it to cover the api.",
       fix: "Make the planned change in `app/tests`, or ask the human to unlock the plan and drop `app/tests` from it.",
+    },
+  ]);
+});
+
+test("a tsconfig alias retargeted without a source change touches the importing module even under an empty plan", async () => {
+  const report = await finalCheck({
+    committed: {
+      "app/use.ts": 'import { api } from "@api";\nexport const value = api;\n',
+      "good/api.ts": "export const api = 1;\n",
+      "bad/api.ts": "export const api = 2;\n",
+      "tsconfig.json": aliasTo("./good/api.ts"),
+    },
+    working: { "tsconfig.json": aliasTo("./bad/api.ts") },
+    plan: planOf({ modules: [] }),
+  });
+
+  expect(report.verdict).toBe("violating");
+  expect(report.findings.map(({ rule, severity, file, line, subject, message, fix }) => ({ rule, severity, file, line, subject, message, fix }))).toEqual([
+    {
+      rule: "unplanned-module",
+      severity: "violation",
+      file: "app/use.ts",
+      line: 1,
+      subject: { kind: "module", path: "app" },
+      message:
+        "app/use.ts:1 in module `app`, which the plan does not touch, now imports `bad/api.ts`: a new dependency on `bad` through a configuration change, not a source change (1 reconfigured import there).",
+      fix: "Revert the configuration change behind the import, or ask the human to unlock the plan and add `app` as a modified module.",
     },
   ]);
 });

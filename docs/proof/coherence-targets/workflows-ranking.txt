@@ -1,0 +1,149 @@
+Targets in products/workflows at f637db96f1fc, churn from 2026-06-19 to 2026-09-17
+score = pressure × pain × safety, each in [0, 1]; counts saturate as n / (n + half). Pressure is the mean of commits, touched source lines, and authors over the window; agent co-authored commits are evidence only. Pain is 1 − Π(1 − c) over its available components, so any strong pain counts and a missing provider only drops out. Safety is (0.5 + 0.5 × tested share) × (1 − 0.5 × saturated traffic). Ties break on pain × safety. Modules that open pull requests touch are skipped.
+Available: complexity, review findings, open pull requests, ci.test_failures, ci.test_retries
+Unavailable: errors.occurrences (project 2 not reachable: switch-project returned 404)
+Unavailable: apm.error_rate (project 2 not reachable: switch-project returned 404)
+Unavailable: logs.warn_error_lines (project 2 not reachable: switch-project returned 404)
+Unavailable: apm.requests (project 2 not reachable: switch-project returned 404)
+Unavailable: usage.pageviews (project 2 not reachable: switch-project returned 404)
+Not scored: errors.users, apm.p95_ms, usage.users, ci.test_p95_ms
+Open pull requests: 2069 in PostHog/posthog
+Skipped products/workflows: open pull requests #82740, #91709, #91795, #92252, #103019, #103540, #103689, #104157, #104164, #104202, #104452, #104996, #105095, #106014, #106561, #106759, #107266
+Skipped products/workflows/backend: open pull requests #88238, #91709, #91795, #92252, #100947, #101866, #102248, #102580, #103540, #103849, #104452, #104856, #105095, #105958, #106606
+Skipped products/workflows/backend/admin: open pull requests #103540, #104452
+Skipped products/workflows/backend/api: open pull requests #83800, #88238, #91709, #91795, #92252, #99844, #101229, #101701, #102248, #102673, #103019, #103183, #103540, #103849, #104156, #104202, #104215, #104270, #104452, #104470, #104668, #104713, #104856, #104883, #105854, #106553, #106561, #106759, #107195, #107216
+Skipped products/workflows/backend/facade: open pull requests #74031
+Skipped products/workflows/backend/management/commands: open pull requests #100947
+Skipped products/workflows/backend/models: open pull requests #91795, #92252
+Skipped products/workflows/backend/models/hog_flow: open pull requests #103540, #103849, #104452, #105958
+Skipped products/workflows/backend/models/hog_flow_batch_job: open pull requests #104668
+Skipped products/workflows/backend/providers: open pull requests #99752, #106606
+Skipped products/workflows/backend/services: open pull requests #88238, #100947, #101604, #101866, #103540, #104270, #104452, #105854
+Skipped products/workflows/backend/templates: open pull requests #102580, #104856
+Skipped products/workflows/frontend: open pull requests #88238, #91709, #91795, #92252, #101857, #102652, #103019, #103540, #103849, #104452, #104668, #104713, #105095, #105308, #105379, #105991, #106014, #106508, #106561, #106759, #107286
+Skipped products/workflows/frontend/Channels/EmailSetup: open pull requests #100880
+Skipped products/workflows/frontend/TemplateLibrary: open pull requests #101857, #102211, #103182, #105308, #106014
+Skipped products/workflows/frontend/Workflows: open pull requests #75243, #91710, #91795, #92252, #97159, #99583, #99786, #100187, #101132, #101229, #101701, #102212, #102652, #103021, #103540, #103849, #104452, #105359, #106035, #106508, #106759
+Skipped products/workflows/frontend/Workflows/Reputation: open pull requests #102652, #106508
+Skipped products/workflows/frontend/Workflows/hogflows: open pull requests #92252, #96734, #99816, #101132, #103021, #103370, #103540, #103849, #104452, #106014, #106035, #106062
+Skipped products/workflows/frontend/Workflows/hogflows/editor/graph: open pull requests #106062
+Skipped products/workflows/frontend/Workflows/hogflows/filters: open pull requests #83801, #88238
+Skipped products/workflows/frontend/Workflows/hogflows/panel: open pull requests #106014
+Skipped products/workflows/frontend/Workflows/hogflows/panel/testing: open pull requests #105313, #106014
+Skipped products/workflows/frontend/Workflows/hogflows/react_flow_utils: open pull requests #96734
+Skipped products/workflows/frontend/Workflows/hogflows/registry/actions: open pull requests #103370
+Skipped products/workflows/frontend/Workflows/hogflows/registry/triggers: open pull requests #99780, #102580, #107298
+Skipped products/workflows/frontend/Workflows/hogflows/steps: open pull requests #74031, #83801, #88238, #95021, #99583, #103187, #103370, #103540, #104452, #106062, #106553, #106759
+Skipped products/workflows/frontend/Workflows/hogflows/steps/components: open pull requests #96734, #100187, #103370, #103540, #104452, #105308, #105379, #106014, #106553
+Skipped products/workflows/frontend/Workflows/hogflows/tree: open pull requests #106035, #106062
+Skipped products/workflows/frontend/Workflows/logs: open pull requests #93058
+Skipped products/workflows/frontend/Workflows/misc: open pull requests #91710, #91795, #103021
+
+  1.  25.30  products/workflows/backend/utils  pressure 0.36 × pain 0.70 × safety 1.00  -> facade (boundary)
+  2.  16.50  products/workflows/backend/tasks  pressure 0.37 × pain 0.67 × safety 0.67  -> facade (boundary)
+  3.   8.63  products/workflows/frontend/OptOuts  pressure 0.56 × pain 0.29 × safety 0.54  -> characterisation-tests (mechanical)
+  4.   7.67  products/workflows/frontend/Workflows/templates  pressure 0.42 × pain 0.29 × safety 0.64  -> characterisation-tests (mechanical)
+  5.   7.58  products/workflows/frontend/Channels  pressure 0.38 × pain 0.40 × safety 0.50  -> characterisation-tests (mechanical)
+  6.   1.16  products/workflows/mcp/apps  pressure 0.12 × pain 0.17 × safety 0.60  -> characterisation-tests (mechanical)
+  7.   0.00  products/workflows/backend/models/hog_flow_schedule  pressure 0.00 × pain 0.14 × safety 0.75  -> ratchet-rule (mechanical)
+  8.   0.00  products/workflows/frontend/Workflows/hogflows/registry  pressure 0.00 × pain 0.11 × safety 0.50  -> characterisation-tests (mechanical)
+  9.   0.00  products/workflows/frontend/Channels/APNSSetup  pressure 0.33 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 10.   0.00  products/workflows/frontend/Channels/FCMSetup  pressure 0.30 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 11.   0.00  products/workflows/frontend/Channels/SlackSetup  pressure 0.14 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 12.   0.00  products/workflows/frontend/Channels/TwilioSetup  pressure 0.14 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 13.   0.00  products/workflows/frontend/Suppression  pressure 0.30 × pain 0.00 × safety 0.67  -> characterisation-tests (mechanical)
+ 14.   0.00  products/workflows/frontend/Workflows/hogflows/editor  pressure 0.20 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 15.   0.00  products/workflows/frontend/emptyState  pressure 0.26 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 16.   0.00  products/workflows/frontend/onboarding  pressure 0.19 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+ 17.   0.00  products/workflows/frontend/scenes/settings  pressure 0.19 × pain 0.00 × safety 0.50  -> characterisation-tests (mechanical)
+
+#1 products/workflows/backend/utils (4 files, 262 lines)
+  next: facade, boundary: 3 imports from outside the product bypass the facade into this module: posthog/admin/admins/team_admin.py -> products/workflows/backend/utils/email_sending_tiers.py; products/ai_observability/backend/api/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py; products/ai_observability/backend/models/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py
+  pressure 0.36 (mean)
+    commits: 4 -> 0.29  [136fc5de81e6; bdabda1a9bc0; 19176793afd6; e4637d1f9cc6; 3 of 4 co-authored by an agent]
+    lines: 650 -> 0.39
+    authors: 2 -> 0.40
+  pain 0.70 (any)
+    review findings: 6.8333 -> 0.41  [constraints-live-in-the-serializer: 5 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341; row-scoped-triggers-reject-person-steps: 3 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341; graph-structure-validated-on-every-write: 5 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/62649#discussion_r3429112580; server-compiles-all-bytecode: 3 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/57847#discussion_r3335658853; secrets-masked-in-every-representation: 6 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/72913#discussion_r3637293575; custom-actions-declare-scopes-and-object-access: 6 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/73522#discussion_r3646021418; lifecycle-changes-are-explicit: 3 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/91486#discussion_r3894363710; one-duration-grammar: 1 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/81114#discussion_r3757761854; stored-payloads-are-size-bounded: 6 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/68133#pullrequestreview-4745189470; flags-gate-adoption-not-execution: 4 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/85511#discussion_r3822135887]
+    complexity: 0 -> 0.00
+    architecture: 3 -> 0.50  [inbound facade bypass posthog/admin/admins/team_admin.py -> products/workflows/backend/utils/email_sending_tiers.py; inbound facade bypass products/ai_observability/backend/api/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py; inbound facade bypass products/ai_observability/backend/models/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py]
+    ci flakiness: 0 -> 0.00
+    production errors: unavailable
+    apm errors: unavailable
+    error logs: unavailable
+  safety 1.00 (product)
+    tests: 1 -> 1.00  [4 of 4 files imported by tests]
+    traffic: unavailable
+
+#2 products/workflows/backend/tasks (6 files, 250 lines)
+  next: facade, boundary: 4 imports from outside the product bypass the facade into this module: posthog/tasks/scheduled.py -> products/workflows/backend/tasks/email_sending_tiers.py; posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_account_reputation.py; posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_tenant_state.py
+  pressure 0.37 (mean)
+    commits: 7 -> 0.41  [f04cbb5bccfa; 17e1f7c2d63e; 86eee9800ff7; a5603d0b5eb6; d86813b2cfa3; 3 of 7 co-authored by an agent]
+    lines: 253 -> 0.20
+    authors: 3 -> 0.50
+  pain 0.67 (any)
+    review findings: 0 -> 0.00
+    complexity: 0 -> 0.00
+    architecture: 6 -> 0.67  [inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/email_sending_tiers.py; inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_account_reputation.py; inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_tenant_state.py; inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/workflow_email_health.py; outbound facade bypass products/workflows/backend/tasks/hog_flows.py -> products/actions/backend/models/action.py]
+    ci flakiness: 0 -> 0.00
+    production errors: unavailable
+    apm errors: unavailable
+    error logs: unavailable
+  safety 0.67 (product)
+    tests: 0.3333 -> 0.67  [2 of 6 files imported by tests]
+    traffic: unavailable
+
+#3 products/workflows/frontend/OptOuts (14 files, 2583 lines)
+  next: characterisation-tests, mechanical: tests import 1 of 13 files; untested: products/workflows/frontend/OptOuts/CategorySelect.tsx, products/workflows/frontend/OptOuts/CustomerIOImportModal.tsx, products/workflows/frontend/OptOuts/NewCategoryModal.tsx
+  pressure 0.56 (mean)
+    commits: 7 -> 0.41  [16079efaebed; c576f19b7938; b6f1064fe0ed; a00ab91023a9; 4f22498b653c; 1 of 7 co-authored by an agent]
+    lines: 1523 -> 0.60
+    authors: 6 -> 0.67
+  pain 0.29 (any)
+    review findings: 0 -> 0.00
+    complexity: 2 -> 0.29  [products/workflows/frontend/OptOuts/CustomerIOImportModal.tsx:StepBadge CCN 13; products/workflows/frontend/OptOuts/optOutCsvImport.ts:column.trim.toLowerCase CCN 12]
+    architecture: 0 -> 0.00
+    ci flakiness: 0 -> 0.00
+    production errors: unavailable
+    apm errors: unavailable
+    error logs: unavailable
+  safety 0.54 (product)
+    tests: 0.0769 -> 0.54  [1 of 13 files imported by tests]
+    traffic: unavailable
+
+#4 products/workflows/frontend/Workflows/templates (12 files, 1121 lines)
+  next: characterisation-tests, mechanical: tests import 3 of 11 files; untested: products/workflows/frontend/Workflows/templates/SaveAsTemplateModal.tsx, products/workflows/frontend/Workflows/templates/TemplateJsonModal.tsx, products/workflows/frontend/Workflows/templates/WorkflowTemplateAiBadge.tsx
+  pressure 0.42 (mean)
+    commits: 3 -> 0.23  [cc0a7e8c1579; 994b4bbed785; 4f22498b653c; 1 of 3 co-authored by an agent]
+    lines: 1146 -> 0.53
+    authors: 3 -> 0.50
+  pain 0.29 (any)
+    review findings: 0 -> 0.00
+    complexity: 2 -> 0.29  [products/workflows/frontend/Workflows/templates/workflowTemplateLogic.ts:async CCN 24; products/workflows/frontend/Workflows/templates/workflowTemplateLogic.ts:async CCN 11]
+    architecture: 0 -> 0.00
+    ci flakiness: 0 -> 0.00
+    production errors: unavailable
+    apm errors: unavailable
+    error logs: unavailable
+  safety 0.64 (product)
+    tests: 0.2727 -> 0.64  [3 of 11 files imported by tests]
+    traffic: unavailable
+
+#5 products/workflows/frontend/Channels (4 files, 238 lines)
+  next: characterisation-tests, mechanical: tests import 0 of 4 files; untested: products/workflows/frontend/Channels/ChannelSetupModal.tsx, products/workflows/frontend/Channels/MessageChannels.tsx, products/workflows/frontend/Channels/PushIdentityVerificationField.tsx
+  pressure 0.38 (mean)
+    commits: 7 -> 0.41  [16079efaebed; f206baa1a4e5; 46c12fd62ef6; 4f22498b653c; 28a938a1e1f8; 2 of 7 co-authored by an agent]
+    lines: 181 -> 0.15
+    authors: 4 -> 0.57
+  pain 0.40 (any)
+    review findings: 0 -> 0.00
+    complexity: 0 -> 0.00
+    architecture: 2 -> 0.40  [on an import cycle: products/workflows/frontend/Channels/ChannelSetupModal.tsx; on an import cycle: products/workflows/frontend/Channels/MessageChannels.tsx]
+    ci flakiness: 0 -> 0.00
+    production errors: unavailable
+    apm errors: unavailable
+    error logs: unavailable
+  safety 0.50 (product)
+    tests: 0 -> 0.50  [0 of 4 files imported by tests]
+    traffic: unavailable
+

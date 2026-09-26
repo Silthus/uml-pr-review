@@ -1,0 +1,2502 @@
+{
+  "scope": "products/workflows",
+  "commit": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "window": {
+    "since": "2026-06-19T16:33:35.000Z",
+    "until": "2026-09-17T16:33:35.000Z",
+    "days": 90
+  },
+  "formula": "score = pressure × pain × safety, each in [0, 1]; counts saturate as n / (n + half). Pressure is the mean of commits, touched source lines, and authors over the window; agent co-authored commits are evidence only. Pain is 1 − Π(1 − c) over its available components, so any strong pain counts and a missing provider only drops out. Safety is (0.5 + 0.5 × tested share) × (1 − 0.5 × saturated traffic). Ties break on pain × safety. Modules that open pull requests touch are skipped.",
+  "available": [
+    "complexity",
+    "review findings",
+    "open pull requests",
+    "ci.test_failures",
+    "ci.test_retries"
+  ],
+  "unavailable": [
+    {
+      "signal": "errors.occurrences",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "apm.error_rate",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "logs.warn_error_lines",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "apm.requests",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "usage.pageviews",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    }
+  ],
+  "ignored": [
+    "errors.users",
+    "apm.p95_ms",
+    "usage.users",
+    "ci.test_p95_ms"
+  ],
+  "openPullRequests": {
+    "repository": "PostHog/posthog",
+    "open": 2069
+  },
+  "skipped": [
+    {
+      "module": "products/workflows",
+      "pullRequests": [
+        82740,
+        91709,
+        91795,
+        92252,
+        103019,
+        103540,
+        103689,
+        104157,
+        104164,
+        104202,
+        104452,
+        104996,
+        105095,
+        106014,
+        106561,
+        106759,
+        107266
+      ]
+    },
+    {
+      "module": "products/workflows/backend",
+      "pullRequests": [
+        88238,
+        91709,
+        91795,
+        92252,
+        100947,
+        101866,
+        102248,
+        102580,
+        103540,
+        103849,
+        104452,
+        104856,
+        105095,
+        105958,
+        106606
+      ]
+    },
+    {
+      "module": "products/workflows/backend/admin",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "module": "products/workflows/backend/api",
+      "pullRequests": [
+        83800,
+        88238,
+        91709,
+        91795,
+        92252,
+        99844,
+        101229,
+        101701,
+        102248,
+        102673,
+        103019,
+        103183,
+        103540,
+        103849,
+        104156,
+        104202,
+        104215,
+        104270,
+        104452,
+        104470,
+        104668,
+        104713,
+        104856,
+        104883,
+        105854,
+        106553,
+        106561,
+        106759,
+        107195,
+        107216
+      ]
+    },
+    {
+      "module": "products/workflows/backend/facade",
+      "pullRequests": [
+        74031
+      ]
+    },
+    {
+      "module": "products/workflows/backend/management/commands",
+      "pullRequests": [
+        100947
+      ]
+    },
+    {
+      "module": "products/workflows/backend/models",
+      "pullRequests": [
+        91795,
+        92252
+      ]
+    },
+    {
+      "module": "products/workflows/backend/models/hog_flow",
+      "pullRequests": [
+        103540,
+        103849,
+        104452,
+        105958
+      ]
+    },
+    {
+      "module": "products/workflows/backend/models/hog_flow_batch_job",
+      "pullRequests": [
+        104668
+      ]
+    },
+    {
+      "module": "products/workflows/backend/providers",
+      "pullRequests": [
+        99752,
+        106606
+      ]
+    },
+    {
+      "module": "products/workflows/backend/services",
+      "pullRequests": [
+        88238,
+        100947,
+        101604,
+        101866,
+        103540,
+        104270,
+        104452,
+        105854
+      ]
+    },
+    {
+      "module": "products/workflows/backend/templates",
+      "pullRequests": [
+        102580,
+        104856
+      ]
+    },
+    {
+      "module": "products/workflows/frontend",
+      "pullRequests": [
+        88238,
+        91709,
+        91795,
+        92252,
+        101857,
+        102652,
+        103019,
+        103540,
+        103849,
+        104452,
+        104668,
+        104713,
+        105095,
+        105308,
+        105379,
+        105991,
+        106014,
+        106508,
+        106561,
+        106759,
+        107286
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Channels/EmailSetup",
+      "pullRequests": [
+        100880
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/TemplateLibrary",
+      "pullRequests": [
+        101857,
+        102211,
+        103182,
+        105308,
+        106014
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows",
+      "pullRequests": [
+        75243,
+        91710,
+        91795,
+        92252,
+        97159,
+        99583,
+        99786,
+        100187,
+        101132,
+        101229,
+        101701,
+        102212,
+        102652,
+        103021,
+        103540,
+        103849,
+        104452,
+        105359,
+        106035,
+        106508,
+        106759
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/Reputation",
+      "pullRequests": [
+        102652,
+        106508
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows",
+      "pullRequests": [
+        92252,
+        96734,
+        99816,
+        101132,
+        103021,
+        103370,
+        103540,
+        103849,
+        104452,
+        106014,
+        106035,
+        106062
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/editor/graph",
+      "pullRequests": [
+        106062
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/filters",
+      "pullRequests": [
+        83801,
+        88238
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/panel",
+      "pullRequests": [
+        106014
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/panel/testing",
+      "pullRequests": [
+        105313,
+        106014
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/react_flow_utils",
+      "pullRequests": [
+        96734
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/registry/actions",
+      "pullRequests": [
+        103370
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/registry/triggers",
+      "pullRequests": [
+        99780,
+        102580,
+        107298
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/steps",
+      "pullRequests": [
+        74031,
+        83801,
+        88238,
+        95021,
+        99583,
+        103187,
+        103370,
+        103540,
+        104452,
+        106062,
+        106553,
+        106759
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/steps/components",
+      "pullRequests": [
+        96734,
+        100187,
+        103370,
+        103540,
+        104452,
+        105308,
+        105379,
+        106014,
+        106553
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/tree",
+      "pullRequests": [
+        106035,
+        106062
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/logs",
+      "pullRequests": [
+        93058
+      ]
+    },
+    {
+      "module": "products/workflows/frontend/Workflows/misc",
+      "pullRequests": [
+        91710,
+        91795,
+        103021
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "rank": 1,
+      "module": "products/workflows/backend/utils",
+      "score": 0.253,
+      "files": 4,
+      "lines": 262,
+      "factors": {
+        "pressure": {
+          "value": 0.3599,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 4,
+              "value": 0.2857,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "136fc5de81e6",
+                "bdabda1a9bc0",
+                "19176793afd6",
+                "e4637d1f9cc6",
+                "3 of 4 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 650,
+              "value": 0.3939,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 2,
+              "value": 0.4,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.703,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 6.8333,
+              "value": 0.4059,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": [
+                "constraints-live-in-the-serializer: 5 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341",
+                "row-scoped-triggers-reject-person-steps: 3 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341",
+                "graph-structure-validated-on-every-write: 5 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/62649#discussion_r3429112580",
+                "server-compiles-all-bytecode: 3 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/57847#discussion_r3335658853",
+                "secrets-masked-in-every-representation: 6 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/72913#discussion_r3637293575",
+                "custom-actions-declare-scopes-and-object-access: 6 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/73522#discussion_r3646021418",
+                "lifecycle-changes-are-explicit: 3 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/91486#discussion_r3894363710",
+                "one-duration-grammar: 1 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/81114#discussion_r3757761854",
+                "stored-payloads-are-size-bounded: 6 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/68133#pullrequestreview-4745189470",
+                "flags-gate-adoption-not-execution: 4 findings × 0.1667 of its component, e.g. https://github.com/PostHog/posthog/pull/85511#discussion_r3822135887"
+              ]
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 3,
+              "value": 0.5,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": [
+                "inbound facade bypass posthog/admin/admins/team_admin.py -> products/workflows/backend/utils/email_sending_tiers.py",
+                "inbound facade bypass products/ai_observability/backend/api/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py",
+                "inbound facade bypass products/ai_observability/backend/models/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py"
+              ]
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 1,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 1,
+              "value": 1,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "4 of 4 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "facade",
+        "verification": "boundary",
+        "reason": "3 imports from outside the product bypass the facade into this module: posthog/admin/admins/team_admin.py -> products/workflows/backend/utils/email_sending_tiers.py; products/ai_observability/backend/api/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py; products/ai_observability/backend/models/evaluation_reports.py -> products/workflows/backend/utils/rrule_utils.py"
+      }
+    },
+    {
+      "rank": 2,
+      "module": "products/workflows/backend/tasks",
+      "score": 0.165,
+      "files": 6,
+      "lines": 250,
+      "factors": {
+        "pressure": {
+          "value": 0.3712,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 7,
+              "value": 0.4118,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "f04cbb5bccfa",
+                "17e1f7c2d63e",
+                "86eee9800ff7",
+                "a5603d0b5eb6",
+                "d86813b2cfa3",
+                "3 of 7 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 253,
+              "value": 0.2019,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 3,
+              "value": 0.5,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.6667,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 6,
+              "value": 0.6667,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": [
+                "inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/email_sending_tiers.py",
+                "inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_account_reputation.py",
+                "inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_tenant_state.py",
+                "inbound facade bypass posthog/tasks/scheduled.py -> products/workflows/backend/tasks/workflow_email_health.py",
+                "outbound facade bypass products/workflows/backend/tasks/hog_flows.py -> products/actions/backend/models/action.py"
+              ]
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.6667,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0.3333,
+              "value": 0.6667,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "2 of 6 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "facade",
+        "verification": "boundary",
+        "reason": "4 imports from outside the product bypass the facade into this module: posthog/tasks/scheduled.py -> products/workflows/backend/tasks/email_sending_tiers.py; posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_account_reputation.py; posthog/tasks/scheduled.py -> products/workflows/backend/tasks/ses_tenant_state.py"
+      }
+    },
+    {
+      "rank": 3,
+      "module": "products/workflows/frontend/OptOuts",
+      "score": 0.0863,
+      "files": 14,
+      "lines": 2583,
+      "factors": {
+        "pressure": {
+          "value": 0.5607,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 7,
+              "value": 0.4118,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "16079efaebed",
+                "c576f19b7938",
+                "b6f1064fe0ed",
+                "a00ab91023a9",
+                "4f22498b653c",
+                "1 of 7 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 1523,
+              "value": 0.6036,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 6,
+              "value": 0.6667,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.2857,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 2,
+              "value": 0.2857,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": [
+                "products/workflows/frontend/OptOuts/CustomerIOImportModal.tsx:StepBadge CCN 13",
+                "products/workflows/frontend/OptOuts/optOutCsvImport.ts:column.trim.toLowerCase CCN 12"
+              ]
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5385,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0.0769,
+              "value": 0.5385,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "1 of 13 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 1 of 13 files; untested: products/workflows/frontend/OptOuts/CategorySelect.tsx, products/workflows/frontend/OptOuts/CustomerIOImportModal.tsx, products/workflows/frontend/OptOuts/NewCategoryModal.tsx"
+      }
+    },
+    {
+      "rank": 4,
+      "module": "products/workflows/frontend/Workflows/templates",
+      "score": 0.0767,
+      "files": 12,
+      "lines": 1121,
+      "factors": {
+        "pressure": {
+          "value": 0.4216,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 3,
+              "value": 0.2308,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "cc0a7e8c1579",
+                "994b4bbed785",
+                "4f22498b653c",
+                "1 of 3 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 1146,
+              "value": 0.534,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 3,
+              "value": 0.5,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.2857,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 2,
+              "value": 0.2857,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": [
+                "products/workflows/frontend/Workflows/templates/workflowTemplateLogic.ts:async CCN 24",
+                "products/workflows/frontend/Workflows/templates/workflowTemplateLogic.ts:async CCN 11"
+              ]
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.6364,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0.2727,
+              "value": 0.6364,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "3 of 11 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 3 of 11 files; untested: products/workflows/frontend/Workflows/templates/SaveAsTemplateModal.tsx, products/workflows/frontend/Workflows/templates/TemplateJsonModal.tsx, products/workflows/frontend/Workflows/templates/WorkflowTemplateAiBadge.tsx"
+      }
+    },
+    {
+      "rank": 5,
+      "module": "products/workflows/frontend/Channels",
+      "score": 0.0758,
+      "files": 4,
+      "lines": 238,
+      "factors": {
+        "pressure": {
+          "value": 0.3788,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 7,
+              "value": 0.4118,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "16079efaebed",
+                "f206baa1a4e5",
+                "46c12fd62ef6",
+                "4f22498b653c",
+                "28a938a1e1f8",
+                "2 of 7 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 181,
+              "value": 0.1533,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 4,
+              "value": 0.5714,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.4,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 2,
+              "value": 0.4,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": [
+                "on an import cycle: products/workflows/frontend/Channels/ChannelSetupModal.tsx",
+                "on an import cycle: products/workflows/frontend/Channels/MessageChannels.tsx"
+              ]
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 4 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 4 files; untested: products/workflows/frontend/Channels/ChannelSetupModal.tsx, products/workflows/frontend/Channels/MessageChannels.tsx, products/workflows/frontend/Channels/PushIdentityVerificationField.tsx"
+      }
+    },
+    {
+      "rank": 6,
+      "module": "products/workflows/mcp/apps",
+      "score": 0.0116,
+      "files": 7,
+      "lines": 389,
+      "factors": {
+        "pressure": {
+          "value": 0.1156,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 1,
+              "value": 0.0909,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "23f060a2b209"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 6,
+              "value": 0.006,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 1,
+              "value": 0.25,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.1667,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 1,
+              "value": 0.1667,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": [
+                "products/workflows/mcp/apps/EmailTemplateView.tsx:EmailTemplateView CCN 16"
+              ]
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.6,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0.2,
+              "value": 0.6,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "1 of 5 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 1 of 5 files; untested: products/workflows/mcp/apps/WorkflowListView.tsx, products/workflows/mcp/apps/WorkflowView.tsx, products/workflows/mcp/apps/index.ts"
+      }
+    },
+    {
+      "rank": 7,
+      "module": "products/workflows/backend/models/hog_flow_schedule",
+      "score": 0,
+      "files": 2,
+      "lines": 31,
+      "factors": {
+        "pressure": {
+          "value": 0,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 0,
+              "value": 0,
+              "basis": "commits / (commits + 10)",
+              "evidence": []
+            },
+            {
+              "name": "lines",
+              "raw": 0,
+              "value": 0,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 0,
+              "value": 0,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.1379,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 1.6,
+              "value": 0.1379,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": [
+                "dispatch-requires-a-previewed-audience: 5 findings × 0.2 of its component, e.g. https://github.com/PostHog/posthog/pull/73225#discussion_r3643941753",
+                "dispatch-is-idempotent: 3 findings × 0.2 of its component, e.g. https://github.com/PostHog/posthog/pull/91581#discussion_r3894714334"
+              ]
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.75,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0.5,
+              "value": 0.75,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "1 of 2 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "ratchet-rule",
+        "verification": "mechanical",
+        "reason": "ratchet dispatch-requires-a-previewed-audience (documented -> structural) with today's violations as the baseline: Every dispatch to a batch audience, from any caller, first previews the audience and presents the confirm token bound to it."
+      }
+    },
+    {
+      "rank": 8,
+      "module": "products/workflows/frontend/Workflows/hogflows/registry",
+      "score": 0,
+      "files": 1,
+      "lines": 2,
+      "factors": {
+        "pressure": {
+          "value": 0,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 0,
+              "value": 0,
+              "basis": "commits / (commits + 10)",
+              "evidence": []
+            },
+            {
+              "name": "lines",
+              "raw": 0,
+              "value": 0,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 0,
+              "value": 0,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0.1089,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 1.2222,
+              "value": 0.1089,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": [
+                "closed-type-sets-have-one-home: 2 findings × 0.1111 of its component, e.g. https://github.com/PostHog/posthog/pull/91572#discussion_r3894329629",
+                "registry-owns-trigger-and-step-types: 3 findings × 0.1111 of its component, e.g. https://github.com/PostHog/posthog/pull/47035#discussion_r2877422332",
+                "configs-are-typed-unions: 3 findings × 0.1111 of its component, e.g. https://github.com/PostHog/posthog/pull/100259#discussion_r4006503486",
+                "template-ids-resolve-and-fixed-channels-are-server-checked: 3 findings × 0.1111 of its component, e.g. https://github.com/PostHog/posthog/pull/78208#discussion_r3720060567"
+              ]
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 1 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 1 files; untested: products/workflows/frontend/Workflows/hogflows/registry/index.ts"
+      }
+    },
+    {
+      "rank": 9,
+      "module": "products/workflows/frontend/Channels/APNSSetup",
+      "score": 0,
+      "files": 2,
+      "lines": 214,
+      "factors": {
+        "pressure": {
+          "value": 0.3252,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 4,
+              "value": 0.2857,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "f206baa1a4e5",
+                "46c12fd62ef6",
+                "4f22498b653c",
+                "28a938a1e1f8",
+                "2 of 4 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 408,
+              "value": 0.2898,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 2,
+              "value": 0.4,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 2 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 2 files; untested: products/workflows/frontend/Channels/APNSSetup/APNSSetupModal.tsx, products/workflows/frontend/Channels/APNSSetup/apnsSetupModalLogic.ts"
+      }
+    },
+    {
+      "rank": 10,
+      "module": "products/workflows/frontend/Channels/FCMSetup",
+      "score": 0,
+      "files": 2,
+      "lines": 128,
+      "factors": {
+        "pressure": {
+          "value": 0.298,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 4,
+              "value": 0.2857,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "f206baa1a4e5",
+                "46c12fd62ef6",
+                "4f22498b653c",
+                "28a938a1e1f8",
+                "2 of 4 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 263,
+              "value": 0.2082,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 2,
+              "value": 0.4,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 2 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 2 files; untested: products/workflows/frontend/Channels/FCMSetup/FCMSetupModal.tsx, products/workflows/frontend/Channels/FCMSetup/fcmSetupModalLogic.ts"
+      }
+    },
+    {
+      "rank": 11,
+      "module": "products/workflows/frontend/Channels/SlackSetup",
+      "score": 0,
+      "files": 2,
+      "lines": 110,
+      "factors": {
+        "pressure": {
+          "value": 0.1448,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 1,
+              "value": 0.0909,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "4f22498b653c"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 103,
+              "value": 0.0934,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 1,
+              "value": 0.25,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 2 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 2 files; untested: products/workflows/frontend/Channels/SlackSetup/SlackSetupModal.tsx, products/workflows/frontend/Channels/SlackSetup/slackSetupModalLogic.ts"
+      }
+    },
+    {
+      "rank": 12,
+      "module": "products/workflows/frontend/Channels/TwilioSetup",
+      "score": 0,
+      "files": 2,
+      "lines": 99,
+      "factors": {
+        "pressure": {
+          "value": 0.1437,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 1,
+              "value": 0.0909,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "4f22498b653c"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 99,
+              "value": 0.0901,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 1,
+              "value": 0.25,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 2 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 2 files; untested: products/workflows/frontend/Channels/TwilioSetup/TwilioSetupModal.tsx, products/workflows/frontend/Channels/TwilioSetup/twilioSetupModalLogic.ts"
+      }
+    },
+    {
+      "rank": 13,
+      "module": "products/workflows/frontend/Suppression",
+      "score": 0,
+      "files": 3,
+      "lines": 359,
+      "factors": {
+        "pressure": {
+          "value": 0.2995,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 3,
+              "value": 0.2308,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "9c72c982d584",
+                "c576f19b7938",
+                "6b1a875925f8",
+                "2 of 3 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 717,
+              "value": 0.4176,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 1,
+              "value": 0.25,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.6667,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0.3333,
+              "value": 0.6667,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "1 of 3 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 1 of 3 files; untested: products/workflows/frontend/Suppression/SuppressionList.tsx, products/workflows/frontend/Suppression/SuppressionScene.tsx"
+      }
+    },
+    {
+      "rank": 14,
+      "module": "products/workflows/frontend/Workflows/hogflows/editor",
+      "score": 0,
+      "files": 1,
+      "lines": 319,
+      "factors": {
+        "pressure": {
+          "value": 0.195,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 1,
+              "value": 0.0909,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "e8e4f990ab5f"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 323,
+              "value": 0.2441,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 1,
+              "value": 0.25,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 1 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 1 files; untested: products/workflows/frontend/Workflows/hogflows/editor/workflowEditorStoryFixtures.ts"
+      }
+    },
+    {
+      "rank": 15,
+      "module": "products/workflows/frontend/emptyState",
+      "score": 0,
+      "files": 3,
+      "lines": 145,
+      "factors": {
+        "pressure": {
+          "value": 0.2567,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 3,
+              "value": 0.2308,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "16f4af657741",
+                "107203891a63",
+                "9ce83f77bd24",
+                "1 of 3 co-authored by an agent"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 162,
+              "value": 0.1394,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 2,
+              "value": 0.4,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 3 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 3 files; untested: products/workflows/frontend/emptyState/WorkflowsPreview.tsx, products/workflows/frontend/emptyState/workflowsEmptyState.tsx, products/workflows/frontend/emptyState/workflowsSetupLogic.ts"
+      }
+    },
+    {
+      "rank": 16,
+      "module": "products/workflows/frontend/onboarding",
+      "score": 0,
+      "files": 1,
+      "lines": 72,
+      "factors": {
+        "pressure": {
+          "value": 0.1922,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 2,
+              "value": 0.1667,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "3af0672afdfa",
+                "c17e1517502f"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 10,
+              "value": 0.0099,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 2,
+              "value": 0.4,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 1 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 1 files; untested: products/workflows/frontend/onboarding/steps.tsx"
+      }
+    },
+    {
+      "rank": 17,
+      "module": "products/workflows/frontend/scenes/settings",
+      "score": 0,
+      "files": 3,
+      "lines": 195,
+      "factors": {
+        "pressure": {
+          "value": 0.1912,
+          "combination": "mean",
+          "components": [
+            {
+              "name": "commits",
+              "raw": 2,
+              "value": 0.1667,
+              "basis": "commits / (commits + 10)",
+              "evidence": [
+                "7e0e9064491d",
+                "a22595d75d61"
+              ]
+            },
+            {
+              "name": "lines",
+              "raw": 186,
+              "value": 0.1568,
+              "basis": "lines / (lines + 1000)",
+              "evidence": []
+            },
+            {
+              "name": "authors",
+              "raw": 1,
+              "value": 0.25,
+              "basis": "authors / (authors + 3)",
+              "evidence": []
+            }
+          ]
+        },
+        "pain": {
+          "value": 0,
+          "combination": "any",
+          "components": [
+            {
+              "name": "review findings",
+              "raw": 0,
+              "value": 0,
+              "basis": "Σ distinct findings × the module's share of the citing rule's component / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "complexity",
+              "raw": 0,
+              "value": 0,
+              "basis": "complexity / (complexity + 5)",
+              "evidence": []
+            },
+            {
+              "name": "architecture",
+              "raw": 0,
+              "value": 0,
+              "basis": "architecture / (architecture + 3)",
+              "evidence": []
+            },
+            {
+              "name": "ci flakiness",
+              "raw": 0,
+              "value": 0,
+              "basis": "sum of ci.test_failures + ci.test_retries (service rows count half) / (that + 10)",
+              "evidence": []
+            },
+            {
+              "name": "production errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "apm errors",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            },
+            {
+              "name": "error logs",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        },
+        "safety": {
+          "value": 0.5,
+          "combination": "product",
+          "components": [
+            {
+              "name": "tests",
+              "raw": 0,
+              "value": 0.5,
+              "basis": "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+              "evidence": [
+                "0 of 3 files imported by tests"
+              ]
+            },
+            {
+              "name": "traffic",
+              "raw": null,
+              "value": null,
+              "basis": "unavailable: project 2 not reachable: switch-project returned 404; project 2 not reachable: switch-project returned 404",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "recommendation": {
+        "step": "characterisation-tests",
+        "verification": "mechanical",
+        "reason": "tests import 0 of 3 files; untested: products/workflows/frontend/scenes/settings/WorkflowsEmailTrackingConsentSettings.tsx, products/workflows/frontend/scenes/settings/WorkflowsEngagementEventsSettings.tsx, products/workflows/frontend/scenes/settings/WorkflowsTaskLimitsSettings.tsx"
+      }
+    }
+  ]
+}

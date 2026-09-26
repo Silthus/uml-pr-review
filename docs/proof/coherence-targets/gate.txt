@@ -1,0 +1,6 @@
+ 416 pass
+ 0 fail
+ 989 expect() calls
+Ran 416 tests across 41 files. (after rebase on 8ca2f90)
+$ tsc --noEmit
+exit 0

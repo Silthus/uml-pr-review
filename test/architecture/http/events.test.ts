@@ -61,8 +61,9 @@ test("a client that disconnects leaves no listener behind, and the other stream 
   const staying = await openEventStream(await server.api(inRepository("/api/events", shopA)));
   expect(server.bus.listenerCount(repositoryId)).toBe(2);
 
-  disconnect.abort();
-  await expect(leaving.next(1)).rejects.toThrow("The operation was aborted.");
+  const clientLeft = new Error("The client left.");
+  disconnect.abort(clientLeft);
+  await expect(leaving.next(1)).rejects.toBe(clientLeft);
   await until(() => server.bus.listenerCount(repositoryId) === 1);
   await server.api(inRepository("/api/plans", shopA), jsonBody({ title: "After the disconnect", goal: "Still delivered." }));
   const [event] = await staying.next(1);

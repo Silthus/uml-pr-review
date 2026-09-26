@@ -34,7 +34,7 @@ let plan: ArchitecturePlan = {
   createdAt: at,
   updatedAt: at,
 };
-let conformance: ConformanceResult | null = null;
+let conformance: ConformanceResult | null = process.env.EXPLORER_STALE_CHECK ? outdatedCheck() : null;
 const streams = new Set<ReadableStreamDefaultController<string>>();
 
 const server = Bun.serve({
@@ -94,7 +94,13 @@ async function routeCheck(request: Request): Promise<Response> {
   if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
   const body = await parseJson(request, CheckPlanRequestSchema);
   if (body instanceof Response) return body;
-  conformance = {
+  conformance = checkResult();
+  emit({ seq: seq++, at: conformance.checkedAt, repositoryId: payload.repository.id, type: "conformance_result", planId: plan.id, result: conformance });
+  return Response.json(conformance);
+}
+
+function checkResult(): ConformanceResult {
+  return {
     verdict: "violating",
     modules: [
       { path: "products/error_tracking/backend/facade", action: "modify", status: "pending" },
@@ -127,8 +133,10 @@ async function routeCheck(request: Request): Promise<Response> {
     snapshotTree: payload.tree,
     checkedAt: new Date().toISOString(),
   };
-  emit({ seq: seq++, at: conformance.checkedAt, repositoryId: payload.repository.id, type: "conformance_result", planId: plan.id, result: conformance });
-  return Response.json(conformance);
+}
+
+function outdatedCheck(): ConformanceResult {
+  return { ...checkResult(), planRevision: 1, worktree: "/Users/michael/dev/posthog-review", checkedAt: at };
 }
 
 async function routeScenario(request: Request): Promise<Response> {

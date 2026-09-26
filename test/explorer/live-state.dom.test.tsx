@@ -98,6 +98,10 @@ async function renderExplorer(loadedRevision = 1) {
   return view;
 }
 
+function shownRevision(view: ReturnType<typeof render>) {
+  return view.getByText(/^Architecture plan · revision/).textContent;
+}
+
 function planPanel(view: ReturnType<typeof render>) {
   return within(view.getByRole("region", { name: "Architecture plan" }));
 }
@@ -142,11 +146,11 @@ describe("explorer live state", () => {
 
     await submitComment(view, "Please change this");
     await act(async () => FakeEventSource.latest.emit(patchEvent(revision(3))));
-    expect(view.getByText("Architecture plan · revision 3")).toBeTruthy();
+    expect(shownRevision(view)).toBe("Architecture plan · revision 3");
 
     await act(async () => server.respond(Response.json({ plan: revision(2), warnings: [] })));
 
-    expect(view.getByText("Architecture plan · revision 3")).toBeTruthy();
+    expect(shownRevision(view)).toBe("Architecture plan · revision 3");
   });
 
   test("a rejected comment keeps the text and says why it was not saved", async () => {
@@ -159,7 +163,7 @@ describe("explorer live state", () => {
 
     expect(box.value).toBe("Please preserve my detailed feedback");
     expect(within(view.getByRole("form", { name: "New comment on the plan" })).getByRole("alert").textContent).toContain("revision 2");
-    expect(view.getByText("Architecture plan · revision 2")).toBeTruthy();
+    expect(shownRevision(view)).toBe("Architecture plan · revision 2");
   });
 
   test("a rejected module save keeps the form open with its input", async () => {

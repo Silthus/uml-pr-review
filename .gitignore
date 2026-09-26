@@ -3,3 +3,4 @@ node_modules
 !src/**/*.html
 !test/**/*.html
 .DS_Store
+src/explorer/dev/*.fixture.json

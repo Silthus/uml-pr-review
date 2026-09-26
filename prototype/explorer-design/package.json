@@ -1,0 +1,15 @@
+{
+  "name": "explorer-design-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun ./index.html",
+    "build-data": "node ./data/build-posthog-architecture.mjs"
+  },
+  "dependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

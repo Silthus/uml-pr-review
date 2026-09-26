@@ -1,0 +1,57 @@
+diff --git a/products/feature_flags/backend/facade/api.py b/products/feature_flags/backend/facade/api.py
+index 846e179a56d8..f7a4aac81b7c 100644
+--- a/products/feature_flags/backend/facade/api.py
++++ b/products/feature_flags/backend/facade/api.py
+@@ -24,6 +24,7 @@ signal the gate skips on (its policies target human-driven changes, and a reques
+ caller cannot surface a 409/change request), so ``ApprovalRequired`` is never raised.
+ """
+ 
++from dataclasses import dataclass
+ from datetime import datetime
+ from typing import Any, Literal
+ 
+@@ -348,3 +349,20 @@ def flag_is_active(key: str, *, team_id: int | None = None) -> bool:
+     if team_id is not None:
+         qs = qs.filter(team_id=team_id)
+     return qs.exists()
++
++
++@dataclass(frozen=True)
++class FlagSummary:
++    id: int
++    key: str
++    name: str
++    active: bool
++    deleted: bool
++
++
++def get_flag_summaries_by_key(team_id: int, keys: list[str]) -> list[FlagSummary]:
++    flags = FeatureFlag.objects.filter(team_id=team_id, key__in=keys)
++    return [
++        FlagSummary(id=flag.id, key=flag.key, name=flag.name, active=flag.active, deleted=flag.deleted)
++        for flag in flags
++    ]
+--- a/products/error_tracking/backend/logic/feature_flags.py
++++ b/products/error_tracking/backend/logic/feature_flags.py
+@@ -1,6 +1,6 @@
+ from dataclasses import dataclass
+ 
+-from products.feature_flags.backend.models import FeatureFlag
++from products.feature_flags.backend.facade.api import FlagSummary, get_flag_summaries_by_key
+ 
+ 
+ @dataclass(frozen=True)
+@@ -13,8 +13,8 @@
+ 
+ 
+ def resolve_issue_flags(team_id: int, keys: list[str]) -> dict[str, IssueFlagInfo]:
+-    flags = FeatureFlag.objects.filter(team_id=team_id, key__in=keys)
+-    return {
+-        flag.key: IssueFlagInfo(id=flag.id, key=flag.key, name=flag.name, active=flag.active, deleted=flag.deleted)
+-        for flag in flags
+-    }
++    return {summary.key: issue_flag_info(summary) for summary in get_flag_summaries_by_key(team_id, keys)}
++
++
++def issue_flag_info(summary: FlagSummary) -> IssueFlagInfo:
++    return IssueFlagInfo(id=summary.id, key=summary.key, name=summary.name, active=summary.active, deleted=summary.deleted)

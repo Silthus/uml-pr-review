@@ -1,0 +1,3 @@
+top-level modules: 16 (bin, cli, common, docs/onboarding, ee, frontend, funnel-udf, livestream/bot, nodejs, packages, playwright, posthog, products, rust, services, tools)
+children of products: 90; by kind: product 86, package 2, directory 2
+stats: {"files":41535,"imports":174312,"parsed":39028,"cacheHits":0,"failed":0,"milliseconds":6479}

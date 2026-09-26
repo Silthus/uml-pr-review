@@ -1,0 +1,17 @@
+#41 evidence: "+78 more · show all" does nothing (explorer on /tmp/posthog-proof, main 7bb1705, 1440x900)
+
+$ agent-browser open "http://127.0.0.1:4633/?path=%2Ftmp%2Fposthog-proof&plan=none&expanded=products&theme=light"
+$ agent-browser wait --fn 'document.body.innerText.includes("dependencies drawn")'
+$ agent-browser snapshot -i -c > showall-before.txt
+$ agent-browser find role button click --name "show all modules in products"
+✓ Done
+$ agent-browser snapshot -i -c > showall-after.txt
+$ grep -c 'group "' showall-before.txt showall-after.txt
+showall-before.txt:41
+showall-after.txt:41
+$ diff showall-before.txt showall-after.txt
+(no differences: the accessibility tree is byte-identical after the click)
+$ agent-browser get text body | grep -o "[0-9]* packages · [0-9]* dependencies drawn"
+29 packages · 12 dependencies drawn
+$ grep -c "show all modules in products" showall-after.txt
+1

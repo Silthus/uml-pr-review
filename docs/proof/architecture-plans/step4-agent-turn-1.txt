@@ -1,0 +1,232 @@
+[init] claude 2.1.282, model claude-opus-5-5, session dfe35233-8979-4255-ac6f-28c55abc23a7, mcp servers [uml-pr-review: connected]
+
+>>> ToolSearch {"query":"select:mcp__uml-pr-review__get_architecture_overview,mcp__uml-pr-review__search_modules,mcp__uml-pr-review__describe_module,mcp__uml-pr-review__get_dependency_evidence,mcp__uml-pr-review__create_plan,mcp__uml-pr-review__edit_plan,mcp__uml-pr-review__check_plan,mcp__uml-pr-review__get_plan,mcp__uml-pr-review__set_plan_lock","max_results":10}
+<<< ToolSearch
+[tool_reference]
+[tool_reference]
+[tool_reference]
+[tool_reference]
+[tool_reference]
+[tool_reference]
+[tool_reference]
+[tool_reference]
+[tool_reference]
+
+>>> search_modules {"worktree":"/private/tmp/posthog-proof","query":"error_tracking"}
+<<< search_modules
+{"hits":[{"module":{"path":"ee/hogai/context/error_tracking","label":"error_tracking","kind":"python-package","parent":"ee/hogai/context","childCount":1,"directFiles":3,"totalFiles":5},"files":[]},{"module":{"path":"products/dashboards/frontend/widgets/error_tracking","label":"error_tracking","kind":"directory","parent":"products/dashboards/frontend/widgets","childCount":0,"directFiles":16,"totalFiles":16},"files":[]},{"module":{"path":"products/error_tracking","label":"error_tracking","kind":"product","parent":"products","childCount":5,"directFiles":3,"totalFiles":532},"files":[]},{"module":{"path":"products/posthog_ai/evals/error_tracking","label":"error_tracking","kind":"directory","paren … (3536 more characters)
+
+>>> search_modules {"worktree":"/private/tmp/posthog-proof","query":"feature_flags"}
+<<< search_modules
+{"hits":[{"module":{"path":"products/feature_flags","label":"feature_flags","kind":"product","parent":"products","childCount":5,"directFiles":2,"totalFiles":205},"files":[]},{"module":{"path":"services/mcp/src/generated/feature_flags","label":"feature_flags","kind":"directory","parent":"services/mcp/src/generated","childCount":0,"directFiles":1,"totalFiles":1},"files":[]},{"module":{"path":"products/feature_flags/backend","label":"backend","kind":"layer","parent":"products/feature_flags","childCount":8,"directFiles":32,"totalFiles":152},"files":[]},{"module":{"path":"products/feature_flags/backend/api","label":"api","kind":"python-package","parent":"products/feature_flags/backend","childCoun … (3450 more characters)
+
+>>> describe_module {"worktree":"/private/tmp/posthog-proof","path":"products/error_tracking"}
+<<< describe_module
+{"module":{"path":"products/error_tracking","label":"error_tracking","kind":"product","parent":"products","childCount":5,"directFiles":3,"totalFiles":532},"children":[{"path":"products/error_tracking/backend","label":"backend","kind":"layer","parent":"products/error_tracking","childCount":10,"directFiles":17,"totalFiles":220},{"path":"products/error_tracking/dags","label":"dags","kind":"python-package","parent":"products/error_tracking","childCount":1,"directFiles":2,"totalFiles":4},{"path":"products/error_tracking/frontend","label":"frontend","kind":"layer","parent":"products/error_tracking","childCount":9,"directFiles":9,"totalFiles":297},{"path":"products/error_tracking/mcp/apps","label": … (5529 more characters)
+
+>>> describe_module {"worktree":"/private/tmp/posthog-proof","path":"products/feature_flags/backend/facade"}
+<<< describe_module
+{"module":{"path":"products/feature_flags/backend/facade","label":"facade","kind":"python-package","parent":"products/feature_flags/backend","childCount":0,"directFiles":10,"totalFiles":10},"children":[],"dependsOn":[{"module":"posthog","imports":12,"via":[{"module":"posthog","imports":5},{"module":"posthog/models/property","imports":2},{"module":"posthog/models/team","imports":2},{"module":"posthog/api","imports":1},{"module":"posthog/hogql","imports":1}]},{"module":"products/feature_flags/backend","imports":4,"via":[{"module":"products/feature_flags/backend","imports":4}]},{"module":"products/access_control","imports":1,"via":[{"module":"products/access_control/backend/facade","imports":1} … (1752 more characters)
+
+>>> get_dependency_evidence {"worktree":"/private/tmp/posthog-proof","from":"products/error_tracking","to":"products/feature_flags","limit":50}
+<<< get_dependency_evidence
+{"from":"products/error_tracking","to":"products/feature_flags","total":0,"imports":[],"next":"To plan a dependency from products/error_tracking on products/feature_flags, add a seam with edit_plan whose interface lists the target files it must go through."}
+
+>>> describe_module {"worktree":"/private/tmp/posthog-proof","path":"products/error_tracking/backend/hogql_queries"}
+<<< describe_module
+{"module":{"path":"products/error_tracking/backend/hogql_queries","label":"hogql_queries","kind":"python-package","parent":"products/error_tracking/backend","childCount":1,"directFiles":11,"totalFiles":19},"children":[{"path":"products/error_tracking/backend/hogql_queries/test","label":"test","kind":"tests","parent":"products/error_tracking/backend/hogql_queries","childCount":0,"directFiles":8,"totalFiles":8}],"dependsOn":[{"module":"posthog","imports":54,"via":[{"module":"posthog/hogql","imports":26},{"module":"posthog","imports":13},{"module":"posthog/hogql_queries","imports":9},{"module":"posthog/hogql/database/schema","imports":2},{"module":"posthog/hogql_queries/utils","imports":1}]},{" … (605 more characters)
+
+>>> get_architecture_overview {"worktree":"/private/tmp/posthog-proof","path":"products/error_tracking/frontend","depth":2}
+<<< get_architecture_overview
+{"repository":{"id":"/Users/mreichenbach/dev/posthog/.git","root":"/private/tmp/posthog-proof","commonDir":"/Users/mreichenbach/dev/posthog/.git","name":"posthog"},"tree":"14cef23eb5ea69d71dd081bedb1afb513409326b","root":{"path":"products/error_tracking/frontend","label":"frontend","kind":"layer","parent":"products/error_tracking","childCount":9,"directFiles":9,"totalFiles":297},"modules":[{"path":"products/error_tracking/frontend/components","label":"components","kind":"directory","parent":"products/error_tracking/frontend","childCount":19,"directFiles":23,"totalFiles":138},{"path":"products/error_tracking/frontend/components/Assignee","label":"Assignee","kind":"directory","parent":"product … (14815 more characters)
+
+>>> Bash {"command":"ls products/feature_flags/backend/facade products/error_tracking/backend/hogql_queries products/error_tracking/backend/facade products/error_tracking/backend/presentation/views; grep -rn \"\\$feature/\\|active_feature_flags\" products/error_tracking --include=*.py --include=*.ts --include=*.tsx | head -20","description":"List relevant module files and search flag property usage"}
+<<< Bash
+products/error_tracking/backend/facade:
+__init__.py
+alerts.py
+api.py
+contracts.py
+issues.py
+queries.py
+query_utils.py
+recommendations.py
+symbol_sets.py
+temporal.py
+testing.py
+tools.py
+
+products/error_tracking/backend/hogql_queries:
+__init__.py
+access.py
+error_tracking_breakdowns_query_runner.py
+error_tracking_fingerprint_projection_query_runner.py
+error_tracking_issue_correlation_query_runner.py
+error_tracking_query_builder.py
+error_tracking_query_runner_utils.py
+error_tracking_query_runner.py
+error_tracking_releases_query_runner.py
+error_tracking_similar_issues_query_runner.py
+issue_state_overlay.py
+test
+
+products/error_tracking/backend/presentation/views:
+__init__.py
+alerts.py
+assignment_r … (515 more characters)
+
+>>> Bash {"command":"grep -rln 'feature/\\|active_feature_flags' products/error_tracking | head; echo ---; sed -n 1,80p products/error_tracking/backend/hogql_queries/error_tracking_releases_query_runner.py; echo ---; sed -n 1,60p products/error_tracking/backend/hogql_queries/error_tracking_breakdowns_query_runner.py; echo ---; grep -n \"^def \\|^class \\|^async def \" products/feature_flags/backend/facade/api.py | head -40; ls products/error_tracking/frontend/components/IssueReleases products/error_tracking/frontend/components/Breakdowns products/error_tracking/frontend/scenes/ErrorTrackingIssueScene","description":"Inspect analogous releases/breakdowns runners and flag facade API"}
+<<< Bash
+products/error_tracking/frontend/generated/api.schemas.ts
+products/error_tracking/frontend/__mocks__/events/javascript_non_error_promise_rejection.json
+products/error_tracking/frontend/__mocks__/events/javascript_resolved.json
+products/error_tracking/frontend/__mocks__/events/javascript_empty.json
+products/error_tracking/frontend/__mocks__/events/javascript_unresolved.json
+products/error_tracking/frontend/__mocks__/events/javascript_script_error.json
+products/error_tracking/frontend/__mocks__/events/javascript_minified_react_error.json
+products/error_tracking/frontend/__mocks__/events/javascript_no_in_app.json
+products/error_tracking/backend/prompts.py
+products/error_tracking/skills/investig … (7387 more characters)
+
+[assistant] I'm mapping the error tracking and feature flag modules. Next I'll pick the seams and draft the plan.
+
+>>> Bash {"command":"grep -n \"^def \\|^class \" products/feature_flags/backend/facade/flags.py products/feature_flags/backend/facade/__init__.py | head -30; echo ---; sed -n 1,40p products/error_tracking/backend/hogql_queries/error_tracking_issue_correlation_query_runner.py; echo ---; grep -n \"ErrorTrackingReleasesQuery\\|ErrorTrackingBreakdownsQuery\" posthog/hogql_queries/query_runner.py frontend/src/queries/schema/*.ts products/error_tracking/backend/facade/*.py | head -20; echo ---; grep -rn \"IssueReleases\\|MiniBreakdowns\" products/error_tracking/frontend/scenes/ErrorTrackingIssueScene/*.tsx products/error_tracking/frontend/scenes/ErrorTrackingIssueScene/ScenePanel/* | head","description":"Check flag facade, correlation runner, query registration, issue scene wiring"}
+<<< Bash
+products/feature_flags/backend/facade/flags.py:17:def is_flag_evaluations_table_enabled(team: "Team") -> bool:
+---
+import datetime
+from dataclasses import dataclass
+from uuid import UUID
+
+from django.db.models import QuerySet
+
+import structlog
+
+from posthog.schema import (
+    CachedErrorTrackingIssueCorrelationQueryResponse,
+    DateRange,
+    ErrorTrackingIssueCorrelationQuery,
+    ErrorTrackingIssueCorrelationQueryResponse,
+)
+
+from posthog.hogql import ast
+from posthog.hogql.constants import LimitContext
+from posthog.hogql.parser import parse_select
+
+from posthog.hogql_queries.paginators import HogQLHasMorePaginator
+from posthog.hogql_queries.query_runner import AnalyticsQueryRunner
+
+from … (2996 more characters)
+
+>>> Bash {"command":"grep -rln \"IssueReleases\\|MiniBreakdowns\\|issueReleasesLogic\" products/error_tracking/frontend | grep -v \"components/IssueReleases\\|components/Breakdowns\"; ls products/error_tracking/frontend/scenes/ErrorTrackingIssueScene/ScenePanel; grep -n \"Releases\" products/error_tracking/backend/facade/queries.py; grep -rn \"urls.featureFlag\\b\\|featureFlag:\" frontend/src/scenes/urls.ts | head -3","description":"Locate where releases panel mounts in issue scene"}
+<<< Bash
+products/error_tracking/frontend/queries.ts
+products/error_tracking/frontend/ErrorTracking.stories.tsx
+products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/insights/ExceptionBreakdownCard.tsx
+products/error_tracking/frontend/scenes/ErrorTrackingScene/tabs/insights/releaseBreakdown.ts
+products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewPanel.tsx
+products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts
+ErrorTrackingIssueScenePanel.tsx
+index.tsx
+IssueAssigneeSelect.tsx
+IssueCohort.tsx
+28:    ErrorTrackingReleasesQueryRunner,
+39:    "ErrorTrackingReleasesQueryRunner",
+
+>>> Bash {"command":"grep -n \"import\\|Releases\\|Breakdown\" products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewPanel.tsx | head -30; grep -rn \"IssueFilterPreviewPanel\" products/error_tracking/frontend --include=*.tsx -l; grep -n \"featureFlag\" frontend/src/scenes/urls.ts products/feature_flags/manifest.tsx 2>/dev/null | head -5","description":"Inspect issue preview panel composition and flag URLs"}
+<<< Bash
+Exit code 1
+1:import { useActions, useValues } from 'kea'
+2:import type { PropsWithChildren, UIEvent } from 'react'
+4:import { IconClock, IconListTree, IconRocket } from '@posthog/icons'
+6:import { useFeatureFlag } from 'lib/hooks/useFeatureFlag'
+7:import { IconFingerprint } from 'lib/lemon-ui/icons'
+8:import {
+19:import { errorTrackingIssueSceneLogic } from '../../scenes/ErrorTrackingIssueScene/errorTrackingIssueSceneLogic'
+20:import { MiniBreakdowns } from '../Breakdowns/MiniBreakdowns'
+21:import { FingerprintPreview } from '../FingerprintPreview/FingerprintPreview'
+22:import { IssueReleasesPreview } from '../IssueReleases/IssueReleasesPreview'
+23:import { IssueFilterPreview, issueFilterPr … (672 more characters)
+
+>>> Bash {"command":"grep -rn \"featureFlag: (\" frontend/src products/feature_flags/manifest.tsx 2>/dev/null | head -3; ls products/feature_flags/; sed -n 1,40p products/feature_flags/backend/facade/flags.py; sed -n 1,30p products/feature_flags/backend/facade/__init__.py; grep -rn \"urls.featureFlag(\" products/error_tracking products/experiments/frontend 2>/dev/null | head -3","description":"Find flag URL helper and facade exports"}
+<<< Bash
+frontend/src/products.tsx:1360:    featureFlag: (id: string | number): string => `/feature_flags/${id}`,
+frontend/src/toolbar/urls.ts:24:    featureFlag: (id: string | number): string => `/feature_flags/${id}`,
+products/feature_flags/manifest.tsx:26:        featureFlag: (id: string | number): string => `/feature_flags/${id}`,
+__init__.py
+backend
+evals
+frontend
+manifest.tsx
+mcp
+package.json
+product.yaml
+skills
+"""Feature-flag gates for this product, kept light so core code can import them without pulling
+the facade's heavier logic surface onto its import path.
+"""
+
+from typing import TYPE_CHECKING
+
+from django.conf import settings
+
+from posthog.ph_client import feature_enabled_or_false
+
+if TY … (1842 more characters)
+
+>>> get_dependency_evidence {"worktree":"/private/tmp/posthog-proof","from":"products/error_tracking/frontend/components/IssueReleases","to":".","limit":40}
+<<< get_dependency_evidence
+{"from":"products/error_tracking/frontend/components/IssueReleases","to":".","total":42,"imports":[{"file":"products/error_tracking/frontend/components/IssueReleases/IssueReleaseRow.tsx","line":3,"target":"frontend/@posthog/lemon-ui/src/index.ts","kind":"static","names":["Tooltip"],"test":false},{"file":"products/error_tracking/frontend/components/IssueReleases/IssueReleaseRow.tsx","line":5,"target":"frontend/src/lib/dayjs.ts","kind":"static","names":["dayjs"],"test":false},{"file":"products/error_tracking/frontend/components/IssueReleases/IssueReleaseRow.tsx","line":6,"target":"frontend/src/lib/ui/quill/index.ts","kind":"static","names":["Button","Text"],"test":false},{"file":"products/erro … (8861 more characters)
+
+>>> get_dependency_evidence {"worktree":"/private/tmp/posthog-proof","from":"posthog/hogql_queries","to":"products/error_tracking/backend/facade","limit":10}
+<<< get_dependency_evidence
+{"from":"posthog/hogql_queries","to":"products/error_tracking/backend/facade","total":1,"imports":[{"file":"posthog/hogql_queries/query_runner.py","line":1000,"target":"products/error_tracking/backend/facade/queries.py","kind":"lazy","names":["ErrorTrackingBreakdownsQueryRunner","ErrorTrackingFingerprintProjectionQueryRunner","ErrorTrackingIssueCorrelationQueryRunner","ErrorTrackingQueryRunner","ErrorTrackingReleasesQueryRunner","ErrorTrackingSimilarIssuesQueryRunner"],"test":false}],"next":"To plan a dependency from posthog/hogql_queries on products/error_tracking/backend/facade, add a seam with edit_plan whose interface lists the target files it must go through."}
+
+[assistant] Enough to draft. The Releases tab is a close template, so I'm modeling the plan on it.
+
+>>> create_plan {"worktree":"/private/tmp/posthog-proof","title":"Feature flag usage on error tracking issues","goal":"On an error tracking issue, show which feature flags (and variants) were active on the issue's $exception events, so engineers can spot a flag rollout causing the error. v1 mirrors the existing Releases tab: a new ErrorTrackingIssueFeatureFlagsQuery reads `$feature/<key>` properties off the issue's exceptions in ClickHouse, aggregates occurrences per flag and variant over the preview date range, and enriches the keys with flag id/name/active state through the feature_flags facade so the UI can link to each flag. A new \"Flags\" tab in the issue filter preview panel renders it, gated by a new ERROR_TRACKING_ISSUE_FEATURE_FLAGS frontend flag. Out of scope for v1: baseline comparison against $feature_flag_called traffic (lift), and flag filters in the issue list."}
+<<< create_plan
+{"plan":{"version":1,"id":"feature-flag-usage-on-error-tracking-iss-7c5c","title":"Feature flag usage on error tracking issues","goal":"On an error tracking issue, show which feature flags (and variants) were active on the issue's $exception events, so engineers can spot a flag rollout causing the error. v1 mirrors the existing Releases tab: a new ErrorTrackingIssueFeatureFlagsQuery reads `$feature/<key>` properties off the issue's exceptions in ClickHouse, aggregates occurrences per flag and variant over the preview date range, and enriches the keys with flag id/name/active state through the feature_flags facade so the UI can link to each flag. A new \"Flags\" tab in the issue filter previe … (786 more characters)
+
+>>> edit_plan {"worktree":"/private/tmp/posthog-proof","planId":"feature-flag-usage-on-error-tracking-iss-7c5c","expectedRevision":1,"note":"Initial draft modeled on the ErrorTrackingReleasesQuery + IssueReleases tab path.","operations":[{"op":"upsert_module","path":"products/error_tracking/backend/hogql_queries","action":"modify","responsibility":"New ErrorTrackingIssueFeatureFlagsQueryRunner: aggregates the issue's $exception events by `$feature/<key>` property into per-flag, per-variant counts, capped at N flags, then enriches keys via the feature_flags facade."},{"op":"upsert_module","path":"products/error_tracking/backend/facade","action":"modify","responsibility":"Export the new runner from queries.py so core query dispatch can reach it, like the other error tracking runners."},{"op":"upsert_module","path":"products/feature_flags/backend/facade","action":"modify","responsibility":"Add get_flag_summaries_by_key(team, keys) returning frozen FlagSummary(id, key, name, active, deleted) records, so callers never touch the FeatureFlag model."},{"op":"upsert_module","path":"posthog/hogql_queries","action":"modify","responsibility":"Register the ErrorTrackingIssueFeatureFlagsQuery kind in get_query_runner via a lazy import from the error tracking facade."},{"op":"upsert_module","path":"frontend/src/queries/schema","action":"modify","responsibility":"Add NodeKind.ErrorTrackingIssueFeatureFlagsQuery, the query, response and row types; regenerate posthog/schema.py."},{"op":"upsert_module","path":"products/error_tracking/frontend","action":"modify","responsibility":"queries.ts gains errorTrackingIssueFeatureFlagsQuery builder, next to errorTrackingReleasesQuery."},{"op":"upsert_module","path":"products/error_tracking/frontend/components/IssueFeatureFlags","action":"create","responsibility":"issueFeatureFlagsLogic (loads the query for the preview's issue and date range) and IssueFeatureFlagsPreview (rows per flag with variant split, linking to the flag)."},{"op":"upsert_module","path":"products/error_tracking/frontend/components/IssueFilterPreview","action":"modify","responsibility":"Add a 'Flags' tab to IssueFilterPreviewPanel behind the ERROR_TRACKING_ISSUE_FEATURE_FLAGS flag; clicking a variant adds a `$feature/<key>` property filter to the preview."},{"op":"upsert_module","path":"frontend/src/lib","action":"modify","responsibility":"Add ERROR_TRACKING_ISSUE_FEATURE_FLAGS to FEATURE_FLAGS in constants.tsx."},{"op":"upsert_seam","from":"products/error_tracking/backend/hogql_queries","to":"products/feature_flags/backend/facade","action":"add","interface":{"files":["products/feature_flags/backend/facade/api.py"],"symbols":["get_flag_summaries_by_key","FlagSummary"]},"rationale":"First error_tracking→feature_flags dependency; must go through the facade, not models, per product isolation."},{"op":"upsert_seam","from":"products/error_tracking/backend/hogql_queries","to":"posthog/hogql","action":"keep","interface":{"files":["posthog/hogql/query.py","posthog/hogql/parser.py","posthog/hogql/ast.py"],"symbols":["execute_hogql_query","parse_select"]},"rationale":"Same HogQL surface the releases and breakdowns runners already use."},{"op":"upsert_seam","from":"posthog/hogql_queries","to":"products/error_tracking/backend/facade","action":"keep","interface":{"files":["products/error_tracking/backend/facade/queries.py"],"symbols":["ErrorTrackingIssueFeatureFlagsQueryRunner"]},"rationale":"Existing lazy-import dispatch; only the imported names grow."},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFilterPreview","to":"products/error_tracking/frontend/components/IssueFeatureFlags","action":"add","interface":{"files":["products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx"],"symbols":["IssueFeatureFlagsPreview"]},"rationale":"Panel mounts the tab, as it does IssueReleasesPreview."},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"products/error_tracking/frontend/components/IssueFilterPreview","action":"add","interface":{"files":["products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts","products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx"],"symbols":["issueFilterPreviewLogic","PreviewPropertyFilter","IssueFilterPreviewHeader"]},"rationale":"Reads date range and pushes variant filters, same two-way coupling IssueReleases has today."},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"products/error_tracking/frontend","action":"add","interface":{"files":["products/error_tracking/frontend/queries.ts"],"symbols":["errorTrackingIssueFeatureFlagsQuery"]}},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"frontend/src/queries/schema","action":"add","interface":{"files":["frontend/src/queries/schema/schema-general.ts"],"symbols":["ErrorTrackingIssueFeatureFlagsQueryResponse","ErrorTrackingIssueFeatureFlag","DateRange"]}},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"frontend/src/scenes","action":"add","interface":{"files":["frontend/src/scenes/urls.ts","frontend/src/scenes/teamLogic.tsx"],"symbols":["urls","teamLogic"]},"rationale":"Link rows to /feature_flags/:id through the global urls helper; no frontend import of products/feature_flags."}]}
+<<< edit_plan
+Operation 15 (upsert_seam): A seam connects two separate modules; `products/error_tracking/frontend` contains `products/error_tracking/frontend/components/IssueFeatureFlags`.
+Nothing was applied. Fix these problems and send the whole batch again with expectedRevision 1.
+Explorer: http://127.0.0.1:4633/?path=%2Fprivate%2Ftmp%2Fposthog-proof&plan=feature-flag-usage-on-error-tracking-iss-7c5c
+
+>>> Bash {"command":"ls frontend/src/scenes/urls.ts frontend/src/lib/constants.tsx","description":"Confirm urls and constants file paths"}
+<<< Bash
+frontend/src/lib/constants.tsx
+frontend/src/scenes/urls.ts
+
+>>> edit_plan {"worktree":"/private/tmp/posthog-proof","planId":"feature-flag-usage-on-error-tracking-iss-7c5c","expectedRevision":1,"note":"Initial draft modeled on the ErrorTrackingReleasesQuery + IssueReleases tab path.","operations":[{"op":"upsert_module","path":"products/error_tracking/backend/hogql_queries","action":"modify","responsibility":"New ErrorTrackingIssueFeatureFlagsQueryRunner: aggregates the issue's $exception events by `$feature/<key>` property into per-flag, per-variant counts, capped at N flags, then enriches keys via the feature_flags facade."},{"op":"upsert_module","path":"products/error_tracking/backend/facade","action":"modify","responsibility":"Export the new runner from queries.py so core query dispatch can reach it, like the other error tracking runners."},{"op":"upsert_module","path":"products/feature_flags/backend/facade","action":"modify","responsibility":"Add get_flag_summaries_by_key(team, keys) returning frozen FlagSummary(id, key, name, active, deleted) records, so callers never touch the FeatureFlag model."},{"op":"upsert_module","path":"posthog/hogql_queries","action":"modify","responsibility":"Register the ErrorTrackingIssueFeatureFlagsQuery kind in get_query_runner via a lazy import from the error tracking facade."},{"op":"upsert_module","path":"frontend/src/queries/schema","action":"modify","responsibility":"Add NodeKind.ErrorTrackingIssueFeatureFlagsQuery, the query, response and row types; regenerate posthog/schema.py."},{"op":"upsert_module","path":"products/error_tracking/frontend","action":"modify","responsibility":"queries.ts gains errorTrackingIssueFeatureFlagsQuery builder next to errorTrackingReleasesQuery; the new IssueFeatureFlags logic uses it."},{"op":"upsert_module","path":"products/error_tracking/frontend/components/IssueFeatureFlags","action":"create","responsibility":"issueFeatureFlagsLogic (loads the query for the preview's issue and date range) and IssueFeatureFlagsPreview (rows per flag with variant split, linking to the flag)."},{"op":"upsert_module","path":"products/error_tracking/frontend/components/IssueFilterPreview","action":"modify","responsibility":"Add a 'Flags' tab to IssueFilterPreviewPanel behind the ERROR_TRACKING_ISSUE_FEATURE_FLAGS flag; clicking a variant adds a `$feature/<key>` property filter to the preview."},{"op":"upsert_module","path":"frontend/src/lib","action":"modify","responsibility":"Add ERROR_TRACKING_ISSUE_FEATURE_FLAGS to FEATURE_FLAGS in constants.tsx."},{"op":"upsert_seam","from":"products/error_tracking/backend/hogql_queries","to":"products/feature_flags/backend/facade","action":"add","interface":{"files":["products/feature_flags/backend/facade/api.py"],"symbols":["get_flag_summaries_by_key","FlagSummary"]},"rationale":"First error_tracking→feature_flags dependency; must go through the facade, not models, per product isolation."},{"op":"upsert_seam","from":"products/error_tracking/backend/hogql_queries","to":"posthog/hogql","action":"keep","interface":{"files":["posthog/hogql/query.py","posthog/hogql/parser.py","posthog/hogql/ast.py"],"symbols":["execute_hogql_query","parse_select"]},"rationale":"Same HogQL surface the releases and breakdowns runners already use."},{"op":"upsert_seam","from":"posthog/hogql_queries","to":"products/error_tracking/backend/facade","action":"keep","interface":{"files":["products/error_tracking/backend/facade/queries.py"],"symbols":["ErrorTrackingIssueFeatureFlagsQueryRunner"]},"rationale":"Existing lazy-import dispatch; only the imported names grow."},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFilterPreview","to":"products/error_tracking/frontend/components/IssueFeatureFlags","action":"add","interface":{"files":["products/error_tracking/frontend/components/IssueFeatureFlags/IssueFeatureFlagsPreview.tsx"],"symbols":["IssueFeatureFlagsPreview"]},"rationale":"Panel mounts the tab, as it does IssueReleasesPreview."},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"products/error_tracking/frontend/components/IssueFilterPreview","action":"add","interface":{"files":["products/error_tracking/frontend/components/IssueFilterPreview/issueFilterPreviewLogic.ts","products/error_tracking/frontend/components/IssueFilterPreview/IssueFilterPreviewHeader.tsx"],"symbols":["issueFilterPreviewLogic","PreviewPropertyFilter","IssueFilterPreviewHeader"]},"rationale":"Reads date range and pushes variant filters, same two-way coupling IssueReleases has today."},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"frontend/src/queries/schema","action":"add","interface":{"files":["frontend/src/queries/schema/schema-general.ts"],"symbols":["ErrorTrackingIssueFeatureFlagsQueryResponse","ErrorTrackingIssueFeatureFlag","DateRange"]}},{"op":"upsert_seam","from":"products/error_tracking/frontend/components/IssueFeatureFlags","to":"frontend/src/scenes","action":"add","interface":{"files":["frontend/src/scenes/urls.ts","frontend/src/scenes/teamLogic.tsx"],"symbols":["urls","teamLogic"]},"rationale":"Link rows to /feature_flags/:id through the global urls helper; no frontend import of products/feature_flags."}]}
+<<< edit_plan
+{"plan":{"version":1,"id":"feature-flag-usage-on-error-tracking-iss-7c5c","title":"Feature flag usage on error tracking issues","goal":"On an error tracking issue, show which feature flags (and variants) were active on the issue's $exception events, so engineers can spot a flag rollout causing the error. v1 mirrors the existing Releases tab: a new ErrorTrackingIssueFeatureFlagsQuery reads `$feature/<key>` properties off the issue's exceptions in ClickHouse, aggregates occurrences per flag and variant over the preview date range, and enriches the keys with flag id/name/active state through the feature_flags facade so the UI can link to each flag. A new \"Flags\" tab in the issue filter previe … (5888 more characters)
+
+>>> edit_plan {"worktree":"/private/tmp/posthog-proof","planId":"feature-flag-usage-on-error-tracking-iss-7c5c","expectedRevision":2,"operations":[{"op":"add_comment","target":{"kind":"seam","from":"products/error_tracking/backend/hogql_queries","to":"products/feature_flags/backend/facade"},"body":"Open decision: v1 reads flag state from the `$feature/<key>` properties the SDKs stamp on $exception events, so it needs nothing from feature_flags except key→id/name enrichment. The alternative is to join posthog.flag_evaluations (gated by is_flag_evaluations_table_enabled in facade/flags.py). That would also catch server-side flags that were never stamped on the event, but it is cloud-only and costs a join. Recommendation: event properties for v1, with evaluations as a follow-up."}]}
+<<< edit_plan
+{"plan":{"version":1,"id":"feature-flag-usage-on-error-tracking-iss-7c5c","title":"Feature flag usage on error tracking issues","goal":"On an error tracking issue, show which feature flags (and variants) were active on the issue's $exception events, so engineers can spot a flag rollout causing the error. v1 mirrors the existing Releases tab: a new ErrorTrackingIssueFeatureFlagsQuery reads `$feature/<key>` properties off the issue's exceptions in ClickHouse, aggregates occurrences per flag and variant over the preview date range, and enriches the keys with flag id/name/active state through the feature_flags facade so the UI can link to each flag. A new \"Flags\" tab in the issue filter previe … (6407 more characters)
+
+[assistant] I've drafted the plan (`feature-flag-usage-on-error-tracking-iss-7c5c`, revision 3). It's unlocked and nothing is implemented. You can open it in the explorer: http://127.0.0.1:4633/?path=%2Fprivate%2Ftmp%2Fposthog-proof&plan=feature-flag-usage-on-error-tracking-iss-7c5c
+
+**Approach:** copy the path the issue page's Releases tab already uses (`ErrorTrackingReleasesQuery` plus the `IssueReleasesPreview` tab in `IssueFilterPreviewPanel.tsx`) and apply it to feature flags. Error tracking has no dependency on feature flags today, so this plan adds the first one.
+
+**Backend**
+- **`products/error_tracking/backend/hogql_queries`**: a new `ErrorTrackingIssueFeatureFlagsQueryRunner`. It reads the `$feature/<key>` properties on the issue's `$exception` events and counts occurrences per flag and variant over the preview's date range, with a cap on the number of flags.
+- **`products/feature_flags/backend/facade`**: a new `get_flag_summaries_by_key(team, keys)` in `api.py`. It returns frozen `FlagSummary` records (id, key, name, active, deleted) so error tracking can link to each flag without touching the `FeatureFlag` model.
+- **`products/error_tracking/backend/facade/queries.py`** exports the runner, and `posthog/hogql_queries/query_runner.py` registers the new query kind with a lazy import, like the other error tracking runners.
+- **`frontend/src/queries/schema`**: the new query kind and response types, then regenerate `posthog/schema.py`.
+
+**Frontend**
+- **New `components/IssueFeatureFlags`**: a logic that loads the query and a preview component. It shows one row per flag with the split by variant, and each row links through the global `urls.featureFlag`, so the frontend never imports the feature flags product.
+- **`components/IssueFilterPreview`**: a new "Flags" tab behind a new `ERROR_TRACKING_ISSUE_FEATURE_FLAGS` flag. Clicking a variant adds a `$feature/<key>` filter to the preview.
+- **`queries.ts`** gets a query builder, and `constants.tsx` gets the new flag.
+
+**One decision for you** (also left as a comment on the new seam): the plan takes flag state from the `$feature/*` properties already on exception events. The alternative is to join the `posthog.flag_evaluations` table. That would also catch server-side flags that never get recorded on the event, but it's cloud-only and adds a join. I recommend event properties for v1 and evaluations as a follow-up.
+
+**Out of scope for v1:** comparing error rates against normal flag traffic to show lift, and filtering the issue list by flag.
+
+Comment in the explorer or tell me what to change. Once you're happy with it, ask me to lock the plan and I'll implement against it.
+
+[done] 22 turns, 114048 ms, $0.82, is_error=false, permission_denials 0, modelUsage claude-haiku-4-5-20251001 (provider firstParty, $0.0010), claude-opus-5-5 (provider firstParty, $0.8184)
+

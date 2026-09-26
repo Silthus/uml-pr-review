@@ -22,7 +22,7 @@ const judgeKey = shuffledKey(
   runs.map(({ name }) => name),
   crypto.getRandomValues(new Uint32Array(1))[0]!,
 );
-await writeJson(join(taskDir, "judge-key.json"), judgeKey);
+await rm(join(taskDir, "judge-key.json"), { force: true });
 
 const prompt = judgePrompt({
   taskStatement: task.taskStatement,
@@ -32,6 +32,7 @@ const prompt = judgePrompt({
 await Bun.write(join(taskDir, "judge-prompt.md"), prompt);
 
 const output = await askJudge(prompt, judgeKey);
+await writeJson(join(taskDir, "judge-key.json"), judgeKey);
 await writeJson(join(taskDir, "judge.json"), { model: judgeModel, judgedAt: new Date().toISOString(), verdicts: unshuffledVerdicts(output, judgeKey) });
 console.log(`Judged ${runs.length} diffs of ${key} with ${judgeModel}.`);
 

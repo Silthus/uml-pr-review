@@ -1,0 +1,14 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/coherence-index.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../coherence/contract.ts' from '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab27e42cab61b7e6b/test/coherence/coherence-index.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

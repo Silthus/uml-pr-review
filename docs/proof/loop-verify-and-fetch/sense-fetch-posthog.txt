@@ -7,6 +7,7 @@ base: {"ref":"upstream/master","commit":"57ca357730843205c2d659098ac8e4c5e07a669
 
 The fetch git ran (from GIT_TRACE):
 trace: built-in: git fetch --quiet https://github.com/PostHog/posthog.git +refs/heads/master:refs/remotes/upstream/master
+trace: built-in: git fetch --quiet https://github.com/PostHog/posthog.git +refs/heads/master:refs/remotes/upstream/master
 
 Lines in the trace that mention ssh: 0
 

@@ -4,7 +4,7 @@ $ bun test test/coherence/loop-test-runs.test.ts test/coherence/loop-sense.test.
 
 bun test v1.4.2 (50a8a8387)
 
- 20 pass
+ 25 pass
  0 fail
- 54 expect() calls
-Ran 20 tests across 3 files. [5.98s]
+ 64 expect() calls
+Ran 25 tests across 3 files. [6.79s]

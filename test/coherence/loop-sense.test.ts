@@ -15,6 +15,7 @@ let repository: TemporaryRepository;
 let upstream: string;
 let gh: FakeGh;
 let gitShim: string;
+let globalGitConfig: string;
 
 type Sensed = { code: number; json: { sense?: string; base?: Sense["base"]; error?: string } };
 
@@ -23,15 +24,15 @@ async function senseWithFetch(remoteUrl: string): Promise<Sensed> {
   const runs = await mkdtemp(join(scratch, "runs-"));
   const child = Bun.spawn(
     ["bun", sense, "--repo", repository.dir, "--scope", "products/a", "--base", "upstream/main", "--fetch", "--github", "acme/app", "--rules", join(scratch, "rules.json"), "--runs", runs],
-    { stdout: "pipe", stderr: "pipe", env: { ...gh.env, PATH: `${gitShim}:${gh.env.PATH}`, GIT_SSH_COMMAND: "false" } },
+    { stdout: "pipe", stderr: "pipe", env: { ...gh.env, PATH: `${gitShim}:${gh.env.PATH}`, GIT_SSH_COMMAND: "false", GIT_CONFIG_GLOBAL: globalGitConfig, GIT_CONFIG_NOSYSTEM: "1" } },
   );
   const [stdout, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
   return { code, json: JSON.parse(stdout) };
 }
 
 async function advanceUpstream(): Promise<string> {
-  const next = (await repository.git("commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "upstream moved on")).trim();
-  await repository.git("push", "--quiet", upstream, `${next}:refs/heads/main`);
+  const next = (await repository.git("commit-tree", "HEAD^{tree}", "-p", "refs/remotes/upstream/main", "-m", "upstream moved on")).trim();
+  await repository.git("push", "--quiet", upstream, `+${next}:refs/heads/main`);
   return next;
 }
 
@@ -51,6 +52,8 @@ async function loggingGit(): Promise<string> {
 beforeAll(async () => {
   scratch = await mkdtemp(join(tmpdir(), "coherence-sense-"));
   gitShim = await loggingGit();
+  globalGitConfig = join(scratch, "gitconfig");
+  await writeFile(globalGitConfig, '[url "git@github.com:"]\n\tinsteadOf = https://github.com/\n[protocol "https"]\n\tallow = never\n');
   repository = await temporaryRepository({ "products/a/backend/api.py": "def run(value):\n    return value\n" });
   upstream = join(scratch, "upstream.git");
   await git(scratch, ["init", "--quiet", "--bare", upstream]);
@@ -69,16 +72,17 @@ afterAll(async () => {
 });
 
 describe("sense --fetch", () => {
-  test(
-    "moves the base to the GitHub remote's head over HTTPS, without an SSH agent",
-    async () => {
+  test.each(["git@github.com:acme/app.git", "ssh://git@github.com:22/acme/app", "https://GitHub.com/acme/app/"])(
+    "moves the base to the head of GitHub remote %s over HTTPS, without an SSH agent, despite a global rewrite to SSH",
+    async (remoteUrl) => {
       const next = await advanceUpstream();
+      const earlierCalls = (await gitCalls()).length;
 
-      const sensed = await senseWithFetch("git@github.com:acme/app.git");
+      const sensed = await senseWithFetch(remoteUrl);
 
       expect(sensed).toMatchObject({ code: 0, json: { base: { ref: "upstream/main", commit: next } } });
       expect((await repository.git("rev-parse", "upstream/main")).trim()).toBe(next);
-      expect((await gitCalls()).filter((call) => call.includes(" fetch "))).toEqual([expect.stringContaining("credential.helper=!gh auth git-credential fetch --quiet https://github.com/acme/app.git +refs/heads/main:refs/remotes/upstream/main")]);
+      expect((await gitCalls()).slice(earlierCalls).filter((call) => call.includes(" fetch "))).toEqual([expect.stringContaining("credential.helper=!gh auth git-credential fetch --quiet https://github.com/acme/app.git +refs/heads/main:refs/remotes/upstream/main")]);
     },
     toolTimeoutMs,
   );
@@ -89,7 +93,7 @@ describe("sense --fetch", () => {
       const sensed = await senseWithFetch("git@git.example.com:acme/app.git");
 
       expect(sensed.code).toBe(1);
-      expect(sensed.json.error).toStartWith("could not fetch upstream/main from git@git.example.com:acme/app.git over SSH:");
+      expect(sensed.json.error).toStartWith("could not fetch upstream/main from git@git.example.com:acme/app.git: ");
     },
     toolTimeoutMs,
   );

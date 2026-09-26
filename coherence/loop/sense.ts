@@ -14,7 +14,7 @@ const usage =
 
 const baseCandidates = ["upstream/master", "upstream/main", "origin/master", "origin/main", "HEAD"];
 const targetsShown = 10;
-const githubRemote = /^(?:git@github\.com:|ssh:\/\/git@github\.com\/|https:\/\/github\.com\/)([^/]+\/[^/]+?)(?:\.git)?\/?$/;
+const githubRemote = /^(?:ssh:\/\/|https:\/\/)?(?:[^@/]+@)?github\.com(?::\d+)?[:/]([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/i;
 
 const { values } = parseArgs({
   options: {
@@ -87,12 +87,9 @@ async function fetchBase(repository: string, ref: string): Promise<void> {
   const url = (await git(repository, ["config", "--get", `remote.${remote}.url`]).catch(() => "")).trim();
   if (url === "") throw new Error(`--fetch cannot find the remote ${remote} of ${ref}`);
   const https = githubHttpsUrl(url);
-  const [transport, fetch] =
-    https === null
-      ? ["SSH", ["fetch", "--quiet", remote!, branch]]
-      : ["HTTPS", [...githubHttpsOnly(https), "fetch", "--quiet", https, `+refs/heads/${branch}:refs/remotes/${ref}`]];
+  const fetch = https === null ? ["fetch", "--quiet", remote!, branch] : [...githubHttpsOnly(https), "fetch", "--quiet", https, `+refs/heads/${branch}:refs/remotes/${ref}`];
   await git(repository, fetch).catch((error: unknown) => {
-    throw new Error(`could not fetch ${ref} from ${https ?? url} over ${transport}: ${error instanceof CommandError ? error.stderr.trim() : String(error)}`);
+    throw new Error(`could not fetch ${ref} from ${https ?? url}: ${error instanceof CommandError ? error.stderr.trim() : String(error)}`);
   });
 }
 

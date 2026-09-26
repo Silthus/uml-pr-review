@@ -17,8 +17,13 @@ async function executable(path: string, script: string): Promise<void> {
   await chmod(path, 0o755);
 }
 
-const borrowedPytest = (output: string, code: number) =>
-  executable(join(mainCheckout, ".flox", "cache", "venv", "bin", "pytest"), `#!/bin/sh\ncat <<'OUTPUT'\n${output}\nOUTPUT\nexit ${code}\n`);
+const pytestScript = (output: string, code: number) => `#!/bin/sh\necho "$0"\ncat <<'OUTPUT'\n${output}\nOUTPUT\nexit ${code}\n`;
+const borrowedPytest = (output: string, code: number) => executable(join(mainCheckout, ".flox", "cache", "venv", "bin", "pytest"), pytestScript(output, code));
+const floxUv = (script: string) => executable(join(mainCheckout, ".flox", "run", "aarch64-darwin.dev", "bin", "uv"), `#!/bin/sh\n${script}\n`);
+const locks = async (workspaceLock: string, mainCheckoutLock: string) => {
+  await writeFile(join(workspace, "uv.lock"), workspaceLock);
+  await writeFile(join(mainCheckout, "uv.lock"), mainCheckoutLock);
+};
 
 beforeEach(async () => {
   workspace = await mkdtemp(join(tmpdir(), "coherence-workspace-"));
@@ -62,17 +67,46 @@ describe("pytest outcomes", () => {
 
     expect(run).toMatchObject({ status: "failed", reason: null });
   });
+
+  test("a colored summary that counts failed tests is a failure", async () => {
+    await borrowedPytest("\x1b[31m\x1b[1m1 failed\x1b[0m, \x1b[32m1 passed\x1b[0m\x1b[31m in 0.12s\x1b[0m", 1);
+
+    const [run] = await runTests(workspace, mainCheckout, [testFile]);
+
+    expect(run).toMatchObject({ status: "failed" });
+  });
 });
 
 describe("the Python test environment", () => {
-  test("a workspace with a uv lock runs pytest through uv, frozen, in a venv of its own", async () => {
+  test("a workspace whose uv lock differs from the main checkout's syncs a venv of its own, frozen", async () => {
     await borrowedPytest(conftestCrash, 1);
-    await writeFile(join(workspace, "uv.lock"), "version = 1\n");
-    await executable(join(mainCheckout, ".flox", "run", "aarch64-darwin.dev", "bin", "uv"), '#!/bin/sh\necho "uv $* into $UV_PROJECT_ENVIRONMENT with global git config $GIT_CONFIG_GLOBAL"\necho "2 passed in 0.30s"\n');
+    await locks("version = 2\n", "version = 1\n");
+    await floxUv(`[ "$*" = "sync --quiet --frozen" ] || exit 9\nmkdir -p "$UV_PROJECT_ENVIRONMENT/bin"\nprintf '%s' '${pytestScript("2 passed in 0.30s", 0)}' > "$UV_PROJECT_ENVIRONMENT/bin/pytest"\nchmod +x "$UV_PROJECT_ENVIRONMENT/bin/pytest"`);
 
     const [run] = await runTests(workspace, mainCheckout, [testFile]);
 
     expect(run).toMatchObject({ status: "passed" });
-    expect(run!.output).toContain(`uv run --quiet --frozen pytest -q -p no:cacheprovider ${testFile} into ${join(workspace, ".venv")} with global git config /dev/null`);
+    expect(run!.output).toStartWith(join(workspace, ".venv", "bin", "pytest"));
+  });
+
+  test("a workspace whose uv lock matches the main checkout's borrows its venv without syncing", async () => {
+    await borrowedPytest("1 passed in 0.10s", 0);
+    await locks("version = 1\n", "version = 1\n");
+    await floxUv("exit 9");
+
+    const [run] = await runTests(workspace, mainCheckout, [testFile]);
+
+    expect(run).toMatchObject({ status: "passed" });
+    expect(run!.output).toStartWith(join(mainCheckout, ".flox", "cache", "venv", "bin", "pytest"));
+  });
+
+  test("a uv sync that fails is not run, with uv's error as the reason", async () => {
+    await borrowedPytest(conftestCrash, 1);
+    await locks("version = 2\n", "version = 1\n");
+    await floxUv("echo '  × Failed to download and build `pytest-split`' >&2\necho 'hint: `pytest-split` was included because `posthog:dev` depends on it' >&2\nexit 1");
+
+    const [run] = await runTests(workspace, mainCheckout, [testFile]);
+
+    expect(run).toMatchObject({ status: "not run", reason: `uv could not sync ${join(workspace, "uv.lock")}: × Failed to download and build \`pytest-split\`` });
   });
 });

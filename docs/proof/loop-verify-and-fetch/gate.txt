@@ -5,7 +5,7 @@ $ tsc --noEmit
 (exit 0, no output)
 
 $ bun test
- 463 pass
+ 474 pass
  0 fail
-Ran 463 tests across 49 files. [32.19s]
+Ran 474 tests across 50 files. [33.20s]
 (exit 0)

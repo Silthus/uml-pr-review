@@ -1,19 +1,23 @@
 import { useState, type FormEvent } from "react";
 import type { CommentTarget, PlanComment } from "../../architecture/contracts/index.ts";
+import type { MutationOutcome } from "./plan-actions.ts";
 
-export type CommentActions = { addComment(target: CommentTarget, body: string): Promise<void> };
+export type CommentActions = { addComment(target: CommentTarget, body: string): Promise<MutationOutcome> };
 
 export function CommentThread({ comments, target, actions, label }: { comments: PlanComment[]; target: CommentTarget; actions: CommentActions; label: string }) {
   const [busy, setBusy] = useState(false);
+  const [rejection, setRejection] = useState<string | null>(null);
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const body = String(new FormData(form).get("body") ?? "").trim();
     if (!body) return;
     setBusy(true);
+    setRejection(null);
     try {
-      await actions.addComment(target, body);
-      form.reset();
+      const outcome = await actions.addComment(target, body);
+      if (outcome.ok) form.reset();
+      else setRejection(outcome.message);
     } finally {
       setBusy(false);
     }
@@ -42,9 +46,15 @@ export function CommentThread({ comments, target, actions, label }: { comments: 
       <form className="comment-form" aria-label={`New comment on ${label}`} onSubmit={(event) => void submit(event)}>
         <textarea name="body" aria-label={`Comment on ${label}`} placeholder="Tell the agent what to change" rows={2} />
         <button type="submit" disabled={busy}>Add comment</button>
+        <FormRejection message={rejection} />
       </form>
     </section>
   );
+}
+
+export function FormRejection({ message }: { message: string | null }) {
+  if (!message) return null;
+  return <p className="form-error" role="alert">{message}</p>;
 }
 
 export function shortTime(at: string): string {

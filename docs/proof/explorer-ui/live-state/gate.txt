@@ -1,0 +1,10 @@
+# Final tree f707165, rebased on origin/main 7bb1705
+
+$ bun test
+ 295 pass
+ 0 fail
+ 714 expect() calls
+Ran 295 tests across 25 files. [10.52s]
+
+$ bun run typecheck
+$ tsc --noEmit

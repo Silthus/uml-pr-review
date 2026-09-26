@@ -2,8 +2,8 @@ import { useState, type FormEvent } from "react";
 import type { ArchitecturePlan, ConformanceResult, ModuleView, PlannedModule, Seam } from "../../architecture/contracts/index.ts";
 import type { ArchitectureModel } from "../../architecture/model/index.ts";
 import { stereotypeOf } from "../canvas/stereotype.ts";
-import type { PlanActions } from "./plan-actions.ts";
-import { CommentThread } from "./comments.tsx";
+import { closingOnSuccess, type MutationOutcome, type PlanActions } from "./plan-actions.ts";
+import { CommentThread, FormRejection } from "./comments.tsx";
 import { DependencyList } from "./dependency-list.tsx";
 import { ModulePath } from "./module-path.tsx";
 
@@ -52,20 +52,21 @@ function ModulePlanActions({ module, planned, plan, actions }: { module: ModuleV
         <button type="button" onClick={() => setForm(form === "module" ? null : "module")}>Add to plan</button>
       )}
       <button type="button" onClick={() => setForm(form === "seam" ? null : "seam")}>Add seam from here</button>
-      {form === "module" ? <ModuleForm path={module.path} exists onSubmit={async (entry) => { await actions.upsertModule(entry); setForm(null); }} /> : null}
-      {form === "seam" ? <SeamForm from={module.path} onSubmit={async (seam) => { await actions.upsertSeam(seam); setForm(null); }} /> : null}
+      {form === "module" ? <ModuleForm path={module.path} exists onSubmit={closingOnSuccess(actions.upsertModule, () => setForm(null))} /> : null}
+      {form === "seam" ? <SeamForm from={module.path} onSubmit={closingOnSuccess(actions.upsertSeam, () => setForm(null))} /> : null}
     </div>
   );
 }
 
-export function ModuleForm({ path, exists, onSubmit }: { path: string; exists: boolean; onSubmit(entry: Omit<PlannedModule, "origin">): Promise<void> }) {
+export function ModuleForm({ path, exists, onSubmit }: { path: string; exists: boolean; onSubmit(entry: Omit<PlannedModule, "origin">): Promise<MutationOutcome> }) {
+  const [rejection, save] = useRejection(onSubmit);
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const fields = new FormData(event.currentTarget);
     const modulePath = field(fields, "path") || path;
     const responsibility = field(fields, "responsibility");
     if (!modulePath || !responsibility) return;
-    void onSubmit({ path: modulePath, action: field(fields, "action") as PlannedModule["action"], responsibility });
+    void save({ path: modulePath, action: field(fields, "action") as PlannedModule["action"], responsibility });
   };
   return (
     <form className="edit-form" onSubmit={submit} aria-label="Planned module">
@@ -77,18 +78,20 @@ export function ModuleForm({ path, exists, onSubmit }: { path: string; exists: b
       </select>
       <input name="responsibility" aria-label="Responsibility" placeholder="What this module is responsible for" />
       <button type="submit">Save module</button>
+      <FormRejection message={rejection} />
     </form>
   );
 }
 
-export function SeamForm({ from, onSubmit }: { from: string; onSubmit(seam: Omit<Seam, "origin">): Promise<void> }) {
+export function SeamForm({ from, onSubmit }: { from: string; onSubmit(seam: Omit<Seam, "origin">): Promise<MutationOutcome> }) {
+  const [rejection, save] = useRejection(onSubmit);
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const fields = new FormData(event.currentTarget);
     const to = field(fields, "to");
     if (!to) return;
     const interfaceFile = field(fields, "interface");
-    void onSubmit({ from, to, action: field(fields, "action") as Seam["action"], interface: interfaceFile ? { files: [interfaceFile], symbols: [] } : undefined, rationale: field(fields, "rationale") || undefined });
+    void save({ from, to, action: field(fields, "action") as Seam["action"], interface: interfaceFile ? { files: [interfaceFile], symbols: [] } : undefined, rationale: field(fields, "rationale") || undefined });
   };
   return (
     <form className="edit-form" onSubmit={submit} aria-label="Planned seam">
@@ -101,8 +104,21 @@ export function SeamForm({ from, onSubmit }: { from: string; onSubmit(seam: Omit
       <input name="interface" aria-label="Interface file" placeholder="Interface file the seam routes through (optional)" />
       <input name="rationale" aria-label="Rationale" placeholder="Why (optional)" />
       <button type="submit">Save seam</button>
+      <FormRejection message={rejection} />
     </form>
   );
+}
+
+function useRejection<T>(save: (value: T) => Promise<MutationOutcome>): [string | null, (value: T) => Promise<void>] {
+  const [rejection, setRejection] = useState<string | null>(null);
+  return [
+    rejection,
+    async (value) => {
+      setRejection(null);
+      const outcome = await save(value);
+      if (!outcome.ok) setRejection(outcome.message);
+    },
+  ];
 }
 
 function field(fields: FormData, name: string): string {

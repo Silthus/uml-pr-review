@@ -1,27 +1,30 @@
 import { useState } from "react";
-import type { ArchitecturePlan, ConformanceResult } from "../../architecture/contracts/index.ts";
+import type { ArchitecturePlan } from "../../architecture/contracts/index.ts";
 import { statusGlyph } from "../canvas/package-node.tsx";
-import { CommentThread } from "./comments.tsx";
+import { currentConformance, type CheckView } from "../state/check-provenance.ts";
+import { CommentThread, shortTime } from "./comments.tsx";
 import { FindingList } from "./finding-list.tsx";
 import { ModulePath } from "./module-path.tsx";
-import type { PlanActions } from "./plan-actions.ts";
+import { closingOnSuccess, type PlanActions } from "./plan-actions.ts";
 import { ModuleForm } from "./selected-module.tsx";
 
-export function PlanPanel({ plan, conformance, actions, onSelectModule, onSelectSeam }: { plan: ArchitecturePlan; conformance: ConformanceResult | null; actions: PlanActions; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void }) {
+export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }: { plan: ArchitecturePlan; check: CheckView | null; actions: PlanActions; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void }) {
   const [creating, setCreating] = useState(false);
   const locked = plan.status === "locked";
+  const conformance = currentConformance(check);
   const moduleStatus = new Map(conformance?.modules.map((module) => [module.path, module.status]) ?? []);
   const seamStatus = new Map(conformance?.seams.map((seam) => [`${seam.from}->${seam.to}`, seam.status]) ?? []);
   const planComments = plan.comments.filter((comment) => comment.target.kind === "plan");
   return (
     <section className="panel plan" aria-label="Architecture plan">
-      <p className="eyebrow">Architecture plan · revision {plan.revision}</p>
+      <p className="eyebrow">{`Architecture plan · revision ${plan.revision}`}</p>
       <h2>{plan.title}</h2>
       <p className="goal">{plan.goal}</p>
       <div className="plan-state">
         <span className={`chip chip-lock ${plan.status}`}>{locked ? "Locked" : "Draft"}</span>
-        {conformance ? <span className={`chip chip-status status-${conformance.verdict}`}>{statusGlyph(conformance.verdict)} {conformance.verdict} · {conformance.phase}</span> : <span className="muted">Not checked yet</span>}
+        <CheckChip check={check} />
       </div>
+      {check?.provenance.kind === "outdated" ? <CheckProvenanceNote result={check.result} since={check.provenance.since} /> : null}
       <div className="actions">
         <button type="button" onClick={() => void actions.check(false)}>Check</button>
         <button type="button" onClick={() => void actions.check(true)}>Final check</button>
@@ -40,7 +43,7 @@ export function PlanPanel({ plan, conformance, actions, onSelectModule, onSelect
         ))}
       </ul>
       {locked ? null : creating ? (
-        <ModuleForm path="" exists={false} onSubmit={async (entry) => { await actions.upsertModule(entry); setCreating(false); }} />
+        <ModuleForm path="" exists={false} onSubmit={closingOnSuccess(actions.upsertModule, () => setCreating(false))} />
       ) : (
         <button type="button" className="subtle" onClick={() => setCreating(true)}>New module…</button>
       )}
@@ -66,6 +69,29 @@ export function PlanPanel({ plan, conformance, actions, onSelectModule, onSelect
       <CommentThread comments={planComments} target={{ kind: "plan" }} actions={actions} label="the plan" />
     </section>
   );
+}
+
+function CheckChip({ check }: { check: CheckView | null }) {
+  if (!check) return <span className="muted">Not checked yet</span>;
+  if (check.provenance.kind === "outdated") return <span className="chip chip-status status-outdated">Outdated check</span>;
+  const { verdict, phase } = check.result;
+  return <span className={`chip chip-status status-${verdict}`}>{`${statusGlyph(verdict)} ${verdict} · ${phase}`}</span>;
+}
+
+function CheckProvenanceNote({ result, since }: { result: CheckView["result"]; since: string[] }) {
+  return (
+    <p className="muted check-provenance">
+      {`Checked revision ${result.planRevision} in ${result.worktree} `}
+      <time dateTime={result.checkedAt}>{checkedAtText(result.checkedAt)}</time>
+      {`: ${result.verdict} · ${result.phase}. ${since.join(" ")} Check again to see the current state.`}
+    </p>
+  );
+}
+
+function checkedAtText(checkedAt: string): string {
+  const at = new Date(checkedAt);
+  const sameDay = at.toDateString() === new Date().toDateString();
+  return sameDay ? `at ${shortTime(checkedAt)}` : `on ${at.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })} at ${shortTime(checkedAt)}`;
 }
 
 function StatusChip({ status }: { status: "conforming" | "pending" | "violating" | undefined }) {

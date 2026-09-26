@@ -18,16 +18,20 @@ import {
 
 export type EventStatus = "connecting" | "live" | "offline";
 
-export type RepositoryState = {
-  path: string;
-  payload: ArchitecturePayload;
+export type PlansSnapshot = {
   plans: PlanSummary[];
   plan: ArchitecturePlan | null;
   conformance: ConformanceResult | null;
 };
 
+export type RepositoryState = PlansSnapshot & {
+  path: string;
+  payload: ArchitecturePayload;
+};
+
 export type ExplorerApi = {
-  load(planId: string | null | undefined): Promise<RepositoryState>;
+  loadArchitecture(): Promise<ArchitecturePayload>;
+  loadPlans(planId: string | null | undefined): Promise<PlansSnapshot>;
   applyOperations(planId: string, expectedRevision: number, operations: PlanOperation[], note?: string): Promise<ArchitecturePlan>;
   setLock(planId: string, expectedRevision: number, locked: boolean): Promise<ArchitecturePlan>;
   check(planId: string, final: boolean): Promise<ConformanceResult>;
@@ -39,12 +43,15 @@ const eventTypes = ["agent_activity", "plan_patch", "conformance_result", "selec
 export function createExplorerApi(path: string): ExplorerApi {
   const query = `path=${encodeURIComponent(path)}`;
   return {
-    async load(planId) {
-      const [payload, plans] = await Promise.all([getJson(`/api/architecture?${query}`, ArchitecturePayloadSchema), getJson(`/api/plans?${query}`, PlanListResponseSchema)]);
+    loadArchitecture() {
+      return getJson(`/api/architecture?${query}`, ArchitecturePayloadSchema);
+    },
+    async loadPlans(planId) {
+      const plans = await getJson(`/api/plans?${query}`, PlanListResponseSchema);
       const selectedPlan = planId === null ? null : planId && plans.some((plan) => plan.id === planId) ? planId : (plans[0]?.id ?? null);
-      if (!selectedPlan) return { path, payload, plans, plan: null, conformance: null };
+      if (!selectedPlan) return { plans, plan: null, conformance: null };
       const detail = await getJson(`/api/plans/${selectedPlan}?${query}`, PlanDetailResponseSchema);
-      return { path, payload, plans, plan: detail.plan, conformance: detail.conformance };
+      return { plans, plan: detail.plan, conformance: detail.conformance };
     },
     async applyOperations(planId, expectedRevision, operations, note) {
       const response = await postJson(`/api/plans/${planId}/operations?${query}`, { expectedRevision, operations, note });

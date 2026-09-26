@@ -1,11 +1,19 @@
-import { afterAll } from "bun:test";
+import { afterAll, beforeAll } from "bun:test";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
 const nativeWorker = globalThis.Worker;
 
-GlobalRegistrator.register({ url: "http://localhost/" });
-globalThis.Worker = nativeWorker;
+export function useHappyDom() {
+  beforeAll(register);
+  afterAll(async () => {
+    if (GlobalRegistrator.isRegistered) await GlobalRegistrator.unregister();
+  });
+}
 
-afterAll(async () => {
-  await GlobalRegistrator.unregister();
-});
+function register() {
+  if (GlobalRegistrator.isRegistered) return;
+  GlobalRegistrator.register({ url: "http://localhost/" });
+  globalThis.Worker = nativeWorker;
+}
+
+register();

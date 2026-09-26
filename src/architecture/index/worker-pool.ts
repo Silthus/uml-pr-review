@@ -11,6 +11,9 @@ export async function extractInWorkers(cwd: string, blobs: BlobToExtract[], work
       for (let chunk = chunks.shift(); chunk; chunk = chunks.shift()) {
         extractions.push(...(await extractChunk(worker, { cwd, blobs: chunk })));
       }
+    } catch (error) {
+      chunks.length = 0;
+      throw error;
     } finally {
       worker.terminate();
     }

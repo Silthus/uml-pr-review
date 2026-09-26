@@ -143,7 +143,7 @@ describe("extraction cache", () => {
     cache.close();
   });
 
-  test("drops the parse failures an earlier indexer cached, so a poisoned cache heals when it opens", async () => {
+  test("ignores the parse failures an earlier indexer cached, so a poisoned cache heals", async () => {
     const repository = await repositoryOf(threeFiles);
     await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
     const poisoned = (await repository.git("rev-parse", "HEAD:app/a.py")).trim();

@@ -24,7 +24,6 @@ export class ExtractionStore {
     this.database.run("PRAGMA synchronous = NORMAL");
     this.database.run("CREATE TABLE IF NOT EXISTS extraction (sha TEXT, extractor TEXT, data TEXT, PRIMARY KEY (sha, extractor)) WITHOUT ROWID");
     this.dropRowsOfOtherExtractors();
-    this.dropRecordedFailures();
   }
 
   async extract(cwd: string, blobs: BlobToExtract[], workerCount: number): Promise<ExtractionResult> {
@@ -47,14 +46,10 @@ export class ExtractionStore {
     this.database.run("DELETE FROM extraction WHERE substr(extractor, 1, length(?1)) <> ?1", [currentExtractors]);
   }
 
-  private dropRecordedFailures() {
-    this.database.run("DELETE FROM extraction WHERE data = 'null'");
-  }
-
   private recall(blob: BlobToExtract): boolean {
     if (this.remembered.has(keyOf(blob))) return true;
     const row = this.database
-      .query<{ data: string }, [string, string]>("SELECT data FROM extraction WHERE sha = ? AND extractor = ?")
+      .query<{ data: string }, [string, string]>("SELECT data FROM extraction WHERE sha = ? AND extractor = ? AND data <> 'null'")
       .get(blob.sha, extractorOf(blob));
     if (!row) return false;
     this.remembered.set(keyOf(blob), JSON.parse(row.data) as ImportRef[]);

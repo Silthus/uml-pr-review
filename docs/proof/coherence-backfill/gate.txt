@@ -1,1 +1,11 @@
 bun test
+checkConformance: 38400 files, 170250 imports, 50 changed files, median 8.35 ms
+
+ 408 pass
+ 0 fail
+ 974 expect() calls
+Ran 408 tests across 43 files. [21.93s]
+
+bun run typecheck
+$ tsc --noEmit
+exit 0

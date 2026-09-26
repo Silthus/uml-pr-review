@@ -1,5 +1,5 @@
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
-import { createEventBus } from "../../../src/architecture/events/index.ts";
+import { createEventBus, type EventBus } from "../../../src/architecture/events/index.ts";
 import { createArchitectureRoutes } from "../../../src/architecture/http/index.ts";
 import { createMcpRoute } from "../../../src/architecture/mcp/index.ts";
 import { createArchitectureService } from "../../../src/architecture/service.ts";
@@ -10,6 +10,7 @@ export const explorerOrigin = "http://127.0.0.1:4477";
 export type ArchitectureServer = {
   url: URL;
   mcpUrl: URL;
+  bus: EventBus;
   api(path: string, init?: BunFetchRequestInit): Promise<Response>;
   stop(): Promise<void>;
 };
@@ -27,6 +28,7 @@ export function startArchitectureServer(): ArchitectureServer {
   return {
     url,
     mcpUrl: new URL("/mcp", url),
+    bus,
     api: (path, init) => fetch(new URL(path, url), init),
     stop: () => server.stop(true),
   };

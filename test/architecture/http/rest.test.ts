@@ -19,6 +19,11 @@ afterAll(async () => {
 
 const api = (route: string, init?: BunFetchRequestInit) => server.api(inRepository(route, repository), init);
 
+async function titles(): Promise<string[]> {
+  const plans: { title: string }[] = await (await api("/api/plans")).json();
+  return plans.map((plan) => plan.title);
+}
+
 async function createdPlan(): Promise<ArchitecturePlan> {
   const response = await api("/api/plans", jsonBody({ title: "Charge orders", goal: "Orders charge payments." }));
   expect(response.status).toBe(201);
@@ -115,12 +120,29 @@ describe("plans", () => {
 
     const malformed = await api(`/api/plans/${plan.id}/operations`, jsonBody({ expectedRevision: 1, operations: [] }));
     expect(malformed.status).toBe(400);
-    const notJson = await api("/api/plans", { method: "POST", body: "{" });
+    const notJson = await api("/api/plans", { method: "POST", headers: { "content-type": "application/json" }, body: "{" });
     expect(await notJson.json()).toEqual({ error: "The request body is not valid JSON." });
 
     const rejected = await api(`/api/plans/${plan.id}/operations`, jsonBody({ expectedRevision: 1, operations: [{ op: "upsert_module", path: "shop/order", action: "modify", responsibility: "x" }] }));
     expect(rejected.status).toBe(400);
     expect((await rejected.json()).error).toContain("No module `shop/order` at base commit");
+  });
+
+  test("answers 415 to a body that is not declared as JSON, so a browser form cannot post without a preflight", async () => {
+    const body = JSON.stringify({ title: "Simple request", goal: "Sent as text/plain." });
+
+    const response = await api("/api/plans", { method: "POST", headers: { "content-type": "text/plain" }, body });
+
+    expect(response.status).toBe(415);
+    expect(await response.json()).toEqual({ error: "Send the request body as JSON with content-type: application/json." });
+    expect(await titles()).not.toContain("Simple request");
+  });
+
+  test("answers 400 with the next step when ?path= is missing", async () => {
+    const response = await server.api("/api/plans");
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Pass ?path=<absolute path of a directory inside your repository>." });
   });
 });
 
@@ -131,12 +153,12 @@ describe("DNS rebinding guard", () => {
 
     const responses = await Promise.all([
       api("/api/plans", foreignHost),
-      api("/api/plans", jsonBody({ title: "x", goal: "y" }, foreignOrigin)),
+      api("/api/plans", jsonBody({ title: "Rebound", goal: "Posted by a foreign page." }, foreignOrigin)),
       server.api("/mcp", jsonBody({}, foreignHost)),
       server.api("/mcp", jsonBody({}, foreignOrigin)),
     ]);
 
     expect(responses.map((response) => response.status)).toEqual([403, 403, 403, 403]);
-    expect((await (await api("/api/plans")).json()).length).toBeGreaterThan(0);
+    expect(await titles()).not.toContain("Rebound");
   });
 });

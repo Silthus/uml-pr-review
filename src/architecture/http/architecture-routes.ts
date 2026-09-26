@@ -19,8 +19,9 @@ import type { ApplyOutcome } from "../plan/index.ts";
 import { ServiceError, type ArchitectureService, type RepositoryPlans } from "../service.ts";
 import { eventStream } from "./event-stream.ts";
 
-type Handler = (request: Bun.BunRequest) => Promise<Response>;
-type PlanHandler = (request: Bun.BunRequest, plans: RepositoryPlans, planId: string) => Promise<Response>;
+type Handler<Request_ extends Request = Request> = (request: Request_) => Promise<Response>;
+type PlanRequest = Bun.BunRequest<"/api/plans/:id">;
+type PlanHandler = (request: PlanRequest, plans: RepositoryPlans, planId: string) => Promise<Response>;
 
 class HttpFailure extends Error {
   constructor(
@@ -35,10 +36,8 @@ class HttpFailure extends Error {
 export function createArchitectureRoutes({ service, bus }: { service: ArchitectureService; bus: EventBus }) {
   const compressed = new WeakMap<ArchitectureModel, Uint8Array<ArrayBuffer>>();
 
-  const repositoryPath = (request: Request) => new URL(request.url).searchParams.get("path") ?? "";
   const plansOf = (request: Request) => service.plans(repositoryPath(request));
-  const forPlan = (handler: PlanHandler): Handler =>
-    guarded(async (request) => handler(request, await plansOf(request), (request.params as { id: string }).id));
+  const forPlan = (handler: PlanHandler): Handler<PlanRequest> => guarded(async (request) => handler(request, await plansOf(request), request.params.id));
 
   async function architecture(request: Request): Promise<Response> {
     const commit = new URL(request.url).searchParams.get("commit") || undefined;
@@ -87,30 +86,32 @@ export function createArchitectureRoutes({ service, bus }: { service: Architectu
     "/api/plans/:id/check": {
       POST: forPlan(async (request, plans, id) => {
         const { final } = await bodyOf(request, CheckPlanRequestSchema);
-        const plan = await plans.get(id);
-        return json<ConformanceResult>(await service.check(repositoryPath(request), plan.id, { phase: final ? "final" : "progress" }));
+        return json<ConformanceResult>(await service.check(repositoryPath(request), id, { phase: final ? "final" : "progress" }));
       }),
     },
     "/api/events": { GET: guarded(events) },
   };
 }
 
-function guarded(handler: Handler): Handler {
-  return async (request) => {
-    const rejection = foreignRequest(request);
-    if (rejection) return json<ErrorResponse>({ error: rejection }, 403);
-    return handler(request).catch(failure);
-  };
+export function rejectForeignRequest(request: Request): Response | undefined {
+  const host = validateHostHeader(request.headers.get("host"), localhostAllowedHostnames());
+  const origin = validateOriginHeader(request.headers.get("origin"), localhostAllowedOrigins());
+  const problem = !host.ok ? host.message : !origin.ok ? origin.message : undefined;
+  return problem === undefined ? undefined : json<ErrorResponse>({ error: problem }, 403);
 }
 
-function foreignRequest(request: Request): string | undefined {
-  const host = validateHostHeader(request.headers.get("host"), localhostAllowedHostnames());
-  if (!host.ok) return host.message;
-  const origin = validateOriginHeader(request.headers.get("origin"), localhostAllowedOrigins());
-  return origin.ok ? undefined : origin.message;
+function guarded<Request_ extends Request>(handler: Handler<Request_>): Handler<Request_> {
+  return async (request) => rejectForeignRequest(request) ?? handler(request).catch(failure);
+}
+
+function repositoryPath(request: Request): string {
+  const path = new URL(request.url).searchParams.get("path");
+  if (!path) throw new HttpFailure(400, "Pass ?path=<absolute path of a directory inside your repository>.");
+  return path;
 }
 
 async function bodyOf<Schema extends z.ZodType>(request: Request, schema: Schema): Promise<z.output<Schema>> {
+  if (!isJson(request)) throw new HttpFailure(415, "Send the request body as JSON with content-type: application/json.");
   const text = await request.text();
   let body: unknown;
   try {
@@ -136,6 +137,10 @@ function failure(error: unknown): Response {
   if (error instanceof ServiceError) return json<ErrorResponse>({ error: error.message }, error.reason === "plan-not-found" ? 404 : 400);
   console.error(error);
   return json<ErrorResponse>({ error: error instanceof Error ? error.message : String(error) }, 500);
+}
+
+function isJson(request: Request): boolean {
+  return (request.headers.get("content-type") ?? "").split(";")[0]!.trim().toLowerCase() === "application/json";
 }
 
 function acceptsGzip(request: Request): boolean {

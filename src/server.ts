@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 import { createEventBus } from "./architecture/events/index.ts";
-import { createArchitectureRoutes } from "./architecture/http/index.ts";
+import { createArchitectureRoutes, rejectForeignRequest } from "./architecture/http/index.ts";
 import { createMcpRoute } from "./architecture/mcp/index.ts";
 import { createArchitectureService } from "./architecture/service.ts";
 import explorer from "./explorer/index.html";
@@ -53,8 +53,8 @@ function failure(error: unknown): Response {
   return Response.json({ error: message }, { status });
 }
 
-const handle = (handler: (url: URL, request: Request) => Promise<Response>) => (request: Request) =>
-  handler(new URL(request.url), request).catch(failure);
+const handle = (handler: (url: URL, request: Request) => Promise<Response>) => async (request: Request) =>
+  rejectForeignRequest(request) ?? handler(new URL(request.url), request).catch(failure);
 
 const server = Bun.serve({
   port,

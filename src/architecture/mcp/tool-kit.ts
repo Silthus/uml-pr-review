@@ -63,7 +63,7 @@ export function defineTool<Input extends WorktreeInput, Output extends z.ZodObje
             client: caller,
             tool: tool.name,
             status,
-            summary: summary.slice(0, summaryLength),
+            summary: summary.length > summaryLength ? `${summary.slice(0, summaryLength - 1)}…` : summary,
             ...(planId === undefined ? {} : { planId }),
             durationMs: Math.round(performance.now() - started),
           });

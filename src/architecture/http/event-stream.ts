@@ -17,11 +17,11 @@ export function eventStream(bus: EventBus, repositoryId: string, signal: AbortSi
       };
       const unsubscribe = bus.subscribe(repositoryId, (event) => send(frameOf(event)));
       const keepalive = setInterval(() => send(": keepalive\n\n"), keepaliveMilliseconds);
-      stop = () => {
+      stop = once(() => {
         unsubscribe();
         clearInterval(keepalive);
-      };
-      signal.addEventListener("abort", () => stop());
+      });
+      signal.addEventListener("abort", stop, { once: true });
       send(": connected\n\n");
     },
     cancel() {
@@ -29,6 +29,15 @@ export function eventStream(bus: EventBus, repositoryId: string, signal: AbortSi
     },
   });
   return new Response(body, { headers: { "content-type": "text/event-stream", "cache-control": "no-cache" } });
+}
+
+function once(action: () => void): () => void {
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    action();
+  };
 }
 
 function frameOf(event: ArchitectureEvent): string {

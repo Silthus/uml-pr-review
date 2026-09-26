@@ -1,1 +1,1 @@
-export { createArchitectureRoutes } from "./architecture-routes.ts";
+export { createArchitectureRoutes, rejectForeignRequest } from "./architecture-routes.ts";

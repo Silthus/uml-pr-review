@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import type { Client } from "@modelcontextprotocol/client";
+import { realpath } from "node:fs/promises";
+import { join } from "node:path";
+import type { ArchitectureEvent } from "../../../src/architecture/contracts/index.ts";
 import { connectAgent, removeRepositories, shopRepository, startArchitectureServer, type ArchitectureServer } from "../http/architecture-server.ts";
 import { agentTools } from "./agent.ts";
 
@@ -24,12 +27,19 @@ test("a worktree outside any repository, or a relative one, asks for the absolut
   }
 });
 
-test("an unknown module suggests the closest ones and search_modules", async () => {
-  const call = agentTools(client, (await shopRepository()).dir);
+test("an unknown module suggests the closest ones and search_modules, and the activity feed shows the failure", async () => {
+  const repository = await shopRepository();
+  const activity: ArchitectureEvent[] = [];
+  const unsubscribe = server.bus.subscribe(await realpath(join(repository.dir, ".git")), (event) => activity.push(event));
 
-  const result = await call("describe_module", { path: "shop/payment/facade" });
+  const result = await agentTools(client, repository.dir)("describe_module", { path: "shop/payment/facade" });
+  unsubscribe();
 
   expect(result).toMatchObject({ isError: true, text: "No module `shop/payment/facade`. Did you mean `shop/payments/facade`, `shop/payments`, or `shop/payments/models`? Use search_modules to find module paths." });
+  const [failure, ...others] = activity.filter((event) => event.type === "agent_activity");
+  expect(others).toEqual([]);
+  expect(failure).toMatchObject({ tool: "describe_module", status: "error" });
+  expect(failure?.type === "agent_activity" && failure.summary).toStartWith("describe_module failed: No module `shop/payment/facade`. Did you mean");
 });
 
 test("plan lookups name the next call: create_plan without plans, the known ids otherwise", async () => {
@@ -70,7 +80,9 @@ test("a draft check says to have the plan locked, and set_plan_lock records the 
   const lockedAgain = await call("set_plan_lock", { planId: structured.plan.id, locked: true, humanRequest: "Lock it." });
 
   expect(draftCheck.text).toContain("The plan is a draft. Ask the human to lock it before you implement.");
-  expect(locked.structured.humanChanges).toMatchObject([{ number: 2, kind: "lock", actor: "human", note: "Looks good, lock it." }]);
+  const history = await call("get_plan", { planId: structured.plan.id, history: true });
+  expect(locked.structured).toMatchObject({ plan: { status: "locked", revision: 2 }, humanChanges: [] });
+  expect(history.structured.plan.revisions.at(-1)).toMatchObject({ number: 2, kind: "lock", actor: "agent", client: "test-modern@1.0.0", note: "Looks good, lock it." });
   expect(lockedAgain.isError).toBe(true);
   expect(lockedAgain.text).toStartWith(`Plan ${structured.plan.id} is already locked. Implement it and check your work with check_plan.`);
 });

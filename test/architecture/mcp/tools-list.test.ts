@@ -112,4 +112,32 @@ describe.each<Wire>(["modern", "legacy"])("tools/list over the %s wire", (wire) 
     expect(input("edit_plan").operations).toMatchObject({ minItems: 1, maxItems: 50 });
     expect(input("create_plan").worktree).toMatchObject({ description: "Absolute path of your working directory in the repository. Use the directory you are working in." });
   });
+
+  test("types every input and encodes the operations and output enums", async () => {
+    const client = await connectAgent(server, wire);
+    const { tools } = await client.listTools();
+    await client.close();
+    const tool = (name: string) => tools.find((candidate) => candidate.name === name)!;
+    const typesOf = (schema: unknown) => Object.fromEntries(Object.entries(schemaOf(schema).properties).map(([key, property]) => [key, property.type ?? "union"]));
+    const operations = schemaOf(tool("edit_plan").inputSchema).properties.operations as { items: { oneOf: JsonSchema[] } };
+    const output = (name: string) => schemaOf(tool(name).outputSchema).properties;
+
+    expect(typesOf(tool("get_architecture_overview").inputSchema)).toEqual({ worktree: "string", path: "string", depth: "integer", includeTests: "boolean" });
+    expect(typesOf(tool("edit_plan").inputSchema)).toEqual({ worktree: "string", planId: "string", expectedRevision: "integer", operations: "array", note: "string" });
+    expect(typesOf(tool("set_plan_lock").inputSchema)).toEqual({ worktree: "string", planId: "string", locked: "boolean", humanRequest: "string" });
+    expect(typesOf(tool("check_plan").inputSchema)).toEqual({ worktree: "string", planId: "string", final: "boolean" });
+    expect(operations.items.oneOf.map((operation) => operation.properties.op!.const)).toEqual([
+      "set_summary",
+      "set_base_commit",
+      "upsert_module",
+      "drop_module",
+      "upsert_seam",
+      "drop_seam",
+      "add_comment",
+      "resolve_comment",
+    ]);
+    expect(schemaOf(output("describe_module").module).properties.kind!.enum).toEqual(["root", "product", "package", "layer", "django-app", "scene", "tests", "migrations", "generated", "python-package", "directory"]);
+    expect(schemaOf(output("check_plan").result).properties.verdict!.enum).toEqual(["conforming", "pending", "violating"]);
+    expect(output("check_plan").next).toMatchObject({ type: "string" });
+  });
 });

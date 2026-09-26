@@ -1,6 +1,6 @@
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
-import { CommandError, git } from "../git.ts";
+import { CommandError } from "../git.ts";
 import { checkConformance } from "./conformance/index.ts";
 import {
   ConformanceResultSchema,
@@ -11,9 +11,19 @@ import {
   type RepositoryRef,
 } from "./contracts/index.ts";
 import type { EventBus } from "./events/index.ts";
-import { createRepositoryIndexer } from "./index/index.ts";
+import { createRepositoryIndexer, git } from "./index/index.ts";
 import { ArchitectureModel } from "./model/index.ts";
-import { commitToValidate, openPlanStore, type ApplyOutcome, type LockChange, type NewPlan, type PlanChange, type PlanStore } from "./plan/index.ts";
+import {
+  commitToValidate,
+  noPlansYet,
+  openPlanStore,
+  unknownPlan,
+  type ApplyOutcome,
+  type LockChange,
+  type NewPlan,
+  type PlanChange,
+  type PlanStore,
+} from "./plan/index.ts";
 
 export type ServiceErrorReason = "not-a-repository" | "unknown-commit" | "no-commits" | "plan-not-found" | "not-descended";
 
@@ -105,15 +115,17 @@ export function createArchitectureService({ bus, explorerOrigin, clock = () => n
       return outcome;
     };
 
+    const unknown = async (id: string) => unknownPlan(id, (await store.list()).map((summary) => summary.id));
+
     async function get(id: string): Promise<ArchitecturePlan> {
       const plan = await store.get(id);
-      if (!plan) throw new ServiceError("plan-not-found", unknownPlan(id, (await store.list()).map((summary) => summary.id)));
+      if (!plan) throw new ServiceError("plan-not-found", await unknown(id));
       return plan;
     }
 
     async function latest(): Promise<ArchitecturePlan> {
       const [newest] = await store.list();
-      if (!newest) throw new ServiceError("plan-not-found", unknownPlan("", []));
+      if (!newest) throw new ServiceError("plan-not-found", noPlansYet());
       return get(newest.id);
     }
 
@@ -125,7 +137,8 @@ export function createArchitectureService({ bus, explorerOrigin, clock = () => n
 
     async function apply(id: string, change: PlanChange): Promise<ApplyOutcome> {
       const plan = await store.get(id);
-      const base = await baseModel(located.root, plan ? commitToValidate(plan, change.operations) : "HEAD", plan);
+      if (!plan) return { ok: false, reason: "not-found", message: await unknown(id) };
+      const base = await baseModel(located.root, commitToValidate(plan, change.operations), plan);
       return published(await store.apply(id, change, base));
     }
 
@@ -140,9 +153,9 @@ export function createArchitectureService({ bus, explorerOrigin, clock = () => n
     };
   }
 
-  async function baseModel(root: string, commit: string, plan: ArchitecturePlan | undefined): Promise<ArchitectureModel> {
+  async function baseModel(root: string, commit: string, plan: ArchitecturePlan): Promise<ArchitectureModel> {
     const payload = await indexCommit(root, commit).catch((error: unknown) => {
-      if (error instanceof ServiceError && plan) return indexCommit(root, plan.baseCommit);
+      if (error instanceof ServiceError) return indexCommit(root, plan.baseCommit);
       throw error;
     });
     return modelOf(payload);
@@ -230,9 +243,4 @@ async function refuseUnlessDescended(root: string, baseCommit: string): Promise<
     "not-descended",
     `HEAD of ${root} does not descend from the plan's base commit ${base7}. Check out a branch based on ${base7}, or move the plan's base with set_base_commit while it is a draft.`,
   );
-}
-
-function unknownPlan(id: string, ids: string[]): string {
-  if (ids.length === 0) return "There is no plan in this repository yet. Call create_plan.";
-  return `No plan \`${id}\` in this repository. Plans here: ${ids.map((planId) => `\`${planId}\``).join(", ")}. Call get_plan without planId for the latest.`;
 }

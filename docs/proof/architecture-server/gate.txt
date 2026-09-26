@@ -1,7 +1,7 @@
 $ bun test
- 253 pass
+ 258 pass
  0 fail
-Ran 253 tests across 21 files. [7.13s]
+Ran 258 tests across 21 files. [7.25s]
 
 $ bun run typecheck
 $ tsc --noEmit

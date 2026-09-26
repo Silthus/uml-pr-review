@@ -126,7 +126,7 @@ export const setPlanLockTool = defineTool({
   output: withPlanContext({ plan: PlanViewSchema }),
   async run({ planId, locked, humanRequest }, { service, repository, client }) {
     const plans = await service.plans(repository.root);
-    const outcome = await plans.setLock(planId, { locked, actor: "human", client, note: humanRequest });
+    const outcome = await plans.setLock(planId, { locked, actor: "agent", client, note: humanRequest });
     const plan = acceptedPlan(outcome, planId, service, repository);
     const context = planContext(service, repository, plan);
     const text = [`Plan ${plan.id} is now ${plan.status} at revision ${plan.revision}.`, ...planText(plan), ...planContextText(context)];

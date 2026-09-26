@@ -104,6 +104,24 @@ describe("the question inbox", () => {
     expect((await gh.calls()).at(-2)?.args).toEqual(["issue", "close", "100", "--reason", "not planned", "--repo", "Silthus/uml-pr-review"]);
   });
 
+  test("refuses to resolve an issue that is not one of its questions", async () => {
+    await gh.cleanup();
+    gh = await fakeGh({ issues: [{ number: 72, url: "https://github.com/Silthus/uml-pr-review/issues/72", title: "a ticket", state: "OPEN", stateReason: null, labels: [], body: "", comments: [] }] });
+
+    const refused = await run<{ error: string }>(["resolve", "72", "--skip"]);
+
+    expect(refused).toEqual({ code: 1, json: { error: "#72 is not labelled coherence:question; the inbox only resolves its own questions" } });
+    expect((await gh.state()).issues[0]!.state).toBe("OPEN");
+  });
+
+  test("reads a comment choosing the Skip option as a skip", async () => {
+    await run(["raise", "--iteration", await writeIteration(iteration())]);
+
+    await run(["resolve", "100", "--answer", "C"]);
+
+    expect((await run<{ answer: string | null }[]>(["list", "--state", "resolved"])).json[0]!.answer).toBeNull();
+  });
+
   test("reads answers only from people with a role in the repository", async () => {
     await run(["raise", "--iteration", await writeIteration(iteration())]);
     const state = await gh.state();

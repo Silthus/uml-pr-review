@@ -9,6 +9,7 @@ export type TestRun = { runner: "pytest" | "jest"; files: string[]; status: "pas
 const python = /\.py$/;
 const script = /\.[jt]sx?$/;
 const unreachableService = /(could not connect to server|connection refused|connection to server at .* failed|is the server running|error 61 connecting)/i;
+const noTestsFound = /No tests found/;
 const jestConfigs = ["jest.config.ts", "jest.config.js", "jest.config.mjs", "jest.config.cjs"];
 const outputTail = 2_000;
 const testTimeoutMs = 10 * 60_000;
@@ -26,7 +27,7 @@ export async function runTests(workspace: string, mainCheckout: string, tests: s
   const scriptTests = tests.filter((file) => script.test(file));
   return [
     ...(pythonTests.length > 0 ? [await pytest(workspace, mainCheckout, pythonTests)] : []),
-    ...(scriptTests.length > 0 ? [await jest(workspace, mainCheckout, scriptTests)] : []),
+    ...(scriptTests.length > 0 ? await jest(workspace, mainCheckout, scriptTests) : []),
   ];
 }
 
@@ -43,20 +44,24 @@ async function pytest(workspace: string, mainCheckout: string, files: string[]):
   return notRun("pytest", files, result.code === 5 ? "pytest collected no tests" : `pytest exited ${result.code}: ${lastLine(output)}`, output);
 }
 
-async function jest(workspace: string, mainCheckout: string, files: string[]): Promise<TestRun> {
-  const directory = dirname(files[0]!);
-  const packageDirectory = jestPackage(workspace, directory);
-  if (packageDirectory === null) return notRun("jest", files, `no jest config above ${directory} or at the top level of the repository covers it`);
+async function jest(workspace: string, mainCheckout: string, files: string[]): Promise<TestRun[]> {
+  const byPackage = Map.groupBy(files, (file) => jestPackage(workspace, dirname(file)));
+  return Promise.all([...byPackage].map(([packageDirectory, packageFiles]) => jestIn(workspace, mainCheckout, packageDirectory, packageFiles)));
+}
+
+async function jestIn(workspace: string, mainCheckout: string, packageDirectory: string | null, files: string[]): Promise<TestRun> {
+  if (packageDirectory === null) return notRun("jest", files, `no jest config above ${dirname(files[0]!)} or at the top level of the repository covers it`);
   const installed = join(workspace, packageDirectory, "node_modules");
   const borrowed = join(mainCheckout, packageDirectory, "node_modules");
-  const jestBinary = join("node_modules", ".bin", "jest");
   const linked = !existsSync(join(installed, ".bin", "jest")) && existsSync(join(borrowed, ".bin", "jest"));
   if (!linked && !existsSync(join(installed, ".bin", "jest"))) return notRun("jest", files, `jest is installed in neither ${installed} nor ${borrowed}`);
   if (linked) await symlink(borrowed, installed);
   try {
     const root = join(workspace, packageDirectory);
-    const result = await execute(root, [join(root, jestBinary), "--ci", ...files.map((file) => relative(root, join(workspace, file)))], undefined, testTimeoutMs);
-    return { runner: "jest", files, status: result.code === 0 ? "passed" : "failed", reason: null, output: tail(`${result.stdout}\n${result.stderr}`) };
+    const result = await execute(root, [join(installed, ".bin", "jest"), "--ci", ...files.map((file) => relative(root, join(workspace, file)))], undefined, testTimeoutMs);
+    const output = `${result.stdout}\n${result.stderr}`;
+    if (result.code !== 0 && noTestsFound.test(output)) return notRun("jest", files, `jest in ${packageDirectory} found none of these tests`, output);
+    return { runner: "jest", files, status: result.code === 0 ? "passed" : "failed", reason: null, output: tail(output) };
   } finally {
     if (linked) await rm(installed);
   }

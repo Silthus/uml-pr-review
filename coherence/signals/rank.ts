@@ -96,7 +96,7 @@ export async function rankTargets({ repository, scope, commit = "HEAD", rules: r
     ...availability(signals, [complexity, rules.unavailable, pullRequests.unavailable]),
     openPullRequests: pullRequests.value && { repository: pullRequests.value.repository, active: [...new Set([...busy.values()].flat())].length, activeDays },
     skipped,
-    busyFiles: [...busy].filter(([path]) => modules.moduleOf(path) !== undefined).map(([path, pullRequests]) => ({ path, pullRequests })).sort((a, b) => compare(a.path, b.path)),
+    busyFiles: busyFilesTheLoopMayTouch(modules, busy),
     targets,
   };
 }
@@ -126,6 +126,14 @@ function busyFiles(pullRequests: OpenPullRequest[], since: Date): Map<string, nu
     for (const file of new Set(files)) busy.set(file, [...(busy.get(file) ?? []), number].sort((a, b) => a - b));
   }
   return busy;
+}
+
+function busyFilesTheLoopMayTouch(modules: ScopeModules, busy: Map<string, number[]>): BusyFile[] {
+  const facadeCallers = new Set(modules.modules.flatMap(({ inboundBypasses }) => inboundBypasses.map(({ from }) => from)));
+  return [...busy]
+    .filter(([path]) => modules.moduleOf(path) !== undefined || facadeCallers.has(path))
+    .map(([path, pullRequests]) => ({ path, pullRequests }))
+    .sort((a, b) => compare(a.path, b.path));
 }
 
 function pullRequestsOf(files: BusyFile[]): number[] {

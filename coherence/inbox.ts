@@ -30,7 +30,9 @@ const IssuesSchema = z.array(
     comments: z.array(z.object({ body: z.string(), authorAssociation: z.string() })),
   }),
 );
+const LabelsSchema = z.object({ labels: z.array(z.object({ name: z.string() })) });
 const trustedAuthors = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
+const skipAnswer = /^skip\b/i;
 const optionLetters = "ABCDEFGHIJ";
 
 export async function listQuestions(): Promise<Question[]> {
@@ -52,12 +54,19 @@ export async function raiseQuestion(subject: QuestionSubject, draft: QuestionDra
 }
 
 export async function resolveQuestion(number: number, answer: string): Promise<void> {
+  await assertQuestion(number);
   await gh(["issue", "comment", String(number), "--body-file", "-"], answer);
   await gh(["issue", "close", String(number)]);
 }
 
 export async function skipQuestion(number: number): Promise<void> {
+  await assertQuestion(number);
   await gh(["issue", "close", String(number), "--reason", "not planned"]);
+}
+
+async function assertQuestion(number: number): Promise<void> {
+  const { labels } = LabelsSchema.parse(JSON.parse(await gh(["issue", "view", String(number), "--json", "labels"])));
+  if (!labels.some(({ name }) => name === questionLabel)) throw new Error(`#${number} is not labelled ${questionLabel}; the inbox only resolves its own questions`);
 }
 
 export function questionBody(subject: QuestionSubject, { question, context, options }: QuestionDraft): string {
@@ -88,9 +97,15 @@ function subjectOf(body: string): QuestionSubject | null {
 function answerOf({ body, comments, stateReason }: z.infer<typeof IssuesSchema>[number]): string | null {
   if (stateReason?.toUpperCase() === "NOT_PLANNED") return null;
   const comment = comments.filter(({ authorAssociation }) => trustedAuthors.has(authorAssociation)).at(-1)?.body.trim();
-  if (comment) return comment;
+  if (comment) return skipAnswer.test(chosenOption(body, comment)) ? null : comment;
   const ticked = body.split("\n").filter((line) => /^- \[x\] /i.test(line));
   return ticked.length > 0 ? ticked.map((line) => line.slice(6)).join("\n") : null;
+}
+
+function chosenOption(body: string, answer: string): string {
+  const letter = /^\s*([A-J])\b/.exec(answer)?.[1];
+  const option = letter === undefined ? undefined : new RegExp(`^- \\[[ xX]\\] ${letter}\\. (.*)$`, "m").exec(body)?.[1];
+  return option ?? answer;
 }
 
 function gh(args: string[], stdin?: string): Promise<string> {

@@ -190,6 +190,11 @@ describe("ranking", () => {
       expect(report.openPullRequests).toEqual({ repository: "acme/app", active: 2, activeDays: 14 });
       expect(targetFor(report, "products/a/backend/wip").busyFiles).toEqual([{ path: "products/a/backend/wip/draft.py", pullRequests: [42] }]);
       expect(report.skipped).toEqual([{ module: "products/a/backend/facade", pullRequests: [43] }]);
+      expect(report.busyFiles).toEqual([
+        { path: "products/a/backend/facade/api.py", pullRequests: [43] },
+        { path: "products/a/backend/wip/draft.py", pullRequests: [42] },
+        { path: "products/b/backend/consumer.py", pullRequests: [43] },
+      ]);
       expect(report.targets.map(({ module }) => module)).not.toContain("products/a/backend/facade");
     },
     toolTimeoutMs,

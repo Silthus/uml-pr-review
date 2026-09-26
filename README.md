@@ -46,6 +46,13 @@ default_tools_approval_mode = "approve"
 
 Neither client needs authentication. The server binds to `127.0.0.1` only, and `/mcp`, `/api/*`, and `/review/*` answer 403 to a foreign `Host` or `Origin` header. The pages at `/` and `/pulls` are static bundles and are not guarded; everything they load comes through the guarded routes.
 
+**Agent skill.** `skills/planning-architecture/SKILL.md` teaches an agent the whole loop: map the ground, draft modules and seams through interfaces, review with you, build against the locked plan, and prove conformance. Link it where your agent loads skills:
+
+```sh
+ln -s "$PWD/skills/planning-architecture" ~/.claude/skills/planning-architecture   # Claude Code
+ln -s "$PWD/skills/planning-architecture" ~/.codex/skills/planning-architecture    # Codex
+```
+
 Then ask the agent to plan before it builds, for example: "Plan, don't implement yet, how to show feature flag usage on error tracking issues. Use the uml-pr-review tools to explore and draft the architecture plan." Every tool takes `worktree`, the absolute path the agent works in. The nine tools:
 
 - `get_architecture_overview`: the module tree a few levels deep, with kinds, file counts, and the heaviest dependencies.
@@ -68,7 +75,7 @@ A full run on PostHog, with recordings, screenshots, and the verbatim tool outpu
 - `…/plans/<id>.conformance.json`: the latest check of each plan.
 - `…/uml-pr-review/index-cache.sqlite` (with its `-wal` and `-shm` files): the import cache, keyed by blob. The first index of a PostHog-sized repository takes about 7 s; with the cache it takes about 1 s.
 
-To remove all of it, delete `$(git rev-parse --git-common-dir)/uml-pr-review`. Checks snapshot the working tree through a temporary Git index and write its trees and blobs as loose objects into the clone's object store. Nothing references them, so `git gc` removes them once they are older than `gc.pruneExpire` (two weeks by default).
+To remove all of it, stop the server, then delete `$(git rev-parse --git-common-dir)/uml-pr-review`. Checks snapshot the working tree through a temporary Git index and write its trees and blobs as loose objects into the clone's object store. Nothing references them, so `git gc` removes them once they are older than `gc.pruneExpire` (two weeks by default).
 
 **Known limits:**
 

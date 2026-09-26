@@ -52,7 +52,7 @@ export async function backfill(request: BackfillRequest, log: Log = () => {}): P
   const scopes: BackfillManifest["scopes"] = {};
   for (const scope of request.scopes) {
     const points = await weeklyPoints(request, scope, store);
-    const noise = await measureNoise(request, scope, points, store);
+    const noise = await measureNoise(request, scope, store);
     const movers = await attributeMovers(request, scope, points, store);
     scopes[scope] = { points, noise, movers };
   }
@@ -104,16 +104,30 @@ async function weeklyPoints({ repository, ref, until, weeks }: BackfillRequest, 
   return points;
 }
 
-async function measureNoise({ repository, ref }: BackfillRequest, scope: string, points: z.infer<typeof PointSchema>[], store: ScoreStore) {
+async function measureNoise({ repository, ref, until, weeks }: BackfillRequest, scope: string, store: ScoreStore) {
   const pairs: z.infer<typeof NoisePairSchema>[] = [];
-  for (const after of points) {
-    const dayBefore = await firstParentBefore(repository, ref, new Date(new Date(after.date).getTime() - dayMs));
-    if (dayBefore === null || dayBefore.commit === after.commit) continue;
-    const before = await store.score(scope, dayBefore);
-    if (before !== null) pairs.push({ before: commitOf(before), after: commitOf(after), delta: delta(before.scores, after.scores) });
+  for (const boundary of weekBoundaries(until, weeks)) {
+    const pair = await weekdayPair(repository, ref, boundary);
+    if (pair === null || !(await scopeChanged(repository, pair.before.commit, pair.after.commit, scope))) continue;
+    const before = await store.score(scope, pair.before);
+    const after = await store.score(scope, pair.after);
+    if (before !== null && after !== null) pairs.push({ before: commitOf(before), after: commitOf(after), delta: delta(before.scores, after.scores) });
   }
   const magnitudes = (key: keyof Scores) => pairs.map(({ delta: change }) => Math.abs(change[key]));
   return { pairs, median: mapScores((key) => percentile(magnitudes(key), 0.5)), band: mapScores((key) => percentile(magnitudes(key), 0.9)) };
+}
+
+async function weekdayPair(repository: string, ref: string, monday: Date): Promise<{ before: Commit; after: Commit } | null> {
+  const [before, after] = await Promise.all([firstParentBefore(repository, ref, daysAfter(monday, 2)), firstParentBefore(repository, ref, daysAfter(monday, 3))]);
+  return before === null || after === null || before.commit === after.commit ? null : { before, after };
+}
+
+async function scopeChanged(repository: string, from: string, to: string, scope: string): Promise<boolean> {
+  return (await git(repository, ["diff", "--name-only", from, to, "--", scope])).trim() !== "";
+}
+
+function daysAfter(date: Date, days: number): Date {
+  return new Date(date.getTime() + days * dayMs);
 }
 
 async function attributeMovers(request: BackfillRequest, scope: string, points: z.infer<typeof PointSchema>[], store: ScoreStore) {
@@ -124,7 +138,7 @@ async function attributeMovers(request: BackfillRequest, scope: string, points: 
     .slice(0, request.moverWeeks ?? 3);
   const movers: z.infer<typeof MoverSchema>[] = [];
   for (const { from, to } of weeks) {
-    let previous = from;
+    let previous: { commit: string; scores: Scores } = from;
     for (const commit of await commitsTouching(request.repository, from.commit, to.commit, scope)) {
       const scored = await store.score(scope, commit);
       if (scored === null) continue;

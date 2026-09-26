@@ -5,6 +5,7 @@ import { backfill, type BackfillManifest } from "../../coherence/backfill.ts";
 import { backfillFixture, type BackfillFixture } from "./backfill-fixture.ts";
 
 const toolTimeoutMs = 300_000;
+const zero = { composite: 0, architecture: 0, complexity: 0, smells: 0, tests: 0 };
 
 let fixture: BackfillFixture;
 let manifest: BackfillManifest;
@@ -36,20 +37,14 @@ describe("the weekly backfill", () => {
     expect(again.scopes).toEqual(manifest.scopes);
   });
 
-  test("measures noise by re-scoring the day before each boundary commit and reporting the typical movement", () => {
+  test("measures noise by re-scoring Wednesday and Thursday of each week, keeping only the days that changed the scope", () => {
     const noise = manifest.scopes["products/a"]!.noise;
 
-    expect(noise.pairs.map(({ before, after }) => `${before.commit.slice(0, 7)}→${after.commit.slice(0, 7)}`)).toEqual([
-      `${commits.base!.slice(0, 7)}→${commits.addsB!.slice(0, 7)}`,
-      `${commits.busy!.slice(0, 7)}→${commits.trivial!.slice(0, 7)}`,
-      `${commits.trivial!.slice(0, 7)}→${commits.merge!.slice(0, 7)}`,
-    ]);
-    expect(noise.pairs[0]!.delta.composite).toBe(0);
-    expect(noise.pairs[1]!.delta.composite).toBe(0);
-    expect(noise.pairs[2]!.delta.composite).toBeGreaterThan(5);
-    expect(noise.band.composite).toBe(Math.abs(noise.pairs[2]!.delta.composite));
-    expect(noise.median.composite).toBe(0);
-    expect(manifest.scopes["products/b"]!.noise.pairs).toHaveLength(2);
+    expect(noise.pairs.map(({ before, after }) => `${before.commit.slice(0, 7)}→${after.commit.slice(0, 7)}`)).toEqual([`${commits.addsB!.slice(0, 7)}→${commits.busy!.slice(0, 7)}`]);
+    expect(noise.pairs[0]!.delta.composite).toBeLessThan(-5);
+    expect(noise.band.composite).toBe(Math.abs(noise.pairs[0]!.delta.composite));
+    expect(noise.median.composite).toBe(noise.band.composite);
+    expect(manifest.scopes["products/b"]!.noise).toEqual({ pairs: [], median: zero, band: zero });
   });
 
   test("attributes the biggest weekly moves to the commits inside the week that touched the scope, with their pull request", () => {

@@ -30,10 +30,10 @@ All 35 diffs were scored on:
 
 **The tool made the agent plan, but it did not measurably make the code better.**
 
-- **C's composite lead is mostly the process angle.** That angle rewards planning before editing, which is exactly what arm C was told to do. Without it, B and C land within noise: 74.9 against 75.5.
-- **Jev scores both arms identically, and Astra differs by 0.6.**
-- **No replay in either arm broke a PostHog boundary rule.** The only facade bypass in the benchmark is the original first push of #103523. Opus 5.5 respects boundaries that are written down and enforced (`products/architecture.md`, `tach.toml`), whether or not the tool is present.
-- **Consistency is mixed.** C was more consistent on #103533 (file overlap 1.0 against 0.2) and less consistent on #103849 and #103843.
+- **C's composite lead is mostly the process angle.** That angle rewards planning before editing, which is exactly what arm C was told to do. Drop Process from every run, rescale the remaining weights (as the report's composite does when an angle is missing), and average per arm: B scores 76.1 and C 77.0 (A 70.5). The lead shrinks from 3.2 to 0.8, within noise.
+- **The Jev means match (86.8 each).** Per task they differ in both directions: C is about 3.7 lower on #103533 and higher on #103843. Astra differs by 0.6.
+- **No replay in either arm has a penalised boundary bypass.** The only penalised facade bypass in the benchmark is the original first push of #103523. Opus 5.5 respects boundaries that are written down and enforced (`products/architecture.md`, `tach.toml`), whether or not the tool is present. Every #104202 run, replays included, has a test file importing another product's backend. Test imports are exempt from the rule, so these are listed but not scored.
+- **Consistency is mixed.** C was more consistent on #103533 (file overlap 1.0 against 0.2), and less consistent on three tasks: #103523 (0.5 against 1.0), #103849, and #103843.
 - **Both replay arms beat the originals on the Astra judge.** Don't read that as a tool effect: A is a different model, with a human steering it over many turns.
 
 ## Why
@@ -55,5 +55,7 @@ That work is map #67.
 - There are 7 tasks and 2 repeats per arm, so the samples are small.
 - Arm A uses the original model and the original human steering.
 - `pytest` did not run: there is no local PostHog Python environment. TypeScript was not type-checked.
-- Jev inputs were capped (a 16k-character diff and 12k characters of context per file). No file had to be skipped.
-- Transcripts and arm A session traces stay local, not committed. They are large, and the traces contain private session text.
+- Jev inputs were capped: the per-diff questions saw the first 16k characters of a diff, and each file got 60 lines of context, capped at 12k characters. No file had to be skipped, but the per-diff grade saw only part of 12 of the 35 diffs (29–45% of each #103843 diff).
+- All five #103729 diffs are byte-identical, so that task carries no code signal. B and C differ there only on Process.
+- `102897/C-2` was cut off by Claude Code's background-task ceiling ("Background tasks still running after 600s; terminating"), although its meta records `completed`.
+- Transcripts and arm A session traces stay local, not committed. They are large, and the traces contain private session text. Run snapshots (`runs/*/task.json`) have their local paths, dispatch prompts, and notes removed. The original manifests in `benchmark/tasks/` are unchanged.

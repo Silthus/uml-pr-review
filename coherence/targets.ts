@@ -3,15 +3,17 @@ import { basename, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import type { Factor } from "./signals/factors.ts";
 import { githubOpenPullRequests } from "./signals/pull-requests.ts";
-import { rankTargets, type Target, type TargetReport } from "./signals/rank.ts";
+import { activePullRequestDays, rankTargets, type Target, type TargetReport } from "./signals/rank.ts";
 import { readSignalReport } from "./signals/report.ts";
 
-const usage = "Usage: bun coherence/targets.ts --repo <path> --scope <path> [--commit <rev>] [--rules <rules.json>] [--posthog-signals <SignalReport.json>] [--github <owner/name>] [--json]";
+const usage = "Usage: bun coherence/targets.ts --repo <path> --scope <path> [--commit <rev>] [--rules <rules.json>] [--posthog-signals <SignalReport.json>] [--github <owner/name>] [--active-days <n>] [--json]";
 const detailed = 5;
 
 const { values } = parseOptions();
 
-if (!values.repo || !values.scope) {
+const activeDays = Number(values["active-days"]);
+
+if (!values.repo || !values.scope || !Number.isInteger(activeDays) || activeDays < 1) {
   console.error(usage);
   process.exit(2);
 }
@@ -27,6 +29,7 @@ try {
     rules: values.rules ?? join(import.meta.dir, "..", "docs", "harvest", harvestName(values.scope), "rules.json"),
     signals: signalsPath === undefined ? null : await readSignalReport(resolve(signalsPath)),
     openPullRequests: githubOpenPullRequests(repository, values.github),
+    activeDays,
   });
   console.log(values.json ? JSON.stringify(report, null, 2) : summary(report));
 } catch (error) {
@@ -44,6 +47,7 @@ function parseOptions() {
         rules: { type: "string" },
         "posthog-signals": { type: "string" },
         github: { type: "string" },
+        "active-days": { type: "string", default: String(activePullRequestDays) },
         json: { type: "boolean", default: false },
       },
     });
@@ -64,8 +68,10 @@ function summary(report: TargetReport): string {
     `Available: ${report.available.join(", ")}`,
     ...report.unavailable.map(({ signal, reason }) => `Unavailable: ${signal} (${reason})`),
     `Not scored: ${report.ignored.join(", ")}`,
-    report.openPullRequests === null ? "Open pull requests: unavailable" : `Open pull requests: ${report.openPullRequests.open} in ${report.openPullRequests.repository}`,
-    ...report.skipped.map(({ module, pullRequests }) => `Skipped ${module}: open pull requests ${pullRequests.map((number) => `#${number}`).join(", ")}`),
+    report.openPullRequests === null
+      ? "Open pull requests: unavailable"
+      : `Active pull requests: ${report.openPullRequests.active} in ${report.openPullRequests.repository}, updated within ${report.openPullRequests.activeDays} days`,
+    ...report.skipped.map(({ module, pullRequests }) => `Skipped ${module}: every file is busy in ${pullRequestList(pullRequests)}`),
     "",
     ...report.targets.map(targetLine),
     "",
@@ -78,10 +84,11 @@ function targetLine({ rank, module, score, factors, recommendation }: Target): s
   return `${String(rank).padStart(3)}. ${(100 * score).toFixed(2).padStart(6)}  ${module}  pressure ${pressure.value.toFixed(2)} × pain ${pain.value.toFixed(2)} × safety ${safety.value.toFixed(2)}  -> ${recommendation.step} (${recommendation.verification})`;
 }
 
-function targetDetail({ rank, module, files, lines, factors, recommendation }: Target): string[] {
+function targetDetail({ rank, module, files, lines, busyFiles, factors, recommendation }: Target): string[] {
   return [
     `#${rank} ${module} (${files} files, ${lines} lines)`,
     `  next: ${recommendation.step}, ${recommendation.verification}: ${recommendation.reason}`,
+    ...busyFiles.map(({ path, pullRequests }) => `  busy: ${path} in ${pullRequestList(pullRequests)}`),
     ...factorLines("pressure", factors.pressure),
     ...factorLines("pain", factors.pain),
     ...factorLines("safety", factors.safety),
@@ -96,4 +103,8 @@ function factorLines(name: string, { value, combination, components }: Factor): 
       score === null ? `    ${component}: unavailable` : `    ${component}: ${raw} -> ${score.toFixed(2)}${evidence.length > 0 ? `  [${evidence.join("; ")}]` : ""}`,
     ),
   ];
+}
+
+function pullRequestList(numbers: number[]): string {
+  return numbers.map((number) => `#${number}`).join(", ");
 }

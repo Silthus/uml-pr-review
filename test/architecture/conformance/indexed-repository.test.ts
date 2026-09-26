@@ -56,7 +56,7 @@ test("a tsconfig alias retargeted without a source change is an unplanned depend
       "tsconfig.json": aliasTo("./good/api.ts"),
     },
     working: { "tsconfig.json": aliasTo("./bad/api.ts") },
-    plan: planOf({ modules: [{ path: "app/tests", action: "modify" }, { path: "app", action: "modify" }] }),
+    plan: planOf({ modules: [{ path: "app/tests", action: "modify", responsibility: "cover the api" }, { path: "app", action: "modify", responsibility: "use the api" }] }),
   });
 
   expect(report.findings.map(({ rule, severity, file, line, message, fix }) => ({ rule, severity, file, line, message, fix }))).toEqual([
@@ -65,7 +65,7 @@ test("a tsconfig alias retargeted without a source change is an unplanned depend
       severity: "violation",
       file: "app/use.ts",
       line: 1,
-      message: "`app` is unchanged; the plan modifies it to show feature flag usage on issues.",
+      message: "`app` is unchanged; the plan modifies it to use the api.",
       fix: "Make the planned change in `app`, or ask the human to unlock the plan and drop `app` from it.",
     },
     {
@@ -81,7 +81,7 @@ test("a tsconfig alias retargeted without a source change is an unplanned depend
       severity: "warning",
       file: "app/tests/use.test.ts",
       line: 1,
-      message: "`app/tests` is unchanged; the plan modifies it to show feature flag usage on issues.",
+      message: "`app/tests` is unchanged; the plan modifies it to cover the api.",
       fix: "Make the planned change in `app/tests`, or ask the human to unlock the plan and drop `app/tests` from it.",
     },
   ]);

@@ -148,7 +148,7 @@ describe("unplanned-dependency", () => {
     ]);
   });
 
-  test("reports a dependency that a file without source changes gains when resolver configuration retargets its import", () => {
+  test("reports a dependency that a file without source changes gains, as when its import resolves to another file", () => {
     const findings = findingsOf({
       plan: planOf({ modules: [modifyLogic] }),
       both: { [fingerprint]: [`${models}/issue.py`] },
@@ -447,6 +447,30 @@ describe("removed seams", () => {
     expect(findings.map(({ rule, severity }) => ({ rule, severity }))).toEqual([{ rule: "seam-not-removed", severity }]);
   });
 
+  test("reports an import still along a removed seam that gains names as going against the seam, even in a progress check", () => {
+    const cohorts = `${legacy}/cohorts.py`;
+    const findings = findingsOf({
+      plan: removeLegacyFlags,
+      both: { [cohorts]: [{ to: featureFlag, names: ["FeatureFlag"] }] },
+      head: { [cohorts]: [{ to: featureFlag, names: ["FeatureFlag", "get_flag"] }] },
+      changes: [modified(cohorts)],
+    });
+
+    expect(findings).toEqual([
+      {
+        rule: "against-removed-seam",
+        severity: "violation",
+        file: cohorts,
+        line: 1,
+        subject: { kind: "seam", from: legacy, to: flagsModels },
+        target: featureFlag,
+        test: false,
+        message: `${cohorts}:1 imports \`${featureFlag}\` along seam \`${legacy}\` -> \`${flagsModels}\`, which the plan removes.`,
+        fix: `Remove this import; the plan takes \`${legacy}\` off \`${flagsModels}\`.`,
+      },
+    ]);
+  });
+
   test("leaves imports that a more specific kept seam claims out of the removed seam", () => {
     const sync = `${legacy}/sync/flags.py`;
     const report = check({
@@ -708,7 +732,18 @@ describe("module-not-removed", () => {
       phase: "final",
     });
 
-    expect(findings.map(({ severity, file, test }) => ({ severity, file, test }))).toEqual([{ severity: "violation", file: `${legacy}/utils.py`, test: false }]);
+    expect(findings).toEqual([
+      {
+        rule: "module-not-removed",
+        severity: "violation",
+        file: `${legacy}/utils.py`,
+        line: 1,
+        subject: { kind: "module", path: legacy },
+        test: false,
+        message: `\`${legacy}\` still holds 2 source files; the plan removes it.`,
+        fix: `Delete the remaining files in \`${legacy}\` and move their importers as the plan's seams say.`,
+      },
+    ]);
   });
 
   test("stays silent once every file is gone", () => {

@@ -47,12 +47,10 @@ export class Change {
   addedImports(): FileImport[] {
     const { payload } = this.head;
     const atBase = counterpartImports(payload, this.base.payload);
-    const added: FileImport[] = [];
-    payload.imports.forEach((tuple, index) => {
-      const names = addedNames(tuple[4], atBase[index]?.[4]);
-      if (names) added.push({ ...fileImportOf(payload, tuple), names });
+    return payload.imports.flatMap((tuple, index) => {
+      const names = namesIfAdded(tuple[4], atBase[index]?.[4]);
+      return names ? [{ ...fileImportOf(payload, tuple), names }] : [];
     });
-    return added;
   }
 
   addedUnresolvedImports(): UnresolvedImport[] {
@@ -116,7 +114,7 @@ export class Change {
   }
 }
 
-function addedNames(headNames: string[], baseNames: string[] | undefined): string[] | undefined {
+function namesIfAdded(headNames: string[], baseNames: string[] | undefined): string[] | undefined {
   if (baseNames === undefined) return headNames;
   const gained = headNames.filter((name) => !baseNames.includes(name));
   return gained.length > 0 ? gained : undefined;

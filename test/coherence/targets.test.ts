@@ -141,25 +141,34 @@ afterAll(async () => {
 
 describe("ranking", () => {
   test(
-    "ranks churned, painful modules first and keeps the evidence behind every factor",
+    "scores a module as pressure × pain × safety from its churn, findings, complexity, and tests",
+    async () => {
+      const jobs = targetFor(await rankTargets(request()), "products/a/backend/jobs");
+
+      expect(jobs.factors.pressure.components.map(({ name, raw }) => [name, raw])).toEqual([
+        ["commits", 2],
+        ["lines", 4],
+        ["authors", 2],
+      ]);
+      expect(jobs.factors.pressure.value).toBeCloseTo((2 / 12 + 4 / 1004 + 2 / 5) / 3, 4);
+      expect(jobs.factors.pain.components).toContainEqual(expect.objectContaining({ name: "complexity", raw: 1, evidence: [expect.stringContaining("runner.py:dispatch")] }));
+      expect(jobs.factors.pain.components).toContainEqual(expect.objectContaining({ name: "review findings", raw: 1, evidence: [expect.stringContaining("jobs-retry-once")] }));
+      expect(jobs.factors.pain.value).toBeCloseTo(1 - (1 - 1 / 11) * (1 - 1 / 6), 4);
+      expect(jobs.factors.safety.value).toBe(0.5);
+      expect(jobs.score).toBeCloseTo(jobs.factors.pressure.value * jobs.factors.pain.value * 0.5, 4);
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "ranks a module with pressure above an equally painful module nobody touched",
     async () => {
       const report = await rankTargets(request());
-      const jobs = targetFor(report, "products/a/backend/jobs");
-      const rows = targetFor(report, "products/a/backend/store");
+      const ranks = report.targets.map(({ module }) => module);
 
-      expect(report.targets.map(({ score }) => score)).toEqual(report.targets.map(({ score }) => score).sort((a, b) => b - a));
-      expect(jobs.score).toBeGreaterThan(rows.score);
-      expect(jobs.factors.pressure.components).toContainEqual(expect.objectContaining({ name: "commits", raw: 2 }));
-      expect(jobs.factors.pressure.components).toContainEqual(expect.objectContaining({ name: "authors", raw: 2 }));
-      expect(jobs.factors.pain.components).toContainEqual(expect.objectContaining({ name: "complexity", raw: 1, evidence: [expect.stringContaining("dispatch")] }));
-      expect(rows.factors.pressure.value).toBe(0);
-      expect(rows.score).toBe(0);
-      for (const target of report.targets) {
-        for (const factor of Object.values(target.factors)) {
-          expect(factor.value).toBeGreaterThanOrEqual(0);
-          expect(factor.value).toBeLessThanOrEqual(1);
-        }
-      }
+      expect(targetFor(report, "products/a/backend/store").factors.pain.value).toBeGreaterThan(0);
+      expect(targetFor(report, "products/a/backend/store").score).toBe(0);
+      expect(ranks.indexOf("products/a/backend/jobs")).toBeLessThan(ranks.indexOf("products/a/backend/store"));
     },
     toolTimeoutMs,
   );
@@ -184,6 +193,33 @@ describe("ranking", () => {
 
       expect(ci).toMatchObject({ raw: 9, evidence: ["products/a/backend/limits/test_limits_flaky.py: ci.test_failures 9 (30d, exact)"] });
       expect(targetFor(report, "products/a/backend/jobs").factors.pain.components.find(({ name }) => name === "ci flakiness")).toMatchObject({ raw: 0 });
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "counts only the widest window of a signal and service rows at half weight",
+    async () => {
+      const row = (value: number, window: "30d" | "90d", attribution: "exact" | "service") => ({
+        path: "products/a/backend/limits/check.py",
+        signal: "errors.occurrences" as const,
+        value,
+        window,
+        attribution,
+        evidence: [{ kind: "error_issue" as const, id: `issue-${window}` }],
+      });
+      const errors: SignalReport = { ...ciSignals, rows: [row(40, "30d", "exact"), row(100, "90d", "exact"), row(20, "90d", "service")], unavailable: [] };
+      const limits = targetFor(await rankTargets(request({ signals: errors })), "products/a/backend/limits");
+
+      expect(limits.factors.pain.components.find(({ name }) => name === "production errors")).toMatchObject({ raw: 110 });
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "rejects a signal report collected for another scope",
+    async () => {
+      await expect(rankTargets(request({ signals: { ...ciSignals, scope: "products/b" } }))).rejects.toThrow("the signal report covers products/b, not products/a");
     },
     toolTimeoutMs,
   );
@@ -295,6 +331,21 @@ describe("command line", () => {
       expect(exitCode).toBe(0);
       expect(report.targets.map(({ module }) => module)).toContain("products/a/backend/jobs");
       expect(report.unavailable).toContainEqual({ signal: "open pull requests", reason: expect.any(String) });
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "prints the ranking, the missing providers, and the evidence for the top targets",
+    async () => {
+      const cli = Bun.spawn(["bun", join(import.meta.dir, "../../coherence/targets.ts"), "--repo", repository.dir, "--scope", scope, "--commit", head, "--rules", join(fixtures, "rules.json")], { stdout: "pipe", stderr: "pipe" });
+      const [output, exitCode] = await Promise.all([new Response(cli.stdout).text(), cli.exited]);
+
+      expect(exitCode).toBe(0);
+      expect(output).toContain("Unavailable: open pull requests (no GitHub upstream or origin remote");
+      expect(output).toContain("Unavailable: errors.occurrences (no --posthog-signals report given)");
+      expect(output).toMatch(/^ {2}1\. .*products\/a\/backend\/\w+ .*-> [a-z-]+ \((mechanical|behaviour-adjacent|boundary)\)$/m);
+      expect(output).toContain("  next: characterisation-tests, mechanical: tests import 0 of 1 files; untested: products/a/backend/jobs/runner.py");
     },
     toolTimeoutMs,
   );

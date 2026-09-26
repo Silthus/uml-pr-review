@@ -33,6 +33,8 @@ const painSignals: SignalComponent[] = [
 
 const trafficSignals: SignalComponent = { name: "traffic", signals: ["apm.requests", "usage.pageviews"], aggregate: "sum", half: halfSaturation.traffic };
 
+export const scoredSignals: SignalKind[] = [...painSignals, trafficSignals].flatMap(({ signals }) => signals);
+
 export function saturate(raw: number, half: number): number {
   return raw / (raw + half);
 }
@@ -62,18 +64,21 @@ function painOf(evidence: ModuleEvidence): Factor {
 function reviewFindingsOf({ rules }: ModuleEvidence): Component {
   if (rules === null) return unavailable("review findings", "no harvested rules");
   const cited = rules.map((rule) => ({ rule, findings: rule.evidence.filter(({ source }) => findingSources.has(source)) })).filter(({ findings }) => findings.length > 0);
-  const total = cited.reduce((sum, { rule, findings }) => sum + rule.share * findings.length, 0);
+  const shareOfFinding = new Map<string, number>();
+  for (const { rule, findings } of cited) for (const { url } of findings) shareOfFinding.set(url, Math.max(shareOfFinding.get(url) ?? 0, rule.share));
+  const total = [...shareOfFinding.values()].reduce((sum, share) => sum + share, 0);
   return {
     ...counted("review findings", round(total), halfSaturation.reviewFindings, cited.map(({ rule, findings }) => `${rule.id}: ${findings.length} findings × ${round(rule.share)} of its component, e.g. ${findings[0]!.url}`)),
-    basis: "Σ findings × share of the rule's component paths in this module / (that + 10)",
+    basis: `Σ distinct findings × the module's share of the citing rule's component / (that + ${halfSaturation.reviewFindings})`,
   };
 }
 
-function complexityOf(module: ModuleState): Component {
-  const complex = module.complexity.drivers.filter(({ ccn }) => ccn > complexThreshold);
+function complexityOf({ complexity }: ModuleState): Component {
+  if (complexity === null) return unavailable("complexity", "complexity tools failed");
+  const complex = complexity.drivers.filter(({ ccn }) => ccn > complexThreshold);
   return counted(
     "complexity",
-    module.complexity.functions.overTen,
+    complexity.functions.overTen,
     halfSaturation.complexFunctions,
     complex.slice(0, evidenceLimit).map(({ file, function: name, ccn }) => `${file}:${name} CCN ${ccn}`),
   );
@@ -86,14 +91,15 @@ function architectureOf(module: ModuleState): Component {
 }
 
 function safetyOf(evidence: ModuleEvidence): Factor {
-  const { module } = evidence;
-  const share = module.files.length === 0 ? 0 : module.testedFiles.length / module.files.length;
+  const { testedFiles, untestedFiles } = evidence.module;
+  const testable = testedFiles.length + untestedFiles.length;
+  const share = testable === 0 ? 0 : testedFiles.length / testable;
   const tests: Component = {
     name: "tests",
     raw: round(share),
     value: round(0.5 + 0.5 * share),
-    basis: "0.5 + 0.5 × share of the module's files that a test imports",
-    evidence: [`${module.testedFiles.length} of ${module.files.length} files imported by tests`],
+    basis: "0.5 + 0.5 × share of the module's files, stories aside, that a test imports",
+    evidence: [`${testedFiles.length} of ${testable} files imported by tests`],
   };
   const traffic = signalComponent(trafficSignals, evidence);
   const damped: Component = traffic.raw === null ? traffic : { ...traffic, value: round(1 - 0.5 * saturate(traffic.raw, trafficSignals.half)), basis: `1 − 0.5 × traffic / (traffic + ${trafficSignals.half})` };

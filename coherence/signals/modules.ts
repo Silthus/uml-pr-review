@@ -15,7 +15,7 @@ export type ModuleState = {
   path: string;
   files: string[];
   lines: number;
-  complexity: Complexity;
+  complexity: Complexity | null;
   testedFiles: string[];
   untestedFiles: string[];
   uncoveredFacadeFunctions: string[];
@@ -24,7 +24,19 @@ export type ModuleState = {
   cycleFiles: string[];
 };
 
-export type ScopeModules = { root: string; commit: string; tree: string; scope: string; modules: ModuleState[]; moduleOf(path: string): string | undefined };
+export type ScopeModules = {
+  root: string;
+  commit: string;
+  tree: string;
+  scope: string;
+  modules: ModuleState[];
+  complexityUnavailable: string | null;
+  moduleOf(path: string): string | undefined;
+};
+
+type Complexities = { perModule: Map<string, Complexity>; unavailable: string | null };
+
+const storybook = /\.stories\.[jt]sx?$/;
 
 export async function measureModules(repository: string, scopePath: string, commit: string): Promise<ScopeModules> {
   const payload = await createRepositoryIndexer().index(repository, { commit });
@@ -38,13 +50,14 @@ export async function measureModules(repository: string, scopePath: string, comm
   const modules = [...owned].map(([path, files]): ModuleState => {
     const paths = files.map(({ path: file }) => file);
     const holds = (file: string) => paths.includes(file);
+    const testable = paths.filter((file) => !storybook.test(file));
     return {
       path,
       files: paths,
       lines: files.reduce((total, { lines }) => total + lines, 0),
-      complexity: complexities.get(path)!,
-      testedFiles: paths.filter((file) => tested.has(file)),
-      untestedFiles: paths.filter((file) => !tested.has(file)),
+      complexity: complexities.perModule.get(path) ?? null,
+      testedFiles: testable.filter((file) => tested.has(file)),
+      untestedFiles: testable.filter((file) => !tested.has(file)),
       uncoveredFacadeFunctions: uncoveredFacadeFunctions.filter((entry) => holds(entry.slice(0, entry.lastIndexOf(":")))),
       inboundBypasses: architecture.facade.bypasses.filter(({ to, direction }) => direction === "inbound" && holds(to)),
       outboundBypasses: architecture.facade.bypasses.filter(({ from, direction }) => direction === "outbound" && holds(from)),
@@ -58,6 +71,7 @@ export async function measureModules(repository: string, scopePath: string, comm
     tree: payload.tree,
     scope: scope.path,
     modules: modules.sort((a, b) => compare(a.path, b.path)),
+    complexityUnavailable: complexities.unavailable,
     moduleOf: (file) => byDepth.find((module) => file === module || file.startsWith(`${module}/`)),
   };
 }
@@ -66,15 +80,18 @@ function testedFiles(payload: ArchitecturePayload): Set<string> {
   return new Set(payload.imports.filter(([from]) => payload.files[from]![3] === "test").map(([, to]) => payload.files[to]![0]));
 }
 
-async function complexityPerModule(repository: string, payload: ArchitecturePayload, scope: Scope, owned: Map<string, ScopeFile[]>): Promise<Map<string, Complexity>> {
+async function complexityPerModule(repository: string, payload: ArchitecturePayload, scope: Scope, owned: Map<string, ScopeFile[]>): Promise<Complexities> {
   const cache = new BlobCache(payload.repository.commonDir);
   try {
-    return await withToolbox(repository, scope.production, async (toolbox) => {
+    const perModule = await withToolbox(repository, scope.production, async (toolbox) => {
       await measureComplexity(scope.production, toolbox, cache);
       const measured = new Map<string, Complexity>();
       for (const [module, files] of owned) measured.set(module, await measureComplexity(files, toolbox, cache));
       return measured;
     });
+    return { perModule, unavailable: null };
+  } catch (error) {
+    return { perModule: new Map(), unavailable: error instanceof Error ? error.message : String(error) };
   } finally {
     cache.close();
   }

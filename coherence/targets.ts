@@ -9,17 +9,7 @@ import { readSignalReport } from "./signals/report.ts";
 const usage = "Usage: bun coherence/targets.ts --repo <path> --scope <path> [--commit <rev>] [--rules <rules.json>] [--posthog-signals <SignalReport.json>] [--github <owner/name>] [--json]";
 const detailed = 5;
 
-const { values } = parseArgs({
-  options: {
-    repo: { type: "string" },
-    scope: { type: "string" },
-    commit: { type: "string", default: "HEAD" },
-    rules: { type: "string" },
-    "posthog-signals": { type: "string" },
-    github: { type: "string" },
-    json: { type: "boolean", default: false },
-  },
-});
+const { values } = parseOptions();
 
 if (!values.repo || !values.scope) {
   console.error(usage);
@@ -44,6 +34,25 @@ try {
   process.exit(1);
 }
 
+function parseOptions() {
+  try {
+    return parseArgs({
+      options: {
+        repo: { type: "string" },
+        scope: { type: "string" },
+        commit: { type: "string", default: "HEAD" },
+        rules: { type: "string" },
+        "posthog-signals": { type: "string" },
+        github: { type: "string" },
+        json: { type: "boolean", default: false },
+      },
+    });
+  } catch (error) {
+    console.error(`${error instanceof Error ? error.message : String(error)}\n${usage}`);
+    process.exit(2);
+  }
+}
+
 function harvestName(scope: string): string {
   return /^(?:\.\/)?products\/([^/]+)/.exec(scope)?.[1] ?? basename(resolve(scope));
 }
@@ -54,6 +63,7 @@ function summary(report: TargetReport): string {
     report.formula,
     `Available: ${report.available.join(", ")}`,
     ...report.unavailable.map(({ signal, reason }) => `Unavailable: ${signal} (${reason})`),
+    `Not scored: ${report.ignored.join(", ")}`,
     report.openPullRequests === null ? "Open pull requests: unavailable" : `Open pull requests: ${report.openPullRequests.open} in ${report.openPullRequests.repository}`,
     ...report.skipped.map(({ module, pullRequests }) => `Skipped ${module}: open pull requests ${pullRequests.map((number) => `#${number}`).join(", ")}`),
     "",

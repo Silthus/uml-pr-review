@@ -1,0 +1,16 @@
+{
+  "pr": "_smoke",
+  "arm": "B-1",
+  "model": "claude-opus-5-5",
+  "sessionId": "88026d0d-eca7-4b82-9d5c-6d73b1626d40",
+  "turns": 3,
+  "costUsd": 0.0850352,
+  "wallSeconds": 13,
+  "startedAt": "2026-09-26T14:56:59.797Z",
+  "exit": {
+    "reason": "completed",
+    "code": 0
+  },
+  "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
+  "planIds": []
+}

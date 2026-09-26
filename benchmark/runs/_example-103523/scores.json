@@ -1,0 +1,93 @@
+{
+  "pr": 103523,
+  "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
+  "scoredAt": "2026-09-26T14:55:12.248Z",
+  "arms": {
+    "final": {
+      "arm": "final",
+      "exit": null,
+      "application": "clean",
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [
+          {
+            "from": "ee",
+            "to": "products.workflows",
+            "declared": true
+          }
+        ],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 6,
+        "linesAdded": 157,
+        "linesRemoved": 5,
+        "modulesTouched": 4,
+        "tachModulesTouched": 3,
+        "newCrossModuleEdges": 3,
+        "testsAdded": 2
+      },
+      "build": {
+        "pythonFiles": 5,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": false
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "hygiene": 90,
+      "focusScore": 51.9,
+      "process": null
+    },
+    "first-push": {
+      "arm": "first",
+      "exit": null,
+      "application": "clean",
+      "boundary": {
+        "facadeBypasses": [
+          {
+            "from": "ee/hogai/context/entity_search/context.py",
+            "to": "products/workflows/backend/models/__init__.py"
+          }
+        ],
+        "testFacadeBypasses": [
+          {
+            "from": "ee/hogai/context/entity_search/test/test_context.py",
+            "to": "products/workflows/backend/models/__init__.py"
+          }
+        ],
+        "newCrossProductDependencies": [
+          {
+            "from": "ee",
+            "to": "products.workflows",
+            "declared": false
+          }
+        ],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 3,
+        "linesAdded": 39,
+        "linesRemoved": 2,
+        "modulesTouched": 3,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 1,
+        "testsAdded": 1
+      },
+      "build": {
+        "pythonFiles": 3,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": false
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "hygiene": 50,
+      "focusScore": 100,
+      "process": null
+    }
+  }
+}

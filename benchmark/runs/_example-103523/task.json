@@ -1,0 +1,12 @@
+{
+  "pr": 103523,
+  "title": "feat(ai): let the agent search and list workflows",
+  "url": "https://github.com/PostHog/posthog/pull/103523",
+  "session": { "source": "t3", "id": "unknown", "title": "example manifest for the scorer proof", "model": "unknown" },
+  "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
+  "finalHead": "45ea0221e13233e854f72c06bb3dcc296bc6a5a4",
+  "firstPushHead": "d8e4fa0b0c8",
+  "taskStatement": "Let the PostHog AI agent search and list workflows.",
+  "attachments": [],
+  "whyChosen": "The scorer's known example: the first push (git diff cea129a d8e4fa0) bypasses the workflows facade once; the final PR (git diff 8872766 45ea022) does not."
+}

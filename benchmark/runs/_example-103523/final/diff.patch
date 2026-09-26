@@ -1,0 +1,322 @@
+diff --git a/ee/hogai/context/entity_search/context.py b/ee/hogai/context/entity_search/context.py
+index be22d05c21f..5844cea3eb1 100644
+--- a/ee/hogai/context/entity_search/context.py
++++ b/ee/hogai/context/entity_search/context.py
+@@ -38,6 +38,7 @@ from products.feature_flags.backend.models.feature_flag import FeatureFlag
+ from products.notebooks.backend.models import Notebook
+ from products.product_analytics.backend.facade.models import Insight
+ from products.surveys.backend.models import Survey
++from products.workflows.backend.facade.api import search_workflows
+ 
+ from ee.hogai.artifacts.handlers.base import get_handler_for_content_type
+ from ee.hogai.context.context import AssistantContextManager
+@@ -54,6 +55,7 @@ class EntityKind(StrEnum):
+     SURVEYS = "surveys"
+     ALERTS = "alerts"
+     ACCOUNTS = "accounts"
++    WORKFLOWS = "workflows"
+     ALL = "all"
+ 
+ 
+@@ -68,6 +70,7 @@ SEARCH_KIND_TO_DATABASE_ENTITY_TYPE: dict[EntityKind, str] = {
+     EntityKind.SURVEYS: "survey",
+     EntityKind.ALERTS: "alert_configuration",
+     EntityKind.ACCOUNTS: "account",
++    EntityKind.WORKFLOWS: "hog_flow",
+ }
+ 
+ ENTITY_MAP: dict[str, EntityConfig] = {
+@@ -169,10 +172,12 @@ class EntitySearchContext:
+             Tuple of (results list, counts dict)
+         """
+         if entity_types == "all":
+-            entity_types = set(ENTITY_MAP.keys())
++            entity_types = {*ENTITY_MAP, "hog_flow"}
+ 
+         results: list[dict] = []
+         counts: dict[str, int | None] = {}
++        workflow_requested = "hog_flow" in entity_types
++        workflow_results: list[dict[str, Any]] = []
+ 
+         if "account" in entity_types:
+             # Account uses a fail-closed manager and is not in ENTITY_MAP, so it can't go through the shared FTS path
+@@ -181,6 +186,17 @@ class EntitySearchContext:
+             results.extend(account_results)
+             counts["account"] = account_count
+ 
++        if workflow_requested:
++            entity_types = entity_types - {"hog_flow"}
++            workflow_results, workflow_count = await database_sync_to_async(search_workflows, thread_sensitive=False)(
++                project_id=self._team.project_id,
++                query=query,
++                access_control=self.user_access_control,
++                limit=SEARCH_LIMIT,
++            )
++            counts["hog_flow"] = workflow_count
++
++        fts_results: list[dict[str, Any]] = []
+         if entity_types:
+             fts_results, fts_counts, _ = await database_sync_to_async(search_entities_fts, thread_sensitive=False)(
+                 entity_types,
+@@ -190,9 +206,23 @@ class EntitySearchContext:
+                 ENTITY_MAP,
+             )
+             assert fts_counts is not None
+-            results.extend(fts_results)
+             counts.update(fts_counts)
+ 
++        if workflow_requested:
++            database_results = [*workflow_results, *fts_results]
++            if query:
++                database_results.sort(key=lambda result: result.get("rank", 0), reverse=True)
++            else:
++                database_results.sort(
++                    key=lambda result: (
++                        result["type"],
++                        result.get("extra_fields", {}).get("name") or result.get("extra_fields", {}).get("title") or "",
++                    )
++                )
++            results.extend(database_results[:SEARCH_LIMIT])
++        else:
++            results.extend(fts_results)
++
+         return results, counts
+ 
+     async def list_entities(
+@@ -243,6 +273,14 @@ class EntitySearchContext:
+         elif entity_type == "account":
+             # Account uses a fail-closed manager, so it can't go through the shared FTS path
+             return await self._list_accounts(limit, offset)
++        elif entity_type == "hog_flow":
++            return await database_sync_to_async(search_workflows, thread_sensitive=False)(
++                project_id=self._team.project_id,
++                query=None,
++                access_control=self.user_access_control,
++                limit=limit,
++                offset=offset,
++            )
+         elif entity_type == "feature_flag":
+             # Specialized queryset so we can surface each flag's status
+             return await self.list_feature_flags(limit, offset)
+@@ -546,6 +584,8 @@ class EntitySearchContext:
+                 return f"{base_url}/error_tracking/{result_id}"
+             case "alert_configuration":
+                 return f"{base_url}/alerts?alert_id={result_id}"
++            case "hog_flow":
++                return f"{base_url}/workflows/{result_id}/workflow"
+             case "account":
+                 # Deep-link to the specific account (filtered + expanded) rather than the bare list.
+                 return f"{base_url}{build_account_deeplink(account_id=result_id)}"
+diff --git a/ee/hogai/context/entity_search/test/test_context.py b/ee/hogai/context/entity_search/test/test_context.py
+index 630a337ebaf..e57859ed10b 100644
+--- a/ee/hogai/context/entity_search/test/test_context.py
++++ b/ee/hogai/context/entity_search/test/test_context.py
+@@ -24,9 +24,10 @@ from products.feature_flags.backend.models.feature_flag import FeatureFlag
+ from products.product_analytics.backend.facade.api import record_insight_views
+ from products.product_analytics.backend.facade.models import Insight
+ from products.surveys.backend.models import Survey
++from products.workflows.backend.facade.testing import create_workflow_for_test
+ 
+ from ee.hogai.context import AssistantContextManager
+-from ee.hogai.context.entity_search import EntitySearchContext
++from ee.hogai.context.entity_search.context import SEARCH_LIMIT, EntitySearchContext
+ 
+ if TYPE_CHECKING:
+     from products.customer_analytics.backend.models import Account
+@@ -59,6 +60,7 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+             ("notebook", "test_notebook_id", "/project/{team_id}/notebooks/test_notebook_id"),
+             ("alert_configuration", "test_alert_id", "/project/{team_id}/alerts?alert_id=test_alert_id"),
+             ("account", "test_account_id", "/project/{team_id}/customer_analytics/accounts/test_account_id"),
++            ("hog_flow", "test_flow_id", "/project/{team_id}/workflows/test_flow_id/workflow"),
+         ]
+     )
+     def test_build_url(self, entity_type, result_id, expected_path):
+@@ -332,6 +334,9 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+             created_by=self.user,
+             type=Survey.SurveyType.POPOVER,
+         )
++        await create_workflow_for_test(
++            team_id=self.team.id, created_by_id=self.user.id, name="deleted workflow", status="archived"
++        )
+ 
+         results, _ = await self.context.search_entities("all", "deleted")
+ 
+@@ -341,6 +346,7 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+         assert "deleted action" not in result_names
+         assert "deleted cohort" not in result_names
+         assert "archived survey" not in result_names
++        assert "deleted workflow" not in result_names
+ 
+     async def test_list_entities_insight(self):
+         insight1 = await Insight.objects.acreate(
+@@ -403,6 +409,49 @@ class TestEntitySearchContext(NonAtomicBaseTest):
+         assert total == 1
+         assert entities[0]["extra_fields"]["name"] == "List Dashboard"
+ 
++    async def test_list_entities_workflow_surfaces_status_and_hides_archived(self):
++        await create_workflow_for_test(
++            team_id=self.team.id, created_by_id=self.user.id, name="welcome email", status="active"
++        )
++        await create_workflow_for_test(
++            team_id=self.team.id, created_by_id=self.user.id, name="win-back draft", status="draft"
++        )
++        await create_workflow_for_test(
++            team_id=self.team.id, created_by_id=self.user.id, name="old campaign", status="archived"
++        )
++
++        results, total_count = await self.context.list_entities("hog_flow")
++
++        assert total_count == 2
++        assert {(r["extra_fields"]["name"], r["extra_fields"]["status"]) for r in results} == {
++            ("welcome email", "active"),
++            ("win-back draft", "draft"),
++        }
++
++    async def test_search_entities_merges_workflows_into_the_shared_ranked_limit(self):
++        await Dashboard.objects.abulk_create(
++            [
++                Dashboard(
++                    team=self.team,
++                    name=f"Dashboard {index}",
++                    description="priority workflow",
++                    created_by=self.user,
++                )
++                for index in range(SEARCH_LIMIT)
++            ]
++        )
++        await create_workflow_for_test(
++            team_id=self.team.id,
++            created_by_id=self.user.id,
++            name="Priority workflow",
++            status="active",
++        )
++
++        results, _ = await self.context.search_entities({"dashboard", "hog_flow"}, "priority workflow")
++
++        assert len(results) == SEARCH_LIMIT
++        assert results[0]["type"] == "hog_flow"
++
+     async def test_list_entities_account(self):
+         account = await Account.objects.unscoped().acreate(team=self.team, name="Acme Corp", external_id="acme-1")
+ 
+diff --git a/ee/hogai/tools/search.py b/ee/hogai/tools/search.py
+index b1aa8b51a84..0058b3c22c7 100644
+--- a/ee/hogai/tools/search.py
++++ b/ee/hogai/tools/search.py
+@@ -26,7 +26,7 @@ from ee.hogai.utils.helpers import sanitize_for_system_reminder
+ logger = structlog.get_logger(__name__)
+ 
+ SEARCH_TOOL_PROMPT = """
+-Use this tool to search docs, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, and surveys in PostHog.
++Use this tool to search docs, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, surveys, and workflows in PostHog.
+ 
+ If the user's question mentions multiple topics, search for each topic separately and combine the results.
+ 
+@@ -118,7 +118,7 @@ class InkeepResponse(BaseModel):
+ class SearchTool(MaxTool):
+     name: Literal["search"] = "search"
+     description: str = SEARCH_TOOL_PROMPT
+-    context_prompt_template: str = "Searches documentation, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, and surveys in PostHog"
++    context_prompt_template: str = "Searches documentation, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, surveys, and workflows in PostHog"
+     args_schema: type[BaseModel] = SearchToolArgs
+ 
+     _has_business_knowledge: bool = False
+diff --git a/products/workflows/backend/facade/api.py b/products/workflows/backend/facade/api.py
+index d35249cf7ad..c13d362d90d 100644
+--- a/products/workflows/backend/facade/api.py
++++ b/products/workflows/backend/facade/api.py
+@@ -1,7 +1,12 @@
++from typing import Any
+ from uuid import UUID
+ 
++from django.db.models import F
++
++from posthog.helpers.full_text_search import build_rank
+ from posthog.ingress.contracts import WebhookDelivery
+ 
++from products.access_control.backend.facade.user_access_control import UserAccessControl
+ from products.workflows.backend.models import HogFlow
+ 
+ 
+@@ -9,6 +14,50 @@ class WorkflowNotFound(Exception):
+     pass
+ 
+ 
++def search_workflows(
++    *,
++    project_id: int,
++    query: str | None,
++    access_control: UserAccessControl,
++    limit: int,
++    offset: int = 0,
++) -> tuple[list[dict[str, Any]], int]:
++    queryset = access_control.filter_queryset_by_access_level(
++        HogFlow.objects.filter(
++            team__project_id=project_id,
++            status__in=(HogFlow.State.DRAFT, HogFlow.State.ACTIVE),
++        )
++    )
++
++    if query:
++        queryset = queryset.annotate(rank=build_rank({"name": "A", "description": "C"}, query, config="simple"))
++        queryset = queryset.filter(rank__gt=0.05).order_by("-rank")
++    else:
++        queryset = queryset.order_by(F("name").asc(nulls_first=True))
++
++    total_count = queryset.count()
++    fields = ["id", "name", "description", "status"]
++    if query:
++        fields.append("rank")
++
++    results: list[dict[str, Any]] = []
++    for workflow in queryset[offset : offset + limit].values(*fields):
++        result: dict[str, Any] = {
++            "type": "hog_flow",
++            "result_id": str(workflow["id"]),
++            "extra_fields": {
++                "name": workflow["name"],
++                "description": workflow["description"],
++                "status": workflow["status"],
++            },
++        }
++        if query:
++            result["rank"] = workflow["rank"]
++        results.append(result)
++
++    return results, total_count
++
++
+ def get_workflow_owner_id(*, team_id: int, workflow_id: UUID) -> int | None:
+     try:
+         return HogFlow.objects.values_list("created_by_id", flat=True).get(team_id=team_id, id=workflow_id)
+diff --git a/products/workflows/backend/facade/testing.py b/products/workflows/backend/facade/testing.py
+new file mode 100644
+index 00000000000..c4c1bf1ee2e
+--- /dev/null
++++ b/products/workflows/backend/facade/testing.py
+@@ -0,0 +1,13 @@
++from typing import Literal
++
++from products.workflows.backend.models import HogFlow
++
++
++async def create_workflow_for_test(
++    *,
++    team_id: int,
++    created_by_id: int,
++    name: str,
++    status: Literal["active", "archived", "draft"],
++) -> None:
++    await HogFlow.objects.acreate(team_id=team_id, created_by_id=created_by_id, name=name, status=status)
+diff --git a/tach.toml b/tach.toml
+index 144093ee72b..9120892f899 100644
+--- a/tach.toml
++++ b/tach.toml
+@@ -76,6 +76,7 @@ depends_on = [
+     "products.user_interviews",
+     "products.warehouse_sources",
+     "products.exports",
++    "products.workflows",
+ ]
+ layer = "modules"
+ 

@@ -1,0 +1,54 @@
+{
+  "pr": "_smoke",
+  "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
+  "scoredAt": "2026-09-26T14:59:16.186Z",
+  "arms": {
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 4,
+        "linesRemoved": 0,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 1,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": false
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "process": {
+        "toolCalls": 2,
+        "edits": 0,
+        "toolCallsBeforeFirstEdit": 2,
+        "secondsBeforeFirstEdit": null,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 2,
+        "architectureReasoningBeforeEdit": 1,
+        "firstArchitectureThought": "I added `workflows_product_name() -> str` to the end of `products/workflows/backend/facade/api.py`.",
+        "turns": 3,
+        "wallSeconds": 13,
+        "costUsd": 0.0850352
+      }
+    }
+  }
+}

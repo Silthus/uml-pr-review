@@ -1,0 +1,50 @@
+{
+  "model": "gpt-6-astra",
+  "judgedAt": "2026-09-26T14:58:39.232Z",
+  "verdicts": {
+    "final": {
+      "seams": {
+        "score": 6,
+        "justification": "ee/hogai/context/entity_search/context.py calls a deliberate search_workflows facade instead of importing HogFlow. However, the facade accepts a behavioral UserAccessControl object and returns list[dict[str, Any]] rather than frozen contracts, leaving the boundary loosely defined."
+      },
+      "cohesion": {
+        "score": 6,
+        "justification": "Workflow querying and status filtering belong to workflows and are placed within that product. However, products/workflows/backend/facade/api.py implements ranking, pagination, and filtering directly instead of delegating to internal logic, and constructs the AI consumer's result format."
+      },
+      "coupling": {
+        "score": 6,
+        "justification": "The facade keeps HogFlow and its ORM operations out of the AI consumer, and tach.toml explicitly records the workflows dependency. Passing UserAccessControl into search_workflows and returning AI-shaped dictionaries still couples the product API to access-control behavior and the consumer's representation."
+      },
+      "fit": {
+        "score": 5,
+        "justification": "The facade import and products/workflows/backend/facade/testing.py fixture helper follow the documented boundary direction. The substantial implementation in facade/api.py, absence of frozen result contracts, and behavioral access-control parameter depart from the prescribed thin facade and contract rules."
+      },
+      "overall": {
+        "score": 6,
+        "justification": "X establishes a useful product boundary and keeps workflow model access inside workflows. Moving search logic out of facade/api.py and exposing typed frozen results would make that boundary substantially stronger."
+      }
+    },
+    "first-push": {
+      "seams": {
+        "score": 2,
+        "justification": "ee/hogai/context/entity_search/context.py imports HogFlow directly and passes the model class into ENTITY_MAP. This bypasses the workflow facade and exposes ORM behavior across the product boundary."
+      },
+      "cohesion": {
+        "score": 4,
+        "justification": "Adding an ENTITY_MAP entry reuses the existing search mechanism with little additional orchestration. However, workflow field selection, ranking weights, and lifecycle visibility rules now live in ee/hogai/context/entity_search/context.py rather than the workflows product."
+      },
+      "coupling": {
+        "score": 2,
+        "justification": "The AI consumer now depends directly on products.workflows.backend.models.HogFlow, its State enum, and its database fields. test_context.py adds another direct model consumer, so workflow implementation changes can affect code outside the owning product."
+      },
+      "fit": {
+        "score": 2,
+        "justification": "The HogFlow import violates the documented prohibition on reaching into another product's models. Passing it through ENTITY_MAP is neither an approved behavioral wiring interface nor one of the named model-class exceptions, and the diff adds no facade boundary."
+      },
+      "overall": {
+        "score": 3,
+        "justification": "Y is compact and follows the local ENTITY_MAP pattern, but extends a legacy coupling that the architecture explicitly forbids. Workflow search should be owned by workflows and reached through its facade."
+      }
+    }
+  }
+}

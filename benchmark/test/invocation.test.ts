@@ -28,7 +28,22 @@ describe("replay invocations", () => {
     expect(command).not.toContain("--append-system-prompt");
     expect(flagValue(command, "--model")).toBe("claude-opus-5-5");
     expect(prompt).toBe("Let the agent search workflows.\n\nAttachments:\n- /tmp/screenshot.png\n\nImplement this in the working directory. Do not commit, push, or open a pull request.");
-    expect(env).toEqual({ PATH: "/usr/bin", HOME: "/Users/me", CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" });
+    expect(env).toMatchObject({ PATH: "/usr/bin", HOME: "/Users/me", CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" });
+    expect(Object.keys(env)).not.toContainAnyValues(["ANTHROPIC_BASE_URL", "ANTHROPIC_MODEL", "CLAUDE_CODE_SUBAGENT_MODEL", "GITHUB_TOKEN", "AI_GATEWAY_API_KEY"]);
+  });
+
+  test("a replay can neither push nor write to GitHub, whatever its task statement asks", () => {
+    for (const arm of ["B", "C"] as const) {
+      const { command, env } = invocationFor(task, arm, "SKILL", environment);
+
+      const sandbox = JSON.parse(flagValue(command, "--settings")!).sandbox;
+      const pushRewrites = Object.entries(env).filter(([key]) => key.startsWith("GIT_CONFIG_VALUE_")).map(([, value]) => value);
+
+      expect(sandbox).toMatchObject({ enabled: true, failIfUnavailable: true, allowUnsandboxedCommands: false });
+      expect(sandbox.network.deniedDomains).toContain("github.com");
+      expect(pushRewrites).toEqual(["git@github.com:", "ssh://git@github.com/", "https://github.com/"]);
+      expect(env).toMatchObject({ GH_TOKEN: "blocked-by-benchmark", GIT_SSH_COMMAND: "false", GIT_CONFIG_COUNT: "3" });
+    }
   });
 
   test("arm C adds the architecture server, the skill, and standing approval to lock the plan", () => {

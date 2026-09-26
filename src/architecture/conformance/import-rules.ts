@@ -2,7 +2,8 @@ import type { PlannedModule, Seam } from "../contracts/index.ts";
 import type { Change, FileImport } from "./change.ts";
 import { type DraftFinding, draftOf, moduleSubject, seamSubject } from "./draft.ts";
 import * as feedback from "./feedback.ts";
-import { depthOf, isWithin, regionOf } from "./paths.ts";
+import { isWithin } from "./paths.ts";
+import { mostSpecific, mostSpecificMatch, regionOf } from "./seams.ts";
 
 export function importFindings(change: Change): DraftFinding[] {
   return [...change.addedImports().flatMap((imported) => addedImportFindings(change, imported)), ...unresolvedImportFindings(change)];
@@ -11,10 +12,10 @@ export function importFindings(change: Change): DraftFinding[] {
 function addedImportFindings(change: Change, imported: FileImport): DraftFinding[] {
   const owner = change.owner(imported.file);
   if (!owner || isInternal(change, imported, owner)) return [];
-  const matched = mostSpecific(change.plan.seams.filter((seam) => matches(seam, imported)));
+  const matched = mostSpecificMatch(change.plan.seams, imported);
   if (matched?.action === "remove") return [againstRemovedSeam(imported, matched)];
   if (matched) return offInterface(imported, matched);
-  const bypassed = mostSpecific(change.plan.seams.filter((seam) => seam.action !== "remove" && isWithin(imported.file, seam.from) && isWithin(imported.target, regionOf(seam.from, seam.to))));
+  const bypassed = mostSpecific(change.plan.seams.filter((seam) => routesTowards(seam, imported)));
   if (bypassed) return [bypassesSeam(change, imported, bypassed)];
   return unplannedDependency(change, imported, owner);
 }
@@ -23,17 +24,8 @@ function isInternal(change: Change, imported: FileImport, owner: PlannedModule):
   return isWithin(imported.target, owner.path) || change.leaf(imported.file) === change.leaf(imported.target);
 }
 
-function matches(seam: Seam, imported: FileImport): boolean {
-  return isWithin(imported.file, seam.from) && isWithin(imported.target, seam.to);
-}
-
-function mostSpecific(seams: Seam[]): Seam | undefined {
-  return seams.reduce<Seam | undefined>((best, seam) => (!best || isMoreSpecific(seam, best) ? seam : best), undefined);
-}
-
-function isMoreSpecific(seam: Seam, other: Seam): boolean {
-  const byFrom = depthOf(seam.from) - depthOf(other.from);
-  return byFrom > 0 || (byFrom === 0 && depthOf(seam.to) > depthOf(other.to));
+function routesTowards(seam: Seam, imported: FileImport): boolean {
+  return seam.action !== "remove" && isWithin(imported.file, seam.from) && isWithin(imported.target, regionOf(seam));
 }
 
 function againstRemovedSeam(imported: FileImport, seam: Seam): DraftFinding {
@@ -51,14 +43,17 @@ function offInterface(imported: FileImport, seam: Seam): DraftFinding[] {
 
 function bypassesSeam(change: Change, imported: FileImport, seam: Seam): DraftFinding {
   const targetLeaf = change.leaf(imported.target) ?? imported.target;
-  return importDraft(imported, "bypasses-seam", seamSubject(seam), feedback.bypassesSeam(imported, targetLeaf, seam, regionOf(seam.from, seam.to)));
+  return importDraft(imported, "bypasses-seam", seamSubject(seam), feedback.bypassesSeam(imported, targetLeaf, seam, regionOf(seam)));
 }
 
 function unplannedDependency(change: Change, imported: FileImport, owner: PlannedModule): DraftFinding[] {
   const targetLeaf = change.leaf(imported.target) ?? imported.target;
   const farEnd = change.farEnd(owner.path, targetLeaf);
-  if (change.baseDependsOn(owner.path, farEnd)) return [];
-  return [importDraft(imported, "unplanned-dependency", moduleSubject(owner.path), feedback.unplannedDependency(imported, owner.path, farEnd, targetLeaf, change.plan.status))];
+  if (change.baseDependsOn(owner.path, farEnd, { includeTests: imported.test })) return [];
+  const text = isWithin(owner.path, targetLeaf)
+    ? feedback.unplannedDependencyOnEnclosingModule(imported, owner.path, farEnd)
+    : feedback.unplannedDependency(imported, owner.path, farEnd, targetLeaf, change.plan.status);
+  return [importDraft(imported, "unplanned-dependency", moduleSubject(owner.path), text)];
 }
 
 function unresolvedImportFindings(change: Change): DraftFinding[] {

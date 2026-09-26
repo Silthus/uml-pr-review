@@ -33,13 +33,13 @@ const baseSource: ArchitectureSource = {
   [`${scenes}/issueLogic.ts`]: [],
 };
 
-type CheckCase = { plan: ArchitecturePlan; head?: ArchitectureSource; removed?: string[]; changes: ChangedFile[]; phase?: ConformancePhase };
+type CheckCase = { plan: ArchitecturePlan; both?: ArchitectureSource; head?: ArchitectureSource; removed?: string[]; changes: ChangedFile[]; phase?: ConformancePhase };
 
-function check({ plan, head = {}, removed = [], changes, phase = "progress" }: CheckCase) {
-  const headSource = Object.fromEntries(Object.entries({ ...baseSource, ...head }).filter(([path]) => !removed.includes(path)));
+function check({ plan, both = {}, head = {}, removed = [], changes, phase = "progress" }: CheckCase) {
+  const headSource = Object.fromEntries(Object.entries({ ...baseSource, ...both, ...head }).filter(([path]) => !removed.includes(path)));
   return checkConformance({
     plan,
-    base: new ArchitectureModel(architectureOf(baseSource)),
+    base: new ArchitectureModel(architectureOf({ ...baseSource, ...both })),
     head: new ArchitectureModel(architectureOf(headSource)),
     changes,
     phase,
@@ -89,7 +89,7 @@ describe("unplanned-module", () => {
     ]);
   });
 
-  test("is a warning when every changed file there is a test", () => {
+  test("is a warning when every changed file there is a test, and plans a new module as created", () => {
     const testFile = "posthog/models/test/test_team.py";
     const findings = findingsOf({ plan: planOf({ modules: [modifyLogic] }), head: { [testFile]: [team] }, changes: [modified(issues), added(testFile)] });
 
@@ -102,13 +102,23 @@ describe("unplanned-module", () => {
         subject: { kind: "module", path: "posthog/models/test" },
         test: true,
         message: `${testFile}:1 adds a file to module \`posthog/models/test\`, which the plan does not touch (1 changed file there).`,
-        fix: "Revert the changes in `posthog/models/test`, or ask the human to unlock the plan and add `posthog/models/test` as a modified module.",
+        fix: "Revert the changes in `posthog/models/test`, or ask the human to unlock the plan and add `posthog/models/test` as a created module.",
       },
     ]);
   });
 
   test("stays silent when every changed file is within a planned module", () => {
     expect(findingsOf({ plan: planOf({ modules: [modifyLogic] }), changes: [modified(issues), modified(fingerprint)] })).toEqual([]);
+  });
+
+  test("stays silent under a plan that modifies the root", () => {
+    expect(findingsOf({ plan: planOf({ modules: [{ path: ".", action: "modify" }] }), changes: [modified(issues), modified(team)] })).toEqual([]);
+  });
+
+  test("leaves the imports of a file outside every planned module to this one finding", () => {
+    const findings = findingsOf({ plan: planOf({ modules: [modifyLogic] }), head: { [team]: [featureFlag] }, changes: [modified(issues), modified(team)] });
+
+    expect(findings.map(({ rule }) => rule)).toEqual(["unplanned-module"]);
   });
 });
 
@@ -164,6 +174,30 @@ describe("unplanned-dependency", () => {
     expect(findings).toEqual([]);
   });
 
+  test("asks to move a file that sits directly in a module enclosing the owner, since no seam can name it", () => {
+    const utils = `${errorTracking}/utils.py`;
+    const findings = findingsOf({ plan: planOf({ modules: [modifyLogic] }), head: issuesImporting({ to: utils, line: 3 }), changes: [modified(issues, 3)] });
+
+    expect(findings.map(({ rule, message, fix }) => ({ rule, message, fix }))).toEqual([
+      {
+        rule: "unplanned-dependency",
+        message: `${issues}:3 imports \`${utils}\`: a new dependency from \`${logic}\` on \`${errorTracking}\` that the plan does not name.`,
+        fix: `Remove the import, or move \`${utils}\` into a module of its own so the plan can name the dependency.`,
+      },
+    ]);
+  });
+
+  test("does not count a dependency only tests had as one the production code already has", () => {
+    const findings = findingsOf({
+      plan: planOf({ modules: [modifyLogic] }),
+      both: { [`${logic}/tests/test_issues.py`]: [issues, team] },
+      head: issuesImporting({ to: team, line: 3 }),
+      changes: [modified(issues, 3)],
+    });
+
+    expect(findings.map(({ rule, file }) => ({ rule, file }))).toEqual([{ rule: "unplanned-dependency", file: issues }]);
+  });
+
   test("takes the deepest planned module as the owner", () => {
     const findings = findingsOf({
       plan: planOf({ modules: [{ path: "products/error_tracking", action: "modify" }, modifyLogic] }),
@@ -213,14 +247,49 @@ describe("bypasses-seam", () => {
       },
     ]);
   });
+
+  test("names the seam with the deepest from that routes towards the target", () => {
+    const findings = findingsOf({
+      plan: planOf({
+        modules: [modifyLogic],
+        seams: [
+          { from: errorTracking, to: flagsFacade, action: "add" },
+          { from: logic, to: flagsFacade, action: "add", interface: { files: [flagsApi] } },
+        ],
+      }),
+      head: issuesImporting({ to: featureFlag, line: 3 }),
+      changes: [modified(issues, 3)],
+    });
+
+    expect(findings.filter(({ severity }) => severity === "violation").map(({ rule, subject, fix }) => ({ rule, subject, fix }))).toEqual([
+      {
+        rule: "bypasses-seam",
+        subject: { kind: "seam", from: logic, to: flagsFacade },
+        fix: `Import it through \`${flagsApi}\` instead. If that interface does not offer it yet, add it there first.`,
+      },
+    ]);
+  });
+
+  test("leaves an import from outside the seam's from to unplanned-dependency", () => {
+    const findings = findingsOf({
+      plan: planOf({ modules: [{ path: facade, action: "modify" }, modifyLogic], seams: [{ from: logic, to: flagsFacade, action: "add" }] }),
+      head: { [`${facade}/api.py`]: [issues, { to: featureFlag, line: 2 }] },
+      changes: [modified(`${facade}/api.py`, 2), modified(issues)],
+    });
+
+    expect(findings.filter(({ severity }) => severity === "violation").map(({ rule, file }) => ({ rule, file }))).toEqual([
+      { rule: "unplanned-dependency", file: `${facade}/api.py` },
+    ]);
+  });
 });
 
 describe("off-interface", () => {
   const seamThroughApi = (symbols: string[] = []) => ({ from: logic, to: flagsFacade, action: "add" as const, interface: { files: [flagsApi], symbols } });
 
   test("reports an import of a file outside the interface", () => {
+    const seam = { from: logic, to: flagsFacade, action: "add" as const, interface: { files: [flagsApi, `${flagsFacade}/types.py`] } };
     const findings = findingsOf({
-      plan: planOf({ modules: [modifyLogic], seams: [seamThroughApi()] }),
+      plan: planOf({ modules: [modifyLogic], seams: [seam] }),
       head: issuesImporting({ to: flagsApi, line: 3 }, { to: `${flagsFacade}/queries.py`, line: 4 }),
       changes: [modified(issues, 3)],
     });
@@ -235,7 +304,7 @@ describe("off-interface", () => {
         target: `${flagsFacade}/queries.py`,
         test: false,
         message: `${issues}:4 imports \`${flagsFacade}/queries.py\`, which is not part of the interface of seam \`${logic}\` -> \`${flagsFacade}\`.`,
-        fix: `Import from \`${flagsApi}\` instead.`,
+        fix: `Import from \`${flagsApi}\` or \`${flagsFacade}/types.py\` instead.`,
       },
     ]);
   });
@@ -321,6 +390,52 @@ describe("removed seams", () => {
     expect(findings.map(({ rule, severity }) => ({ rule, severity }))).toEqual([{ rule: "seam-not-removed", severity }]);
   });
 
+  test("leaves imports that a more specific kept seam claims out of the removed seam", () => {
+    const sync = `${legacy}/sync/flags.py`;
+    const report = check({
+      plan: planOf({
+        modules: [{ path: legacy, action: "modify" }],
+        seams: [
+          { from: legacy, to: "products/feature_flags/backend", action: "remove" },
+          { from: `${legacy}/sync`, to: flagsFacade, action: "keep" },
+        ],
+      }),
+      both: { [sync]: [flagsApi] },
+      head: { [`${legacy}/cohorts.py`]: [] },
+      changes: [modified(`${legacy}/cohorts.py`)],
+      phase: "final",
+    });
+
+    expect(report.verdict).toBe("conforming");
+    expect(report.seams.map(({ from, imports }) => ({ from, imports }))).toEqual([
+      { from: legacy, imports: 0 },
+      { from: `${legacy}/sync`, imports: 1 },
+    ]);
+  });
+
+  test.each(["progress" as const, "final" as const])("reports a test import still along a removed seam as a warning in a %s check", (phase) => {
+    const testFile = `${legacy}/tests/test_cohorts.py`;
+    const report = check({
+      plan: removeLegacyFlags,
+      both: { [testFile]: [featureFlag] },
+      head: { [`${legacy}/cohorts.py`]: [] },
+      changes: [modified(`${legacy}/cohorts.py`)],
+      phase,
+    });
+
+    expect(report.findings.map(({ rule, severity, file, test }) => ({ rule, severity, file, test }))).toEqual([
+      { rule: "seam-not-removed", severity: "warning", file: testFile, test: true },
+    ]);
+    expect(report.verdict).toBe("conforming");
+  });
+
+  test("does not count a new import beside the removed seam as one along it", () => {
+    const exporter = `${legacy}/export.py`;
+    const findings = findingsOf({ plan: removeLegacyFlags, head: { [exporter]: [flagsApi] }, changes: [added(exporter)] });
+
+    expect(findings.map(({ rule }) => rule)).toEqual(["seam-not-removed"]);
+  });
+
   test("reports at most 20 remaining imports per removed seam", () => {
     const importers = Object.fromEntries(Array.from({ length: 25 }, (_, index) => [`${legacy}/report_${String(index).padStart(2, "0")}.py`, [featureFlag]]));
     const findings = findingsOf({ plan: removeLegacyFlags, head: importers, changes: [modified(`${legacy}/cohorts.py`)] });
@@ -351,6 +466,20 @@ describe("missing-seam", () => {
         fix: `Import \`${flagsApi}\` where \`${logic}\` needs it, for example in \`${issues}\`.`,
       },
     ]);
+  });
+
+  test("anchors a seam from a created module without files at that module's folder", () => {
+    const flagUsage = `${errorTracking}/flag_usage`;
+    const findings = findingsOf({
+      plan: planOf({ modules: [{ path: flagUsage, action: "create" }], seams: [{ from: flagUsage, to: flagsFacade, action: "add", interface: { files: [flagsApi] } }] }),
+      changes: [],
+    });
+
+    expect(findings.find(({ rule }) => rule === "missing-seam")).toMatchObject({
+      file: `${flagUsage}/`,
+      line: 1,
+      fix: `Import \`${flagsApi}\` where \`${flagUsage}\` needs it, for example in \`${flagUsage}/\`.`,
+    });
   });
 
   test("is not satisfied by a test import", () => {

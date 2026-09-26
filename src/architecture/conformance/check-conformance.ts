@@ -24,6 +24,7 @@ export type ConformanceInput = {
 };
 
 const severityOrder: Record<FindingSeverity, number> = { violation: 0, pending: 1, warning: 2 };
+const plannedSeverity: Record<ConformancePhase, FindingSeverity> = { progress: "pending", final: "violation" };
 
 export function checkConformance({ phase, ...input }: ConformanceInput): ConformanceReport {
   const change = new Change(input);
@@ -51,11 +52,10 @@ export function checkConformance({ phase, ...input }: ConformanceInput): Conform
 }
 
 function finalized({ severity, ...draft }: DraftFinding, phase: ConformancePhase): Finding {
-  const planned = severity === "planned" ? (phase === "progress" ? "pending" : "violation") : severity;
   return {
     id: [draft.rule, draft.file, draft.line, draft.target ?? subjectKey(draft.subject)].join("|"),
     ...draft,
-    severity: draft.test && planned === "violation" ? "warning" : planned,
+    severity: draft.test && severity !== "warning" ? "warning" : severity === "planned" ? plannedSeverity[phase] : severity,
   };
 }
 

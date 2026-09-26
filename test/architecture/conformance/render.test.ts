@@ -62,18 +62,22 @@ describe("renderConformanceText", () => {
     );
   });
 
-  test("shows the first 40 findings and points to the rest", () => {
-    const findings = Array.from({ length: 42 }, (_, index): Finding => warningAt(`posthog/api/view_${String(index).padStart(2, "0")}.py`));
-    const report: ConformanceReport = { verdict: "conforming", modules: [], seams: [], findings, counts: { violations: 0, pending: 0, warnings: 42 } };
+  test.each([
+    { total: 41, overflow: "1 more finding is in structuredContent.findings." },
+    { total: 42, overflow: "2 more findings are in structuredContent.findings." },
+  ])("shows the first 40 of $total findings and points to the rest", ({ total, overflow }) => {
+    const findings = Array.from({ length: total }, (_, index): Finding => warningAt(`posthog/api/view_${String(index).padStart(2, "0")}.py`));
+    const report: ConformanceReport = { verdict: "conforming", modules: [], seams: [], findings, counts: { violations: 0, pending: 0, warnings: total } };
 
     const lines = renderConformanceText(resultOf(report)).split("\n");
 
+    expect(lines[1]).toBe(`0 violations, 0 pending, ${total} warnings.`);
     expect(lines.filter((line) => line.startsWith("warning "))).toHaveLength(40);
     expect(lines.slice(-4)).toEqual([
       "warning unresolved-import posthog/api/view_39.py:2",
       "  posthog/api/view_39.py:2 imports `posthog.gone`, which resolves to no file in the repository and no dependency.",
       "  Fix: Fix the specifier, or create the file it names.",
-      "2 more findings are in structuredContent.findings.",
+      overflow,
     ]);
   });
 });

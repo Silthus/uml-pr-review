@@ -12,25 +12,33 @@ const changeVerbs: Record<ChangedFile["status"], string> = {
   deleted: "deletes a file from",
 };
 
-export function unplannedModule(first: ChangedFile, leaf: string, changedFiles: number, status: PlanStatus): Feedback {
+export function unplannedModule(first: ChangedFile, leaf: string, changedFiles: number, existsAtBase: boolean, status: PlanStatus): Feedback {
+  const action = existsAtBase ? "modify" : "create";
   return {
     message: `${at(first.path, first.firstChangedLine)} ${changeVerbs[first.status]} module ${code(leaf)}, which the plan does not touch (${counted(changedFiles, "changed file")} there).`,
     fix: `Revert the changes in ${code(leaf)}, or ${planEditHint(status, {
       draft: "add it to the plan",
-      operation: { op: "upsert_module", path: leaf, action: "modify", responsibility: "…" },
-      locked: `add ${code(leaf)} as a modified module`,
+      operation: { op: "upsert_module", path: leaf, action, responsibility: "…" },
+      locked: `add ${code(leaf)} as a ${existsAtBase ? "modified" : "created"} module`,
     })}.`,
   };
 }
 
 export function unplannedDependency(imported: FileImport, owner: string, farEnd: string, targetLeaf: string, status: PlanStatus): Feedback {
   return {
-    message: `${at(imported.file, imported.line)} imports ${code(imported.target)}: a new dependency from ${code(owner)} on ${code(farEnd)} that the plan does not name.`,
+    message: unplannedDependencyMessage(imported, owner, farEnd),
     fix: `Remove the import, or ${planEditHint(status, {
       draft: "add it to the plan",
       operation: { op: "upsert_seam", from: owner, to: targetLeaf, action: "add" },
       locked: `add seam ${seamName({ from: owner, to: targetLeaf })}`,
     })}.`,
+  };
+}
+
+export function unplannedDependencyOnEnclosingModule(imported: FileImport, owner: string, farEnd: string): Feedback {
+  return {
+    message: unplannedDependencyMessage(imported, owner, farEnd),
+    fix: `Remove the import, or move ${code(imported.target)} into a module of its own so the plan can name the dependency.`,
   };
 }
 
@@ -119,7 +127,11 @@ export function unresolvedImport(unresolved: UnresolvedImport): Feedback {
   };
 }
 
-export function seamName({ from, to }: Pick<Seam, "from" | "to">): string {
+function unplannedDependencyMessage(imported: FileImport, owner: string, farEnd: string): string {
+  return `${at(imported.file, imported.line)} imports ${code(imported.target)}: a new dependency from ${code(owner)} on ${code(farEnd)} that the plan does not name.`;
+}
+
+function seamName({ from, to }: Pick<Seam, "from" | "to">): string {
   return `${code(from)} -> ${code(to)}`;
 }
 

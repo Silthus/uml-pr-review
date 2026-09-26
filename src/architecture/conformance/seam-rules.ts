@@ -5,21 +5,28 @@ import * as feedback from "./feedback.ts";
 
 const importsReportedPerRemovedSeam = 20;
 
-export function seamFindings(change: Change, alreadyReported: DraftFinding[]): DraftFinding[] {
-  const reported = new Set(alreadyReported.map(({ file, target }) => `${file}\n${target}`));
+export function seamFindings(change: Change, importFindings: DraftFinding[]): DraftFinding[] {
   return change.plan.seams.flatMap((seam) => {
-    if (seam.action === "remove") return seamNotRemoved(change, seam, reported);
+    if (seam.action === "remove") return seamNotRemoved(change, seam, againstRemovedImports(importFindings, seam));
     return hasPlannedImport(change, seam) ? [] : [missingSeam(change, seam)];
   });
 }
 
 export function productionImportsAlong(change: Change, seam: Seam): FileImport[] {
-  return change.importsAlong(seam).filter(({ test }) => !test);
+  return change.seamImports(seam).filter(({ test }) => !test);
+}
+
+function againstRemovedImports(importFindings: DraftFinding[], seam: Seam): Set<string> {
+  return new Set(
+    importFindings
+      .filter(({ rule, subject }) => rule === "against-removed-seam" && subject.kind === "seam" && subject.from === seam.from && subject.to === seam.to)
+      .map(({ file, target }) => `${file}\n${target}`),
+  );
 }
 
 function seamNotRemoved(change: Change, seam: Seam, reported: Set<string>): DraftFinding[] {
   return change
-    .importsAlong(seam)
+    .seamImports(seam)
     .filter(({ file, target }) => !reported.has(`${file}\n${target}`))
     .slice(0, importsReportedPerRemovedSeam)
     .map((imported) =>

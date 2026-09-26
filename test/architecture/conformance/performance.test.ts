@@ -10,8 +10,11 @@ const filesPerLeaf = 6;
 const importCount = 170_000;
 const changedFileCount = 50;
 const addedImportsPerChangedFile = 4;
+const plannedElements = 20;
+const plannedActions = ["modify", "create", "remove"] as const;
+const seamActions = ["add", "keep", "remove"] as const;
 
-test("a check of a PostHog-sized pair of payloads with 50 changed files stays under 100 ms", () => {
+test("a check of a PostHog-sized pair of payloads with 50 changed files and 20 planned modules and seams stays under 100 ms", () => {
   const files = syntheticFiles();
   const random = seededRandom(42);
   const basePairs = randomPairs(files.length, importCount, random);
@@ -24,16 +27,13 @@ test("a check of a PostHog-sized pair of payloads with 50 changed files stays un
   const head = new ArchitectureModel(payloadOf(files, headPairs));
   const changes: ChangedFile[] = changedFiles.map((file) => ({ path: files[file]![0], status: "modified", firstChangedLine: 1 }));
   const plan = planOf({
-    modules: [
-      { path: "m0", action: "modify" },
-      { path: "m1", action: "modify" },
-      { path: "m2/m3", action: "remove" },
-    ],
-    seams: [
-      { from: "m0", to: "m4/m1", action: "add", interface: { files: ["m4/m1/m0/f0.py"], symbols: ["api"] } },
-      { from: "m1", to: "m5", action: "keep" },
-      { from: "m0/m2", to: "m6/m3", action: "remove" },
-    ],
+    modules: Array.from({ length: plannedElements }, (_, index) => ({ path: `m${index % topLevel}/m${index}`, action: plannedActions[index % 3]! })),
+    seams: Array.from({ length: plannedElements }, (_, index) => ({
+      from: `m${index % topLevel}/m${index}`,
+      to: `m${(index + 5) % topLevel}/m${index}`,
+      action: seamActions[index % 3]!,
+      interface: { files: [`m${(index + 5) % topLevel}/m${index}/m0/f0.py`], symbols: ["api"] },
+    })),
   });
 
   const median = medianMilliseconds(() => checkConformance({ plan, base, head, changes, phase: "final" }));

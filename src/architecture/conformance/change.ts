@@ -1,32 +1,32 @@
 import type { ArchitecturePayload, ArchitecturePlan, ChangedFile, PlannedModule, Seam } from "../contracts/index.ts";
 import type { ArchitectureModel } from "../model/index.ts";
 import { compare, depthOf, isWithin } from "./paths.ts";
+import { mostSpecificMatch } from "./seams.ts";
+import { fileIndexOf, filesWithin, holds, importsFrom, type Range } from "./sorted-payload.ts";
 
 export type Location = { file: string; line: number };
 export type FileImport = { file: string; line: number; target: string; names: string[]; test: boolean };
 export type UnresolvedImport = { file: string; line: number; specifier: string };
 
+type ImportTuple = ArchitecturePayload["imports"][number];
+
 export class Change {
   readonly plan: ArchitecturePlan;
   readonly head: ArchitectureModel;
+  readonly base: ArchitectureModel;
   readonly changes: ChangedFile[];
-  readonly #base: ArchitectureModel;
   readonly #ownersDeepestFirst: PlannedModule[];
-  readonly #changedPaths: Set<string>;
-  readonly #headRoles: Map<string, boolean>;
-  readonly #baseRoles: Map<string, boolean>;
-  readonly #importsAlong = new Map<string, FileImport[]>();
+  readonly #presentPaths: string[];
+  readonly #seamImports = new Map<Seam, FileImport[]>();
   readonly #baseTargetsOf = new Map<string, string[]>();
 
   constructor({ plan, base, head, changes }: { plan: ArchitecturePlan; base: ArchitectureModel; head: ArchitectureModel; changes: ChangedFile[] }) {
     this.plan = plan;
     this.head = head;
-    this.#base = base;
+    this.base = base;
     this.changes = [...changes].sort((a, b) => compare(a.path, b.path));
     this.#ownersDeepestFirst = [...plan.modules].sort((a, b) => depthOf(b.path) - depthOf(a.path));
-    this.#changedPaths = new Set(changes.filter(({ status }) => status !== "deleted").map(({ path }) => path));
-    this.#headRoles = testRolesOf(head.payload);
-    this.#baseRoles = testRolesOf(base.payload);
+    this.#presentPaths = this.changes.filter(({ status }) => status !== "deleted").map(({ path }) => path);
   }
 
   owner(file: string): PlannedModule | undefined {
@@ -34,39 +34,42 @@ export class Change {
   }
 
   leaf(file: string): string | undefined {
-    return (this.head.moduleOfFile(file) ?? this.#base.moduleOfFile(file))?.path;
+    return (this.head.moduleOfFile(file) ?? this.base.moduleOfFile(file))?.path;
   }
 
   isTest(file: string): boolean {
-    return this.#headRoles.get(file) ?? this.#baseRoles.get(file) ?? false;
+    return roleOf(this.head.payload, file) ?? roleOf(this.base.payload, file) ?? false;
   }
 
   headFilesWithin(path: string): string[] {
-    return this.head.payload.files.flatMap(([file]) => (isWithin(file, path) ? [file] : []));
+    const { start, end } = filesWithin(this.head.payload, path);
+    return this.head.payload.files.slice(start, end).map(([file]) => file);
   }
 
   addedImports(): FileImport[] {
-    const basePairs = new Set(importsFrom(this.#base.payload, this.#changedPaths).map(({ file, target }) => pairKey(file, target)));
-    return importsFrom(this.head.payload, this.#changedPaths).filter(({ file, target }) => !basePairs.has(pairKey(file, target)));
+    return this.#presentPaths.flatMap((path) => {
+      const atBase = new Set(importsOfFile(this.base.payload, path).map((imported) => imported.target));
+      return importsOfFile(this.head.payload, path).filter(({ target }) => !atBase.has(target));
+    });
   }
 
   addedUnresolvedImports(): UnresolvedImport[] {
-    const baseEntries = new Set(unresolvedFrom(this.#base.payload, this.#changedPaths).map(({ file, specifier }) => pairKey(file, specifier)));
-    return unresolvedFrom(this.head.payload, this.#changedPaths).filter(({ file, specifier }) => !baseEntries.has(pairKey(file, specifier)));
+    const present = new Set(this.#presentPaths);
+    const atBase = new Set(unresolvedIn(this.base.payload, present).map(({ file, specifier }) => `${file}\n${specifier}`));
+    return unresolvedIn(this.head.payload, present).filter(({ file, specifier }) => !atBase.has(`${file}\n${specifier}`));
   }
 
-  importsAlong({ from, to }: Pick<Seam, "from" | "to">): FileImport[] {
-    const key = pairKey(from, to);
-    const cached = this.#importsAlong.get(key);
+  seamImports(seam: Seam): FileImport[] {
+    const cached = this.#seamImports.get(seam);
     if (cached) return cached;
-    const { files, imports } = this.head.payload;
-    const sources = files.map(([file]) => isWithin(file, from));
-    const targets = files.map(([file]) => isWithin(file, to));
-    const along = imports
-      .filter(([source, target]) => sources[source] && targets[target])
-      .map((tuple) => fileImportOf(this.head.payload, tuple))
+    const { payload } = this.head;
+    const targets = filesWithin(payload, seam.to);
+    const along = tuplesFrom(payload, filesWithin(payload, seam.from))
+      .filter(([, target]) => holds(targets, target))
+      .map((tuple) => fileImportOf(payload, tuple))
+      .filter((imported) => mostSpecificMatch(this.plan.seams, imported) === seam)
       .sort((a, b) => compare(a.file, b.file) || a.line - b.line || compare(a.target, b.target));
-    this.#importsAlong.set(key, along);
+    this.#seamImports.set(seam, along);
     return along;
   }
 
@@ -79,13 +82,15 @@ export class Change {
     return child;
   }
 
-  baseDependsOn(owner: string, farEnd: string): boolean {
-    return this.#baseTargetsLeaving(owner).some((target) => isWithin(target, farEnd));
+  baseDependsOn(owner: string, farEnd: string, { includeTests }: { includeTests: boolean }): boolean {
+    const targets = this.#baseTargetsLeaving(owner, includeTests);
+    if (!isWithin(owner, farEnd)) return targets.some((target) => isWithin(target, farEnd));
+    return targets.some((target) => this.base.moduleOfFile(target)?.path === farEnd);
   }
 
   anchorIn(path: string): Location {
     const file =
-      this.changes.find(({ path: changed, status }) => status !== "deleted" && isWithin(changed, path) && !this.isTest(changed))?.path ??
+      this.#presentPaths.find((changed) => isWithin(changed, path) && !this.isTest(changed)) ??
       this.headFilesWithin(path).find((candidate) => !this.isTest(candidate));
     return file ? { file, line: this.head.lastImportLine(file) + 1 } : this.placeholderFor(path);
   }
@@ -95,38 +100,44 @@ export class Change {
     return { file: interfaceFile ?? `${path}/`, line: 1 };
   }
 
-  #baseTargetsLeaving(owner: string): string[] {
-    const cached = this.#baseTargetsOf.get(owner);
+  #baseTargetsLeaving(owner: string, includeTests: boolean): string[] {
+    const key = `${owner}\n${includeTests}`;
+    const cached = this.#baseTargetsOf.get(key);
     if (cached) return cached;
-    const { files, imports } = this.#base.payload;
-    const inside = files.map(([file]) => isWithin(file, owner));
-    const targets = imports.flatMap(([source, target]) => (inside[source] && !inside[target] ? [files[target]![0]] : []));
-    this.#baseTargetsOf.set(owner, targets);
+    const { payload } = this.base;
+    const inside = filesWithin(payload, owner);
+    const targets = tuplesFrom(payload, inside)
+      .filter(([source, target]) => !holds(inside, target) && (includeTests || payload.files[source]![3] === "production"))
+      .map(([, target]) => payload.files[target]![0]);
+    this.#baseTargetsOf.set(key, targets);
     return targets;
   }
 }
 
-function importsFrom(payload: ArchitecturePayload, paths: Set<string>): FileImport[] {
-  const sources = payload.files.map(([file]) => paths.has(file));
-  return payload.imports.filter(([source]) => sources[source]).map((tuple) => fileImportOf(payload, tuple));
+function importsOfFile(payload: ArchitecturePayload, path: string): FileImport[] {
+  const index = fileIndexOf(payload, path);
+  if (index === undefined) return [];
+  return tuplesFrom(payload, { start: index, end: index + 1 }).map((tuple) => fileImportOf(payload, tuple));
 }
 
-function unresolvedFrom(payload: ArchitecturePayload, paths: Set<string>): UnresolvedImport[] {
+function tuplesFrom(payload: ArchitecturePayload, sources: Range): ImportTuple[] {
+  const { start, end } = importsFrom(payload, sources);
+  return payload.imports.slice(start, end);
+}
+
+function unresolvedIn(payload: ArchitecturePayload, paths: Set<string>): UnresolvedImport[] {
   return payload.unresolved.flatMap(([source, line, specifier]) => {
     const file = payload.files[source]![0];
     return paths.has(file) ? [{ file, line, specifier }] : [];
   });
 }
 
-function fileImportOf({ files }: ArchitecturePayload, [source, target, , line, names]: ArchitecturePayload["imports"][number]): FileImport {
+function fileImportOf({ files }: ArchitecturePayload, [source, target, , line, names]: ImportTuple): FileImport {
   const [file, , , role] = files[source]!;
   return { file, line, target: files[target]![0], names, test: role === "test" };
 }
 
-function testRolesOf({ files }: ArchitecturePayload): Map<string, boolean> {
-  return new Map(files.map(([file, , , role]) => [file, role === "test"]));
-}
-
-function pairKey(a: string, b: string): string {
-  return `${a}\n${b}`;
+function roleOf(payload: ArchitecturePayload, file: string): boolean | undefined {
+  const index = fileIndexOf(payload, file);
+  return index === undefined ? undefined : payload.files[index]![3] === "test";
 }

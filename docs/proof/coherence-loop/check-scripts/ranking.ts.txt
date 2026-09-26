@@ -1,0 +1,14 @@
+const sense = await Bun.file(process.argv[2]!).json();
+const lines = [
+  `Target ranking the proof run sensed: ${sense.scope} at ${sense.base.ref} ${sense.base.commit.slice(0, 12)} (sense ${sense.id})`,
+  `Signals available: ${sense.report.available.join(", ")}`,
+  `Unavailable: ${sense.report.unavailable.map(({ signal }: { signal: string }) => signal).join(", ")} (project 2 not reachable: 404)`,
+  `Active pull requests: ${sense.report.openPullRequests.active} in ${sense.report.openPullRequests.repository}, updated within ${sense.report.openPullRequests.activeDays} days; modules skipped because every file is busy: ${sense.report.skipped.length}`,
+  `Open inbox questions: ${sense.questions.filter((q: { state: string }) => q.state === "open").map((q: { number: number; module: string }) => `#${q.number} (${q.module})`).join(", ")}`,
+  "",
+  "rank  score  module  -> step (class)  busy files",
+];
+for (const target of sense.report.targets) {
+  lines.push(`${String(target.rank).padStart(3)}  ${(100 * target.score).toFixed(2).padStart(6)}  ${target.module}  -> ${target.recommendation.step} (${target.recommendation.verification})  ${target.busyFiles.length}`);
+}
+console.log(lines.join("\n"));

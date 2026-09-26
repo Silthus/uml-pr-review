@@ -1,0 +1,14 @@
+{
+  "seconds": 2,
+  "runs": [
+    {
+      "runner": "pytest",
+      "files": [
+        "products/workflows/backend/test/test_github_trigger_filters.py"
+      ],
+      "status": "failed",
+      "reason": null,
+      "output": "Options\n  File \"/private/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-characterisation-tests/posthog/personhog_client/proto/__init__.py\", line 5, in <module>\n    from personhog.types.v1.common_pb2 import (\n    ...<5 lines>...\n    )\n  File \"/private/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-characterisation-tests/packages/personhog-proto/personhog/types/v1/common_pb2.py\", line 15, in <module>\n    _runtime_version.ValidateProtobufRuntimeVersion(\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        _runtime_version.Domain.PUBLIC, 6, 31, 1, \"\", \"personhog/types/v1/common.proto\"\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/Users/mreichenbach/dev/posthog/.flox/cache/venv/lib/python3.13/site-packages/google/protobuf/runtime_version.py\", line 100, in ValidateProtobufRuntimeVersion\n    _ReportVersionError(\n    ~~~~~~~~~~~~~~~~~~~^\n        'Detected incompatible Protobuf Gencode/Runtime versions when loading'\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        f' {location}: gencode {gen_version} runtime {version}. Runtime version'\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        f' cannot be older than the linked gencode version. {error_prompt}'\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/Users/mreichenbach/dev/posthog/.flox/cache/venv/lib/python3.13/site-packages/google/protobuf/runtime_version.py\", line 50, in _ReportVersionError\n    raise VersionError(msg)\ngoogle.protobuf.runtime_version.VersionError: Detected incompatible Protobuf Gencode/Runtime versions when loading personhog/types/v1/common.proto: gencode 6.31.1 runtime 5.29.6. Runtime version cannot be older than the linked gencode version. See Protobuf version guarantees at https://protobuf.dev/support/cross-version-runtime-guarantee."
+    }
+  ]
+}

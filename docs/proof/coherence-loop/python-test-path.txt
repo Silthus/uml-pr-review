@@ -1,0 +1,37 @@
+# The runner's pytest path, exercised by hand on the dry-run workspace
+
+The iteration changed only a frontend file, so its verify ran jest and no pytest.
+To exercise the Python path anyway, runTests from coherence/loop/test-runs.ts was
+called directly on the same workspace (PostHog upstream/master 57ca357) with one
+workflows Python test:
+
+$ bun /tmp/wf73/pytest-path.ts products/workflows/backend/test/test_github_trigger_filters.py
+  (the script is check-scripts/python-test-path.ts.txt: runTests(<workspace>, ~/dev/posthog, [that test]); the full JSON is python-test-path.json)
+  runner: pytest   status: failed   reason: null   seconds: 2
+
+The runner found pytest in ~/dev/posthog/.flox/cache/venv/bin and ran it. The
+local dev services were up (Postgres 5432, ClickHouse 8123/9000, Redis 6379,
+Kafka 9092 via OrbStack). No test ran: pytest crashed while loading PostHog's
+conftest, before collection.
+
+$ cd <workspace> && ~/dev/posthog/.flox/cache/venv/bin/pytest -q -p no:cacheprovider products/workflows/backend/test/test_github_trigger_filters.py
+exit 1
+google.protobuf.runtime_version.VersionError: Detected incompatible Protobuf Gencode/Runtime versions when loading personhog/types/v1/common.proto: gencode 6.31.1 runtime 5.29.6. Runtime version cannot be older than the linked gencode version.
+
+Why: the runner borrows the main checkout's flox venv, and that venv follows the
+main checkout, not the freshly fetched base.
+
+$ ~/dev/posthog/.flox/cache/venv/bin/python -c 'import google.protobuf as p; print(p.__version__)'
+5.29.6
+$ grep '"protobuf' ~/dev/posthog/pyproject.toml            # main checkout (Sep 20)
+102:    "protobuf~=5.29.6",
+$ grep '"protobuf' <workspace>/pyproject.toml              # fresh base 57ca357 (Sep 26)
+105:    "protobuf~=6.31.1",
+
+Two findings:
+1. Python tests can run locally in principle: pytest, the venv, and the services exist.
+   They need a venv synced to the base the loop works on.
+2. The runner reports this as "failed", not "not run". pytest exits 1 on a crash
+   before collection, the same code as a real test failure, and the output has no
+   connection-shaped line. A Python iteration on a fresh base would fail verify
+   although no test ran. Recorded as a defect on the map.

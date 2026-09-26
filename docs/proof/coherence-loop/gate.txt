@@ -1,0 +1,11 @@
+Gate on the final tree (docs/coherence-loop-proof, based on origin/main 48d0be4), 2026-09-26
+
+$ bun test
+ 451 pass
+ 0 fail
+ 1110 expect() calls
+Ran 451 tests across 47 files. [32.11s]
+
+$ bun run typecheck
+$ tsc --noEmit
+(clean, exit 0)

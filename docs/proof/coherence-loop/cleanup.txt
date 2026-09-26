@@ -1,0 +1,19 @@
+Cleanup after the proof run and the README check (2026-09-26, about 21:50 UTC)
+
+$ git -C ~/dev/posthog worktree remove --force $TMPDIR/coherence-workflows-frontend-workflows-characterisation-tests
+$ ls -d $TMPDIR/coherence-workflows-frontend-workflows-characterisation-tests
+ls: ...: No such file or directory   (nothing left, so no chmod -R u+w / rm -rf was needed; flox was never activated, so there is no Go cache)
+$ git -C ~/dev/posthog worktree prune
+$ git -C ~/dev/posthog branch -D coherence/workflows/frontend-workflows-characterisation-tests
+Deleted branch coherence/workflows/frontend-workflows-characterisation-tests (was 8eb2dda92c3).
+
+PostHog worktrees named coherence-* afterwards: 0
+PostHog branches under coherence/ afterwards: 0
+
+What stays changed in ~/dev/posthog, by design: refs/remotes/upstream/master now points at 57ca357 (the fetch).
+
+In this repository, the README check's backfill and report build rewrote coherence/data/backfill.json and
+docs/coherence/index-report.{html,md} and added three coherence/data/products/** files. They were restored and
+removed with git restore and rm; refreshing the committed report is outside this change.
+
+The fakes and helper scripts lived in /tmp/wf73 and are not part of the repository.

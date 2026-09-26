@@ -1,0 +1,6 @@
+#!/bin/zsh
+if [[ " $* " == *" push "* ]]; then
+  print -r -- "fake git push, nothing pushed: git ${(q-)@}" >> /tmp/wf73/fake-gh.log
+  exit 0
+fi
+exec /usr/bin/git "$@"

@@ -1,0 +1,49 @@
+Target ranking the proof run sensed: products/workflows at upstream/master 57ca35773084 (sense 2026-09-26T21:32:41.408Z)
+Signals available: complexity, review findings, open pull requests, ci.test_failures, ci.test_retries
+Unavailable: errors.occurrences, apm.error_rate, logs.warn_error_lines, apm.requests, usage.pageviews (project 2 not reachable: 404)
+Active pull requests: 2035 in PostHog/posthog, updated within 14 days; modules skipped because every file is busy: 7
+Open inbox questions: #83 (products/workflows/backend/services), #82 (products/workflows/backend/api)
+
+rank  score  module  -> step (class)  busy files
+  1   72.45  products/workflows/backend/api  -> facade (boundary)  5
+  2   58.06  products/workflows/backend/services  -> facade (boundary)  5
+  3   53.78  products/workflows/frontend/Workflows/hogflows/steps  -> characterisation-tests (mechanical)  7
+  4   44.48  products/workflows/frontend/Workflows  -> characterisation-tests (mechanical)  20
+  5   41.65  products/workflows/frontend/Workflows/hogflows  -> characterisation-tests (mechanical)  4
+  6   40.79  products/workflows/backend/models/hog_flow  -> facade (boundary)  1
+  7   35.78  products/workflows/frontend/Workflows/hogflows/steps/components  -> characterisation-tests (mechanical)  5
+  8   35.19  products/workflows/backend/models  -> facade (boundary)  1
+  9   31.99  products/workflows/backend/management/commands  -> characterisation-tests (mechanical)  1
+ 10   24.90  products/workflows/frontend/Workflows/hogflows/filters  -> ratchet-rule (mechanical)  1
+ 11   23.58  products/workflows/backend/utils  -> facade (boundary)  0
+ 12   23.17  products/workflows/backend/providers  -> facade (boundary)  2
+ 13   22.16  products/workflows/frontend/Workflows/hogflows/panel/testing  -> ratchet-rule (mechanical)  3
+ 14   21.89  products/workflows/frontend/Workflows/hogflows/registry/triggers  -> ratchet-rule (mechanical)  3
+ 15   16.50  products/workflows/backend/tasks  -> facade (boundary)  0
+ 16   16.42  products/workflows/frontend/Broadcasts  -> characterisation-tests (mechanical)  5
+ 17   14.08  products/workflows/frontend/Workflows/hogflows/panel  -> characterisation-tests (mechanical)  1
+ 18   10.02  products/workflows/frontend/Channels  -> characterisation-tests (mechanical)  0
+ 19    9.21  products/workflows/frontend/OptOuts  -> characterisation-tests (mechanical)  0
+ 20    8.97  products/workflows/backend  -> characterisation-tests (mechanical)  2
+ 21    8.62  products/workflows/frontend/Workflows/hogflows/tree  -> characterisation-tests (mechanical)  3
+ 22    8.44  products/workflows/frontend/Workflows/templates  -> characterisation-tests (mechanical)  0
+ 23    5.70  products/workflows/backend/facade  -> characterisation-tests (mechanical)  1
+ 24    2.84  products/workflows/frontend/Workflows/hogflows/registry/actions  -> ratchet-rule (mechanical)  1
+ 25    2.48  products/workflows/frontend/Workflows/hogflows/react_flow_utils  -> characterisation-tests (mechanical)  2
+ 26    1.16  products/workflows/mcp/apps  -> characterisation-tests (mechanical)  0
+ 27    0.67  products/workflows/frontend/Broadcasts/steps  -> characterisation-tests (mechanical)  0
+ 28    0.00  products/workflows/backend/models/hog_flow_schedule  -> ratchet-rule (mechanical)  0
+ 29    0.00  products/workflows/frontend/Workflows/hogflows/registry  -> characterisation-tests (mechanical)  0
+ 30    0.00  products/workflows/backend/admin  -> characterisation-tests (mechanical)  1
+ 31    0.00  products/workflows/frontend  -> characterisation-tests (mechanical)  3
+ 32    0.00  products/workflows/frontend/Channels/APNSSetup  -> characterisation-tests (mechanical)  0
+ 33    0.00  products/workflows/frontend/Channels/FCMSetup  -> characterisation-tests (mechanical)  0
+ 34    0.00  products/workflows/frontend/Channels/SlackSetup  -> characterisation-tests (mechanical)  0
+ 35    0.00  products/workflows/frontend/Channels/TwilioSetup  -> characterisation-tests (mechanical)  0
+ 36    0.00  products/workflows/frontend/Suppression  -> characterisation-tests (mechanical)  0
+ 37    0.00  products/workflows/frontend/TemplateLibrary  -> characterisation-tests (mechanical)  4
+ 38    0.00  products/workflows/frontend/Workflows/hogflows/editor  -> characterisation-tests (mechanical)  0
+ 39    0.00  products/workflows/frontend/Workflows/logs  -> ratchet-rule (mechanical)  0
+ 40    0.00  products/workflows/frontend/emptyState  -> characterisation-tests (mechanical)  0
+ 41    0.00  products/workflows/frontend/onboarding  -> characterisation-tests (mechanical)  0
+ 42    0.00  products/workflows/frontend/scenes/settings  -> characterisation-tests (mechanical)  0

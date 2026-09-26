@@ -1,0 +1,9 @@
+import { runTests } from "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/loop/test-runs.ts";
+
+const workspace = "/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-characterisation-tests";
+const mainCheckout = "/Users/mreichenbach/dev/posthog";
+const tests = process.argv.slice(2);
+
+const started = Date.now();
+const runs = await runTests(workspace, mainCheckout, tests);
+console.log(JSON.stringify({ seconds: Math.round((Date.now() - started) / 1000), runs }, null, 2));

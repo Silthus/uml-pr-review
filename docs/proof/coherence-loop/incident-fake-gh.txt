@@ -1,0 +1,111 @@
+# INCIDENT: the first README check reached GitHub, because the fake gh was not executable.
+#
+# What happened, at 2026-09-26T21:43:35Z to 21:43:44Z:
+# - /tmp/wf73/fakebin/gh had mode 644 after a rewrite, so PATH lookup skipped it and found the real gh.
+#   The fake git (mode 755) worked, so no branch was pushed anywhere.
+# - propose --draft ran the real `gh pr create --draft --repo PostHog/posthog ...`. GitHub refused it
+#   ("Head ref must be a branch", "No commits between ..."), because the branch had never been pushed. No pull request exists.
+# - inbox resolve ran the real gh: it commented "<option and detail>" on #82 and closed it, and closed #83 as not planned.
+#
+# Restored at about 21:45Z, before anything read the inbox:
+# - deleted the comment on #82 (gh api --method DELETE repos/Silthus/uml-pr-review/issues/comments/5850147603);
+# - reopened #82 and #83. Both are open with 0 comments, and `bun coherence/inbox.ts list` shows both "open" with no answer.
+#   Their timelines keep the closed/reopened events.
+# - `gh api repos/Silthus/posthog/branches/coherence%2Fworkflows%2Ffrontend-workflows-characterisation-tests` answers 404.
+# - `gh pr list --repo PostHog/posthog --author @me --search "head:coherence/workflows" --state all` is empty.
+#
+# The fix for the check: chmod 755 on the fake, and check.sh now refuses to run a FAKE command unless
+# `command -v gh` and `command -v git` resolve to /tmp/wf73/fakebin. readme-check.txt is the clean rerun.
+#
+# The log of the failed check, as it was written:
+
+## 7. Open your first draft pull request
+# The exception: this command would push to Silthus/posthog and open a draft on PostHog/posthog, which is Michael's call.
+# It ran exactly as written, but with fakes first on PATH: a git that logs "push" and forwards everything else to /usr/bin/git, and a gh that logs its arguments and prints a placeholder URL.
+
+$ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md --draft
+# run at 2026-09-26T21:43:35Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
+{
+  "error": "gh pr create --draft --repo PostHog/posthog --base master --head Silthus:coherence/workflows/frontend-workflows-characterisation-tests --title test(workflows): pin EmailLinksTable rendering of truncated, duplicate, and counted links --body-file /Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md failed (1): pull request create failed: GraphQL: Head sha can't be blank, Base sha can't be blank, No commits between PostHog:master and Silthus:coherence/workflows/frontend-workflows-characterisation-tests, Head ref must be a branch (createPullRequest)"
+}
+# what the fakes received:
+fake git push, nothing pushed: git push --set-upstream origin HEAD:refs/heads/coherence/workflows/frontend-workflows-characterisation-tests
+# exit 1 in 2 s
+
+$ jq .proposal $iteration/iteration.json
+# run at 2026-09-26T21:43:37Z from the uml-pr-review root
+{
+  "mode": "dry-run",
+  "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
+  "pullRequest": null
+}
+# exit 0 in 0 s
+
+$ gh pr list --repo PostHog/posthog --author @me --draft
+# run at 2026-09-26T21:43:37Z from the uml-pr-review root
+106759	feat(workflows): add a pill search bar to the workflows list	Silthus:workflows-list-v2/search-bar	DRAFT	2026-09-25T14:10:12Z
+106561	feat(workflows): add slim summary list for workflows and email templates	Silthus:workflows-list-v2/slim-list	DRAFT	2026-09-25T11:09:41Z
+106553	fix(workflows): keep the library template link when inserting a template	Silthus:workflows/keep-email-template-link	DRAFT	2026-09-25T10:55:17Z
+106508	feat(workflows): turn the reputation tab into an action list	Silthus:feat/workflows-reputation-action-inbox	DRAFT	2026-09-25T09:41:48Z
+105499	feat(os-shell): an operating-system shell behind the os-shell flag	Silthus:feat/os-shell	DRAFT	2026-09-23T20:19:15Z
+104164	ci(workflows): check and push the repository's own workflows	Silthus:feat/workflows-ci-job	DRAFT	2026-09-22T04:13:53Z
+104157	feat(workflows): add the repository's own workflows folder	Silthus:feat/workflows-example-workflow	DRAFT	2026-09-22T03:44:27Z
+103689	feat(posthog-ai): offer clickable follow-up actions under the answer	Silthus:feat/posthog-ai-chat-actions	DRAFT	2026-09-21T12:00:09Z
+# exit 0 in 1 s
+# Restore the dry-run state (pr.md footer and iteration.json) with the re-render command from step 6:
+
+$ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
+# run at 2026-09-26T21:43:38Z from the uml-pr-review root
+{
+  "mode": "dry-run",
+  "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
+  "branch": "coherence/workflows/frontend-workflows-characterisation-tests",
+  "workspace": "/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-characterisation-tests",
+  "pullRequest": null
+}
+# exit 0 in 0 s
+
+## 8. Answer inbox questions
+
+$ bun coherence/inbox.ts list
+# run at 2026-09-26T21:43:38Z from the uml-pr-review root
+[
+  {
+    "number": 83,
+    "url": "https://github.com/Silthus/uml-pr-review/issues/83",
+    "title": "Coherence: facade for products/workflows/backend/services?",
+    "scope": "products/workflows",
+    "module": "products/workflows/backend/services",
+    "step": "facade",
+    "state": "open",
+    "answer": null
+  },
+  {
+    "number": 82,
+    "url": "https://github.com/Silthus/uml-pr-review/issues/82",
+    "title": "Coherence: facade for products/workflows/backend/api?",
+    "scope": "products/workflows",
+    "module": "products/workflows/backend/api",
+    "step": "facade",
+    "state": "open",
+    "answer": null
+  }
+]
+# exit 0 in 1 s
+# resolve answers Michael's questions, so it ran only against the fake gh, with stand-in values for <number> and the answer.
+
+$ bun coherence/inbox.ts resolve 82 --answer "<option and detail>"
+# run at 2026-09-26T21:43:39Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
+{
+  "resolved": 82
+}
+# what the fakes received:
+# exit 0 in 3 s
+
+$ bun coherence/inbox.ts resolve 83 --skip
+# run at 2026-09-26T21:43:42Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
+{
+  "skipped": 83
+}
+# what the fakes received:
+# exit 0 in 2 s

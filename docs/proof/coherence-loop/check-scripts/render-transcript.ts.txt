@@ -1,0 +1,26 @@
+const [path, limitArgument] = process.argv.slice(2);
+const limit = Number(limitArgument ?? 1200);
+const lines = (await Bun.file(path!).text()).split("\n").filter(Boolean).map((line) => JSON.parse(line));
+
+const clip = (text: string) => (text.length > limit ? `${text.slice(0, limit)}\n… (${text.length - limit} more characters)` : text);
+const textOf = (content: unknown): string =>
+  typeof content === "string" ? content : Array.isArray(content) ? content.map((part) => (part.type === "text" ? part.text : `[${part.type}]`)).join("") : JSON.stringify(content);
+
+const out: string[] = [];
+for (const event of lines) {
+  const stamp = event.timestamp ? event.timestamp.slice(11, 19) : "";
+  if (event.type === "system" && event.subtype === "init") out.push(`## init ${stamp}\nmodel=${event.model} mcp_servers=${JSON.stringify(event.mcp_servers)} permissionMode=${event.permissionMode} cwd=${event.cwd}\n`);
+  if (event.type === "assistant") {
+    for (const part of event.message.content ?? []) {
+      if (part.type === "text" && part.text.trim()) out.push(`### agent ${stamp}\n${clip(part.text.trim())}\n`);
+      if (part.type === "tool_use") out.push(`### ${part.name} ${stamp}\n\`\`\`\n${clip(part.input.command ?? part.input.file_path ?? JSON.stringify(part.input))}\n\`\`\`\n`);
+    }
+  }
+  if (event.type === "user") {
+    for (const part of event.message.content ?? []) {
+      if (part.type === "tool_result") out.push(`result${part.is_error ? " (error)" : ""}:\n\`\`\`\n${clip(textOf(part.content).trim())}\n\`\`\`\n`);
+    }
+  }
+  if (event.type === "result") out.push(`## result ${stamp}\nturns=${event.num_turns} duration_ms=${event.duration_ms} cost_usd=${event.total_cost_usd?.toFixed(2)} subtype=${event.subtype}\n\n${event.result}\n`);
+}
+console.log(out.join("\n"));

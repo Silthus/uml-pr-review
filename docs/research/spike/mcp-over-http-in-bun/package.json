@@ -1,0 +1,18 @@
+{
+  "name": "mcp-over-http-in-bun",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "spike": "bun run spike.ts",
+    "serve": "bun run serve.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "2.1.0",
+    "@modelcontextprotocol/server": "2.1.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.30.1",
+    "@types/bun": "latest"
+  }
+}

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ArchitecturePlan, CommentTarget, PlanOperation, SelectionTarget } from "../architecture/contracts/index.ts";
+import type { CommentTarget, PlanOperation, SelectionTarget } from "../architecture/contracts/index.ts";
 import { StalePlanError } from "./api.ts";
 import { ArchitectureCanvas } from "./canvas/architecture-canvas.tsx";
 import { CanvasActionsContext } from "./canvas/canvas-actions.ts";
-import { buildVisibleGraph, type VisibleGraph } from "./graph/visible-graph.ts";
+import { buildVisibleGraph } from "./graph/visible-graph.ts";
+import type { VisibleGraph } from "./graph/types.ts";
 import { Inspector } from "./inspector/inspector.tsx";
 import type { PlanActions } from "./inspector/plan-actions.ts";
 import { ActivityFeed } from "./shell/activity-feed.tsx";
@@ -16,17 +17,15 @@ import { useLiveEvents } from "./state/use-live-events.ts";
 import { useRepository } from "./state/use-repository.ts";
 import { useViewState } from "./state/use-view-state.ts";
 
-const emptyGraph: VisibleGraph = { nodes: [], edges: [] };
+const emptyGraph: VisibleGraph = { mode: "map", nodes: [], edges: [] };
 
-function planPaths(plan: ArchitecturePlan): string[] {
-  return [...plan.modules.map((module) => module.path), ...plan.seams.flatMap((seam) => [seam.from, seam.to])];
-}
+
 
 export function ExplorerApp() {
   const [url] = useState(readUrlState);
   const [theme, setTheme] = useState<Theme>(() => initialTheme(url.theme));
   const repository = useRepository(url.path, url.plan);
-  const view = useViewState(url.focus, url.expanded);
+  const view = useViewState(url.focus, url.expanded, url.lens ? "lens" : "map");
   const plan = repository.state?.plan ?? null;
   const conformance = repository.state?.conformance ?? null;
   const overlay = view.planVisible ? plan : null;
@@ -35,11 +34,12 @@ export function ExplorerApp() {
     applyPlan: (patched) => {
       if (repository.planId && patched.id !== repository.planId) return;
       repository.replacePlan(patched);
-      if (view.followAgent) view.resetFor(planPaths(patched));
+      if (view.followAgent && view.planVisible) view.focusAll();
     },
     applyConformance: (result) => {
       if (repository.planId && result.planId !== repository.planId) return;
       repository.replaceConformance(result);
+      if (view.followAgent && view.planVisible) view.focusAll();
     },
     focus: (target: SelectionTarget) => {
       if (!view.followAgent) return;
@@ -52,18 +52,26 @@ export function ExplorerApp() {
   });
 
   const graph = useMemo(
-    () => (repository.model ? buildVisibleGraph(repository.model, { expanded: view.expanded, showAll: view.showAll, selection: view.selection, includeTests: view.includeTests, plan: overlay, conformance: overlay ? conformance : null }) : emptyGraph),
-    [repository.model, view.expanded, view.showAll, view.selection, view.includeTests, overlay, conformance],
+    () => (repository.model ? buildVisibleGraph(repository.model, { mode: view.mode, expanded: view.expanded, showAll: view.showAll, selection: view.selection, includeTests: view.includeTests, allEdges: view.allEdges, plan: overlay, conformance: overlay ? conformance : null }) : emptyGraph),
+    [repository.model, view.mode, view.expanded, view.showAll, view.selection, view.includeTests, view.allEdges, overlay, conformance],
   );
   const layout = useLayout(graph);
 
   useEffect(() => {
-    if (plan) view.resetFor(planPaths(plan));
+    if (plan) view.focusAll();
   }, [plan?.id]);
 
   useEffect(() => {
-    writeUrlState({ path: repository.path, plan: repository.planId, selection: view.selection, expanded: view.expanded });
-  }, [repository.path, repository.planId, view.selection, view.expanded]);
+    writeUrlState({ path: repository.path, plan: repository.planId, selection: view.selection, expanded: view.expanded, lens: view.mode === "lens" });
+  }, [repository.path, repository.planId, view.selection, view.expanded, view.mode]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && view.mode === "lens") view.closeLens();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [view.mode, view.closeLens]);
 
   useEffect(() => {
     rememberTheme(theme);
@@ -108,7 +116,7 @@ export function ExplorerApp() {
         try {
           repository.replaceConformance(await repository.api.check(plan.id, final));
           view.setPlanVisible(true);
-          view.resetFor(planPaths(plan));
+          view.focusAll();
         } catch (caught) {
           live.note({ tone: "error", text: caught instanceof Error ? caught.message : String(caught) });
         }
@@ -118,8 +126,8 @@ export function ExplorerApp() {
   );
 
   const canvasActions = useMemo(
-    () => ({ selectModule: view.selectModule, selectSeam: view.selectSeam, toggleExpanded: view.toggleExpanded, showAllChildren: view.showAllChildren }),
-    [view.selectModule, view.selectSeam, view.toggleExpanded, view.showAllChildren],
+    () => ({ selectModule: view.selectModule, selectSeam: view.selectSeam, focusConnections: view.focusConnections, toggleExpanded: view.toggleExpanded, showAllChildren: view.showAllChildren }),
+    [view.selectModule, view.selectSeam, view.focusConnections, view.toggleExpanded, view.showAllChildren],
   );
 
   if (!repository.path) return <RepositoryPicker onOpen={(path) => repository.open(path, null)} />;
@@ -149,12 +157,12 @@ export function ExplorerApp() {
       <div className="workspace">
         <CanvasActionsContext.Provider value={canvasActions}>
           <div className="canvas-column">
-            <ArchitectureCanvas scene={layout.scene} fresh={live.fresh} focus={view.focus} pending={layout.pending} error={layout.error} loading={repository.loadState === "loading"} theme={theme} onClearSelection={view.clearSelection} />
+            <ArchitectureCanvas scene={layout.scene} fresh={live.fresh} focus={view.focus} pending={layout.pending} error={layout.error} loading={repository.loadState === "loading"} theme={theme} lensPath={view.mode === "lens" && view.selection?.kind === "module" ? view.selection.path : null} allEdges={view.allEdges} onAllEdges={view.setAllEdges} onCloseLens={view.closeLens} onClearSelection={view.clearSelection} />
             <ActivityFeed activity={live.activity} />
           </div>
         </CanvasActionsContext.Provider>
         {repository.model ? (
-          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} includeTests={view.includeTests} actions={actions} onSelectModule={view.selectModule} onSelectSeam={view.selectSeam} />
+          <Inspector model={repository.model} selection={view.selection} plan={overlay} conformance={overlay ? conformance : null} includeTests={view.includeTests} actions={actions} onSelectModule={view.selectModule} onSelectSeam={view.selectSeam} onFocusConnections={view.focusConnections} lensOpen={view.mode === "lens"} />
         ) : (
           <aside className="inspector" aria-label="Inspector"><section className="panel"><p className="muted">{repository.loadState === "loading" ? "Indexing the repository. A cold PostHog index takes a few seconds." : "Nothing loaded."}</p></section></aside>
         )}

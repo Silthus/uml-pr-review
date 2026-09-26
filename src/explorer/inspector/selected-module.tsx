@@ -9,7 +9,7 @@ import { ModulePath } from "./module-path.tsx";
 
 const farEndLimit = 12;
 
-export function SelectedModule({ module, model, plan, conformance, includeTests, actions, onSelect }: { module: ModuleView; model: ArchitectureModel; plan: ArchitecturePlan | null; conformance: ConformanceResult | null; includeTests: boolean; actions: PlanActions; onSelect(path: string): void }) {
+export function SelectedModule({ module, model, plan, conformance, includeTests, actions, onSelect, onFocusConnections, lensOpen }: { module: ModuleView; model: ArchitectureModel; plan: ArchitecturePlan | null; conformance: ConformanceResult | null; includeTests: boolean; actions: PlanActions; onSelect(path: string): void; onFocusConnections(path: string): void; lensOpen: boolean }) {
   const planned = plan?.modules.find((entry) => entry.path === module.path) ?? null;
   const status = conformance?.modules.find((entry) => entry.path === module.path)?.status ?? null;
   const comments = plan?.comments.filter((comment) => comment.target.kind === "module" && comment.target.path === module.path) ?? [];
@@ -27,6 +27,7 @@ export function SelectedModule({ module, model, plan, conformance, includeTests,
           {status ? <div><dt>Check</dt><dd className={`chip chip-status status-${status}`}>{status}</dd></div> : null}
         </dl>
         {planned ? <p className="responsibility">{planned.responsibility}</p> : null}
+        {lensOpen ? null : <div className="actions"><button type="button" className="primary" onClick={() => onFocusConnections(module.path)}>Focus connections</button></div>}
         {plan ? <ModulePlanActions module={module} planned={planned} plan={plan} actions={actions} /> : null}
       </section>
       <DependencyList title="Depends on" direction="out" subject={module.path} dependencies={model.dependencies(module.path, "out", { includeTests }).slice(0, farEndLimit)} model={model} includeTests={includeTests} onSelect={onSelect} />

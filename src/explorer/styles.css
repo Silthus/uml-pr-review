@@ -370,7 +370,7 @@ a:hover {
   position: absolute;
   top: 12px;
   left: 12px;
-  right: 400px;
+  right: 364px;
   z-index: 20;
   padding: 10px 14px;
   background: var(--red-soft);
@@ -382,7 +382,7 @@ a:hover {
 .workspace {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) 344px;
   min-height: 0;
 }
 
@@ -396,6 +396,8 @@ a:hover {
 .canvas {
   position: relative;
   min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .canvas .react-flow {
@@ -414,6 +416,50 @@ a:hover {
   padding: 4px 8px;
   border-radius: 6px;
   margin: 10px;
+}
+
+.canvas-mode {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 38px;
+  padding: 4px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.canvas-mode .mode-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.canvas-mode strong {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.canvas-mode kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 0 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.package-context {
+  padding: 5px 12px 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 15px;
+  color: var(--ink-3);
+  word-break: break-all;
 }
 
 .canvas-error {
@@ -526,18 +572,22 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 26px;
+  min-height: 26px;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 0 12px;
+  padding: 2px 12px;
   border: 1.5px solid var(--package-line);
   border-bottom: 0;
   border-radius: 6px 6px 0 0;
   background: var(--package-tab);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  white-space: nowrap;
+  line-height: 1.3;
+  text-align: left;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
   color: var(--ink);
   position: relative;
   top: 1.5px;
@@ -546,6 +596,11 @@ a:hover {
 
 .package.tone-selected .package-tab {
   color: var(--paper);
+}
+
+.package-label {
+  display: flex;
+  flex-direction: column;
 }
 
 .package-body {
@@ -685,9 +740,11 @@ a:hover {
   box-sizing: border-box;
 }
 
-.more-node button {
+.more-node button,
+.more-node .more-static {
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

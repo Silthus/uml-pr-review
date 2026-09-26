@@ -1,5 +1,6 @@
 import type { Edge, Node } from "@xyflow/react";
-import { isProminent, type DependencyEdgeData, type MoreNodeData, type PackageNodeData } from "../graph/visible-graph.ts";
+import { isProminent } from "../graph/nodes.ts";
+import type { DependencyEdgeData, MoreNodeData, PackageNodeData } from "../graph/types.ts";
 import type { Point } from "../layout/layout-engine.ts";
 import type { Scene } from "../state/use-layout.ts";
 

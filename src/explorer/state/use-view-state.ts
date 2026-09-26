@@ -1,55 +1,76 @@
 import { useCallback, useState } from "react";
 import { ancestorsOf } from "../graph/paths.ts";
-import type { Selection } from "../graph/visible-graph.ts";
+import type { Selection } from "../graph/types.ts";
 
-export type FocusRequest = { ids: string[]; version: number };
+export type FocusRequest = { ids: string[] | "all"; version: number };
+export type CanvasMode = "map" | "lens";
 
 export type ViewControls = {
+  mode: CanvasMode;
   selection: Selection | null;
   expanded: ReadonlySet<string>;
   showAll: ReadonlySet<string>;
   includeTests: boolean;
+  allEdges: boolean;
   planVisible: boolean;
   followAgent: boolean;
   focus: FocusRequest | null;
   selectModule(path: string): void;
   selectSeam(from: string, to: string): void;
   clearSelection(): void;
+  focusConnections(path: string): void;
+  closeLens(): void;
   toggleExpanded(path: string): void;
   showAllChildren(parent: string): void;
   setIncludeTests(value: boolean): void;
+  setAllEdges(value: boolean): void;
   setPlanVisible(value: boolean): void;
   setFollowAgent(value: boolean): void;
-  resetFor(paths: string[]): void;
+  focusAll(): void;
 };
 
-function initialFocusRequest(focus: string | null, expanded: string[]): FocusRequest | null {
-  const deepest = [...expanded].sort((a, b) => b.split("/").length - a.split("/").length)[0];
-  const target = focus ?? deepest;
-  return target ? { ids: [target], version: 1 } : null;
-}
-
-export function useViewState(initialFocus: string | null, initialExpanded: string[]): ViewControls {
+export function useViewState(initialFocus: string | null, initialExpanded: string[], initialMode: CanvasMode = "map"): ViewControls {
+  const [mode, setMode] = useState<CanvasMode>(initialFocus ? initialMode : "map");
   const [selection, setSelection] = useState<Selection | null>(initialFocus ? { kind: "module", path: initialFocus } : null);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set([...initialExpanded, ...(initialFocus ? ancestorsOf(initialFocus) : [])]));
   const [showAll, setShowAll] = useState<ReadonlySet<string>>(() => new Set());
   const [includeTests, setIncludeTests] = useState(false);
+  const [allEdges, setAllEdges] = useState(false);
   const [planVisible, setPlanVisible] = useState(true);
   const [followAgent, setFollowAgent] = useState(true);
   const [focus, setFocus] = useState<FocusRequest | null>(() => initialFocusRequest(initialFocus, initialExpanded));
 
-  const requestFocus = useCallback((ids: string[]) => setFocus((current) => ({ ids, version: (current?.version ?? 0) + 1 })), []);
+  const requestFocus = useCallback((ids: string[] | "all") => setFocus((current) => ({ ids, version: (current?.version ?? 0) + 1 })), []);
 
   const selectModule = useCallback((path: string) => {
     setSelection({ kind: "module", path });
     setExpanded((current) => new Set([...current, ...ancestorsOf(path)]));
-    requestFocus([path]);
+    setMode((current) => {
+      requestFocus(current === "lens" ? "all" : [path]);
+      return current;
+    });
   }, [requestFocus]);
 
   const selectSeam = useCallback((from: string, to: string) => {
     setSelection({ kind: "seam", from, to });
     setExpanded((current) => new Set([...current, ...ancestorsOf(from), ...ancestorsOf(to)]));
+    setMode("map");
     requestFocus([from, to]);
+  }, [requestFocus]);
+
+  const focusConnections = useCallback((path: string) => {
+    setSelection({ kind: "module", path });
+    setExpanded((current) => new Set([...current, ...ancestorsOf(path)]));
+    setMode("lens");
+    requestFocus("all");
+  }, [requestFocus]);
+
+  const closeLens = useCallback(() => {
+    setMode("map");
+    setSelection((current) => {
+      requestFocus(current?.kind === "module" ? [current.path] : "all");
+      return current;
+    });
   }, [requestFocus]);
 
   const toggleExpanded = useCallback((path: string) => {
@@ -67,27 +88,36 @@ export function useViewState(initialFocus: string | null, initialExpanded: strin
     requestFocus([parent]);
   }, [requestFocus]);
 
-  const resetFor = useCallback((paths: string[]) => {
-    setExpanded((current) => new Set([...current, ...paths.flatMap(ancestorsOf)]));
-    requestFocus(paths);
-  }, [requestFocus]);
-
   return {
+    mode,
     selection,
     expanded,
     showAll,
     includeTests,
+    allEdges,
     planVisible,
     followAgent,
     focus,
     selectModule,
     selectSeam,
     clearSelection: useCallback(() => setSelection(null), []),
+    focusConnections,
+    closeLens,
     toggleExpanded,
     showAllChildren,
     setIncludeTests,
-    setPlanVisible,
+    setAllEdges,
+    setPlanVisible: useCallback((value: boolean) => {
+      setPlanVisible(value);
+      requestFocus("all");
+    }, [requestFocus]),
     setFollowAgent,
-    resetFor,
+    focusAll: useCallback(() => requestFocus("all"), [requestFocus]),
   };
+}
+
+function initialFocusRequest(focus: string | null, expanded: string[]): FocusRequest | null {
+  const deepest = [...expanded].sort((a, b) => b.split("/").length - a.split("/").length)[0];
+  const target = focus ?? deepest;
+  return target ? { ids: [target], version: 1 } : null;
 }

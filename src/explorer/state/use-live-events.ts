@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ArchitectureEvent, ArchitecturePlan, ConformanceResult, SelectionTarget } from "../../architecture/contracts/index.ts";
 import type { EventStatus, ExplorerApi } from "../api.ts";
-import { edgeId } from "../graph/visible-graph.ts";
+import { edgeId } from "../graph/nodes.ts";
 
 export type Activity = { id: string; at: string; tone: "agent" | "human" | "system" | "error"; text: string };
 

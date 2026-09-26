@@ -1,6 +1,7 @@
 import ELK, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk-api.js";
 import elkWorkerUrl from "elkjs/lib/elk-worker.min.js" with { type: "file" };
-import type { GraphEdge, GraphNode, VisibleGraph } from "../graph/visible-graph.ts";
+import type { GraphEdge, GraphNode, VisibleGraph } from "../graph/types.ts";
+import { packGrid, type Placement } from "./grid.ts";
 
 export type Point = { x: number; y: number };
 export type LaidOutNode = { id: string; parentId: string | null; x: number; y: number; width: number; height: number };
@@ -10,7 +11,13 @@ export type LayoutEngine = { layout(graph: VisibleGraph): Promise<LayoutResult>;
 
 const containerPadding = "[top=64,left=20,bottom=20,right=20]";
 const edgeLabelHeight = 20;
-const denseEdgeCount = 48;
+const layerConstraints = { first: "FIRST", last: "LAST" } as const;
+const directions = { map: "DOWN", lens: "RIGHT", plan: "RIGHT" } as const;
+const spacing = {
+  map: { nodeNode: "20", betweenLayers: "44" },
+  lens: { nodeNode: "12", betweenLayers: "64" },
+  plan: { nodeNode: "16", betweenLayers: "44" },
+} as const;
 
 type ElkSession = { elk: InstanceType<typeof ELK>; failure: Promise<never> };
 
@@ -20,14 +27,18 @@ export function createLayoutEngine(): LayoutEngine {
     async layout(graph) {
       session ??= startElk();
       const started = performance.now();
-      const laidOut = await Promise.race([session.elk.layout(toElkGraph(graph)), session.failure]);
-      return { ...fromElkGraph(laidOut, graph), milliseconds: performance.now() - started };
+      const result = graph.mode === "map" ? await layoutMap(session, graph) : await layoutHierarchy(session, graph);
+      return { ...result, milliseconds: performance.now() - started };
     },
     dispose() {
       session?.elk.terminateWorker();
       session = null;
     },
   };
+}
+
+export function edgeLabelWidth(label: string): number {
+  return label.length * 7 + 14;
 }
 
 function startElk(): ElkSession {
@@ -47,34 +58,52 @@ function startElk(): ElkSession {
   return { elk, failure };
 }
 
-export function edgeLabelWidth(label: string): number {
-  return label.length * 7 + 14;
+async function layoutHierarchy(session: ElkSession, graph: VisibleGraph): Promise<Omit<LayoutResult, "milliseconds">> {
+  const laidOut = await Promise.race([session.elk.layout(toElkGraph(graph, elkChildren(graph.nodes, null))), session.failure]);
+  return fromElkGraph(laidOut, graph.nodes);
 }
 
-function toElkGraph(graph: VisibleGraph): ElkNode {
-  const dense = graph.edges.length > denseEdgeCount;
+async function layoutMap(session: ElkSession, graph: VisibleGraph): Promise<Omit<LayoutResult, "milliseconds">> {
+  const placements = new Map<string, Placement>();
+  const roots = graph.nodes.filter((node) => node.parentId === null).map((node): ElkNode => ({ id: node.id, ...measure(node, graph.nodes, placements) }));
+  const laidOut = await Promise.race([session.elk.layout(toElkGraph(graph, roots)), session.failure]);
+  const result = fromElkGraph(laidOut, graph.nodes.filter((node) => node.parentId === null));
+  const nested = graph.nodes.filter((node) => node.parentId !== null).map((node): LaidOutNode => ({ id: node.id, parentId: node.parentId, ...placements.get(node.id)! }));
+  return { nodes: [...result.nodes, ...nested], edges: result.edges };
+}
+
+function measure(node: GraphNode, nodes: GraphNode[], placements: Map<string, Placement>): { width: number; height: number } {
+  const children = nodes.filter((candidate) => candidate.parentId === node.id).sort((a, b) => Number(a.type === "more") - Number(b.type === "more"));
+  if (children.length === 0) return { width: node.width, height: node.height };
+  const packed = packGrid(children.map((child) => ({ id: child.id, ...measure(child, nodes, placements) })), { minWidth: node.width });
+  for (const [id, placement] of packed.placements) placements.set(id, placement);
+  return { width: packed.width, height: packed.height };
+}
+
+function toElkGraph(graph: VisibleGraph, children: ElkNode[]): ElkNode {
+  const dense = graph.edges.length > 48;
   return {
     id: "root",
     layoutOptions: {
       "elk.algorithm": "layered",
-      "elk.direction": "RIGHT",
-      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.direction": directions[graph.mode],
+      "elk.hierarchyHandling": graph.nodes.some((node) => node.parentId !== null) ? "INCLUDE_CHILDREN" : "SEPARATE_CHILDREN",
       "elk.edgeRouting": "ORTHOGONAL",
       "elk.edgeLabels.inline": "true",
-      "elk.spacing.nodeNode": "28",
+      "elk.spacing.nodeNode": spacing[graph.mode].nodeNode,
       "elk.spacing.edgeNode": dense ? "12" : "18",
       "elk.spacing.edgeEdge": dense ? "6" : "10",
       "elk.spacing.edgeLabel": "6",
-      "elk.spacing.componentComponent": "40",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "56",
+      "elk.spacing.componentComponent": "36",
+      "elk.layered.spacing.nodeNodeBetweenLayers": spacing[graph.mode].betweenLayers,
       "elk.layered.spacing.edgeNodeBetweenLayers": "24",
-      "elk.layered.compaction.postCompaction.strategy": "EDGE_LENGTH",
-      "elk.aspectRatio": "1.7",
       "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
       "elk.layered.crossingMinimization.thoroughness": "7",
+      "elk.layered.compaction.postCompaction.strategy": "EDGE_LENGTH",
+      "elk.aspectRatio": "1.6",
       "elk.padding": "[top=24,left=24,bottom=24,right=24]",
     },
-    children: elkChildren(graph.nodes, null),
+    children,
     edges: graph.edges.map(toElkEdge),
   };
 }
@@ -85,15 +114,12 @@ function elkChildren(nodes: GraphNode[], parentId: string | null): ElkNode[] {
 
 function toElkNode(node: GraphNode, nodes: GraphNode[]): ElkNode {
   const children = elkChildren(nodes, node.id);
-  if (children.length === 0) return { id: node.id, width: node.width, height: node.height };
+  const layer: Record<string, string> = node.layer ? { "elk.layered.layering.layerConstraint": layerConstraints[node.layer] } : {};
+  if (children.length === 0) return { id: node.id, width: node.width, height: node.height, layoutOptions: layer };
   return {
     id: node.id,
     children,
-    layoutOptions: {
-      "elk.padding": containerPadding,
-      "elk.nodeSize.constraints": "MINIMUM_SIZE",
-      "elk.nodeSize.minimum": `(${node.width}, ${node.height})`,
-    },
+    layoutOptions: { ...layer, "elk.padding": containerPadding, "elk.nodeSize.constraints": "MINIMUM_SIZE", "elk.nodeSize.minimum": `(${node.width}, ${node.height})` },
   };
 }
 
@@ -106,8 +132,8 @@ function toElkEdge(edge: GraphEdge): ElkExtendedEdge {
   };
 }
 
-function fromElkGraph(root: ElkNode, graph: VisibleGraph): Omit<LayoutResult, "milliseconds"> {
-  const nodes: LaidOutNode[] = [];
+function fromElkGraph(root: ElkNode, nodes: GraphNode[]): Omit<LayoutResult, "milliseconds"> {
+  const laidOut: LaidOutNode[] = [];
   const absolute = new Map<string, Point>([["root", { x: 0, y: 0 }]]);
   collectNodes(root, null, { x: 0, y: 0 });
   const edges = (root.edges ?? []).map((edge): LaidOutEdge => {
@@ -119,13 +145,13 @@ function fromElkGraph(root: ElkNode, graph: VisibleGraph): Omit<LayoutResult, "m
       labelAt: label && label.x !== undefined && label.y !== undefined ? shift({ x: label.x + (label.width ?? 0) / 2, y: label.y + (label.height ?? 0) / 2 }, offset) : null,
     };
   });
-  return { nodes: graph.nodes.map((node) => nodes.find((laidOut) => laidOut.id === node.id) ?? missing(node)), edges };
+  return { nodes: nodes.map((node) => laidOut.find((entry) => entry.id === node.id) ?? missing(node)), edges };
 
   function collectNodes(node: ElkNode, parentId: string | null, parentAbsolute: Point) {
     const position = { x: node.x ?? 0, y: node.y ?? 0 };
     const here = node.id === "root" ? parentAbsolute : shift(position, parentAbsolute);
     absolute.set(node.id, here);
-    if (node.id !== "root") nodes.push({ id: node.id, parentId, x: position.x, y: position.y, width: node.width ?? 0, height: node.height ?? 0 });
+    if (node.id !== "root") laidOut.push({ id: node.id, parentId, x: position.x, y: position.y, width: node.width ?? 0, height: node.height ?? 0 });
     for (const child of node.children ?? []) collectNodes(child, node.id === "root" ? null : node.id, here);
   }
 }

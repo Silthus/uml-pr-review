@@ -3,6 +3,7 @@ import type { PlanSummary } from "../../architecture/contracts/index.ts";
 import type { ArchitectureModel } from "../../architecture/model/index.ts";
 import type { EventStatus } from "../api.ts";
 import type { Theme } from "../state/theme.ts";
+import { Switch } from "./switch.tsx";
 
 export type HeaderProps = {
   path: string;
@@ -84,11 +85,4 @@ function Search({ model, onSearch }: { model: ArchitectureModel | null; onSearch
   );
 }
 
-export function Switch({ label, checked, onChange }: { label: string; checked: boolean; onChange(value: boolean): void }) {
-  return (
-    <button type="button" role="switch" aria-checked={checked} aria-label={label} className={`switch ${checked ? "on" : ""}`} onClick={() => onChange(!checked)}>
-      <span className="switch-knob" />
-      {label}
-    </button>
-  );
-}
+

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
+import { Switch } from "../shell/switch.tsx";
 import { Background, BackgroundVariant, Controls, MiniMap, Panel, ReactFlow, ReactFlowProvider, useReactFlow, type Node } from "@xyflow/react";
 import type { Scene } from "../state/use-layout.ts";
 import type { Theme } from "../state/theme.ts";
@@ -19,6 +20,10 @@ export type CanvasProps = {
   error: string | null;
   loading: boolean;
   theme: Theme;
+  lensPath: string | null;
+  allEdges: boolean;
+  onAllEdges(value: boolean): void;
+  onCloseLens(): void;
   onClearSelection(): void;
 };
 
@@ -30,12 +35,27 @@ export function ArchitectureCanvas(props: CanvasProps) {
   );
 }
 
-function Canvas({ scene, fresh, focus, pending, error, loading, theme, onClearSelection }: CanvasProps) {
+function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath, allEdges, onAllEdges, onCloseLens, onClearSelection }: CanvasProps) {
   const nodes = useMemo(() => (scene ? toFlowNodes(scene, fresh) : []), [scene, fresh]);
   const edges = useMemo(() => (scene ? toFlowEdges(scene, fresh) : []), [scene, fresh]);
   useFocus(scene, focus);
   return (
     <div className="canvas" aria-label="Architecture canvas" aria-busy={pending || loading}>
+      <div className="canvas-mode">
+        {lensPath ? (
+          <>
+            <span className="mode-label">Connections of <strong>{lensPath}</strong></span>
+            <button type="button" onClick={onCloseLens}>Back to map <kbd>Esc</kbd></button>
+          </>
+        ) : scene?.graph.mode === "plan" ? (
+          <span className="mode-label">Plan focus: planned modules, their seams, and their direct dependencies</span>
+        ) : (
+          <>
+            <span className="mode-label">{allEdges ? "All top-level dependencies" : "Backbone: each package's heaviest dependency"}</span>
+            <Switch label="All dependencies" checked={allEdges} onChange={onAllEdges} />
+          </>
+        )}
+      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -48,14 +68,14 @@ function Canvas({ scene, fresh, focus, pending, error, loading, theme, onClearSe
         elementsSelectable={false}
         panOnScroll
         zoomOnDoubleClick={false}
-        onPaneClick={onClearSelection}
+        onPaneClick={lensPath ? undefined : onClearSelection}
         proOptions={{ hideAttribution: true }}
       >
         <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} className="canvas-paper" />
         <Controls showInteractive={false} position="bottom-left" />
-        <MiniMap pannable zoomable position="bottom-right" nodeColor={(node) => minimapColor(node, theme)} nodeStrokeWidth={0} className="minimap" />
-        <Panel position="top-right" className="canvas-status">
-          {loading ? "Indexing repository…" : pending ? "Laying out…" : scene ? `${scene.graph.nodes.length} packages · ${scene.graph.edges.length} dependencies · layout ${Math.round(scene.layout.milliseconds)} ms` : ""}
+        {scene?.graph.mode === "map" ? <MiniMap pannable zoomable position="bottom-right" nodeColor={(node) => minimapColor(node, theme)} nodeStrokeWidth={0} className="minimap" /> : null}
+        <Panel position="bottom-center" className="canvas-status">
+          {loading ? "Indexing repository…" : pending ? "Laying out…" : scene ? `${scene.graph.nodes.length} packages · ${scene.graph.edges.length} dependencies drawn · layout ${Math.round(scene.layout.milliseconds)} ms` : ""}
         </Panel>
       </ReactFlow>
       {error ? (
@@ -75,17 +95,17 @@ function useFocus(scene: Scene | null, focus: FocusRequest | null) {
   useEffect(() => {
     if (!scene) return;
     if (focus && focus.version !== handled.current) {
-      const ids = withLensNodes(scene, focus.ids);
-      if (ids.length > 0) {
+      const ids = focus.ids === "all" ? "all" : withLensNodes(scene, focus.ids);
+      if (ids === "all" || ids.length > 0) {
         handled.current = focus.version;
         fittedInitially.current = true;
-        void fitView({ nodes: ids.map((id) => ({ id })), duration: 360, padding: 0.2, minZoom: 0.55, maxZoom: 1 });
+        void fitView({ nodes: ids === "all" ? undefined : ids.map((id) => ({ id })), duration: 360, padding: ids === "all" ? 0.04 : 0.08, maxZoom: 1.15 });
         return;
       }
     }
     if (!fittedInitially.current) {
       fittedInitially.current = true;
-      void fitView({ padding: 0.08, duration: 0 });
+      void fitView({ padding: 0.04, duration: 0, maxZoom: 1.15 });
     }
   }, [scene, focus, fitView]);
 }

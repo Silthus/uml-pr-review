@@ -1,6 +1,6 @@
 import type { FarDependency, ImportEvidence } from "../../architecture/contracts/index.ts";
 import type { ArchitectureModel } from "../../architecture/model/index.ts";
-import { compactNumber } from "../graph/visible-graph.ts";
+import { compactNumber } from "../graph/nodes.ts";
 import { ModulePath } from "./module-path.tsx";
 
 const evidenceLimit = 8;

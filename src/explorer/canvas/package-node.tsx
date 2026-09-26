@@ -1,6 +1,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { useCanvasActions } from "./canvas-actions.ts";
 import type { PackageFlowNode } from "./flow-elements.ts";
+import { labelLines } from "../graph/nodes.ts";
 import { stereotypeOf } from "./stereotype.ts";
 
 export function PackageNode({ data }: NodeProps<PackageFlowNode>) {
@@ -10,11 +11,12 @@ export function PackageNode({ data }: NodeProps<PackageFlowNode>) {
     <div className={classes} title={data.path}>
       <Handle type="target" position={Position.Left} className="hidden-handle" />
       <Handle type="source" position={Position.Right} className="hidden-handle" />
-      <button type="button" className="package-tab" aria-label={`${data.path} package`} onClick={() => actions.selectModule(data.path)}>
-        <span className="package-label">{data.label}</span>
+      <button type="button" className="package-tab" aria-label={`${data.path} package`} onClick={() => actions.selectModule(data.path)} onDoubleClick={() => actions.focusConnections(data.path)}>
+        <span className="package-label">{labelLines(data.label).map((line, index) => <span key={index} className="package-label-line">{line}</span>)}</span>
         {data.comments > 0 ? <span className="chip chip-comment" aria-label={`${data.comments} comments`}>{data.comments}</span> : null}
       </button>
       <div className="package-body">
+        {data.context ? <div className="package-context">in {data.context}</div> : null}
         <div className="package-head">
           <span className="stereotype">{stereotypeOf(data.kind)}</span>
           <span className="package-meta">{describeContents(data)}</span>

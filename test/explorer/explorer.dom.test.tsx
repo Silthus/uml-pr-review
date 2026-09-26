@@ -179,7 +179,7 @@ describe("ExplorerApp", () => {
     expect(await view.findByRole("button", { name: "products/feature_flags/backend/tests package" })).toBeTruthy();
   });
 
-  test("selecting a package turns on the connection lens and lists file-level evidence", async () => {
+  test("selecting a package lists its evidence, and Focus connections opens the lens until Escape", async () => {
     installFetch();
 
     const view = renderExplorer();
@@ -198,7 +198,20 @@ describe("ExplorerApp", () => {
     expect(within(dependedOnBy).getByText("None outside tests.")).toBeTruthy();
     const facadeTab = view.getByRole("button", { name: `${facade} package` });
     expect(facadeTab.closest(".package")?.className).toContain("tone-outgoing");
-    expect(view.getByRole("button", { name: "posthog package" }).closest(".package")?.className).toContain("tone-dimmed");
+
+    await act(async () => {
+      fireEvent.click(view.getByRole("button", { name: "Focus connections" }));
+    });
+
+    expect(await view.findByText(/Connections of/)).toBeTruthy();
+    expect(await view.findByRole("button", { name: "products/feature_flags package" })).toBeTruthy();
+    expect(view.queryByRole("button", { name: "posthog package" })).toBeNull();
+
+    await act(async () => {
+      fireEvent.keyDown(window, { key: "Escape" });
+    });
+
+    expect(view.queryByText(/Connections of/)).toBeNull();
   });
 
   test("follow agent moves the selection on selection hints and stays put when switched off", async () => {

@@ -1,0 +1,133 @@
+From 8eb2dda92c3bb125b1b83e9a95b9dfc518990628 Mon Sep 17 00:00:00 2001
+From: "Reichenbach, Michael" <755327+Silthus@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 23:33:48 +0200
+Subject: [PATCH] test(workflows): pin EmailLinksTable rendering of truncated,
+ duplicate, and counted links
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ .../Workflows/EmailLinksTable.test.tsx        | 112 ++++++++++++++++++
+ 1 file changed, 112 insertions(+)
+ create mode 100644 products/workflows/frontend/Workflows/EmailLinksTable.test.tsx
+
+diff --git a/products/workflows/frontend/Workflows/EmailLinksTable.test.tsx b/products/workflows/frontend/Workflows/EmailLinksTable.test.tsx
+new file mode 100644
+index 00000000000..6fbc842a18e
+--- /dev/null
++++ b/products/workflows/frontend/Workflows/EmailLinksTable.test.tsx
+@@ -0,0 +1,112 @@
++import '@testing-library/jest-dom'
++
++import { cleanup, render, screen } from '@testing-library/react'
++
++import { EmailLinksTable } from './EmailLinksTable'
++import { type EmailLinkRow } from './workflowMetricsSummaryLogic'
++
++const row = (overrides: Partial<EmailLinkRow>): EmailLinkRow => ({
++    linkIndex: '1',
++    url: 'https://example.com/pricing',
++    clicks: 0,
++    truncated: false,
++    duplicateUrl: false,
++    ...overrides,
++})
++
++// The rendered body rows, one entry per row: its link cell text and its clicks cell text.
++const bodyRows = (container: HTMLElement): string[][] =>
++    Array.from(container.querySelectorAll('tbody tr')).map((tr) =>
++        Array.from(tr.querySelectorAll('td')).map((td) => td.textContent ?? '')
++    )
++
++describe('EmailLinksTable', () => {
++    afterEach(() => {
++        cleanup()
++    })
++
++    it('renders a whole URL as a link that opens in a new tab', () => {
++        render(<EmailLinksTable links={[row({ url: 'https://example.com/pricing', clicks: 3 })]} />)
++
++        const link = screen.getByRole('link', { name: /example\.com\/pricing/ })
++        expect(link).toHaveAttribute('href', 'https://example.com/pricing')
++        expect(link).toHaveAttribute('target', '_blank')
++    })
++
++    it('renders a truncated URL as plain text with an ellipsis, not a link', () => {
++        const { container } = render(
++            <EmailLinksTable links={[row({ url: 'https://example.com/a-very-long-pa', truncated: true })]} />
++        )
++
++        expect(screen.queryByRole('link')).not.toBeInTheDocument()
++        const text = screen.getByTitle('This link was too long to store in full')
++        expect(text).toHaveTextContent('https://example.com/a-very-long-pa…')
++        expect(bodyRows(container)[0][0]).toBe('https://example.com/a-very-long-pa…')
++    })
++
++    it('tags a duplicate URL with its position in the email', () => {
++        const { container } = render(
++            <EmailLinksTable
++                links={[
++                    row({ linkIndex: '1', url: 'https://example.com/', duplicateUrl: true }),
++                    row({ linkIndex: '3', url: 'https://example.com/', duplicateUrl: true }),
++                ]}
++            />
++        )
++
++        expect(bodyRows(container).map(([link]) => link)).toEqual([
++            'https://example.com/Position 1',
++            'https://example.com/Position 3',
++        ])
++        expect(screen.getAllByTitle('Another link in this email points to the same page')).toHaveLength(2)
++    })
++
++    it('shows no position for a duplicate recorded without a link index, or for a unique URL', () => {
++        const { container } = render(
++            <EmailLinksTable
++                links={[
++                    row({ linkIndex: '', url: 'https://example.com/a', duplicateUrl: true }),
++                    row({ linkIndex: '2', url: 'https://example.com/b', duplicateUrl: false }),
++                ]}
++            />
++        )
++
++        expect(bodyRows(container).map(([link]) => link)).toEqual(['https://example.com/a', 'https://example.com/b'])
++        expect(screen.queryByText(/Position/)).not.toBeInTheDocument()
++    })
++
++    it('formats clicks with thousands separators', () => {
++        const { container } = render(
++            <EmailLinksTable
++                links={[
++                    row({ linkIndex: '1', url: 'https://example.com/a', clicks: 1234567 }),
++                    row({ linkIndex: '2', url: 'https://example.com/b', clicks: 0 }),
++                ]}
++            />
++        )
++
++        expect(bodyRows(container).map(([, clicks]) => clicks)).toEqual(['1,234,567', '0'])
++    })
++
++    it('keeps rows in the order given', () => {
++        const { container } = render(
++            <EmailLinksTable
++                links={[
++                    row({ linkIndex: '2', url: 'https://example.com/b', clicks: 1 }),
++                    row({ linkIndex: '1', url: 'https://example.com/a', clicks: 9 }),
++                ]}
++            />
++        )
++
++        expect(bodyRows(container)).toEqual([
++            ['https://example.com/b', '1'],
++            ['https://example.com/a', '9'],
++        ])
++    })
++
++    it('shows the empty state when there are no links', () => {
++        render(<EmailLinksTable links={[]} emptyState="No link clicks yet" />)
++
++        expect(screen.getByText('No link clicks yet')).toBeInTheDocument()
++    })
++})
+-- 
+2.50.1 (Apple Git-155)
+

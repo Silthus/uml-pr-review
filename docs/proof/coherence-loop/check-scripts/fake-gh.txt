@@ -1,0 +1,7 @@
+#!/bin/zsh
+print -r -- "fake gh, nothing sent: gh ${(q-)@}" >> /tmp/wf73/fake-gh.log
+if [[ "$1 $2" == "pr create" ]]; then
+  print -r -- "https://github.com/PostHog/posthog/pull/FAKE-not-opened"
+elif [[ "$1 $2" == "issue view" ]]; then
+  print -r -- '{"labels":[{"name":"coherence:question"}]}'
+fi

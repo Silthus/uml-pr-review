@@ -104,6 +104,162 @@ bun run cli <pr-url | pr-number> [--out file.html] [--open] [--json]
 
 Resolution is name-based. Calls through untyped receivers, inherited methods, and re-exporting barrels are missed.
 
+## Coherence loop
+
+The Coherence loop moves a product scope toward a coherent architecture, one small verified pull request at a time. A deterministic **Coherence Index** scores the scope, a **ranking** picks the module where incoherence hurts most, and a headless Claude session applies the next recipe step (facade, characterisation tests, ratchet rule, or internal cleanup) in a scratch worktree, verifies it, and writes the pull request. Decisions only a human can make, such as what a facade may export, go to an inbox of GitHub issues instead of into code.
+
+Every command below runs from the root of this repository and was run as written; the `--draft` and `inbox.ts resolve` commands ran against a fake `gh` and a fake `git push`, because they write to GitHub on your behalf. The outputs are in [`docs/proof/coherence-loop/readme-check.txt`](docs/proof/coherence-loop/readme-check.txt), and a full real iteration is in [`docs/proof/coherence-loop/`](docs/proof/coherence-loop/transcript.md).
+
+### 1. Prerequisites
+
+The following prerequisites are required:
+
+- **Bun**, with this repository's dependencies installed. Without them the index cannot load its tree-sitter grammars.
+- **`jq`**, to read the runner's JSON files in steps 6 and 7. `open` in step 3 is macOS; open the file in any browser elsewhere.
+- **`gh`**, signed in. The loop reads PostHog's open pull requests, the inbox lives in `Silthus/uml-pr-review`, and `--draft` opens the pull request with it.
+- **`uv`/`uvx`**, on your `PATH` or from PostHog's flox environment (`~/dev/posthog/.flox/run/*/bin/uvx`). The index runs pinned `lizard` and `ruff` through it.
+- **A PostHog clone** at `~/dev/posthog`, with `upstream` pointing to `PostHog/posthog` and `origin` to your fork. The loop changes code only in scratch worktrees, but it does write to the clone: `--fetch` moves `upstream/master`, and every iteration adds a worktree and a `coherence/*` branch. The session agent has write access to the clone. Frontend tests borrow its `frontend/node_modules`; Python tests borrow its flox venv (`.flox/cache/venv`), which must match the base the loop works on, or pytest crashes and verify reports it as failed ([#85](https://github.com/Silthus/uml-pr-review/issues/85)).
+- **Claude Code**, signed in, with access to `claude-opus-5-5`. The session drops any gateway variables and loads no MCP servers.
+- **The PostHog MCP**, to refresh the CI signals report (DevEx project 347861): in Claude Code, ask it to follow [`coherence/signals/export-ci.md`](coherence/signals/export-ci.md) for `products/workflows`. Without it, the committed report in `coherence/signals/reports/` serves.
+- ⚠️ **Still missing: access to PostHog production (US project 2).** The MCP answers 404, so error tracking, APM, logs, and usage signals are unavailable. Until then, the ranking runs on git history, complexity, review findings, open pull requests, and CI.
+
+```sh
+bun install
+gh auth status
+git -C ~/dev/posthog remote -v
+```
+
+### 2. Score a product
+
+```sh
+bun coherence/index.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master
+```
+
+It prints the composite and the four dimensions (architecture, complexity, smells, tests), each 0 to 100, plus the enforcement ladder, which is reported but not scored. The same commit always gives the same number. Add `--json` for every measure and the files that drive it.
+
+### 3. Backfill the history and read the report
+
+```sh
+bun coherence/backfill.ts --repo ~/dev/posthog --scopes products/workflows,products/surveys,products/error_tracking --ref upstream/master
+bun coherence/report/build.ts --repo ~/dev/posthog --modules products/workflows --github PostHog/posthog
+open docs/coherence/index-report.html
+```
+
+The backfill scores one commit per week over 26 weeks, plus Wednesday→Thursday pairs for the noise band, and caches every point in `coherence/data/`. From scratch it takes about 6 minutes; a refresh reuses the cache and takes seconds. The report build takes about a minute for a new head commit, and seconds after that.
+
+How to read the report:
+
+- **Is the index trustworthy?** A change counts only when it is bigger than the product's weekday band (the p90 of one day of ordinary commits). Workflows moves ±0.6 in a normal day; surveys ±3.9.
+- **Composite, week by week** and **Each dimension** chart workflows next to surveys and error_tracking, the products the loop does not touch, so a trend that only workflows shows stands out.
+- **Biggest movers** name the commits behind each large week, with links to their pull requests.
+- **The module table** lists workflows modules worst first. That is where the loop will look.
+
+### 4. Rank targets
+
+```sh
+bun coherence/targets.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master --posthog-signals coherence/signals/reports/workflows-ci-2026-09-26.json
+```
+
+Each module scores pressure × pain × safety, with the evidence behind each factor, and gets its next recipe step and verification class: **mechanical** (moves, tests, baselines), **behaviour-adjacent** (internals change behind pinned tests), or **boundary** (what other modules may depend on). Boundary steps always become inbox questions, up to `--max-questions` per run; the rest wait for the next run. Modules whose files are all busy in active PostHog pull requests are skipped.
+
+### 5. Run one iteration (dry run)
+
+```sh
+bun coherence/loop/session.ts --repo ~/dev/posthog --scope products/workflows --fetch
+```
+
+It launches a headless Claude Opus 5.5 session with the `coherence-loop` skill. `--fetch` updates `upstream/master` first. Without `--draft`, every push from the session is blocked. It takes about 5 minutes and $0.60 to $1.30. When it ends, it prints the transcript path and the agent's summary.
+
+⚠️ `--fetch` runs `git fetch upstream master` over SSH. If your SSH agent needs an approval that a headless process cannot give (1Password does), the fetch fails ([#86](https://github.com/Silthus/uml-pr-review/issues/86)); in the proof run the agent worked around it. To avoid it, fetch the public repository over HTTPS yourself, with your global URL rewrites off for that one command, and then run the command above without `--fetch`:
+
+```sh
+GIT_CONFIG_GLOBAL=/dev/null git -C ~/dev/posthog fetch --quiet https://github.com/PostHog/posthog.git +master:refs/remotes/upstream/master
+```
+
+Where the output lands:
+
+- `coherence/runs/<date>/workflows.sense.json`: the ranking and inbox state the run started from.
+- `coherence/runs/<date>/<slug>/`: one directory per iteration, with `iteration.json` (runner state), `summary.md` (the agent's words), and `pr.md` (the pull request body).
+- `coherence/runs/ledger.jsonl`: one line per proposal or question. The loop never proposes the same step for the same module twice, and a dry run counts ([#88](https://github.com/Silthus/uml-pr-review/issues/88)). To give a target back to the loop, delete its line.
+- `$TMPDIR/coherence-workflows-<slug>`: the scratch worktree, on branch `coherence/workflows/<slug>` in your PostHog clone.
+- `$TMPDIR/coherence-session-<ms>.jsonl`: the transcript.
+- New `coherence:question` issues in this repository, when the agent hits a boundary decision.
+
+### 6. Review the dry run
+
+```sh
+iteration=$(dirname "$(ls -t coherence/runs/*/*/iteration.json | head -1)")
+cat $iteration/pr.md
+git -C "$(jq -r .workspace.path $iteration/iteration.json)" show --stat
+```
+
+`$iteration` is the newest iteration on this machine; if the run ended on a question, it has no workspace and `git -C` fails. `pr.md` states the target and why it ranks, the step and verification class, the index before and after for the touched module, the lint and test results, and which busy files stayed untouched. Tests that could not run locally are declared as "not run", with the reason. To change the wording, edit `$iteration/summary.md` and render it again:
+
+```sh
+bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
+```
+
+### 7. Open your first draft pull request
+
+When the dry run looks right, promote the same iteration:
+
+```sh
+bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md --draft
+```
+
+What it does:
+
+1. It refuses unless the last verification passed and the branch has not moved since.
+2. It pushes the workspace's `HEAD` to `origin` (your fork, `Silthus/posthog`) as `coherence/workflows/<slug>`, over SSH.
+3. It runs `gh pr create --draft --repo PostHog/posthog --base master --head Silthus:coherence/workflows/<slug>`, with the commit subject as the title and `pr.md` as the body.
+4. It prints the `pullRequest` URL and stores it in `iteration.json`.
+
+Before: check that `origin` is your fork (`git -C ~/dev/posthog remote -v`), that `gh auth status` is green, and that `pr.md` says what you want reviewers to read. After:
+
+```sh
+jq .proposal $iteration/iteration.json
+gh pr list --repo PostHog/posthog --author @me --draft
+```
+
+Keep the scratch worktree until the pull request merges or you drop it; review fixes go there. The ledger keeps the `pr.md` path for this iteration, not the URL ([#87](https://github.com/Silthus/uml-pr-review/issues/87)). Then remove the worktree and the branch from your clone:
+
+```sh
+git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
+git -C ~/dev/posthog branch -D "$(jq -r .workspace.branch $iteration/iteration.json)"
+```
+
+### 8. Answer inbox questions
+
+```sh
+bun coherence/inbox.ts list
+```
+
+Answer on GitHub: comment with the option letter and any detail, then close the issue. Close it as "not planned", or close it without an answer, to skip the target. From the shell, `bun coherence/inbox.ts resolve <number> --answer "<option and detail>"` does the same, and `bun coherence/inbox.ts resolve <number> --skip` skips. Only answers from the repository's owner, members, or collaborators count. The next run reads them: an answered target gets acted on with your answer in its `pr.md`, and a skipped one is never proposed again.
+
+Two questions were open when this section was written (September 2026):
+
+- **[#82](https://github.com/Silthus/uml-pr-review/issues/82): a facade for `backend/api`.** Four imports from outside the product bypass the existing facade, and three of them are Django viewsets, a webhook view, and `HogFlowSerializer`. It asks whether those callers should go through `backend/facade/`, which decides whether the workflows facade may export DRF viewsets and serializers. The options are to re-export all four and re-route the callers, to route only the plain-function caller and move URL registration and the management command into the product, or to skip. An answer lets the loop act on, or drop, the top-ranked workflows module.
+- **[#83](https://github.com/Silthus/uml-pr-review/issues/83): a facade for `backend/services`.** Callers in `posthog/` and in `customer_analytics` import service functions and types directly, including the account-audience provider contract that `customer_analytics` implements. It asks whether the workflows facade should export them, which decides whether that registration hook becomes part of the public workflows boundary or stays a direct import; `customer_analytics` is another team's code. The options are to re-export everything, with the provider contract in `facade/contracts.py`, and re-route every caller; to re-route only the `posthog/` callers for now; or to skip. An answer lets the loop act on, or drop, the second-ranked module.
+
+### 9. Tune it
+
+- **`--budget <n>`** (on `session.ts`, default 1): pull requests to propose per run. Each iteration costs about 5 minutes.
+- **`--active-days <n>`** (on `targets.ts` and `sense.ts`, default 14): a file counts as busy when a PostHog pull request updated within this many days touches it. Fewer days frees more modules; bots bump `updatedAt`, so 14 days still keeps about 2,000 pull requests active. `session.ts` does not pass it through yet, so preview its effect with the ranking:
+
+  ```sh
+  bun coherence/targets.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master --posthog-signals coherence/signals/reports/workflows-ci-2026-09-26.json --active-days 3 | head -20
+  ```
+
+- **`--max-questions <n>`** (on `sense.ts`, default 2): inbox questions per run.
+- **Recipe steps:** there is no switch to turn a step off. The order is fixed in `coherence/signals/recipe.ts`: facade, then characterisation tests, then a ratchet rule, then internal cleanup. Boundary steps always wait for an inbox answer, and "skip" on a question takes one target out of the loop.
+
+### 10. Next steps
+
+These are named, not built:
+
+- **Stamphog auto-approval for mechanical pull requests.** PostHog's merge gate is configured per repository in `.stamphog/policy.yml`. A rule there could approve loop pull requests whose verification class is mechanical (tests, moves, baselines) and whose checks pass, while behaviour-adjacent and boundary ones keep human review.
+- **Self-driving scheduling.** A daily scheduled run of `session.ts` with a small budget, once the loop is tuned and draft mode has earned trust, instead of a person starting each run.
+
 ## Vocabulary
 
 See `CONTEXT.md`. Decisions: `docs/adr/`.

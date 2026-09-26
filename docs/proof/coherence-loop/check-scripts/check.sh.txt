@@ -1,0 +1,21 @@
+#!/bin/zsh
+out=/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/docs/proof/coherence-loop/readme-check.txt
+mkdir -p ${out:h}
+print -r -- "" >> $out
+for line in "${(@f)1}"; do print -r -- "\$ $line" >> $out; done
+print -r -- "# run at $(date -u +%FT%TZ) from the uml-pr-review root${FAKE:+, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub}" >> $out
+cd /Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868
+if [[ -n $FAKE ]]; then
+  export PATH=/tmp/wf73/fakebin:$PATH
+  : > /tmp/wf73/fake-gh.log
+  if [[ "$(command -v gh)" != /tmp/wf73/fakebin/gh || "$(command -v git)" != /tmp/wf73/fakebin/git ]]; then
+    print -r -- "# refused: the fakes are not first on PATH" >> $out
+    exit 99
+  fi
+fi
+start=$(date +%s)
+eval "$1" >> $out 2>&1
+code=$?
+if [[ -n $FAKE ]]; then print -r -- "# what the fakes received:" >> $out; cat /tmp/wf73/fake-gh.log >> $out; fi
+print -r -- "# exit $code in $(( $(date +%s) - start )) s" >> $out
+exit $code

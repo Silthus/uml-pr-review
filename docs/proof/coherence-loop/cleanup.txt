@@ -1,0 +1,35 @@
+Cleanup of ~/dev/posthog
+
+1. After the proof run (2026-09-26, about 21:50 UTC):
+
+$ git -C ~/dev/posthog worktree remove --force $TMPDIR/coherence-workflows-frontend-workflows-characterisation-tests
+$ ls -d $TMPDIR/coherence-workflows-frontend-workflows-characterisation-tests
+ls: ...: No such file or directory   (nothing left, so no chmod -R u+w / rm -rf was needed; flox was never activated, so there is no Go cache)
+$ git -C ~/dev/posthog worktree prune
+$ git -C ~/dev/posthog branch -D coherence/workflows/frontend-workflows-characterisation-tests
+Deleted branch coherence/workflows/frontend-workflows-characterisation-tests (was 8eb2dda92c3).
+
+2. For the second README check, after the review changed steps 6 and 7, the workspace was re-created at the
+   same path, branch, and commit, so those steps could run verbatim:
+
+$ git -C ~/dev/posthog worktree add -b coherence/workflows/frontend-workflows-characterisation-tests $TMPDIR/coherence-workflows-frontend-workflows-characterisation-tests 8eb2dda92c3bb125b1b83e9a95b9dfc518990628
+   (PostHog's post-checkout hook ran pnpm install inside that scratch worktree)
+
+   README step 7's own cleanup commands then removed it again (readme-check.txt, "## 7"):
+   git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
+   git -C ~/dev/posthog branch -D "$(jq -r .workspace.branch $iteration/iteration.json)"
+   Deleted branch coherence/workflows/frontend-workflows-characterisation-tests (was 8eb2dda92c3).
+
+Afterwards (2026-09-26, about 22:13 UTC):
+PostHog worktrees named coherence-* : 0
+PostHog branches under coherence/   : 0
+$TMPDIR/coherence-workflows-*       : none
+
+What stays changed in ~/dev/posthog, by design: refs/remotes/upstream/master points at 57ca357 (the proof
+run's fetch; the README check's HTTPS fetch found no newer commit).
+
+In this repository, the README check's backfill and report build rewrote coherence/data/backfill.json and
+docs/coherence/index-report.{html,md} and added three coherence/data/products/** files. They were restored and
+removed with git restore and rm after each check; refreshing the committed report is outside this change.
+
+The fakes and helper scripts ran from /tmp/wf73; copies are in check-scripts/.

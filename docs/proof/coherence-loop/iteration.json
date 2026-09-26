@@ -1,0 +1,2665 @@
+{
+  "sense": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/workflows.sense.json",
+  "senseId": "2026-09-26T21:32:41.408Z",
+  "repository": "/Users/mreichenbach/dev/posthog",
+  "scope": "products/workflows",
+  "scopeName": "workflows",
+  "rules": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/docs/harvest/workflows/rules.json",
+  "base": {
+    "ref": "upstream/master",
+    "commit": "57ca357730843205c2d659098ac8e4c5e07a6698"
+  },
+  "slug": "frontend-workflows-characterisation-tests",
+  "busyFiles": [
+    {
+      "path": "posthog/admin/admins/team_admin.py",
+      "pullRequests": [
+        100742,
+        100947,
+        101866
+      ]
+    },
+    {
+      "path": "posthog/api/integration.py",
+      "pullRequests": [
+        99695,
+        99752,
+        100557,
+        103218,
+        104019,
+        106241,
+        106665,
+        107086
+      ]
+    },
+    {
+      "path": "posthog/api/person.py",
+      "pullRequests": [
+        98843,
+        99614,
+        101784,
+        104270,
+        104461,
+        104470,
+        106095,
+        106424,
+        107216,
+        107315
+      ]
+    },
+    {
+      "path": "posthog/api/search.py",
+      "pullRequests": [
+        99485,
+        107216
+      ]
+    },
+    {
+      "path": "posthog/api/team.py",
+      "pullRequests": [
+        98612,
+        99248,
+        100742,
+        101096,
+        101873,
+        101914,
+        102000,
+        102008,
+        102451,
+        102576,
+        102580,
+        103683,
+        103841,
+        104337,
+        105446,
+        105587,
+        105593,
+        106651
+      ]
+    },
+    {
+      "path": "posthog/management/commands/refresh_hog_flows.py",
+      "pullRequests": [
+        106870
+      ]
+    },
+    {
+      "path": "posthog/models/integration/email.py",
+      "pullRequests": [
+        105006
+      ]
+    },
+    {
+      "path": "posthog/models/integration/twilio.py",
+      "pullRequests": [
+        99752,
+        105006
+      ]
+    },
+    {
+      "path": "posthog/models/team/team.py",
+      "pullRequests": [
+        100595,
+        100922,
+        101096,
+        102055,
+        102576,
+        102625,
+        103683,
+        104474,
+        104541,
+        106651,
+        106743
+      ]
+    },
+    {
+      "path": "posthog/tasks/integrations.py",
+      "pullRequests": [
+        73783
+      ]
+    },
+    {
+      "path": "posthog/tasks/scheduled.py",
+      "pullRequests": [
+        86690,
+        91429,
+        99069,
+        99712,
+        101501,
+        101539,
+        102207,
+        102570,
+        102625,
+        103252,
+        104541,
+        106213,
+        106984,
+        106986,
+        106994
+      ]
+    },
+    {
+      "path": "posthog/urls.py",
+      "pullRequests": [
+        93058,
+        99069,
+        99986,
+        103806
+      ]
+    },
+    {
+      "path": "posthog/views.py",
+      "pullRequests": [
+        100929,
+        101824
+      ]
+    },
+    {
+      "path": "products/ai_observability/backend/api/evaluation_reports.py",
+      "pullRequests": [
+        107289
+      ]
+    },
+    {
+      "path": "products/ai_observability/backend/models/evaluation_reports.py",
+      "pullRequests": [
+        103419,
+        107176,
+        107289
+      ]
+    },
+    {
+      "path": "products/customer_analytics/backend/apps.py",
+      "pullRequests": [
+        106300,
+        107159
+      ]
+    },
+    {
+      "path": "products/customer_analytics/backend/facade/api.py",
+      "pullRequests": [
+        89260,
+        101697,
+        102225,
+        102862,
+        103235,
+        105667,
+        106300,
+        107079,
+        107159,
+        107161
+      ]
+    },
+    {
+      "path": "products/signals/backend/scout_harness/profile/builders.py",
+      "pullRequests": [
+        103299,
+        103389,
+        103467,
+        104032,
+        104904,
+        105078
+      ]
+    },
+    {
+      "path": "products/warehouse_sources/backend/temporal/data_imports/pipelines/core/cdp_producer.py",
+      "pullRequests": [
+        107298
+      ]
+    },
+    {
+      "path": "products/workflows/CONTRIBUTING.md",
+      "pullRequests": [
+        92252,
+        103540,
+        104157,
+        104164,
+        104202,
+        104452,
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/backend/admin/hog_flow_admin.py",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/hog_flow.py",
+      "pullRequests": [
+        83800,
+        88238,
+        91709,
+        91795,
+        92252,
+        101229,
+        101701,
+        102248,
+        102673,
+        103019,
+        103540,
+        103849,
+        104156,
+        104202,
+        104270,
+        104452,
+        104668,
+        104713,
+        104883,
+        105854,
+        106553,
+        106561,
+        106759,
+        107195,
+        107216
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/hog_flow_batch_job.py",
+      "pullRequests": [
+        104668
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/hog_flow_list.py",
+      "pullRequests": [
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/hog_flow_template.py",
+      "pullRequests": [
+        104856
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/message_assets.py",
+      "pullRequests": [
+        101229,
+        103183
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow.py",
+      "pullRequests": [
+        83800,
+        88238,
+        92252,
+        99844,
+        102248,
+        103019,
+        104668,
+        104713,
+        104883,
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_access_control.py",
+      "pullRequests": [
+        104452,
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_action_email.py",
+      "pullRequests": [
+        106553
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_clock_waits.py",
+      "pullRequests": [
+        105854
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_code.py",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_code_managed.py",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_draft_publish.py",
+      "pullRequests": [
+        101701
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_key.py",
+      "pullRequests": [
+        103540,
+        103849,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_psak_auth.py",
+      "pullRequests": [
+        103540,
+        104202,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_revisions.py",
+      "pullRequests": [
+        103540,
+        104156,
+        104202,
+        104452,
+        107195
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_summaries.py",
+      "pullRequests": [
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_template.py",
+      "pullRequests": [
+        104856
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_message_assets.py",
+      "pullRequests": [
+        101229,
+        103183,
+        104470
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_workflow_proposals.py",
+      "pullRequests": [
+        91709,
+        91795,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/workflow_tasks.py",
+      "pullRequests": [
+        104215
+      ]
+    },
+    {
+      "path": "products/workflows/backend/facade/__init__.py",
+      "pullRequests": [
+        74031
+      ]
+    },
+    {
+      "path": "products/workflows/backend/facade/api.py",
+      "pullRequests": [
+        74031
+      ]
+    },
+    {
+      "path": "products/workflows/backend/github_workflow_events.py",
+      "pullRequests": [
+        102248
+      ]
+    },
+    {
+      "path": "products/workflows/backend/management/commands/backfill_workflows_email_sending_tiers.py",
+      "pullRequests": [
+        100947
+      ]
+    },
+    {
+      "path": "products/workflows/backend/max_tools.py",
+      "pullRequests": [
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/backend/metrics.py",
+      "pullRequests": [
+        91709,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/backend/migrations/0026_lowercase_github_repository_filters.py",
+      "pullRequests": [
+        102248
+      ]
+    },
+    {
+      "path": "products/workflows/backend/migrations/0027_hogflow_key.py",
+      "pullRequests": [
+        103540,
+        103849,
+        104452,
+        105958
+      ]
+    },
+    {
+      "path": "products/workflows/backend/migrations/0027_hogflowoptimisation.py",
+      "pullRequests": [
+        91795
+      ]
+    },
+    {
+      "path": "products/workflows/backend/migrations/0028_hogflow_unique_key_for_team.py",
+      "pullRequests": [
+        103540,
+        103849,
+        104452,
+        105958
+      ]
+    },
+    {
+      "path": "products/workflows/backend/migrations/0029_hogflow_created_via_hogflow_managed_by_and_more.py",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/migrations/max_migration.txt",
+      "pullRequests": [
+        91795,
+        102248,
+        103540,
+        103849,
+        104452,
+        105958
+      ]
+    },
+    {
+      "path": "products/workflows/backend/models/__init__.py",
+      "pullRequests": [
+        91795
+      ]
+    },
+    {
+      "path": "products/workflows/backend/models/hog_flow/hog_flow.py",
+      "pullRequests": [
+        103540,
+        103849,
+        104452,
+        105958
+      ]
+    },
+    {
+      "path": "products/workflows/backend/models/hog_flow_batch_job/__init__.py",
+      "pullRequests": [
+        104668
+      ]
+    },
+    {
+      "path": "products/workflows/backend/models/hog_flow_batch_job/hog_flow_batch_job.py",
+      "pullRequests": [
+        104668
+      ]
+    },
+    {
+      "path": "products/workflows/backend/models/hog_flow_optimisation.py",
+      "pullRequests": [
+        91795,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/backend/providers/ses.py",
+      "pullRequests": [
+        106606
+      ]
+    },
+    {
+      "path": "products/workflows/backend/providers/twilio.py",
+      "pullRequests": [
+        99752
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/audience_v2.py",
+      "pullRequests": [
+        104270
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/batch_audience.py",
+      "pullRequests": [
+        88238,
+        104270
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/code_ownership.py",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/code_renderer.py",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/email_sending_tier.py",
+      "pullRequests": [
+        100947,
+        101866
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/timing_reschedule.py",
+      "pullRequests": [
+        101604
+      ]
+    },
+    {
+      "path": "products/workflows/backend/services/wait_clock_conditions.py",
+      "pullRequests": [
+        101604,
+        105854
+      ]
+    },
+    {
+      "path": "products/workflows/backend/templates/__init__.py",
+      "pullRequests": [
+        102580,
+        104856
+      ]
+    },
+    {
+      "path": "products/workflows/backend/templates/support-spike-alert.json",
+      "pullRequests": [
+        102580
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/crm_follow_up.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/crm_follow_up.roundtrip.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/crm_follow_up.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/passthrough_actions.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/passthrough_actions.roundtrip.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/passthrough_actions.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/re_engagement.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/re_engagement.roundtrip.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/re_engagement.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/trial_nudge.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/trial_nudge.roundtrip.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/trial_nudge.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/ui_built.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/ui_built.roundtrip.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/ui_built.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/webhook_trigger.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/webhook_trigger.roundtrip.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/webhook_trigger.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/weekly_digest.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/weekly_digest.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/welcome_series.json",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/fixtures/code_renderer/welcome_series.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_batch_audience.py",
+      "pullRequests": [
+        88238
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_code_renderer.py",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_email_sending_tier.py",
+      "pullRequests": [
+        100947,
+        101866
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_facade_api.py",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_github_workflow_events.py",
+      "pullRequests": [
+        102248
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_global_templates.py",
+      "pullRequests": [
+        104856
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_max_tools.py",
+      "pullRequests": [
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_ses_provider.py",
+      "pullRequests": [
+        106606
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_support_spike_alert_template.py",
+      "pullRequests": [
+        102580
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/BroadcastScene.tsx",
+      "pullRequests": [
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/BroadcastStartStep.tsx",
+      "pullRequests": [
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/BroadcastsFeaturePreview.tsx",
+      "pullRequests": [
+        107286
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/broadcastAgentContext.ts",
+      "pullRequests": [
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/broadcastPreviewLogic.ts",
+      "pullRequests": [
+        105379
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/broadcastTestSend.test.ts",
+      "pullRequests": [
+        105308
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/broadcastTestSendLogic.ts",
+      "pullRequests": [
+        105308,
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/emailPreview.test.ts",
+      "pullRequests": [
+        105379
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Broadcasts/emailPreview.ts",
+      "pullRequests": [
+        105379
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Channels/EmailSetup/EmailSetupModal.tsx",
+      "pullRequests": [
+        100880
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Channels/EmailSetup/emailSetupModalLogic.test.ts",
+      "pullRequests": [
+        100880
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Channels/EmailSetup/emailSetupModalLogic.ts",
+      "pullRequests": [
+        100880
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/FeaturePreviewFeedbackBanner.tsx",
+      "pullRequests": [
+        107286
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/SelfDriving/SelfDrivingOptInCard.tsx",
+      "pullRequests": [
+        105991
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/SelfDriving/SelfDrivingSuggestionRow.tsx",
+      "pullRequests": [
+        105991
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/SelfDriving/WorkflowsSelfDriving.stories.tsx",
+      "pullRequests": [
+        105991
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/SelfDriving/WorkflowsSelfDriving.tsx",
+      "pullRequests": [
+        105991
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/SelfDriving/workflowsSelfDrivingLogic.test.ts",
+      "pullRequests": [
+        105991
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/SelfDriving/workflowsSelfDrivingLogic.ts",
+      "pullRequests": [
+        105991
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/MessageTemplate.tsx",
+      "pullRequests": [
+        101857,
+        102211,
+        103182
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/MessageTemplatesTable.tsx",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/NewTemplateAgent.tsx",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/TemplateStartingPointCard.tsx",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/messageTemplateLogic.test.ts",
+      "pullRequests": [
+        101857,
+        102211
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/messageTemplateLogic.ts",
+      "pullRequests": [
+        101857,
+        102211
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/messageTemplateTestSendLogic.ts",
+      "pullRequests": [
+        105308,
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/newTemplateAgentLogic.test.ts",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/newTemplateAgentLogic.ts",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/newTemplateHandoff.test.ts",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/newTemplateHandoff.ts",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/templateAgentContext.test.ts",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/TemplateLibrary/templateAgentContext.ts",
+      "pullRequests": [
+        101857
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/CodeManagedSource.stories.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/CodeManagedSource.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/CodeManagedTag.stories.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/CodeManagedTag.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/EmailViewerModal.tsx",
+      "pullRequests": [
+        101229
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/ListViewDisabledReason.tsx",
+      "pullRequests": [
+        106035
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/ManageWorkflowTagsModal.stories.tsx",
+      "pullRequests": [
+        103021
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/ManageWorkflowTagsModal.tsx",
+      "pullRequests": [
+        103021
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/NewWorkflowAgent.tsx",
+      "pullRequests": [
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/NewWorkflowModal.tsx",
+      "pullRequests": [
+        75243
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/RateCell.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationActionList.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationActionRow.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationNoEmailState.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationNothingToFixState.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationProviderBreakdown.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationStatusStrip.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationTab.test.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationTab.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/ReputationWorkflowTable.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/WorkflowsEmailSuspendedBanner.tsx",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.stories.tsx",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputation.tsx",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputationActions.stories.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/WorkflowsReputationActions.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/emailReputation.ts",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/reputationActions.test.ts",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/reputationActions.ts",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/reputationFixtures.ts",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/reputationUtils.ts",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/sendingReviewMessage.test.ts",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/sendingReviewMessage.ts",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/workflowsReputationActionsLogic.test.ts",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/workflowsReputationActionsLogic.ts",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/workflowsReputationLogic.test.ts",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Reputation/workflowsReputationLogic.ts",
+      "pullRequests": [
+        102652
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/Workflow.tsx",
+      "pullRequests": [
+        103540,
+        104452,
+        106035
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowBatchInvocations.tsx",
+      "pullRequests": [
+        100187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowDispatchIcons.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowEmailPauseBanner.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowMetricsSummary.tsx",
+      "pullRequests": [
+        99786,
+        105359
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowRevisions.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowRowMenuOverlay.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowScene.tsx",
+      "pullRequests": [
+        91710,
+        92252,
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowSceneHeader.test.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowSceneHeader.tsx",
+      "pullRequests": [
+        91795,
+        101132,
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowStatusBar.tsx",
+      "pullRequests": [
+        103540,
+        104452,
+        106035
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowStatusTag.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/TemplateRowMenu.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowListNameCell.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowRowMenu.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowSendsCell.test.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowSendsCell.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowsListV2.stories.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowsListV2.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/WorkflowsListV2ColumnsMenu.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowListFacets.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowListLabels.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowListRows.test.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowListRows.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowsListV2Columns.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowsListV2Fixtures.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowsListV2Logic.test.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsListV2/workflowsListV2Logic.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/WorkflowsTable.tsx",
+      "pullRequests": [
+        92252,
+        103021,
+        103540,
+        104452,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/codeManagedWorkflow.ts",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/HogFlowEditor.tsx",
+      "pullRequests": [
+        96734,
+        106062
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/editor/graph/HogFlowGraphEditor.stories.tsx",
+      "pullRequests": [
+        106062
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowFilters.tsx",
+      "pullRequests": [
+        83801,
+        88238
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/hogFlowEditorLogic.test.ts",
+      "pullRequests": [
+        96734,
+        99816,
+        103370,
+        106062
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/hogFlowEditorLogic.tsx",
+      "pullRequests": [
+        96734,
+        99816,
+        101132,
+        103370,
+        106035,
+        106062
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/hogFlowOutputMappingLogic.ts",
+      "pullRequests": [
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing/HogFlowEditorNotificationPanelTest.tsx",
+      "pullRequests": [
+        105313
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorNotificationTestLogic.test.ts",
+      "pullRequests": [
+        105313
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorNotificationTestLogic.ts",
+      "pullRequests": [
+        105313,
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorTestLogic.test.ts",
+      "pullRequests": [
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing/hogFlowEditorTestLogic.ts",
+      "pullRequests": [
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/react_flow_utils/autolayout.ts",
+      "pullRequests": [
+        96734
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/react_flow_utils/constants.ts",
+      "pullRequests": [
+        96734
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/actions/index.ts",
+      "pullRequests": [
+        103370
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/actions/typesafe.ts",
+      "pullRequests": [
+        103370
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers/conversations.tsx",
+      "pullRequests": [
+        102580
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers/data_warehouse_table.test.ts",
+      "pullRequests": [
+        99780
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers/data_warehouse_table.tsx",
+      "pullRequests": [
+        99780
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers/data_warehouse_view.tsx",
+      "pullRequests": [
+        107298
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/HogFlowSteps.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/Nodes.tsx",
+      "pullRequests": [
+        95021
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepConditionalBranch.tsx",
+      "pullRequests": [
+        83801,
+        88238
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepFunction.test.tsx",
+      "pullRequests": [
+        106553
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepFunction.tsx",
+      "pullRequests": [
+        106553
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.stories.tsx",
+      "pullRequests": [
+        103187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+      "pullRequests": [
+        103187,
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.tsx",
+      "pullRequests": [
+        74031,
+        88238,
+        103187,
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTypesafe.stories.tsx",
+      "pullRequests": [
+        103370
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepWaitUntilCondition.tsx",
+      "pullRequests": [
+        99583
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/batchAudienceCsvLogic.test.ts",
+      "pullRequests": [
+        103187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/batchAudienceCsvLogic.ts",
+      "pullRequests": [
+        103187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/HogFlowFunctionConfiguration.test.ts",
+      "pullRequests": [
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/HogFlowFunctionConfiguration.tsx",
+      "pullRequests": [
+        103370,
+        105308,
+        105379,
+        106014,
+        106553
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/RecurringSchedulePicker.test.tsx",
+      "pullRequests": [
+        100187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/RecurringSchedulePicker.tsx",
+      "pullRequests": [
+        100187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/StepSendTestEmailModal.tsx",
+      "pullRequests": [
+        105308
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/StepView.tsx",
+      "pullRequests": [
+        96734
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/WorkflowAutoSaveIndicator.tsx",
+      "pullRequests": [
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/rrule-helpers.test.ts",
+      "pullRequests": [
+        100187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/rrule-helpers.ts",
+      "pullRequests": [
+        100187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/components/stepTestSendLogic.ts",
+      "pullRequests": [
+        105308
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/typesafe-template.json",
+      "pullRequests": [
+        103370
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/utils.ts",
+      "pullRequests": [
+        106062
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/waitClockConditions.test.ts",
+      "pullRequests": [
+        99583
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/waitClockConditions.ts",
+      "pullRequests": [
+        99583
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/testEventFactory.ts",
+      "pullRequests": [
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/tree/HogFlowTreeStep.tsx",
+      "pullRequests": [
+        106062
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/tree/workflowTree.test.ts",
+      "pullRequests": [
+        106035
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/tree/workflowTree.ts",
+      "pullRequests": [
+        106035
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/tree/workflowTreePresentation.ts",
+      "pullRequests": [
+        106035
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/types.ts",
+      "pullRequests": [
+        92252,
+        101132,
+        103021,
+        103540,
+        103849,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/logs/log-utils.test.tsx",
+      "pullRequests": [
+        93058
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/misc/workflowActivityDescriber.tsx",
+      "pullRequests": [
+        91710,
+        91795,
+        103021
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/newWorkflowAgentLogic.ts",
+      "pullRequests": [
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/newWorkflowHandoff.test.ts",
+      "pullRequests": [
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/newWorkflowHandoff.ts",
+      "pullRequests": [
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/newWorkflowLogic.ts",
+      "pullRequests": [
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowAppliedOutcome.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowMetricReading.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowStagedSuggestion.tsx",
+      "pullRequests": [
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionCard.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionDetails.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionEvidence.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestions.tsx",
+      "pullRequests": [
+        91710,
+        91795,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionsIntroduction.tsx",
+      "pullRequests": [
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionsMenuItem.tsx",
+      "pullRequests": [
+        91795,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionsNotice.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionsPanelToggle.tsx",
+      "pullRequests": [
+        91795,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionsSwitch.tsx",
+      "pullRequests": [
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/WorkflowSuggestionsTabLabel.tsx",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/suggestionChanges.test.ts",
+      "pullRequests": [
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/suggestionChanges.ts",
+      "pullRequests": [
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/suggestionEvidence.test.ts",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/suggestionEvidence.ts",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/workflowProposalsLogic.test.ts",
+      "pullRequests": [
+        91710
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/suggestions/workflowProposalsLogic.ts",
+      "pullRequests": [
+        91710,
+        91795,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowAgentContext.ts",
+      "pullRequests": [
+        102212
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowDuplication.test.ts",
+      "pullRequests": [
+        101132,
+        103540,
+        103849,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowDuplication.ts",
+      "pullRequests": [
+        101132,
+        103540,
+        103849,
+        104452,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.autosave.test.ts",
+      "pullRequests": [
+        97159,
+        101701,
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.clockWaitValidation.test.ts",
+      "pullRequests": [
+        99583
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.copyCode.test.ts",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.duplicate.test.ts",
+      "pullRequests": [
+        101132
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.externalEdits.test.ts",
+      "pullRequests": [
+        101701
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.schedule.test.ts",
+      "pullRequests": [
+        100187
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowLogic.ts",
+      "pullRequests": [
+        97159,
+        99583,
+        100187,
+        101132,
+        101701,
+        103540,
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowMetricsSummaryLogic.test.ts",
+      "pullRequests": [
+        99786,
+        105359
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowMetricsSummaryLogic.ts",
+      "pullRequests": [
+        99786,
+        102652,
+        105359
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowRowActions.test.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowRowActions.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowSceneLogic.ts",
+      "pullRequests": [
+        91710,
+        92252
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowStatus.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowTagsLogic.test.ts",
+      "pullRequests": [
+        103021
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowTagsLogic.ts",
+      "pullRequests": [
+        103021
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowsLogic.test.ts",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowsLogic.ts",
+      "pullRequests": [
+        103021,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/WorkflowsScene.test.tsx",
+      "pullRequests": [
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/WorkflowsScene.tsx",
+      "pullRequests": [
+        101857,
+        102652,
+        105991,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/emailTestSend.test.ts",
+      "pullRequests": [
+        105308
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/emailTestSend.ts",
+      "pullRequests": [
+        105308
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/generated/api.schemas.ts",
+      "pullRequests": [
+        88238,
+        91709,
+        91795,
+        92252,
+        103019,
+        103540,
+        103849,
+        104452,
+        104668,
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/generated/api.ts",
+      "pullRequests": [
+        91709,
+        91795,
+        92252,
+        104452,
+        104713,
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/generated/api.zod.ts",
+      "pullRequests": [
+        88238,
+        91709,
+        91795,
+        92252,
+        103019,
+        103540,
+        103849,
+        104452,
+        104668
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/messagingTabs.tsx",
+      "pullRequests": [
+        106508
+      ]
+    },
+    {
+      "path": "products/workflows/manifest.tsx",
+      "pullRequests": [
+        107266
+      ]
+    },
+    {
+      "path": "products/workflows/mcp/tools.yaml",
+      "pullRequests": [
+        82740,
+        91709,
+        91795,
+        92252,
+        103019,
+        103540,
+        103689,
+        104452,
+        106561,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/package.json",
+      "pullRequests": [
+        104157,
+        104164,
+        106759
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/.gitignore",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/.oxlintrc.json",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/README.md",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/package.json",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/client.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/credentials.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/diff.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/init.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/load.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/main.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/normalize.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/run.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/cli/source.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/definition.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/emit.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/errors.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/index.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/steps.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/triggers.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/src/workflow.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/check.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/credentials.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/harness.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/init.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/load.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/main.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/push.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/cli/source.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/emit.test.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tests/types.test-d.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tsconfig.base.json",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tsconfig.build.json",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tsconfig.json",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/packages/workflows/tsconfig.test.json",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/skills/building-workflows/SKILL.md",
+      "pullRequests": [
+        104452,
+        104996,
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/skills/building-workflows/references/graph-schema.md",
+      "pullRequests": [
+        104996,
+        106014
+      ]
+    },
+    {
+      "path": "products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md",
+      "pullRequests": [
+        104452
+      ]
+    },
+    {
+      "path": "products/workflows/skills/creating-broadcasts/SKILL.md",
+      "pullRequests": [
+        105095
+      ]
+    },
+    {
+      "path": "products/workflows/workflows/README.md",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    },
+    {
+      "path": "products/workflows/workflows/welcome-new-signups.ts",
+      "pullRequests": [
+        104157,
+        104164
+      ]
+    }
+  ],
+  "action": "act",
+  "target": {
+    "rank": 4,
+    "module": "products/workflows/frontend/Workflows",
+    "score": 0.4448,
+    "step": "characterisation-tests",
+    "verification": "mechanical",
+    "reason": "tests import 14 of 38 files; untested: products/workflows/frontend/Workflows/BatchRunLog.tsx, products/workflows/frontend/Workflows/EmailLinksTable.tsx, products/workflows/frontend/Workflows/EmailMetricsSummary.tsx",
+    "evidence": [
+      "commits: bbd86e0a1160",
+      "commits: e6ca63b8824e",
+      "commits: 2e1d8e1ccac2",
+      "commits: 6c3603f5a99f",
+      "commits: 91952fa3c268",
+      "commits: 28 of 74 co-authored by an agent",
+      "review findings: editor-schema-accepts-what-the-server-stores: 2 findings × 0.25 of its component, e.g. https://github.com/PostHog/posthog/pull/62649#discussion_r3429112567",
+      "review findings: code-managed-workflows-are-read-only: 3 findings × 0.25 of its component, e.g. local:t3/896884be-14e4-4a9e-9da4-397fff67c0b0#dfd22683-df36-49e5-b32d-38ba0845bffe"
+    ],
+    "busyFiles": [
+      {
+        "path": "products/workflows/frontend/Workflows/EmailViewerModal.tsx",
+        "pullRequests": [
+          101229
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/NewWorkflowAgent.tsx",
+        "pullRequests": [
+          102212
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/NewWorkflowModal.tsx",
+        "pullRequests": [
+          75243
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/Workflow.tsx",
+        "pullRequests": [
+          103540,
+          104452,
+          106035
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowBatchInvocations.tsx",
+        "pullRequests": [
+          100187
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowEmailPauseBanner.tsx",
+        "pullRequests": [
+          106508
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowMetricsSummary.tsx",
+        "pullRequests": [
+          99786,
+          105359
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowRevisions.tsx",
+        "pullRequests": [
+          103540,
+          104452
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowScene.tsx",
+        "pullRequests": [
+          91710,
+          92252,
+          102212
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowSceneHeader.tsx",
+        "pullRequests": [
+          91795,
+          101132,
+          103540,
+          104452
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowStatusBar.tsx",
+        "pullRequests": [
+          103540,
+          104452,
+          106035
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/WorkflowsTable.tsx",
+        "pullRequests": [
+          92252,
+          103021,
+          103540,
+          104452,
+          106759
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/newWorkflowAgentLogic.ts",
+        "pullRequests": [
+          102212
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/newWorkflowLogic.ts",
+        "pullRequests": [
+          102212
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/workflowAgentContext.ts",
+        "pullRequests": [
+          102212
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/workflowDuplication.ts",
+        "pullRequests": [
+          101132,
+          103540,
+          103849,
+          104452,
+          106759
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/workflowLogic.ts",
+        "pullRequests": [
+          97159,
+          99583,
+          100187,
+          101132,
+          101701,
+          103540,
+          104452
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/workflowMetricsSummaryLogic.ts",
+        "pullRequests": [
+          99786,
+          102652,
+          105359
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/workflowSceneLogic.ts",
+        "pullRequests": [
+          91710,
+          92252
+        ]
+      },
+      {
+        "path": "products/workflows/frontend/Workflows/workflowsLogic.ts",
+        "pullRequests": [
+          103021,
+          106759
+        ]
+      }
+    ]
+  },
+  "answer": null,
+  "question": null,
+  "workspace": {
+    "path": "/var/folders/0v/_5100j6j439fdt76hj7tvkr80000gn/T/coherence-workflows-frontend-workflows-characterisation-tests",
+    "branch": "coherence/workflows/frontend-workflows-characterisation-tests"
+  },
+  "verification": {
+    "head": "8eb2dda92c3bb125b1b83e9a95b9dfc518990628",
+    "changes": {
+      "commits": 1,
+      "files": [
+        "products/workflows/frontend/Workflows/EmailLinksTable.test.tsx"
+      ],
+      "added": 112,
+      "deleted": 0,
+      "lines": 112,
+      "maxLines": 300
+    },
+    "busyFilesTouched": [],
+    "outsideScope": [],
+    "lint": {
+      "status": "run",
+      "files": 1,
+      "before": 0,
+      "after": 0
+    },
+    "tests": [
+      {
+        "runner": "jest",
+        "files": [
+          "products/workflows/frontend/Workflows/EmailLinksTable.test.tsx"
+        ],
+        "status": "passed",
+        "reason": null,
+        "output": "PASS ../products/workflows/frontend/Workflows/EmailLinksTable.test.tsx\n  EmailLinksTable\n    ✓ renders a whole URL as a link that opens in a new tab (41 ms)\n    ✓ renders a truncated URL as plain text with an ellipsis, not a link (3 ms)\n    ✓ tags a duplicate URL with its position in the email (3 ms)\n    ✓ shows no position for a duplicate recorded without a link index, or for a unique URL (3 ms)\n    ✓ formats clicks with thousands separators (2 ms)\n    ✓ keeps rows in the order given (1 ms)\n    ✓ shows the empty state when there are no links (1 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       7 passed, 7 total\nSnapshots:   0 total\nTime:        1.413 s\nRan all test suites matching /..\\/products\\/workflows\\/frontend\\/Workflows\\/EmailLinksTable.test.tsx/i."
+      }
+    ],
+    "index": {
+      "scope": "products/workflows/frontend/Workflows",
+      "composite": {
+        "before": 65.1,
+        "after": 65.1
+      },
+      "dimensions": {
+        "architecture": {
+          "before": 72.3,
+          "after": 72.3
+        },
+        "complexity": {
+          "before": 79.8,
+          "after": 79.8
+        },
+        "smells": {
+          "before": 81.6,
+          "after": 81.6
+        },
+        "tests": {
+          "before": 17.6,
+          "after": 17.8
+        }
+      },
+      "targeted": [
+        "tests"
+      ],
+      "regressed": []
+    },
+    "verdict": "pass",
+    "problems": []
+  },
+  "proposal": {
+    "mode": "dry-run",
+    "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
+    "pullRequest": null
+  }
+}

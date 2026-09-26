@@ -4,13 +4,16 @@ import { aggregateEdges, contextOf, dependencyEdge, edgeId, ghostModule, package
 import { ancestorsOf } from "./paths.ts";
 import type { GraphEdge, GraphNode, SeamOverlay, Tone, ViewState, VisibleGraph } from "./types.ts";
 
-const farEndsPerPlannedModule = 2;
+const contextFarEndsPerDirection = 2;
+
+type WeightedEdge = { source: string; target: string; imports: number };
 
 export function buildPlanGraph(model: ArchitectureModel, view: ViewState, plan: ArchitecturePlan): VisibleGraph {
   const planned = new Set(plan.modules.map((module) => module.path));
-  const seamEnds = new Set(plan.seams.flatMap((seam) => [seam.from, seam.to]));
-  const farEnds = [...planned].flatMap((path) => planFarEnds(model, path, view.includeTests)).filter((path) => !planned.has(path) && !seamEnds.has(path) && !isWithinAny(path, planned) && !isAncestorOfAny(path, planned));
-  const drawn = [...new Set([...planned, ...seamEnds, ...farEnds])].filter((path) => path !== ".");
+  const anchors = new Set([...planned, ...plan.seams.flatMap((seam) => [seam.from, seam.to])]);
+  const focused = view.selection?.kind === "module" ? view.selection.path : null;
+  const context = focused ? [focused, ...contextFarEnds(model, focused, view.includeTests)].filter((path) => standsBeside(path, anchors)) : [];
+  const drawn = [...new Set([...anchors, ...context])].filter((path) => path !== ".");
   const marks = planMarks(plan, view.conformance);
 
   const nodes: GraphNode[] = drawn.map((path) => {
@@ -19,16 +22,12 @@ export function buildPlanGraph(model: ArchitectureModel, view: ViewState, plan: 
   });
 
   const drawnSet = new Set(drawn);
-  const nearestDrawn = (path: string): string | null => [path, ...ancestorsOf(path).reverse()].find((candidate) => drawnSet.has(candidate)) ?? null;
-  const lifted = model.lift(new Set(drawn.flatMap(ancestorsOf)), { includeTests: view.includeTests }).dependencies.flatMap((dependency) => {
-    const source = nearestDrawn(dependency.from);
-    const target = nearestDrawn(dependency.to);
-    return source && target && source !== target && (planned.has(source) || planned.has(target)) ? [{ source, target, imports: dependency.imports }] : [];
-  });
-  const merged = aggregateEdges(lifted);
+  const today = aggregateEdges(dependenciesAmong(model, drawnSet, view.includeTests));
   const seams = new Map(plan.seams.filter((seam) => drawnSet.has(seam.from) && drawnSet.has(seam.to)).map((seam) => [edgeId(seam.from, seam.to), seam]));
-  for (const [key, seam] of seams) if (!merged.has(key)) merged.set(key, { source: seam.from, target: seam.to, imports: 0 });
-  const edges = [...merged].map(([key, edge]): GraphEdge => {
+  const shown = new Map<string, WeightedEdge>();
+  for (const [key, seam] of seams) shown.set(key, today.get(key) ?? { source: seam.from, target: seam.to, imports: 0 });
+  for (const [key, edge] of today) if (edge.source === focused || edge.target === focused) shown.set(key, edge);
+  const edges = [...shown].map(([key, edge]): GraphEdge => {
     const seam = seams.get(key);
     const overlay = seam ? seamOverlay(seam, view, marks.comments.get(`seam:${key}`) ?? 0) : null;
     const base = dependencyEdge(edge, seam ? "neutral" : "quiet");
@@ -38,17 +37,22 @@ export function buildPlanGraph(model: ArchitectureModel, view: ViewState, plan: 
   return { mode: "plan", nodes: withTones(nodes, planTones(edges, view)), edges: withSelection(edges, view) };
 }
 
-function planFarEnds(model: ArchitectureModel, path: string, includeTests: boolean): string[] {
+function contextFarEnds(model: ArchitectureModel, path: string, includeTests: boolean): string[] {
   if (!model.module(path)) return [];
-  return (["out", "in"] as const).flatMap((direction) => model.dependencies(path, direction, { includeTests }).slice(0, farEndsPerPlannedModule).map((far) => far.module));
+  return (["out", "in"] as const).flatMap((direction) => model.dependencies(path, direction, { includeTests }).slice(0, contextFarEndsPerDirection).map((far) => far.module));
 }
 
-function isWithinAny(path: string, roots: ReadonlySet<string>): boolean {
-  return [...roots].some((root) => path.startsWith(`${root}/`));
+function dependenciesAmong(model: ArchitectureModel, drawn: ReadonlySet<string>, includeTests: boolean): WeightedEdge[] {
+  const nearestDrawn = (path: string): string | null => [path, ...ancestorsOf(path).reverse()].find((candidate) => drawn.has(candidate)) ?? null;
+  return model.lift(new Set([...drawn].flatMap(ancestorsOf)), { includeTests }).dependencies.flatMap((dependency) => {
+    const source = nearestDrawn(dependency.from);
+    const target = nearestDrawn(dependency.to);
+    return source && target && source !== target ? [{ source, target, imports: dependency.imports }] : [];
+  });
 }
 
-function isAncestorOfAny(path: string, roots: ReadonlySet<string>): boolean {
-  return [...roots].some((root) => root.startsWith(`${path}/`));
+function standsBeside(path: string, anchors: ReadonlySet<string>): boolean {
+  return !anchors.has(path) && ![...anchors].some((anchor) => path.startsWith(`${anchor}/`) || anchor.startsWith(`${path}/`));
 }
 
 function seamOverlay(seam: Seam, view: ViewState, comments: number): SeamOverlay {

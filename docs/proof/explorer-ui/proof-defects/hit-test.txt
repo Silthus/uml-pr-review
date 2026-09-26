@@ -1,0 +1,13 @@
+# #41 browser hit test at 1440x900, PostHog fixture, ?plan=none&expanded=products
+# document.elementFromPoint at the centre of button[aria-label="show all modules in products"],
+# and the computed pointer-events chain from the button up.
+
+## before (origin/main b0008ee)
+{"hit":"DIV.react-flow__pane draggable","chain":["BUTTON:none","more-node tone-neutral:none","react-flow__node react-flow__node-more:none","react-flow__nodes:none","react-flow__viewport xyflow__viewport react-flow__container:none"]}
+status after clicking the cell three ways: "29 packages · 12 dependencies drawn · layout 68 ms" (unchanged)
+package tab "products/error_tracking package" after click: inspector heading stays "Overview", hit is DIV.react-flow__pane
+
+## after (this branch)
+{"hit":"BUTTON.","wrapper":"none","button":"all"}
+status after clicking the cell: "106 packages · 12 dependencies drawn · layout 9 ms"
+frame after show all: {"frameRight":966,"frameBottom":811,"kidsMaxRight":956,"kidsMaxBottom":801,"kids":90}

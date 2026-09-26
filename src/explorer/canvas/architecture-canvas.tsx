@@ -38,7 +38,7 @@ export function ArchitectureCanvas(props: CanvasProps) {
 function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath, allEdges, onAllEdges, onCloseLens, onClearSelection }: CanvasProps) {
   const nodes = useMemo(() => (scene ? toFlowNodes(scene, fresh) : []), [scene, fresh]);
   const edges = useMemo(() => (scene ? toFlowEdges(scene, fresh) : []), [scene, fresh]);
-  useFocus(scene, focus);
+  useFocus(scene, focus, pending);
   return (
     <div className="canvas" aria-label="Architecture canvas" aria-busy={pending || loading}>
       <div className="canvas-mode">
@@ -48,7 +48,7 @@ function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath,
             <button type="button" onClick={onCloseLens}>Back to map <kbd>Esc</kbd></button>
           </>
         ) : scene?.graph.mode === "plan" ? (
-          <span className="mode-label">Plan focus: planned modules, their seams, and their direct dependencies</span>
+          <span className="mode-label">Plan focus: planned modules and their seams. Select a module to see its dependencies.</span>
         ) : (
           <>
             <span className="mode-label">{allEdges ? "All top-level dependencies" : "Backbone: each package's heaviest dependency"}</span>
@@ -86,12 +86,12 @@ function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath,
   );
 }
 
-function useFocus(scene: Scene | null, focus: FocusRequest | null) {
+function useFocus(scene: Scene | null, focus: FocusRequest | null, pending: boolean) {
   const { fitView, fitBounds } = useReactFlow();
   const handled = useRef(0);
   const fittedInitially = useRef(false);
   useEffect(() => {
-    if (!scene) return;
+    if (!scene || pending) return;
     if (focus && focus.version !== handled.current) {
       const ids = focus.ids === "all" ? "all" : withLensNodes(scene, focus.ids);
       if (ids === "all" || ids.length > 0) {
@@ -106,7 +106,7 @@ function useFocus(scene: Scene | null, focus: FocusRequest | null) {
       fittedInitially.current = true;
       void fitBounds(sceneBounds(scene), { duration: 0, padding: 0.03 });
     }
-  }, [scene, focus, fitView, fitBounds]);
+  }, [scene, focus, pending, fitView, fitBounds]);
 }
 
 function sceneBounds(scene: Scene): { x: number; y: number; width: number; height: number } {

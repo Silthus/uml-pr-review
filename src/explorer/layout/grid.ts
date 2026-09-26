@@ -1,13 +1,16 @@
+import { childCap } from "../graph/map-graph.ts";
+
 export type Placement = { x: number; y: number; width: number; height: number };
 export type Packed = { width: number; height: number; placements: Map<string, Placement> };
 
 const padding = { left: 20, bottom: 20, right: 20 };
 const gap = 16;
 const targetAspect = 1.2;
-const maxColumns = 4;
+const foldedColumns = 4;
+const foldedCells = childCap + 1;
 
 export function packGrid(items: { id: string; width: number; height: number }[], options: { minWidth: number; headerHeight: number }): Packed {
-  const columns = Math.max(1, Math.min(items.length, maxColumns, Math.ceil(Math.sqrt(items.length * targetAspect))));
+  const columns = columnsFor(items);
   const placements = new Map<string, Placement>();
   let y = options.headerHeight + 4;
   let widest = 0;
@@ -23,4 +26,11 @@ export function packGrid(items: { id: string; width: number; height: number }[],
     y += rowHeight + gap;
   }
   return { width: Math.max(options.minWidth, widest), height: y - gap + padding.bottom, placements };
+}
+
+function columnsFor(items: { width: number; height: number }[]): number {
+  if (items.length <= foldedCells) return Math.max(1, Math.min(items.length, foldedColumns, Math.ceil(Math.sqrt(items.length * targetAspect))));
+  const meanWidth = items.reduce((total, item) => total + item.width, 0) / items.length;
+  const meanHeight = items.reduce((total, item) => total + item.height, 0) / items.length;
+  return Math.min(items.length, Math.ceil(Math.sqrt((items.length * targetAspect * meanHeight) / meanWidth)));
 }

@@ -1,7 +1,7 @@
 import { useHappyDom } from "./happy-dom.ts";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { act, cleanup, configure, fireEvent, render, waitFor, within } from "@testing-library/react";
-import type { ArchitecturePlan, ConformanceResult, PlanSummary } from "../../src/architecture/contracts/index.ts";
+import type { ArchitecturePayload, ArchitecturePlan, ConformanceResult, PlanComment, PlanSummary } from "../../src/architecture/contracts/index.ts";
 import { ExplorerApp } from "../../src/explorer/app.tsx";
 import { architectureOf } from "../support/architecture.ts";
 import { FakeEventSource } from "./fake-event-source.ts";
@@ -41,7 +41,7 @@ const plan: ArchitecturePlan = {
     { path: "products/error_tracking/frontend", action: "modify", responsibility: "Render issue flag usage.", origin: "agent" },
   ],
   seams: [
-    { from: logic, to: facade, action: "add", interface: { files: [`${facade}/api.py`], symbols: ["flags_for_issue"] }, rationale: "Route through the facade.", origin: "agent" },
+    { from: logic, to: facade, action: "add", interface: { files: [`${facade}/api.py`, `${facade}/types.py`], symbols: ["flags_for_issue"] }, rationale: "Route through the facade.", origin: "agent" },
     { from: logic, to: models, action: "add", rationale: "Intentional violation fixture.", origin: "agent" },
   ],
   comments: [],
@@ -52,6 +52,8 @@ const plan: ArchitecturePlan = {
   createdAt: at,
   updatedAt: at,
 };
+
+const crowded = architectureOf(Object.fromEntries(Array.from({ length: 14 }, (_, index) => [`products/product_${String(index + 1).padStart(2, "0")}/app.py`, []])), { repository: { id: "/repo/.git", root, commonDir: "/repo/.git", name: "repo" } });
 
 const summary: PlanSummary = { id: plan.id, title: plan.title, status: plan.status, revision: plan.revision, baseCommit, updatedAt: at, pendingHumanComments: 0 };
 
@@ -72,7 +74,7 @@ const conformance: ConformanceResult = {
       subject: { kind: "seam", from: logic, to: facade },
       target: "products/feature_flags/backend/models/flag.py",
       test: false,
-      message: "products/error_tracking/backend/logic bypasses the planned seam to products/feature_flags/backend/facade.",
+      message: "`products/error_tracking/backend/logic/service.py:18` imports `products/feature_flags/backend/models/flag.py` directly, but the plan routes `products/error_tracking/backend/logic` through `products/feature_flags/backend/facade`.",
       fix: "Import through products/feature_flags/backend/facade/api.py instead.",
     },
   ],
@@ -87,13 +89,15 @@ const conformance: ConformanceResult = {
   checkedAt: at,
 };
 
-function installFetch(statusByUrl = new Map<string, number>(), plans: PlanSummary[] = [summary]) {
+type FakeServer = { statusByUrl?: Map<string, number>; plans?: PlanSummary[]; architecture?: ArchitecturePayload; openPlan?: ArchitecturePlan };
+
+function installFetch({ statusByUrl = new Map<string, number>(), plans = [summary], architecture = payload, openPlan = plan }: FakeServer = {}) {
   const calls: { url: string; init?: RequestInit }[] = [];
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
     calls.push({ url, init });
     const status = statusByUrl.get(url) ?? 200;
-    if (url.startsWith("/api/architecture")) return Response.json(payload, { status });
+    if (url.startsWith("/api/architecture")) return Response.json(architecture, { status });
     if (url.startsWith("/api/plans/flags-on-issues/operations") && status === 409) return Response.json({ error: "stale revision", plan: { ...plan, revision: 3 } }, { status });
     if (url.startsWith("/api/plans/flags-on-issues/operations")) {
       const body = JSON.parse(String(init?.body)) as { operations: ArchitecturePlan["revisions"][number]["operations"] };
@@ -103,7 +107,7 @@ function installFetch(statusByUrl = new Map<string, number>(), plans: PlanSummar
     }
     if (url.startsWith("/api/plans/flags-on-issues/check")) return Response.json(conformance, { status });
     if (url.startsWith("/api/plans/flags-on-issues/lock")) return Response.json({ plan: { ...plan, status: "locked", revision: 3 } }, { status });
-    if (url.startsWith("/api/plans/flags-on-issues")) return Response.json({ plan, conformance: null }, { status });
+    if (url.startsWith("/api/plans/flags-on-issues")) return Response.json({ plan: openPlan, conformance: null }, { status });
     if (url.startsWith("/api/plans")) return Response.json(plans, { status });
     throw new Error(`Unexpected fetch ${url}`);
   }) as typeof fetch;
@@ -113,6 +117,16 @@ function installFetch(statusByUrl = new Map<string, number>(), plans: PlanSummar
 function renderExplorer(search = `?path=${encodeURIComponent(root)}&plan=flags-on-issues`) {
   history.replaceState(null, "", search);
   return render(<ExplorerApp />);
+}
+
+function planPanel(view: ReturnType<typeof render>) {
+  return within(view.getByRole("region", { name: "Architecture plan" }));
+}
+
+function seamRow(view: ReturnType<typeof render>, from: string, to: string): HTMLElement {
+  const row = planPanel(view).getAllByRole("listitem").find((item) => item.textContent?.includes(`${from} → ${to}`));
+  if (!row) throw new Error(`No seam row ${from} → ${to}`);
+  return within(row).getByRole("button");
 }
 
 async function settle() {
@@ -134,7 +148,7 @@ afterEach(cleanup);
 
 describe("ExplorerApp", () => {
   test("loads the architecture over REST and opens packages in place", async () => {
-    installFetch(new Map(), []);
+    installFetch({ plans: [] });
 
     const view = renderExplorer(`?path=${encodeURIComponent(root)}`);
 
@@ -183,7 +197,7 @@ describe("ExplorerApp", () => {
     const dependedOnBy = view.getByRole("region", { name: "Depended on by" });
     expect(within(dependedOnBy).getByText("None outside tests.")).toBeTruthy();
     const facadeTab = view.getByRole("button", { name: `${facade} package` });
-    expect(facadeTab.closest(".package")?.className).toContain("tone-outgoing");
+    await waitFor(() => expect(facadeTab.closest(".package")?.className).toContain("tone-outgoing"));
 
     await act(async () => {
       fireEvent.click(view.getByRole("button", { name: "Focus connections" }));
@@ -246,7 +260,7 @@ describe("ExplorerApp", () => {
 
   test("comments post plan operations and a stale revision is explained after the plan is reloaded", async () => {
     const operationsUrl = `/api/plans/flags-on-issues/operations?path=${encodeURIComponent(root)}`;
-    const calls = installFetch(new Map([[operationsUrl, 409]]));
+    const calls = installFetch({ statusByUrl: new Map([[operationsUrl, 409]]) });
 
     const view = renderExplorer();
     const logicTab = await view.findByRole("button", { name: `${logic} package` });
@@ -320,5 +334,117 @@ describe("ExplorerApp", () => {
     const violatingSeam = within(planPanel).getAllByTitle(models).map((path) => path.closest("li")).find((row) => row?.textContent?.includes("violating"));
     expect(violatingSeam?.textContent).toContain(`${logic} → ${models}`);
     expect(within(planPanel).getAllByTitle(facade).some((path) => path.closest("li")?.textContent?.includes("conforming"))).toBe(true);
+  });
+
+  test("show all reveals the children folded behind the more cell", async () => {
+    installFetch({ plans: [], architecture: crowded });
+
+    const view = renderExplorer(`?path=${encodeURIComponent(root)}&expanded=products`);
+    const showAll = await view.findByRole("button", { name: "show all modules in products" });
+
+    expect(view.getAllByRole("button", { name: /^products\/product_\d+ package$/ })).toHaveLength(12);
+
+    await act(async () => {
+      fireEvent.click(showAll);
+    });
+
+    expect(await view.findByRole("button", { name: "products/product_14 package" })).toBeTruthy();
+    expect(view.getAllByRole("button", { name: /^products\/product_\d+ package$/ })).toHaveLength(14);
+    expect(view.queryByRole("button", { name: "show all modules in products" })).toBeNull();
+  });
+
+  test("a seam's interface lists one file per line", async () => {
+    installFetch();
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+    await act(async () => {
+      fireEvent.click(seamRow(view, logic, facade));
+    });
+
+    const files = within(view.getByRole("list", { name: "Interface files" })).getAllByRole("listitem");
+    expect(files.map((file) => file.textContent)).toEqual([`${facade}/api.py`, `${facade}/types.py`]);
+  });
+
+  test("a finding renders its code spans as code", async () => {
+    installFetch();
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+    await act(async () => {
+      fireEvent.click(view.getByRole("button", { name: "Check" }));
+    });
+    await settle();
+
+    const finding = planPanel(view).getByRole("listitem", { name: /^bypasses-seam/ });
+    expect(within(finding).getAllByRole("code").map((code) => code.textContent)).toEqual([
+      "products/error_tracking/backend/logic/service.py:18",
+      "products/feature_flags/backend/models/flag.py",
+      logic,
+      facade,
+    ]);
+  });
+
+  test("a plan the agent creates while no plan is open shows in the picker and the URL", async () => {
+    installFetch({ plans: [] });
+
+    const view = renderExplorer(`?path=${encodeURIComponent(root)}`);
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+    const created: ArchitecturePlan = { ...plan, revision: 1, revisions: [plan.revisions[0]!] };
+
+    await act(async () => {
+      FakeEventSource.instances[0]?.emit({ seq: 2, at, repositoryId: "/repo/.git", type: "plan_patch", planId: plan.id, revision: created.revisions[0]!, plan: created });
+    });
+    await settle();
+
+    const picker = view.getByRole("combobox", { name: "Plan" }) as HTMLSelectElement;
+    expect(picker.value).toBe(plan.id);
+    expect(picker.selectedOptions[0]?.textContent).toBe(plan.title);
+    expect(new URLSearchParams(location.search).get("plan")).toBe(plan.id);
+  });
+
+  test("a comment on a dependency that was never planned is listed as unplanned, not dropped", async () => {
+    const comment: PlanComment = { id: "c1", target: { kind: "seam", from: "products/error_tracking/frontend", to: "products/error_tracking/backend/facade" }, author: "human", body: "Keep this one as it is.", at, revision: 3 };
+    installFetch({ openPlan: { ...plan, revision: 3, comments: [comment] } });
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+
+    const thread = planPanel(view).getByRole("region", { name: "Comments on unplanned seam products/error_tracking/frontend → products/error_tracking/backend/facade" });
+    expect(within(thread).getByText("unplanned seam")).toBeTruthy();
+    expect(within(thread).getByText(comment.body)).toBeTruthy();
+  });
+
+  test("a comment on a seam the plan drops stays visible with its original target and the reply", async () => {
+    const comment: PlanComment = { id: "c1", target: { kind: "seam", from: logic, to: models }, author: "human", body: "Route this through the facade instead of the models.", at, revision: 3 };
+    installFetch({ openPlan: { ...plan, revision: 3, comments: [comment] } });
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+    const reply = "Done. The models seam is gone; logic reads flags through the facade.";
+    const dropping: ArchitecturePlan["revisions"][number] = { number: 4, at, actor: "agent", client: "claude", kind: "edit", operations: [{ op: "drop_seam", from: logic, to: models }, { op: "resolve_comment", commentId: "c1", reply }] };
+    const dropped: ArchitecturePlan = { ...plan, revision: 4, seams: plan.seams.filter((seam) => seam.to !== models), comments: [{ ...comment, resolution: { by: "agent", reply, at, revision: 4 } }], revisions: [...plan.revisions, dropping] };
+
+    await act(async () => {
+      FakeEventSource.instances[0]?.emit({ seq: 4, at, repositoryId: "/repo/.git", type: "plan_patch", planId: plan.id, revision: dropping, plan: dropped });
+    });
+    await settle();
+
+    expect(planPanel(view).queryAllByRole("listitem").some((item) => item.textContent?.includes(`${logic} → ${models}`) && item.textContent.includes("add"))).toBe(false);
+    const thread = planPanel(view).getByRole("region", { name: `Comments on dropped seam ${logic} → ${models}` });
+    expect(within(thread).getByText(comment.body)).toBeTruthy();
+    expect(within(thread).getByText(reply)).toBeTruthy();
+
+    await act(async () => {
+      fireEvent.click(within(thread).getByRole("button", { name: `Show seam ${logic} → ${models}` }));
+    });
+
+    const inspectorThread = view.getByRole("region", { name: `seam ${logic} → ${models}` });
+    expect(within(inspectorThread).getByText(reply)).toBeTruthy();
   });
 });

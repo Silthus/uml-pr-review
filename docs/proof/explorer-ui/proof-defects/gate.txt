@@ -1,0 +1,12 @@
+# gate on the final tree, rebased on origin/main 3ba3c6d: bun test && bun run typecheck
+# (one earlier run tripped a timing budget in the architecture suites while other work ran; this run is on a quiet machine)
+
+checkConformance: 38400 files, 170250 imports, 50 changed files, median 9.93 ms
+
+ 333 pass
+ 0 fail
+ 781 expect() calls
+Ran 333 tests across 26 files. [12.32s]
+
+$ tsc --noEmit
+typecheck exit: 0

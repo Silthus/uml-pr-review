@@ -38,7 +38,7 @@ export function Header(props: HeaderProps) {
           <option value="">No plan</option>
           {props.plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.title}{plan.status === "locked" ? " · locked" : ""}</option>)}
         </select>
-        {props.planId ? <Switch label="Plan overlay" checked={props.planVisible} onChange={props.onPlanVisible} /> : null}
+        <Switch label="Plan overlay" checked={props.planVisible} disabled={!props.planId} onChange={props.onPlanVisible} />
         <Switch label="Follow agent" checked={props.followAgent} onChange={props.onFollowAgent} />
         <Switch label="Show tests" checked={props.includeTests} onChange={props.onIncludeTests} />
         <span className={`stream stream-${props.eventStatus}`} title={`Event stream ${props.eventStatus}`}>{props.eventStatus}</span>

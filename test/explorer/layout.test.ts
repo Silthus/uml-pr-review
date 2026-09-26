@@ -1,4 +1,5 @@
 import { afterAll, describe, expect, test } from "bun:test";
+import { ArchitecturePlanSchema } from "../../src/architecture/contracts/index.ts";
 import { ArchitectureModel } from "../../src/architecture/model/index.ts";
 import type { ViewState } from "../../src/explorer/graph/types.ts";
 import { buildVisibleGraph } from "../../src/explorer/graph/visible-graph.ts";
@@ -10,6 +11,16 @@ const source = (await Bun.file(new URL("./fixtures/posthog-products-expanded.jso
 const model = new ArchitectureModel(architectureOf(source));
 const engine = createLayoutEngine();
 const mapView: ViewState = { mode: "map", expanded: new Set(), showAll: new Set(), selection: null, includeTests: false, allEdges: false, plan: null, conformance: null };
+
+const planFocusSource = (await Bun.file(new URL("./fixtures/posthog-plan-focus.json", import.meta.url)).json()) as ArchitectureSource;
+const planFocusModel = new ArchitectureModel(architectureOf(planFocusSource));
+const realPlan = ArchitecturePlanSchema.parse(await Bun.file(new URL("./fixtures/posthog-plan-final.json", import.meta.url)).json());
+const plannedAndSeamEnds = [...new Set([...realPlan.modules.map((module) => module.path), ...realPlan.seams.flatMap((seam) => [seam.from, seam.to])])].sort();
+const packageNameFontSize = 14;
+const legibleNameSize = 11;
+const canvasAt1440x900 = { width: 1095, height: 800 };
+const fitPadding = 0.03;
+const zoomRange = { min: 0.08, max: 1.8 };
 
 afterAll(() => engine.dispose());
 
@@ -55,6 +66,20 @@ describe("PostHog layout through the app's layout path", () => {
     expect(childrenOutsideParents(laidOut.nodes)).toEqual([]);
   });
 
+  test("show all packs every child of products in a landscape grid with no more cell", async () => {
+    const graph = buildVisibleGraph(model, { ...mapView, expanded: new Set(["products"]), showAll: new Set(["products"]) });
+
+    const laidOut = await engine.layout(graph);
+
+    const children = laidOut.nodes.filter((node) => node.parentId === "products");
+    expect(children).toHaveLength(model.children("products").length);
+    expect(children.map((node) => node.id)).not.toContain("more:products");
+    const frame = laidOut.nodes.find((node) => node.id === "products")!;
+    expect(frame.width).toBeGreaterThan(frame.height);
+    expect(overlappingPairs(laidOut.nodes)).toEqual([]);
+    expect(childrenOutsideParents(laidOut.nodes)).toEqual([]);
+  });
+
   test("the connection lens puts dependents left, the selected package expanded in the middle, and dependencies right", async () => {
     const selection = { kind: "module", path: "products/error_tracking" } as const;
     const graph = buildVisibleGraph(model, { ...mapView, mode: "lens", selection });
@@ -73,9 +98,9 @@ describe("PostHog layout through the app's layout path", () => {
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
   });
 
-  test("the plan focus shows only planned modules, seam ends, and their direct dependencies, flat with context", async () => {
+  test("the plan focus shows planned modules, seam ends, and the selected module's direct dependencies, flat with context", async () => {
     const plan = planOf(["products/error_tracking", "products/feature_flags"], [["products/error_tracking", "products/feature_flags"]]);
-    const graph = buildVisibleGraph(model, { ...mapView, plan });
+    const graph = buildVisibleGraph(model, { ...mapView, plan, selection: { kind: "module", path: "products/error_tracking" } });
 
     const laidOut = await engine.layout(graph);
 
@@ -94,6 +119,78 @@ describe("PostHog layout through the app's layout path", () => {
     expect(overlappingPairs(laidOut.nodes)).toEqual([]);
   });
 });
+
+describe("plan focus on the real PostHog plan (10 modules, 8 seams)", () => {
+  test("the automatic fit at 1440×900 keeps package names at 11 px or more", async () => {
+    const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan });
+
+    const laidOut = await engine.layout(graph);
+
+    const zoom = fitZoom(boundsOf(laidOut.nodes), canvasAt1440x900);
+    expect(packageNameFontSize * zoom).toBeGreaterThanOrEqual(legibleNameSize);
+    expect(overlappingPairs(laidOut.nodes)).toEqual([]);
+  });
+
+  test("with nothing selected it draws only planned modules, seam ends, and the seams", () => {
+    const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan });
+
+    expect(graph.nodes.map((node) => node.id).sort()).toEqual(plannedAndSeamEnds);
+    expect(graph.edges.map((edge) => edge.id).sort()).toEqual(realPlan.seams.map((seam) => `${seam.from}->${seam.to}`).sort());
+  });
+
+  test("selecting a planned module adds its direct dependencies and nothing else", () => {
+    const selected = "products/error_tracking/backend/logic";
+    const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan, selection: { kind: "module", path: selected } });
+
+    const context = graph.edges.filter((edge) => edge.data.seam === null);
+    expect(context.length).toBeGreaterThan(0);
+    expect(context.every((edge) => edge.source === selected || edge.target === selected)).toBe(true);
+    const farEnds = graph.nodes.map((node) => node.id).filter((id) => !plannedAndSeamEnds.includes(id));
+    expect(farEnds.length).toBeGreaterThan(0);
+    expect(farEnds.length).toBeLessThanOrEqual(4);
+    expect(graph.edges.filter((edge) => edge.data.seam !== null)).toHaveLength(realPlan.seams.length);
+  });
+});
+
+describe("plan focus context", () => {
+  test("selecting a context node keeps it on the canvas with its own dependencies", () => {
+    const logic = "products/error_tracking/backend/logic";
+    const withLogic = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan, selection: { kind: "module", path: logic } });
+    const contextNode = withLogic.nodes.map((node) => node.id).find((id) => !plannedAndSeamEnds.includes(id))!;
+
+    const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan, selection: { kind: "module", path: contextNode } });
+
+    expect(graph.nodes.find((node) => node.id === contextNode)?.data.tone).toBe("selected");
+    expect(graph.edges.some((edge) => edge.source === contextNode || edge.target === contextNode)).toBe(true);
+  });
+
+  test("selecting a module keeps the seams' import counts and never draws a module inside a seam end", () => {
+    const source: ArchitectureSource = {
+      "app/logic/a.py": ["lib/api.py", "lib/inner/deep.py"],
+      "app/logic/b.py": ["lib/api.py"],
+      "app/logic/c.py": ["lib/api.py"],
+      "lib/api.py": [],
+      "lib/inner/deep.py": [],
+    };
+    const localModel = new ArchitectureModel(architectureOf(source));
+    const plan = planOf(["app/logic"], [["app/logic", "lib"]]);
+    const seamImports = (selection: ViewState["selection"]) => buildVisibleGraph(localModel, { ...mapView, plan, selection }).edges.find((edge) => edge.data.seam !== null)?.data.imports;
+
+    expect(seamImports(null)).toBe(4);
+    expect(seamImports({ kind: "module", path: "app/logic" })).toBe(4);
+    expect(buildVisibleGraph(localModel, { ...mapView, plan, selection: { kind: "module", path: "app/logic" } }).nodes.map((node) => node.id)).not.toContain("lib/inner");
+  });
+});
+
+function fitZoom(bounds: { width: number; height: number }, viewport: { width: number; height: number }): number {
+  const zoom = Math.min((viewport.width * (1 - 2 * fitPadding)) / bounds.width, (viewport.height * (1 - 2 * fitPadding)) / bounds.height);
+  return Math.min(zoomRange.max, Math.max(zoomRange.min, zoom));
+}
+
+function boundsOf(nodes: LaidOutNode[]): { width: number; height: number } {
+  const rects = absoluteRects(nodes);
+  return { width: Math.max(...rects.map((rect) => rect.right)) - Math.min(...rects.map((rect) => rect.left)), height: Math.max(...rects.map((rect) => rect.bottom)) - Math.min(...rects.map((rect) => rect.top)) };
+}
 
 function planOf(modules: string[], seams: [string, string][]): NonNullable<ViewState["plan"]> {
   const at = "2026-09-26T10:15:00.000Z";

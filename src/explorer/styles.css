@@ -252,6 +252,16 @@ a:hover {
   white-space: nowrap;
 }
 
+.header-controls select {
+  width: 220px;
+  text-overflow: ellipsis;
+}
+
+.switch:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .search {
   position: relative;
   flex: 1 1 260px;
@@ -521,6 +531,12 @@ a:hover {
   transition: opacity 180ms;
 }
 
+.package-tab,
+.disclosure,
+.more-node button {
+  pointer-events: all;
+}
+
 .package {
   width: 100%;
   height: 100%;
@@ -565,6 +581,11 @@ a:hover {
 .package.ghost {
   --package-tab: var(--purple-soft);
   --package-line: var(--purple);
+}
+
+.package.ghost.tone-selected {
+  --package-tab: var(--accent);
+  --package-line: var(--accent);
 }
 
 .package.ghost .package-body {
@@ -615,7 +636,7 @@ a:hover {
   box-sizing: border-box;
 }
 
-.package.container .package-body {
+.package.frame .package-body {
   background: color-mix(in srgb, var(--package-body) 45%, transparent);
 }
 
@@ -1189,6 +1210,16 @@ a:hover {
   font-weight: 600;
 }
 
+.finding p {
+  overflow-wrap: anywhere;
+}
+
+.finding code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+
 .finding .fix {
   color: var(--ink-2);
   margin-top: 4px;
@@ -1197,6 +1228,24 @@ a:hover {
 .finding .fix::before {
   content: "Fix: ";
   font-weight: 600;
+}
+
+.interface-files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.outside-thread {
+  margin-bottom: 10px;
+}
+
+.outside-thread header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .comment-list {

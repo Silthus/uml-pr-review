@@ -8,7 +8,17 @@ export const architectureServer = { name: "uml-pr-review", url: "http://127.0.0.
 const implementInstruction = "Implement this in the working directory. Do not commit, push, or open a pull request.";
 const planningInstruction = "Use the planning-architecture skill. You have standing approval to lock your plan once it is drafted.";
 const inheritedEnvironment = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "TERM", "LANG", "LC_ALL", "TMPDIR"];
-const isolatedEnvironment = { CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" };
+const isolatedEnvironment = {
+  CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1",
+  GH_TOKEN: "blocked-by-benchmark",
+  GH_CONFIG_DIR: "/tmp/bench-gh-config-empty",
+  GIT_SSH_COMMAND: "false",
+  GIT_TERMINAL_PROMPT: "0",
+  GIT_CONFIG_COUNT: "1",
+  GIT_CONFIG_KEY_0: "remote.origin.pushurl",
+  GIT_CONFIG_VALUE_0: "file:///dev/null/pushes-are-blocked-in-benchmark-replays",
+};
+const outwardTools = ["Bash(git push:*)", "Bash(gh:*)", "Bash(curl:*api.github.com*)"];
 
 export type Invocation = { command: string[]; prompt: string; env: Record<string, string> };
 
@@ -39,6 +49,8 @@ export function invocationFor(task: Task, arm: ReplayArm, skill: string, environ
       "--output-format",
       "stream-json",
       "--verbose",
+      "--disallowedTools",
+      ...outwardTools,
       "--strict-mcp-config",
       "--mcp-config",
       JSON.stringify({ mcpServers: servers }),

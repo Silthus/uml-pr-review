@@ -1,0 +1,745 @@
+{
+  "provider": "posthog",
+  "source": {
+    "host": "us.posthog.com",
+    "projectId": 347861
+  },
+  "scope": "products/workflows",
+  "collectedAt": "2026-09-26T20:31:00Z",
+  "rows": [
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowPropertyFiltersSearch.test.tsx",
+      "signal": "ci.test_failures",
+      "value": 18,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowPropertyFiltersSearch.test.tsx",
+          "count": 27
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowPropertyFiltersSearch.test.tsx",
+      "signal": "ci.test_retries",
+      "value": 9,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowPropertyFiltersSearch.test.tsx",
+          "count": 27
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowPropertyFiltersSearch.test.tsx",
+      "signal": "ci.test_p95_ms",
+      "value": 2336,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/hogflows/filters/HogFlowPropertyFiltersSearch.test.tsx",
+          "count": 27
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow.py",
+      "signal": "ci.test_failures",
+      "value": 10,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow.py",
+          "count": 3781
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow.py",
+      "signal": "ci.test_retries",
+      "value": 10,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow.py",
+          "count": 3781
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow.py",
+      "signal": "ci.test_p95_ms",
+      "value": 920,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow.py",
+          "count": 3781
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_workflow_proposals.py",
+      "signal": "ci.test_failures",
+      "value": 6,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_workflow_proposals.py",
+          "count": 357
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_workflow_proposals.py",
+      "signal": "ci.test_retries",
+      "value": 1,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_workflow_proposals.py",
+          "count": 357
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_workflow_proposals.py",
+      "signal": "ci.test_p95_ms",
+      "value": 748,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_workflow_proposals.py",
+          "count": 357
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowProposalsLogic.test.ts",
+      "signal": "ci.test_failures",
+      "value": 2,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/workflowProposalsLogic.test.ts",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowProposalsLogic.test.ts",
+      "signal": "ci.test_retries",
+      "value": 2,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/workflowProposalsLogic.test.ts",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/workflowProposalsLogic.test.ts",
+      "signal": "ci.test_p95_ms",
+      "value": 5098,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/workflowProposalsLogic.test.ts",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+      "signal": "ci.test_failures",
+      "value": 1,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+      "signal": "ci.test_retries",
+      "value": 1,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+      "signal": "ci.test_p95_ms",
+      "value": 113,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.test.tsx",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_ses_provider.py",
+      "signal": "ci.test_p95_ms",
+      "value": 2014,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_ses_provider.py",
+          "count": 24066
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_email_reputation.py",
+      "signal": "ci.test_p95_ms",
+      "value": 27059,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_email_reputation.py",
+          "count": 6180
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/utils/test_rrule_utils.py",
+      "signal": "ci.test_p95_ms",
+      "value": 821,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/utils/test_rrule_utils.py",
+          "count": 5447
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_audience_v2.py",
+      "signal": "ci.test_p95_ms",
+      "value": 643,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_audience_v2.py",
+          "count": 2417
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_revisions.py",
+      "signal": "ci.test_p95_ms",
+      "value": 986,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_revisions.py",
+          "count": 216
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_message_preferences_access_control.py",
+      "signal": "ci.test_p95_ms",
+      "value": 675,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_message_preferences_access_control.py",
+          "count": 201
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_message_suppression_access_control.py",
+      "signal": "ci.test_p95_ms",
+      "value": 741,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_message_suppression_access_control.py",
+          "count": 115
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_access_control.py",
+      "signal": "ci.test_p95_ms",
+      "value": 863,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_access_control.py",
+          "count": 82
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_draft_publish.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1070,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_draft_publish.py",
+          "count": 72
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_workflow_email_health.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1729,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_workflow_email_health.py",
+          "count": 60
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_message_assets.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1382,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_message_assets.py",
+          "count": 57
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_invocation_results.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1428,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_invocation_results.py",
+          "count": 46
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_timing_reschedule.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1451,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_timing_reschedule.py",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_batch_audience.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1573,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_batch_audience.py",
+          "count": 25
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_template.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1212,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_template.py",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_hog_flow_schedule.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1230,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_hog_flow_schedule.py",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_slack_trigger_filters.py",
+      "signal": "ci.test_p95_ms",
+      "value": 838,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_slack_trigger_filters.py",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_action_email.py",
+      "signal": "ci.test_p95_ms",
+      "value": 640,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_action_email.py",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_github_trigger_filters.py",
+      "signal": "ci.test_p95_ms",
+      "value": 983,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_github_trigger_filters.py",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_team_workflows_config.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1277,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_team_workflows_config.py",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_hog_flow.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1266,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_hog_flow.py",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_workflow_customer_tasks.py",
+      "signal": "ci.test_p95_ms",
+      "value": 723,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_workflow_customer_tasks.py",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_workflow_scout_runs_api.py",
+      "signal": "ci.test_p95_ms",
+      "value": 847,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_workflow_scout_runs_api.py",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_github_workflow_events.py",
+      "signal": "ci.test_p95_ms",
+      "value": 641,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_github_workflow_events.py",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_email_sending_tier.py",
+      "signal": "ci.test_p95_ms",
+      "value": 960,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_email_sending_tier.py",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_hog_flow_admin.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1448,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_hog_flow_admin.py",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_rewrite_email_asset_url.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1624,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_rewrite_email_asset_url.py",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_hog_flow_cancel.py",
+      "signal": "ci.test_p95_ms",
+      "value": 746,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_hog_flow_cancel.py",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/api/test/test_workflow_email_pause.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1178,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/api/test/test_workflow_email_pause.py",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_ses_tenant_state.py",
+      "signal": "ci.test_p95_ms",
+      "value": 746,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_ses_tenant_state.py",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_timing_reschedule.py",
+      "signal": "ci.test_p95_ms",
+      "value": 576,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_timing_reschedule.py",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_hog_flow_revision_model.py",
+      "signal": "ci.test_p95_ms",
+      "value": 1002,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_hog_flow_revision_model.py",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_strip_placeholder_sender_overrides.py",
+      "signal": "ci.test_p95_ms",
+      "value": 688,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_strip_placeholder_sender_overrides.py",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/test/test_template_input_usage.py",
+      "signal": "ci.test_p95_ms",
+      "value": 934,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/test/test_template_input_usage.py",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "products/workflows/backend/utils/test_batch_trigger_limit.py",
+      "signal": "ci.test_p95_ms",
+      "value": 645,
+      "window": "30d",
+      "attribution": "exact",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "id": "products/workflows/backend/utils/test_batch_trigger_limit.py",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "unavailable": [
+    {
+      "signal": "errors.occurrences",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "errors.users",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "apm.requests",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "apm.error_rate",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "apm.p95_ms",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "logs.warn_error_lines",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "usage.pageviews",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    },
+    {
+      "signal": "usage.users",
+      "reason": "project 2 not reachable: switch-project returned 404"
+    }
+  ]
+}

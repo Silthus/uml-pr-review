@@ -24,6 +24,9 @@ const optionsSchema = z.object({
 });
 type Options = z.infer<typeof optionsSchema>;
 
+const crawlSchema = z.object({ merged: z.array(z.number().int()), closed: z.array(z.number().int()), feedback: z.array(pullRequestFeedbackSchema) });
+type Crawl = z.infer<typeof crawlSchema>;
+
 const usage = "Usage: bun harvest/run.ts --repo owner/name --scope <path> [--scope <path>] --since YYYY-MM-DD --out <dir> [--term <word>] [--config <root file>] [--no-jev]";
 
 const options = parseOptions();
@@ -43,15 +46,12 @@ await Bun.write(join(options.out, "harvest.json"), `${JSON.stringify(harvest, nu
 console.log(`Harvested ${harvest.items.length} items into ${join(options.out, "harvest.json")}`);
 console.log(JSON.stringify(countBy(harvest.items), null, 2));
 
-const crawlSchema = z.object({ merged: z.array(z.number().int()), closed: z.array(z.number().int()), feedback: z.array(pullRequestFeedbackSchema) });
-type Crawl = z.infer<typeof crawlSchema>;
-
 async function harvestReviews(options: Options): Promise<HarvestItem[]> {
   const { merged, closed, feedback } = await cachedCrawl(options);
-  collected.mergedPullRequests = merged.length;
-  collected.closedUnmergedPullRequests = closed.length;
-  collected.inlineComments = feedback.reduce((sum, pr) => sum + pr.reviewThreads.nodes.reduce((threads, { comments }) => threads + comments.nodes.length, 0), 0);
-  collected.reviewBodies = feedback.reduce((sum, pr) => sum + pr.reviews.nodes.filter(({ body }) => body.trim().length > 0).length, 0);
+  collected["merged pull requests touching the scope"] = merged.length;
+  collected["closed, unmerged pull requests touching the scope"] = closed.length;
+  collected["inline review comments on those pull requests"] = feedback.reduce((sum, pr) => sum + pr.reviewThreads.nodes.reduce((threads, { comments }) => threads + comments.nodes.length, 0), 0);
+  collected["non-empty review bodies on those pull requests"] = feedback.reduce((sum, pr) => sum + pr.reviews.nodes.filter(({ body }) => body.trim().length > 0).length, 0);
   return feedback.flatMap((pullRequest) => reviewFeedback(pullRequest, options.scope, drops));
 }
 
@@ -75,8 +75,9 @@ async function filterSessions(candidates: HarvestItem[]): Promise<{ sessionItems
 }
 
 async function harvestSessions({ repo }: Options): Promise<HarvestItem[]> {
-  const turns = await userTurns(defaultSessionLocations(), repo.split("/")[1]?.toLowerCase() ?? repo);
-  for (const turn of turns) collected[`${turn.source}Turns`] = (collected[`${turn.source}Turns`] ?? 0) + 1;
+  const hint = repo.split("/")[1]?.toLowerCase() ?? repo;
+  const turns = await userTurns(defaultSessionLocations(), hint);
+  for (const turn of turns) count(`${turn.source} user turns in ${hint} sessions`);
   const author = await gh(["api", "user"], z.object({ login: z.string() }));
   return correctionCandidates(turns, terms, author.login, drops);
 }
@@ -84,7 +85,7 @@ async function harvestSessions({ repo }: Options): Promise<HarvestItem[]> {
 async function harvestWrittenRules({ repo, scope, config }: Options): Promise<HarvestItem[]> {
   const items: HarvestItem[] = [];
   const documents = (await Promise.all(scope.map((path) => filesUnder(repo, commit, path)))).flat().filter(isGuidanceDocument);
-  collected.guidanceDocuments = documents.length;
+  collected["guidance documents in the scope"] = documents.length;
   for (const path of documents) {
     const text = await rawContent(repo, `${path}?ref=${commit}`);
     if (text !== null) items.push(...statementItems(repo, commit, path, documentStatements(text)));
@@ -93,7 +94,7 @@ async function harvestWrittenRules({ repo, scope, config }: Options): Promise<Ha
   for (const path of config) {
     const text = await rawContent(repo, `${path}?ref=${commit}`);
     if (text === null) continue;
-    collected.configFiles = (collected.configFiles ?? 0) + 1;
+    count("root config files read");
     items.push(...statementItems(repo, commit, path, configBlocks(text, moduleNames)));
   }
   return items;
@@ -110,6 +111,10 @@ function parseOptions(): Options {
     process.exit(1);
   }
   return parsed.data;
+}
+
+function count(what: string): void {
+  collected[what] = (collected[what] ?? 0) + 1;
 }
 
 function countBy(items: readonly HarvestItem[]): Record<string, number> {

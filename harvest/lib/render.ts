@@ -1,7 +1,8 @@
+import { basename } from "node:path";
 import type { Harvest } from "./items.ts";
 import type { Evidence, Rule, Theory } from "./theory.ts";
 
-const evidencePerRule = 3;
+const linksPerRule = 4;
 
 const sections: { title: string; kinds: Rule["kind"][] }[] = [
   { title: "Guarantees", kinds: ["guarantee"] },
@@ -16,7 +17,8 @@ export function renderTheory(theory: Theory): string {
     `# ${theory.product}: theory draft`,
     "",
     `Harvested from ${theory.source.repo} (${theory.source.scopes.map((scope) => `\`${scope}\``).join(", ")}) since ${theory.source.since}: review comments, agent corrections, and written rules.`,
-    "Every rule links the evidence it was clustered from. The level says how the rule holds today: `review-only` (a reader), `documented` (a doc says so), `linted` (CI fails), `structural` (the wrong code cannot be written).",
+    "Each rule links where it came up. The quotes, what was checked in the code, and the full evidence live in `rules.json`.",
+    "Levels say how a rule holds today: `review-only` (a reader), `documented` (a doc says so), `linted` (CI fails), `structural` (the wrong code cannot be written).",
     "This is a draft for the team to argue with. Nothing here is agreed yet.",
     "",
     "## Vocabulary",
@@ -31,7 +33,7 @@ export function renderTheory(theory: Theory): string {
     ...sections.flatMap(({ title, kinds }) => ruleSection(title, theory.rules.filter(({ kind }) => kinds.includes(kind)))),
     "## Caveats",
     "",
-    ...theory.rules.filter(({ kind }) => kind === "caveat").flatMap(ruleBlock),
+    ...theory.rules.filter(({ kind }) => kind === "caveat").map(ruleLine),
     ...theory.caveats.map(({ statement, evidence }) => `- ${statement}${evidence.length > 0 ? ` (${evidence.map(link).join(", ")})` : ""}`),
     "",
     "## Ladder backlog",
@@ -80,30 +82,30 @@ export function renderSources(harvest: Harvest, theory: Theory): string {
 }
 
 function ruleSection(title: string, rules: readonly Rule[]): string[] {
-  return rules.length === 0 ? [] : [`## ${title}`, "", ...rules.flatMap(ruleBlock)];
+  return rules.length === 0 ? [] : [`## ${title}`, "", ...rules.map(ruleLine), ""];
 }
 
-function ruleBlock(rule: Rule): string[] {
-  const shown = rule.evidence.slice(0, evidencePerRule);
-  const more = rule.evidence.length - shown.length;
-  return [
-    `### \`${rule.id}\``,
-    "",
-    rule.statement,
-    "",
-    `- Component: ${rule.component}. Level: ${rule.currentLevel} → ${rule.proposedLevel}. Confidence: ${rule.confidence}.`,
-    `- Today: ${rule.currentLevelBasis}`,
-    `- Enforce: ${rule.howToEnforce}`,
-    `- Evidence: ${rule.occurrences} ${plural(rule.occurrences, "occurrence")}, ${rule.humanAuthors} human ${plural(rule.humanAuthors, "author")}.`,
-    ...shown.map((evidence) => `  - ${link(evidence)}: "${evidence.quote}"`),
-    ...(more > 0 ? [`  - …and ${more} more in \`rules.json\`.`] : []),
-    "",
-  ];
+function ruleLine(rule: Rule): string {
+  const sources = distinctOrigins(rule.evidence).slice(0, linksPerRule).map(link);
+  const more = rule.occurrences - sources.length;
+  const evidence = `${sources.join(", ")}${more > 0 ? `, and ${more} more` : ""}`;
+  return `- **\`${rule.id}\`**: ${rule.statement} _${rule.component}; ${rule.currentLevel} → ${rule.proposedLevel}; ${rule.confidence} confidence; ${rule.occurrences} ${plural(rule.occurrences, "occurrence")}, ${rule.humanAuthors} human ${plural(rule.humanAuthors, "author")}: ${evidence}._`;
+}
+
+function distinctOrigins(evidence: readonly Evidence[]): Evidence[] {
+  const seen = new Set<string>();
+  return evidence.filter(({ origin }) => !seen.has(origin) && seen.add(origin));
 }
 
 function link(evidence: Evidence): string {
-  const label = evidence.source === "session" ? `${evidence.author}, agent session` : evidence.source === "doc" ? evidence.origin.replace(/^doc:/, "") : `${evidence.origin} ${evidence.author}${evidence.source === "bot-review" ? " (bot)" : ""}`;
-  return evidence.url.startsWith("https://") ? `[${label}](${evidence.url})` : label;
+  return evidence.url.startsWith("https://") ? `[${label(evidence)}](${evidence.url})` : label(evidence);
+}
+
+function label({ source, origin, author, url }: Evidence): string {
+  if (source === "session") return `${author}, agent session`;
+  const line = url.match(/#L(\d+)$/)?.[1];
+  if (source === "doc") return line ? `${basename(origin)} L${line}` : basename(origin);
+  return `${origin} ${author}${source === "bot-review" ? " (bot)" : ""}`;
 }
 
 function plural(count: number, noun: string): string {

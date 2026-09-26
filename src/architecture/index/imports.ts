@@ -1,14 +1,12 @@
 import type { Node } from "web-tree-sitter";
-import { languageOf, lineOf, readSyntaxTree } from "../../analyzer/parser.ts";
+import { lineOf, readSyntaxTree, type LanguageId } from "../../analyzer/parser.ts";
 import type { ImportKind } from "../contracts/index.ts";
 
 export type ImportRef = { specifier: string; line: number; kind: ImportKind; names: string[] };
 
-export const extractorVersion = "imports-v2";
+export const extractorVersion = "imports-v3";
 
-export async function extractImports(path: string, source: string): Promise<ImportRef[] | null> {
-  const language = languageOf(path);
-  if (!language) return null;
+export async function extractImports(language: LanguageId, source: string): Promise<ImportRef[] | null> {
   return readSyntaxTree(language, source, (root) => (language === "python" ? pythonImports(root) : scriptImports(root)));
 }
 

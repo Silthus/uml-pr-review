@@ -1,9 +1,10 @@
 import { readBlobs } from "./git.ts";
+import type { LanguageId } from "../../analyzer/parser.ts";
 import { extractImports, type ImportRef } from "./imports.ts";
 
-export type BlobToExtract = { sha: string; path: string };
+export type BlobToExtract = { sha: string; language: LanguageId };
 export type ExtractionRequest = { cwd: string; blobs: BlobToExtract[] };
-export type Extraction = { sha: string; refs: ImportRef[] | null };
+export type Extraction = { blob: BlobToExtract; refs: ImportRef[] | null };
 export type ExtractionReply = { ok: true; extractions: Extraction[] } | { ok: false; message: string };
 
 declare const self: Worker;
@@ -23,16 +24,16 @@ async function replyTo(request: ExtractionRequest): Promise<ExtractionReply> {
 async function extractChunk({ cwd, blobs }: ExtractionRequest): Promise<Extraction[]> {
   const sources = await readBlobs(cwd, blobs.map(({ sha }) => sha));
   const extractions: Extraction[] = [];
-  for (const { sha, path } of blobs) {
-    const source = sources.get(sha);
-    extractions.push({ sha, refs: source === undefined ? null : await extractOrNull(path, source) });
+  for (const blob of blobs) {
+    const source = sources.get(blob.sha);
+    extractions.push({ blob, refs: source === undefined ? null : await extractOrNull(blob.language, source) });
   }
   return extractions;
 }
 
-async function extractOrNull(path: string, source: string): Promise<ImportRef[] | null> {
+async function extractOrNull(language: LanguageId, source: string): Promise<ImportRef[] | null> {
   try {
-    return await extractImports(path, source);
+    return await extractImports(language, source);
   } catch {
     return null;
   }

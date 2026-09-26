@@ -5,11 +5,13 @@ export type TreeEntry = { mode: string; sha: string; path: string };
 const symbolicLinkMode = "120000";
 const repositoryOverrides = new Set(["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_OBJECT_DIRECTORY"]);
 
-export async function git(cwd: string, args: string[], env: Record<string, string> = {}): Promise<string> {
+export type GitOptions = { env?: Record<string, string>; input?: string };
+
+export async function git(cwd: string, args: string[], { env = {}, input }: GitOptions = {}): Promise<string> {
   const command = ["git", ...args];
   const child = Bun.spawn(command, {
     cwd,
-    stdin: "ignore",
+    stdin: input === undefined ? "ignore" : new TextEncoder().encode(input),
     stdout: "pipe",
     stderr: "pipe",
     env: { ...inheritedEnvironment(), GIT_TERMINAL_PROMPT: "0", ...env },

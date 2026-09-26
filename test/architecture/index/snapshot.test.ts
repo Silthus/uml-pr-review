@@ -72,6 +72,33 @@ describe("working-tree snapshot", () => {
     expect(importsOf(payload)).toEqual(["app/first.py:1 -> app/second.py static"]);
   });
 
+  test("captures files hidden by assume-unchanged or skip-worktree, keeps absent skip-worktree files, and leaves the real index byte-identical", async () => {
+    const repository = await temporaryRepository({ "app/use.ts": "", "app/local.ts": "", "lib/api.ts": "", "sparse/away.ts": "" });
+    repositories.push(repository);
+    await repository.git("update-index", "--assume-unchanged", "app/use.ts");
+    await repository.git("update-index", "--skip-worktree", "app/local.ts", "sparse/away.ts");
+    await repository.write({ "app/use.ts": 'import "../lib/api";\n', "app/local.ts": 'import "./use";\n', "sparse/away.ts": null });
+    const before = await worktreeState(repository);
+
+    const payload = await createRepositoryIndexer().index(repository.dir, "working-tree");
+
+    expect(await worktreeState(repository)).toEqual(before);
+    expect(pathsOf(payload)).toEqual(["app/local.ts", "app/use.ts", "lib/api.ts", "sparse/away.ts"]);
+    expect(importsOf(payload)).toEqual(["app/local.ts:1 -> app/use.ts static", "app/use.ts:1 -> lib/api.ts static"]);
+  });
+
+  test("captures untracked files outside a sparse checkout without deleting the files it leaves out", async () => {
+    const repository = await temporaryRepository({ "app/use.ts": "", "outside/kept.ts": "" });
+    repositories.push(repository);
+    await repository.git("sparse-checkout", "set", "app");
+    await repository.write({ "outside/new.ts": 'import "./kept";\n' });
+
+    const payload = await createRepositoryIndexer().index(repository.dir, "working-tree");
+
+    expect(pathsOf(payload)).toEqual(["app/use.ts", "outside/kept.ts", "outside/new.ts"]);
+    expect(importsOf(payload)).toEqual(["outside/new.ts:1 -> outside/kept.ts static"]);
+  });
+
   test("gives concurrent snapshots of one worktree the same tree", async () => {
     const repository = await repositoryWithIgnoredButTrackedFile();
     await repository.write({ "app/new.py": "" });

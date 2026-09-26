@@ -1,0 +1,342 @@
+:root {
+  color-scheme: light dark;
+  --paper: oklch(0.975 0.004 250);
+  --card: oklch(0.995 0.002 250);
+  --ink: oklch(0.24 0.02 262);
+  --ink-2: oklch(0.45 0.02 262);
+  --hair: oklch(0.24 0.02 262 / 0.14);
+  --accent: oklch(0.48 0.15 266);
+  --accent-soft: oklch(0.48 0.15 266 / 0.1);
+  --add: oklch(0.56 0.15 152);
+  --del: oklch(0.54 0.19 26);
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Inter, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Mono", Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: oklch(0.2 0.012 262);
+    --card: oklch(0.235 0.013 262);
+    --ink: oklch(0.93 0.008 250);
+    --ink-2: oklch(0.72 0.01 250);
+    --hair: oklch(0.93 0.008 250 / 0.14);
+    --accent: oklch(0.74 0.13 266);
+    --accent-soft: oklch(0.74 0.13 266 / 0.14);
+    --add: oklch(0.74 0.16 152);
+    --del: oklch(0.7 0.16 24);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font: 14px/1.45 var(--sans);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+  display: grid;
+  gap: 20px;
+}
+
+.masthead h1 {
+  margin: 4px 0 0;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  margin: 0;
+  font: 600 12px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 13px var(--mono);
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+button {
+  padding: 8px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--card);
+  font: 600 13px var(--sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button.secondary,
+button.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--hair);
+}
+
+button.ghost {
+  border-color: transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.error {
+  margin: 0;
+  color: var(--del);
+}
+
+.recents {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.recents button {
+  background: var(--accent-soft);
+  color: var(--ink);
+  border-color: transparent;
+  font: 12px var(--mono);
+}
+
+.pulls-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pulls-head p {
+  margin: 2px 0 0;
+  font-size: 12px;
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.segmented button {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink-2);
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+#pulls-status {
+  margin: 0;
+}
+
+.pull-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.pull-list a {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 4px 12px;
+  padding: 10px 8px;
+  border-top: 1px solid var(--hair);
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.pull-list a:hover {
+  background: var(--accent-soft);
+}
+
+.pull-number {
+  font: 600 13px var(--mono);
+  color: var(--accent);
+}
+
+.pull-title {
+  font-weight: 600;
+}
+
+.pull-meta {
+  grid-column: 2;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.pull-size {
+  grid-row: 1 / span 2;
+  grid-column: 3;
+  align-self: center;
+  font: 12px var(--mono);
+}
+
+.pull-size .additions {
+  color: var(--add);
+}
+
+.pull-size .deletions {
+  color: var(--del);
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  font: 500 11px var(--sans);
+  color: var(--ink-2);
+}
+
+.review {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--hair);
+  background: var(--card);
+}
+
+.toolbar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.toolbar a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.stage {
+  position: relative;
+  min-height: 0;
+}
+
+.stage iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  background: var(--paper);
+  text-align: center;
+  padding: 24px;
+}
+
+.overlay p {
+  max-width: 640px;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.overlay.failed .spinner {
+  display: none;
+}
+
+.overlay.failed p {
+  color: var(--del);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

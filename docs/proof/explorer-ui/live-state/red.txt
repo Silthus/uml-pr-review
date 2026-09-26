@@ -3,29 +3,37 @@
 
 bun test v1.4.2 (50a8a8387)
 test/explorer/live-state.dom.test.tsx:
-(fail) explorer live state > reconnecting the event stream refetches the revision the stream missed [5003.93ms]
+(fail) explorer live state > reconnecting the event stream refetches the revision the stream missed [5004.99ms]
 TestingLibraryElementError: Unable to find an element with the text: Architecture plan · revision 2. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
-(fail) explorer live state > a failed resync shows its error until the next resync succeeds [5002.72ms]
+(fail) explorer live state > a failed resync shows its error until the next resync succeeds [5002.47ms]
 TestingLibraryElementError: Unable to find role="alert"
-252 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
-256 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+(fail) explorer live state > a resync that fails after a newer one applied does not show its error [5002.47ms]
+error: expect(received).toBe(expected)
+Expected: "Architecture plan · revision 2"
+Received: "Architecture plan · revision 1"
+(fail) explorer live state > a plan id that no longer exists falls back to the first plan, and reconnects keep following it [5002.19ms]
+error: expect(received).toBe(expected)
+Expected: "Architecture plan · revision 2"
+Received: "Architecture plan · revision 1"
+292 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+296 |     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
 error: expect(received).toBe(expected)
 Expected: "Architecture plan · revision 3"
 Received: "Architecture plan · revision 2"
-(fail) explorer live state > a late mutation response never rolls the plan back behind a newer live revision [9.09ms]
-267 |     expect(box.value).toBe("Please preserve my detailed feedback");
+(fail) explorer live state > a late mutation response never rolls the plan back behind a newer live revision [8.10ms]
+307 |     expect(box.value).toBe("Please preserve my detailed feedback");
 error: expect(received).toBe(expected)
 Expected: "Please preserve my detailed feedback"
 Received: ""
-(fail) explorer live state > a rejected comment keeps the text and says why it was not saved [6.16ms]
+(fail) explorer live state > a rejected comment keeps the text and says why it was not saved [6.15ms]
 TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name "Responsibility"
-(fail) explorer live state > a rejected module save keeps the form open with its input [17.57ms]
-297 |     expect(panel.queryByText("✓ conforming · final")).toBeNull();
+(fail) explorer live state > a rejected module save keeps the form open with its input [16.27ms]
+337 |     expect(panel.queryByText("✓ conforming · final")).toBeNull();
 error: expect(received).toBeNull()
 Received: HTMLSpanElement {
-(fail) explorer live state > a check of another revision in another worktree is shown as outdated, with what it checked [4277.92ms]
+(fail) explorer live state > a check of another revision in another worktree is shown as outdated, with what it checked [4202.12ms]
 TestingLibraryElementError: Unable to find an element with the text: Not checked yet. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
-(fail) explorer live state > live check results count only for this worktree, and any plan edit outdates them [12.29ms]
- 5 pass
- 7 fail
- 15 expect() calls
+(fail) explorer live state > live check results count only for this worktree, and any plan edit outdates them [16.99ms]
+ 4 pass
+ 9 fail
+ 9123 expect() calls

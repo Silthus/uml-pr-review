@@ -96,13 +96,26 @@ function fakeServer({ initialPlans = [plan], conformance = null }: { initialPlan
     holdReads() {
       holding = true;
     },
+    stopHolding() {
+      holding = false;
+    },
     failReads(value: boolean) {
       failing = value;
     },
-    async releaseReads() {
+    async releaseReads(order: "oldest-first" | "newest-first" = "oldest-first") {
       holding = false;
-      for (const resume of heldReads.splice(0)) resume();
+      const resumes = heldReads.splice(0);
+      for (const resume of order === "oldest-first" ? resumes : resumes.reverse()) resume();
       await new Promise((resolve) => setTimeout(resolve, 20));
+    },
+    listFirst(id: string) {
+      const first = plans.get(id);
+      if (!first) throw new Error(`No plan ${id}`);
+      plans.delete(id);
+      const rest = [...plans.entries()];
+      plans.clear();
+      plans.set(id, first);
+      for (const [key, value] of rest) plans.set(key, value);
     },
   };
 }
@@ -181,7 +194,7 @@ describe("explorer live state", () => {
     });
     await act(async () => FakeEventSource.latest.fail());
     await act(async () => FakeEventSource.latest.open());
-    await act(() => server.releaseReads());
+    await act(() => server.releaseReads("newest-first"));
 
     expect(view.getByRole("heading", { name: secondPlan.title })).toBeTruthy();
     await waitFor(() => expect(view.getByLabelText("Architecture canvas").getAttribute("aria-busy")).toBe("false"));
@@ -202,13 +215,40 @@ describe("explorer live state", () => {
     await waitFor(() => expect(view.queryByRole("alert")).toBeNull());
   });
 
-  test("a plan id that no longer exists falls back to the first plan", async () => {
-    fakeServer();
+  test("a resync that fails after a newer one applied does not show its error", async () => {
+    const server = fakeServer();
+    const view = await renderExplorer();
+
+    server.holdReads();
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+    server.stopHolding();
+    server.advanceTo(revision(2));
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+    await waitFor(() => expect(shownRevision(view)).toBe("Architecture plan · revision 2"));
+
+    server.failReads(true);
+    await act(() => server.releaseReads());
+
+    expect(view.queryByRole("alert")).toBeNull();
+    expect(shownRevision(view)).toBe("Architecture plan · revision 2");
+  });
+
+  test("a plan id that no longer exists falls back to the first plan, and reconnects keep following it", async () => {
+    const server = fakeServer({ initialPlans: [secondPlan, plan] });
     history.replaceState(null, "", `?path=${encodeURIComponent(root)}&plan=deleted-plan`);
     const view = render(<ExplorerApp />);
+    expect(await view.findByRole("heading", { name: secondPlan.title })).toBeTruthy();
+    expect((view.getByRole("combobox", { name: "Plan" }) as HTMLSelectElement).value).toBe(secondPlan.id);
 
-    expect(await view.findByText("Architecture plan · revision 1")).toBeTruthy();
-    expect((view.getByRole("combobox", { name: "Plan" }) as HTMLSelectElement).value).toBe(plan.id);
+    server.listFirst(plan.id);
+    server.advanceTo({ ...revision(2), id: secondPlan.id, title: secondPlan.title });
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+
+    await waitFor(() => expect(shownRevision(view)).toBe("Architecture plan · revision 2"));
+    expect(view.getByRole("heading", { name: secondPlan.title })).toBeTruthy();
   });
 
   test("choosing another plan opens it, and choosing no plan closes the panel", async () => {

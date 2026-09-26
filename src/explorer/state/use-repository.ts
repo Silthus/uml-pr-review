@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ArchitecturePlan, ConformanceResult, PlanOperation } from "../../architecture/contracts/index.ts";
 import { ArchitectureModel } from "../../architecture/model/index.ts";
-import { createExplorerApi, StalePlanError, type ExplorerApi, type RepositoryState } from "../api.ts";
+import { createExplorerApi, StalePlanError, type ExplorerApi, type PlansSnapshot, type RepositoryState } from "../api.ts";
 import type { MutationOutcome } from "../inspector/plan-actions.ts";
 import { rememberRepository } from "./recent-repositories.ts";
 import { acceptArchitecture, acceptLiveCheck, acceptPlan, acceptPlans, type PlanChoice } from "./reconcile.ts";
@@ -51,13 +51,14 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
 
   const beginRequest = useCallback(() => ++requests.current.next, []);
   const stillWanted = useCallback((request: number) => request > requests.current.barrier, []);
+  const superseded = useCallback((kind: Fetched, request: number) => !stillWanted(request) || request <= requests.current.applied[kind], [stillWanted]);
   const appliesFetched = useCallback(
     (kind: Fetched, request: number) => {
-      if (!stillWanted(request) || request <= requests.current.applied[kind]) return false;
+      if (superseded(kind, request)) return false;
       requests.current.applied[kind] = request;
       return true;
     },
-    [stillWanted],
+    [superseded],
   );
 
   const select = useCallback((nextPath: string | null, nextChoice: PlanChoice) => {
@@ -77,6 +78,10 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
     setError(null);
   }, []);
 
+  const followFallback = useCallback((loaded: PlansSnapshot) => {
+    if (typeof choiceRef.current === "string" && loaded.plan && loaded.plan.id !== choiceRef.current) choiceRef.current = undefined;
+  }, []);
+
   const fetchPlansInto = useCallback(
     async (client: ExplorerApi, base: () => RepositoryState | null): Promise<void> => {
       const request = beginRequest();
@@ -85,12 +90,13 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
         const current = base();
         if (!current || !appliesFetched("plans", request)) return;
         commit(acceptPlans(current, loaded, choiceRef.current));
+        followFallback(loaded);
         settle();
       } catch (caught) {
-        if (stillWanted(request)) failWith(caught);
+        if (!superseded("plans", request)) failWith(caught);
       }
     },
-    [beginRequest, appliesFetched, commit, settle, stillWanted, failWith],
+    [beginRequest, appliesFetched, commit, followFallback, settle, superseded, failWith],
   );
 
   const load = useCallback(() => {
@@ -106,9 +112,9 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
         return fetchPlansInto(api, () => stateRef.current ?? { path, payload, plans: [], plan: null, conformance: null });
       })
       .catch((caught: unknown) => {
-        if (stillWanted(request)) failWith(caught);
+        if (!superseded("architecture", request)) failWith(caught);
       });
-  }, [api, path, beginRequest, appliesFetched, fetchPlansInto, stillWanted, failWith]);
+  }, [api, path, beginRequest, appliesFetched, fetchPlansInto, superseded, failWith]);
 
   useEffect(load, [api, choice]);
 
@@ -128,9 +134,9 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
         settle();
       })
       .catch((caught: unknown) => {
-        if (stillWanted(request)) failWith(caught);
+        if (!superseded("architecture", request)) failWith(caught);
       });
-  }, [api, beginRequest, appliesFetched, commit, settle, stillWanted, failWith]);
+  }, [api, beginRequest, appliesFetched, commit, settle, superseded, failWith]);
 
   const accept = useCallback(
     (reconcile: (current: RepositoryState) => RepositoryState): boolean => {

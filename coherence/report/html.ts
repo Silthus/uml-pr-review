@@ -1,6 +1,6 @@
 import { scoreKeys, type Scores } from "../backfill.ts";
 import { escape, lineChart, sparkline, type ChartSeries } from "./charts.ts";
-import { dimensions, type MoverView, type ReportModel, type ScopeView } from "./model.ts";
+import { dimensions, labelOf, type MoverView, type ReportModel, type ScopeView } from "./model.ts";
 import type { ModuleRow } from "./modules.ts";
 import { style } from "./style.ts";
 
@@ -79,7 +79,7 @@ function dimensionSection(model: ReportModel): string {
   return `<section>
   <h2>Each dimension</h2>
   <p class="note">The composite weights architecture 35, complexity 25, smells 20, and tests 20. Each chart keeps the full 0 to 100 axis so the products compare honestly.</p>
-  <div class="grid">${dimensions.map((dimension) => figure(model, `${capitalise(dimension)} score, 0 to 100`, dimension, 540, 240)).join("")}</div>
+  <div class="charts">${dimensions.map((dimension) => figure(model, `${capitalise(dimension)} score, 0 to 100`, dimension, 540, 240)).join("")}</div>
 </section>`;
 }
 
@@ -190,10 +190,6 @@ function method(model: ReportModel): string {
     <li><b>Runtime.</b> The backfill took ${model.runtime.seconds.toLocaleString("en-US")} s: ${model.runtime.measured} commits measured, ${model.runtime.reused} reused from <code>coherence/data/</code>.</li>
   </ul>
 </footer>`;
-}
-
-function labelOf(scope: string): string {
-  return scope.split("/").at(-1) ?? scope;
 }
 
 function capitalise(text: string): string {

@@ -75,8 +75,7 @@ figure.chart figcaption { font-size: 13px; color: var(--ink-2); margin-bottom: 4
 .tooltip span:last-child { color: var(--ink-2); }
 .table-view { font-size: 12px; color: var(--ink-2); margin-top: 4px; }
 .table-view summary { cursor: pointer; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
-div.grid { stroke: none; }
+.charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
 table { border-collapse: collapse; width: 100%; font-size: 13px; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 th { color: var(--ink-2); font-weight: 500; }
@@ -90,6 +89,6 @@ tbody tr:hover { background: var(--mid); }
 .subject { max-width: 520px; }
 .sha { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
 td.module b { font-weight: 600; }
-@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: no-preference) { .delta-cell .bar { transition: width 200ms ease; } }
 `;

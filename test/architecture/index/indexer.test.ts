@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, test } from "bun:test";
+import { Database } from "bun:sqlite";
 import { mkdtemp, realpath, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ArchitecturePayload } from "../../../src/architecture/contracts/index.ts";
 import { createRepositoryIndexer } from "../../../src/architecture/index/index.ts";
 import { CommandError } from "../../../src/git.ts";
-import { temporaryRepository, type TemporaryRepository } from "./repository.ts";
+import { importsOf, temporaryRepository, type TemporaryRepository } from "./repository.ts";
 
 const repositories: TemporaryRepository[] = [];
 
@@ -83,6 +84,32 @@ describe("extraction cache", () => {
 
     expect(payload.stats).toMatchObject({ parsed: 3, imports: 2 });
     expect(payload.imports).toHaveLength(2);
+  });
+
+  test("parses identical bytes once per grammar, so a file never inherits another language's imports", async () => {
+    const sameBytes = 'import("./target");\n';
+    const repository = await repositoryOf({ "a/use.ts": sameBytes, "z/use.py": sameBytes, "a/target.ts": "", "b/use.tsx": sameBytes });
+
+    const first = await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+    const second = await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+
+    expect(importsOf(first)).toEqual(["a/use.ts:1 -> a/target.ts dynamic"]);
+    expect(first.stats).toMatchObject({ parsed: 4, cacheHits: 0 });
+    expect(second.stats).toMatchObject({ parsed: 0, cacheHits: 4 });
+    expect(second.imports).toEqual(first.imports);
+  });
+
+  test("drops rows written by another extractor version when it opens the cache", async () => {
+    const repository = await repositoryOf(threeFiles);
+    await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+    const cache = new Database(join(repository.dir, ".git/uml-pr-review/index-cache.sqlite"));
+    cache.run("INSERT INTO extraction (sha, extractor, data) VALUES ('stale', 'imports-v2', '[]')");
+    const extractorsIn = () => cache.query<{ extractor: string }, []>("SELECT DISTINCT extractor FROM extraction ORDER BY extractor").all().map(({ extractor }) => extractor);
+
+    await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+
+    expect(extractorsIn()).toEqual(["imports-v3/python"]);
+    cache.close();
   });
 
   test("parses only the blobs a new tree adds, and each distinct blob once", async () => {

@@ -7,7 +7,9 @@ import { extractInWorkers } from "./worker-pool.ts";
 
 export type Extracted = ImportRef[] | null;
 export type ExtractionCounts = { parsed: number; cacheHits: number; failed: number };
-export type ExtractionResult = { bySha: Map<string, Extracted>; counts: ExtractionCounts };
+export type ExtractionResult = { refsOf: (blob: BlobToExtract) => Extracted; counts: ExtractionCounts };
+
+const currentExtractors = `${extractorVersion}/`;
 
 export class ExtractionStore {
   private readonly database: Database;
@@ -19,40 +21,49 @@ export class ExtractionStore {
     this.database.run("PRAGMA journal_mode = WAL");
     this.database.run("PRAGMA synchronous = NORMAL");
     this.database.run("CREATE TABLE IF NOT EXISTS extraction (sha TEXT, extractor TEXT, data TEXT, PRIMARY KEY (sha, extractor)) WITHOUT ROWID");
+    this.database.run("DELETE FROM extraction WHERE substr(extractor, 1, length(?1)) <> ?1", [currentExtractors]);
   }
 
   async extract(cwd: string, blobs: BlobToExtract[], workerCount: number): Promise<ExtractionResult> {
-    const unique = uniqueBySha(blobs);
-    const misses = unique.filter(({ sha }) => !this.recall(sha));
-    const extractions = await extractInWorkers(cwd, misses, workerCount);
-    this.remember(extractions.map(({ sha, refs }) => [sha, refs]));
+    const unique = [...new Map(blobs.map((blob) => [keyOf(blob), blob])).values()];
+    const misses = unique.filter((blob) => !this.recall(blob));
+    const extractions = await extractInWorkers(
+      cwd,
+      misses.map(({ sha, language }) => ({ sha, language })),
+      workerCount,
+    );
+    this.remember(extractions.map(({ blob, refs }) => [blob, refs]));
     const failed = extractions.filter(({ refs }) => refs === null).length;
     return {
-      bySha: new Map(unique.map(({ sha }) => [sha, this.remembered.get(sha) ?? null])),
+      refsOf: (blob) => this.remembered.get(keyOf(blob)) ?? null,
       counts: { parsed: extractions.length - failed, cacheHits: unique.length - misses.length, failed },
     };
   }
 
-  private recall(sha: string): boolean {
-    if (this.remembered.has(sha)) return true;
+  private recall(blob: BlobToExtract): boolean {
+    if (this.remembered.has(keyOf(blob))) return true;
     const row = this.database
       .query<{ data: string }, [string, string]>("SELECT data FROM extraction WHERE sha = ? AND extractor = ?")
-      .get(sha, extractorVersion);
+      .get(blob.sha, extractorOf(blob));
     if (!row) return false;
-    this.remembered.set(sha, JSON.parse(row.data) as Extracted);
+    this.remembered.set(keyOf(blob), JSON.parse(row.data) as Extracted);
     return true;
   }
 
-  private remember(entries: [string, Extracted][]) {
+  private remember(entries: [BlobToExtract, Extracted][]) {
     if (entries.length === 0) return;
     const insert = this.database.query("INSERT OR REPLACE INTO extraction (sha, extractor, data) VALUES (?, ?, ?)");
     this.database.transaction(() => {
-      for (const [sha, refs] of entries) insert.run(sha, extractorVersion, JSON.stringify(refs));
+      for (const [blob, refs] of entries) insert.run(blob.sha, extractorOf(blob), JSON.stringify(refs));
     })();
-    for (const [sha, refs] of entries) this.remembered.set(sha, refs);
+    for (const [blob, refs] of entries) this.remembered.set(keyOf(blob), refs);
   }
 }
 
-function uniqueBySha(blobs: BlobToExtract[]): BlobToExtract[] {
-  return [...new Map(blobs.map((blob) => [blob.sha, blob])).values()];
+function extractorOf({ language }: BlobToExtract): string {
+  return `${currentExtractors}${language}`;
+}
+
+function keyOf(blob: BlobToExtract): string {
+  return `${blob.sha}/${blob.language}`;
 }

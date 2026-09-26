@@ -10,11 +10,12 @@ const filesPerLeaf = 6;
 const importCount = 170_000;
 const changedFileCount = 50;
 const addedImportsPerChangedFile = 4;
+const retargetedUnchangedFiles = 50;
 const plannedElements = 20;
 const plannedActions = ["modify", "create", "remove"] as const;
 const seamActions = ["add", "keep", "remove"] as const;
 
-test("a check of a PostHog-sized pair of payloads with 50 changed files and 20 planned modules and seams stays under 100 ms", () => {
+test("a check of a PostHog-sized pair of payloads with 50 changed files, 50 retargeted unchanged files, and 20 planned modules and seams stays under 100 ms", () => {
   const files = syntheticFiles();
   const random = seededRandom(42);
   const basePairs = randomPairs(files.length, importCount, random);
@@ -23,16 +24,17 @@ test("a check of a PostHog-sized pair of payloads with 50 changed files and 20 p
   for (const file of changedFiles) {
     for (let added = 0; added < addedImportsPerChangedFile; added++) headPairs.add(file * files.length + random(files.length));
   }
+  for (let retargeted = 0; retargeted < retargetedUnchangedFiles; retargeted++) headPairs.add((retargeted * 97 + 13) * files.length + random(files.length));
   const base = new ArchitectureModel(payloadOf(files, basePairs));
   const head = new ArchitectureModel(payloadOf(files, headPairs));
   const changes: ChangedFile[] = changedFiles.map((file) => ({ path: files[file]![0], status: "modified", firstChangedLine: 1 }));
   const plan = planOf({
-    modules: Array.from({ length: plannedElements }, (_, index) => ({ path: `m${index % topLevel}/m${index}`, action: plannedActions[index % 3]! })),
+    modules: Array.from({ length: plannedElements }, (_, index) => ({ path: `${folder(index % topLevel)}/${folder(index)}`, action: plannedActions[index % 3]! })),
     seams: Array.from({ length: plannedElements }, (_, index) => ({
-      from: `m${index % topLevel}/m${index}`,
-      to: `m${(index + 5) % topLevel}/m${index}`,
+      from: `${folder(index % topLevel)}/${folder(index)}`,
+      to: `${folder((index + 5) % topLevel)}/${folder(index)}`,
       action: seamActions[index % 3]!,
-      interface: { files: [`m${(index + 5) % topLevel}/m${index}/m0/f0.py`], symbols: ["api"] },
+      interface: { files: [`${folder((index + 5) % topLevel)}/${folder(index)}/${folder(0)}/f0.py`], symbols: ["api"] },
     })),
   });
 
@@ -53,7 +55,7 @@ function syntheticFiles(): ArchitecturePayload["files"] {
       module++;
       for (let leaf = 0; leaf < perParent; leaf++) {
         module++;
-        for (let file = 0; file < filesPerLeaf; file++) files.push([`m${top}/m${middle}/m${leaf}/f${file}.py`, module, "python", "production"]);
+        for (let file = 0; file < filesPerLeaf; file++) files.push([`${folder(top)}/${folder(middle)}/${folder(leaf)}/f${file}.py`, module, "python", "production"]);
       }
     }
   }
@@ -77,10 +79,10 @@ function payloadOf(files: ArchitecturePayload["files"], pairs: Set<number>): Arc
 function syntheticModules(): ArchitecturePayload["modules"] {
   const modules: ArchitecturePayload["modules"] = [[".", ".", -1, "root", 0, 0]];
   for (let top = 0; top < topLevel; top++) {
-    const topIndex = modules.push([`m${top}`, `m${top}`, 0, "directory", 0, 0]) - 1;
+    const topIndex = modules.push([folder(top), folder(top), 0, "directory", 0, 0]) - 1;
     for (let middle = 0; middle < perParent; middle++) {
-      const middleIndex = modules.push([`m${top}/m${middle}`, `m${middle}`, topIndex, "directory", 0, 0]) - 1;
-      for (let leaf = 0; leaf < perParent; leaf++) modules.push([`m${top}/m${middle}/m${leaf}`, `m${leaf}`, middleIndex, "directory", filesPerLeaf, filesPerLeaf]);
+      const middleIndex = modules.push([`${folder(top)}/${folder(middle)}`, folder(middle), topIndex, "directory", 0, 0]) - 1;
+      for (let leaf = 0; leaf < perParent; leaf++) modules.push([`${folder(top)}/${folder(middle)}/${folder(leaf)}`, folder(leaf), middleIndex, "directory", filesPerLeaf, filesPerLeaf]);
     }
   }
   return modules;
@@ -99,6 +101,10 @@ function randomPairs(fileCount: number, count: number, random: (limit: number) =
 function seededRandom(seed: number): (limit: number) => number {
   let state = seed;
   return (limit) => (state = (Math.imul(state, 1_664_525) + 1_013_904_223) >>> 0) % limit;
+}
+
+function folder(index: number): string {
+  return `m${String(index).padStart(2, "0")}`;
 }
 
 function medianMilliseconds(run: () => void): number {

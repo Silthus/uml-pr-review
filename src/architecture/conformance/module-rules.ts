@@ -13,13 +13,13 @@ function plannedModuleFindings(change: Change, module: PlannedModule): DraftFind
   switch (module.action) {
     case "create":
       if (files.length > 0) return [];
-      return [plannedDraft("missing-module", module, change.placeholderFor(module.path), feedback.missingCreatedModule(module))];
+      return [plannedDraft(change, "missing-module", module, change.placeholderFor(module.path), feedback.missingCreatedModule(module))];
     case "modify":
       if (change.changes.some(({ path }) => isWithin(path, module.path))) return [];
-      return [plannedDraft("missing-module", module, firstFileOf(change, files, module.path), feedback.missingModifiedModule(module, change.plan.status))];
+      return [plannedDraft(change, "missing-module", module, firstFileOf(change, files, module.path), feedback.missingModifiedModule(module, change.plan.status))];
     case "remove":
       if (files.length === 0) return [];
-      return [plannedDraft("module-not-removed", module, { file: files[0]!, line: 1 }, feedback.moduleNotRemoved(module, files.length))];
+      return [plannedDraft(change, "module-not-removed", module, firstFileOf(change, files, module.path), feedback.moduleNotRemoved(module, files.length))];
   }
 }
 
@@ -28,8 +28,8 @@ function firstFileOf(change: Change, files: string[], path: string): Location {
   return file ? { file, line: 1 } : change.placeholderFor(path);
 }
 
-function plannedDraft(rule: DraftFinding["rule"], module: PlannedModule, location: Location, text: feedback.Feedback): DraftFinding {
-  return draftOf({ rule, severity: "planned", ...location, subject: moduleSubject(module.path), ...text });
+function plannedDraft(change: Change, rule: DraftFinding["rule"], module: PlannedModule, location: Location, text: feedback.Feedback): DraftFinding {
+  return draftOf({ rule, severity: "planned", ...location, subject: moduleSubject(module.path), test: change.isTest(location.file), ...text });
 }
 
 function unplannedModuleFindings(change: Change): DraftFinding[] {

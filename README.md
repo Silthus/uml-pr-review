@@ -115,9 +115,10 @@ Every command below runs from the root of this repository and was run as written
 The following prerequisites are required:
 
 - **Bun**, with this repository's dependencies installed. Without them the index cannot load its tree-sitter grammars.
+- **`jq`**, to read the runner's JSON files in steps 6 and 7. `open` in step 3 is macOS; open the file in any browser elsewhere.
 - **`gh`**, signed in. The loop reads PostHog's open pull requests, the inbox lives in `Silthus/uml-pr-review`, and `--draft` opens the pull request with it.
 - **`uv`/`uvx`**, on your `PATH` or from PostHog's flox environment (`~/dev/posthog/.flox/run/*/bin/uvx`). The index runs pinned `lizard` and `ruff` through it.
-- **A PostHog clone** at `~/dev/posthog`, with `upstream` pointing to `PostHog/posthog` and `origin` to your fork. The loop works in scratch worktrees and never touches your checkout. Frontend tests borrow its `frontend/node_modules`; Python tests borrow its flox venv (`.flox/cache/venv`).
+- **A PostHog clone** at `~/dev/posthog`, with `upstream` pointing to `PostHog/posthog` and `origin` to your fork. The loop changes code only in scratch worktrees, but it does write to the clone: `--fetch` moves `upstream/master`, and every iteration adds a worktree and a `coherence/*` branch. The session agent has write access to the clone. Frontend tests borrow its `frontend/node_modules`; Python tests borrow its flox venv (`.flox/cache/venv`), which must match the base the loop works on, or pytest crashes and verify reports it as failed ([#85](https://github.com/Silthus/uml-pr-review/issues/85)).
 - **Claude Code**, signed in, with access to `claude-opus-5-5`. The session drops any gateway variables and loads no MCP servers.
 - **The PostHog MCP**, to refresh the CI signals report (DevEx project 347861): in Claude Code, ask it to follow [`coherence/signals/export-ci.md`](coherence/signals/export-ci.md) for `products/workflows`. Without it, the committed report in `coherence/signals/reports/` serves.
 - ⚠️ **Still missing: access to PostHog production (US project 2).** The MCP answers 404, so error tracking, APM, logs, and usage signals are unavailable. Until then, the ranking runs on git history, complexity, review findings, open pull requests, and CI.
@@ -144,7 +145,7 @@ bun coherence/report/build.ts --repo ~/dev/posthog --modules products/workflows 
 open docs/coherence/index-report.html
 ```
 
-The backfill scores one commit per week over 26 weeks, plus Wednesday→Thursday pairs for the noise band, and caches every point in `coherence/data/`. From scratch it takes about 6 minutes; a refresh reuses the cache and takes seconds. The report build takes about a minute.
+The backfill scores one commit per week over 26 weeks, plus Wednesday→Thursday pairs for the noise band, and caches every point in `coherence/data/`. From scratch it takes about 6 minutes; a refresh reuses the cache and takes seconds. The report build takes about a minute for a new head commit, and seconds after that.
 
 How to read the report:
 
@@ -159,7 +160,7 @@ How to read the report:
 bun coherence/targets.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master --posthog-signals coherence/signals/reports/workflows-ci-2026-09-26.json
 ```
 
-Each module scores pressure × pain × safety, with the evidence behind each factor, and gets its next recipe step and verification class: **mechanical** (moves, tests, baselines), **behaviour-adjacent** (internals change behind pinned tests), or **boundary** (what other modules may depend on). Boundary steps always become inbox questions. Modules whose files are all busy in active PostHog pull requests are skipped.
+Each module scores pressure × pain × safety, with the evidence behind each factor, and gets its next recipe step and verification class: **mechanical** (moves, tests, baselines), **behaviour-adjacent** (internals change behind pinned tests), or **boundary** (what other modules may depend on). Boundary steps always become inbox questions, up to `--max-questions` per run; the rest wait for the next run. Modules whose files are all busy in active PostHog pull requests are skipped.
 
 ### 5. Run one iteration (dry run)
 
@@ -169,13 +170,17 @@ bun coherence/loop/session.ts --repo ~/dev/posthog --scope products/workflows --
 
 It launches a headless Claude Opus 5.5 session with the `coherence-loop` skill. `--fetch` updates `upstream/master` first. Without `--draft`, every push from the session is blocked. It takes about 5 minutes and $0.60 to $1.30. When it ends, it prints the transcript path and the agent's summary.
 
-⚠️ `--fetch` runs `git fetch upstream master` over SSH. If your SSH agent needs an approval that a headless process cannot give (1Password does), the fetch fails. In the proof run the agent then fetched the public repository over HTTPS itself. Fetching yourself before the run avoids that.
+⚠️ `--fetch` runs `git fetch upstream master` over SSH. If your SSH agent needs an approval that a headless process cannot give (1Password does), the fetch fails ([#86](https://github.com/Silthus/uml-pr-review/issues/86)); in the proof run the agent worked around it. To avoid it, fetch the public repository over HTTPS yourself, with your global URL rewrites off for that one command, and then run the command above without `--fetch`:
+
+```sh
+GIT_CONFIG_GLOBAL=/dev/null git -C ~/dev/posthog fetch --quiet https://github.com/PostHog/posthog.git +master:refs/remotes/upstream/master
+```
 
 Where the output lands:
 
 - `coherence/runs/<date>/workflows.sense.json`: the ranking and inbox state the run started from.
 - `coherence/runs/<date>/<slug>/`: one directory per iteration, with `iteration.json` (runner state), `summary.md` (the agent's words), and `pr.md` (the pull request body).
-- `coherence/runs/ledger.jsonl`: one line per proposal or question. The loop never proposes the same step for the same module twice.
+- `coherence/runs/ledger.jsonl`: one line per proposal or question. The loop never proposes the same step for the same module twice, and a dry run counts ([#88](https://github.com/Silthus/uml-pr-review/issues/88)). To give a target back to the loop, delete its line.
 - `$TMPDIR/coherence-workflows-<slug>`: the scratch worktree, on branch `coherence/workflows/<slug>` in your PostHog clone.
 - `$TMPDIR/coherence-session-<ms>.jsonl`: the transcript.
 - New `coherence:question` issues in this repository, when the agent hits a boundary decision.
@@ -183,12 +188,12 @@ Where the output lands:
 ### 6. Review the dry run
 
 ```sh
-iteration=$(dirname "$(ls -t coherence/runs/*/*/pr.md | head -1)")
+iteration=$(dirname "$(ls -t coherence/runs/*/*/iteration.json | head -1)")
 cat $iteration/pr.md
 git -C "$(jq -r .workspace.path $iteration/iteration.json)" show --stat
 ```
 
-`pr.md` states the target and why it ranks, the step and verification class, the index before and after for the touched module, the lint and test results, and which busy files stayed untouched. Tests that could not run locally are declared as "not run", with the reason. To change the wording, edit `$iteration/summary.md` and render it again:
+`$iteration` is the newest iteration on this machine; if the run ended on a question, it has no workspace and `git -C` fails. `pr.md` states the target and why it ranks, the step and verification class, the index before and after for the touched module, the lint and test results, and which busy files stayed untouched. Tests that could not run locally are declared as "not run", with the reason. To change the wording, edit `$iteration/summary.md` and render it again:
 
 ```sh
 bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
@@ -216,7 +221,12 @@ jq .proposal $iteration/iteration.json
 gh pr list --repo PostHog/posthog --author @me --draft
 ```
 
-Keep the scratch worktree until the pull request merges; review fixes go there. The ledger keeps the `pr.md` path for this iteration, not the URL.
+Keep the scratch worktree until the pull request merges or you drop it; review fixes go there. The ledger keeps the `pr.md` path for this iteration, not the URL ([#87](https://github.com/Silthus/uml-pr-review/issues/87)). Then remove the worktree and the branch from your clone:
+
+```sh
+git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
+git -C ~/dev/posthog branch -D "$(jq -r .workspace.branch $iteration/iteration.json)"
+```
 
 ### 8. Answer inbox questions
 
@@ -224,12 +234,12 @@ Keep the scratch worktree until the pull request merges; review fixes go there. 
 bun coherence/inbox.ts list
 ```
 
-Answer on GitHub: comment with the option letter and any detail, then close the issue. Close it as "not planned" to skip the target. From the shell, `bun coherence/inbox.ts resolve <number> --answer "<option and detail>"` does the same, and `bun coherence/inbox.ts resolve <number> --skip` skips. Only answers from the repository's owner, members, or collaborators count. The next run reads them: an answered target gets acted on with your answer in its `pr.md`, and a skipped one is never proposed again.
+Answer on GitHub: comment with the option letter and any detail, then close the issue. Close it as "not planned", or close it without an answer, to skip the target. From the shell, `bun coherence/inbox.ts resolve <number> --answer "<option and detail>"` does the same, and `bun coherence/inbox.ts resolve <number> --skip` skips. Only answers from the repository's owner, members, or collaborators count. The next run reads them: an answered target gets acted on with your answer in its `pr.md`, and a skipped one is never proposed again.
 
-Two questions are open now:
+Two questions were open when this section was written (September 2026):
 
-- **[#82](https://github.com/Silthus/uml-pr-review/issues/82): a facade for `backend/api`.** Four imports from outside the product bypass the existing facade, and three of them are Django viewsets, a webhook view, and `HogFlowSerializer`. It asks whether the workflows facade may export DRF classes, or whether URL registration and the management command should move into the product instead. The options are to re-export everything, to route only plain functions and move the rest, or to skip. An answer unblocks the top-ranked workflows module and decides what "public boundary" means for every product facade.
-- **[#83](https://github.com/Silthus/uml-pr-review/issues/83): a facade for `backend/services`.** Callers in `posthog/` and in `customer_analytics` import services directly, including the account-audience provider hook that `customer_analytics` implements. It asks whether that hook becomes part of the public workflows boundary (a `facade/contracts.py`), given that `customer_analytics` belongs to another team. The options are to route every caller, to route only the `posthog/` callers for now, or to skip. An answer unblocks the second-ranked module and sets the pattern for cross-team contracts.
+- **[#82](https://github.com/Silthus/uml-pr-review/issues/82): a facade for `backend/api`.** Four imports from outside the product bypass the existing facade, and three of them are Django viewsets, a webhook view, and `HogFlowSerializer`. It asks whether those callers should go through `backend/facade/`, which decides whether the workflows facade may export DRF viewsets and serializers. The options are to re-export all four and re-route the callers, to route only the plain-function caller and move URL registration and the management command into the product, or to skip. An answer lets the loop act on, or drop, the top-ranked workflows module.
+- **[#83](https://github.com/Silthus/uml-pr-review/issues/83): a facade for `backend/services`.** Callers in `posthog/` and in `customer_analytics` import service functions and types directly, including the account-audience provider contract that `customer_analytics` implements. It asks whether the workflows facade should export them, which decides whether that registration hook becomes part of the public workflows boundary or stays a direct import; `customer_analytics` is another team's code. The options are to re-export everything, with the provider contract in `facade/contracts.py`, and re-route every caller; to re-route only the `posthog/` callers for now; or to skip. An answer lets the loop act on, or drop, the second-ranked module.
 
 ### 9. Tune it
 

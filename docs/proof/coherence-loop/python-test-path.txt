@@ -10,9 +10,16 @@ $ bun /tmp/wf73/pytest-path.ts products/workflows/backend/test/test_github_trigg
   runner: pytest   status: failed   reason: null   seconds: 2
 
 The runner found pytest in ~/dev/posthog/.flox/cache/venv/bin and ran it. The
-local dev services were up (Postgres 5432, ClickHouse 8123/9000, Redis 6379,
-Kafka 9092 via OrbStack). No test ran: pytest crashed while loading PostHog's
-conftest, before collection.
+local dev services were listening:
+
+$ lsof -iTCP -sTCP:LISTEN -P | grep -E ':(5432|6379|8123|9000|9092) ' | awk '{print $1, $9}' | sort -u
+OrbStack *:5432
+OrbStack *:6379
+OrbStack *:8123
+OrbStack *:9000
+OrbStack *:9092
+
+No test ran: pytest crashed while loading PostHog's conftest, before collection.
 
 $ cd <workspace> && ~/dev/posthog/.flox/cache/venv/bin/pytest -q -p no:cacheprovider products/workflows/backend/test/test_github_trigger_filters.py
 exit 1
@@ -23,7 +30,9 @@ main checkout, not the freshly fetched base.
 
 $ ~/dev/posthog/.flox/cache/venv/bin/python -c 'import google.protobuf as p; print(p.__version__)'
 5.29.6
-$ grep '"protobuf' ~/dev/posthog/pyproject.toml            # main checkout (Sep 20)
+$ stat -f '%Sm %N' ~/dev/posthog/pyproject.toml
+Sep 20 20:55:31 2026 /Users/mreichenbach/dev/posthog/pyproject.toml
+$ grep '"protobuf' ~/dev/posthog/pyproject.toml            # main checkout
 102:    "protobuf~=5.29.6",
 $ grep '"protobuf' <workspace>/pyproject.toml              # fresh base 57ca357 (Sep 26)
 105:    "protobuf~=6.31.1",

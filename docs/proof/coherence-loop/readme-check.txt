@@ -4,24 +4,24 @@
 ## 1. Prerequisites
 
 $ bun install
-# run at 2026-09-26T21:46:24Z from the uml-pr-review root
+# run at 2026-09-26T22:08:00Z from the uml-pr-review root
 bun install v1.4.2 (50a8a8387)
 
-Checked 198 installs across 217 packages (no changes) [8.00ms]
+Checked 198 installs across 217 packages (no changes) [65.00ms]
 # exit 0 in 0 s
 
 $ gh auth status
-# run at 2026-09-26T21:46:24Z from the uml-pr-review root
+# run at 2026-09-26T22:08:00Z from the uml-pr-review root
 github.com
   ✓ Logged in to github.com account Silthus (keyring)
   - Active account: true
   - Git operations protocol: ssh
   - Token: gho_************************************
   - Token scopes: 'admin:public_key', 'admin:ssh_signing_key', 'gist', 'read:org', 'repo'
-# exit 0 in 0 s
+# exit 0 in 1 s
 
 $ git -C ~/dev/posthog remote -v
-# run at 2026-09-26T21:46:24Z from the uml-pr-review root
+# run at 2026-09-26T22:08:01Z from the uml-pr-review root
 origin	git@github.com:Silthus/posthog.git (fetch)
 origin	git@github.com:Silthus/posthog.git (push)
 upstream	git@github.com:PostHog/posthog.git (fetch)
@@ -31,37 +31,74 @@ upstream	git@github.com:PostHog/posthog.git (push)
 ## 2. Score a product
 
 $ bun coherence/index.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master
-# run at 2026-09-26T21:46:24Z from the uml-pr-review root
+# run at 2026-09-26T22:08:01Z from the uml-pr-review root
 Coherence Index for products/workflows at 57ca35773084: 62.1
   architecture  60.6
   complexity    72.4
   smells        80.4
   tests         33.6
   ladder        documented 13, review-only 16, structural 1
-Measured in 1.6 s (635 cached, 0 measured). Add --json for every measure and its drivers.
+Measured in 1.9 s (635 cached, 0 measured). Add --json for every measure and its drivers.
 # exit 0 in 2 s
 
 ## 3. Backfill the history and read the report
 # The backfill and the build rewrite the tracked coherence/data and docs/coherence report. This PR restores them afterwards: refreshing the committed report is outside its scope.
 
 $ bun coherence/backfill.ts --repo ~/dev/posthog --scopes products/workflows,products/surveys,products/error_tracking --ref upstream/master
-# run at 2026-09-26T21:46:26Z from the uml-pr-review root
-Backfilled 3 scopes over 26 weeks in 9.2 s (0 measured, 368 reused; 370 measured in 351.8 s across runs). Manifest: /Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/data/backfill.json
-# exit 0 in 9 s
+# run at 2026-09-26T22:08:03Z from the uml-pr-review root
+products/workflows 2026-09-23 debd20ac48f5 composite 61.9 in 1.6 s
+products/error_tracking 2026-09-23 debd20ac48f5 composite 71.7 in 1.7 s
+Backfilled 3 scopes over 26 weeks in 12.2 s (2 measured, 366 reused; 370 measured in 342.5 s across runs). Manifest: /Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/data/backfill.json
+# exit 0 in 12 s
 
 $ bun coherence/report/build.ts --repo ~/dev/posthog --modules products/workflows --github PostHog/posthog
-# run at 2026-09-26T21:46:35Z from the uml-pr-review root
+# run at 2026-09-26T22:08:15Z from the uml-pr-review root
+products/workflows/backend code 55.5 (70 files)
+products/workflows/backend/admin code 88.7 (5 files)
+products/workflows/backend/api code 52.7 (10 files)
+products/workflows/backend/management code 53.4 (7 files)
+products/workflows/backend/management/commands code 53.4 (7 files)
+products/workflows/backend/models code 76.3 (11 files)
+products/workflows/backend/models/hog_flow code 67 (3 files)
+products/workflows/backend/providers code 46.1 (4 files)
+products/workflows/backend/services code 60.6 (13 files)
+products/workflows/backend/tasks code 72.3 (6 files)
+products/workflows/backend/utils code 78.5 (4 files)
+products/workflows/frontend code 82.8 (239 files)
+products/workflows/frontend/Broadcasts code 87.2 (23 files)
+products/workflows/frontend/Broadcasts/steps code 97.2 (5 files)
+products/workflows/frontend/Channels code 81.1 (15 files)
+products/workflows/frontend/OptOuts code 84.4 (14 files)
+products/workflows/frontend/Suppression code 82.7 (3 files)
+products/workflows/frontend/TemplateLibrary code 88.3 (10 files)
+products/workflows/frontend/Workflows code 77 (160 files)
+products/workflows/frontend/Workflows/Reputation code 79.6 (3 files)
+products/workflows/frontend/Workflows/hogflows code 71 (105 files)
+products/workflows/frontend/Workflows/hogflows/filters code 79.8 (3 files)
+products/workflows/frontend/Workflows/hogflows/panel code 79.3 (15 files)
+products/workflows/frontend/Workflows/hogflows/panel/testing code 68.4 (4 files)
+products/workflows/frontend/Workflows/hogflows/react_flow_utils code 66.2 (3 files)
+products/workflows/frontend/Workflows/hogflows/registry code 79 (19 files)
+products/workflows/frontend/Workflows/hogflows/registry/actions code 82 (4 files)
+products/workflows/frontend/Workflows/hogflows/registry/triggers code 78.3 (14 files)
+products/workflows/frontend/Workflows/hogflows/steps code 88.2 (43 files)
+products/workflows/frontend/Workflows/hogflows/steps/components code 89.7 (19 files)
+products/workflows/frontend/Workflows/hogflows/tree code 84.7 (12 files)
+products/workflows/frontend/Workflows/templates code 85.5 (12 files)
+products/workflows/frontend/emptyState code 87.2 (3 files)
+products/workflows/frontend/scenes/settings code 96.4 (3 files)
+products/workflows/mcp/apps code 78.2 (7 files)
 Report for 3 scopes over 27 weeks written to /Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/docs/coherence/index-report.{html,md}
-# exit 0 in 0 s
+# exit 0 in 63 s
 
 $ open docs/coherence/index-report.html
-# run at 2026-09-26T21:46:35Z from the uml-pr-review root
+# run at 2026-09-26T22:09:18Z from the uml-pr-review root
 # exit 0 in 0 s
 
 ## 4. Rank targets
 
 $ bun coherence/targets.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master --posthog-signals coherence/signals/reports/workflows-ci-2026-09-26.json
-# run at 2026-09-26T21:46:35Z from the uml-pr-review root
+# run at 2026-09-26T22:09:18Z from the uml-pr-review root
 Targets in products/workflows at 57ca35773084, churn from 2026-06-28 to 2026-09-26
 score = pressure × pain × safety, each in [0, 1]; counts saturate as n / (n + half). Pressure is the mean of commits, touched source lines, and authors over the window; agent co-authored commits are evidence only. Pain is 1 − Π(1 − c) over its available components, so any strong pain counts and a missing provider only drops out. Safety is (0.5 + 0.5 × tested share) × (1 − 0.5 × saturated traffic). Ties break on pain × safety. Files that pull requests updated within the active days touch are busy; modules with only busy files are skipped.
 Available: complexity, review findings, open pull requests, ci.test_failures, ci.test_retries
@@ -71,7 +108,7 @@ Unavailable: logs.warn_error_lines (project 2 not reachable: switch-project retu
 Unavailable: apm.requests (project 2 not reachable: switch-project returned 404)
 Unavailable: usage.pageviews (project 2 not reachable: switch-project returned 404)
 Not scored: errors.users, apm.p95_ms, usage.users, ci.test_p95_ms
-Active pull requests: 2035 in PostHog/posthog, updated within 14 days
+Active pull requests: 2040 in PostHog/posthog, updated within 14 days
 Skipped products/workflows: every file is busy in #107266
 Skipped products/workflows/backend/models/hog_flow_batch_job: every file is busy in #104668
 Skipped products/workflows/backend/templates: every file is busy in #102580, #104856
@@ -254,7 +291,7 @@ Skipped products/workflows/frontend/Workflows/misc: every file is busy in #91710
     tests: 0.375 -> 0.69  [3 of 8 files imported by tests]
     traffic: unavailable
 
-# exit 0 in 87 s
+# exit 0 in 86 s
 
 ## 5. Run one iteration (dry run)
 
@@ -265,16 +302,20 @@ $ bun coherence/loop/session.ts --repo ~/dev/posthog --scope products/workflows 
   "exitCode": 0,
   "result": "I ran one iteration and proposed one pull request as a dry run, so nothing was pushed. It adds tests for `EmailLinksTable` and leaves the production code unchanged. The loop then stopped because the budget of 1 was spent.\n\n| | |\n|---|---|\n| **Target** | `products/workflows/frontend/Workflows` (rank 4, score 0.4448) |\n| **Step** | characterisation-tests |\n| **Verification class** | mechanical |\n| **Index delta** | composite 65.1 → 65.1; tests 17.6 → 17.8; architecture, complexity and smells unchanged |\n| **pr.md** | `coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md` |\n\n**The change:** one commit (`8eb2dda92c3`) on branch `coherence/workflows/frontend-workflows-characterisation-tests`. It adds `EmailLinksTable.test.tsx` (112 lines, 7 tests, all passing). The tests pin how the table shows today:\n- Whole URLs are links that open in a new tab.\n- Cut-off (truncated) URLs show as plain text ending in \"…\", not as links.\n- A repeated URL gets a \"Position N\" tag only when it has a position; one with an empty position gets no tag.\n- Clicks show with thousands separators, rows keep their order, and an empty table shows its empty-state message.\n\nThe change touches no files that open pull requests are editing, stays inside the scope, and adds no lint findings.\n\n**Why ranks 1–3 were skipped:**\n- **Ranks 1 and 2** (`backend/api` and `backend/services`, both facade steps) are still waiting on open questions #82 and #83.\n- **Rank 3** (`hogflows/steps`): choose didn't say why it passed over it, and I didn't dig into it.\n\n**Things that differed from the standard run:**\n- **Signals:** no PostHog MCP tools were available, so I used the saved report `workflows-ci-2026-09-26.json` instead of refreshing it. The error, request, log and pageview signals in that report are marked unavailable because project 2 returned a 404.\n- **Fetch:** `--fetch` failed because the SSH agent couldn't sign, and your `~/.gitconfig` turns `https://github.com/` URLs back into SSH. Instead, I fetched `upstream/master` myself over HTTPS with the global config skipped for that one command (base `57ca357`), then ran sense without `--fetch`. Your git config is unchanged.\n- **Dependencies:** sense couldn't load its grammar files at first, so I ran `bun install` in this repo.\n- **Commit hook:** PostHog's pre-commit hook failed because Python wasn't found (it needs the flox environment). I committed with `--no-verify` after running oxfmt and oxlint on the file by hand; the PR description says so."
 }
-# exit 0 in 325 s (21 turns, $0.60). The full log is transcript-tools.md; the raw stream is transcript.jsonl.
+# Not measured by this script: exit 0, and 21 turns, 325 s, $0.60 from the result event in transcript.jsonl.
+
+$ GIT_CONFIG_GLOBAL=/dev/null git -C ~/dev/posthog fetch --quiet https://github.com/PostHog/posthog.git +master:refs/remotes/upstream/master
+# run at 2026-09-26T22:10:44Z from the uml-pr-review root
+# exit 0 in 6 s
+# The fallback's follow-up, the session command without --fetch, was not run again: it would start a second iteration. The proof run's agent ran sense without --fetch after the same fetch (transcript-tools.md).
 
 ## 6. Review the dry run
+# The proof run's workspace was removed after the run; it was re-created at the same path, branch, and commit (8eb2dda) for this check, and step 7's cleanup removes it again.
 
-$ iteration=$(dirname "$(ls -t coherence/runs/*/*/pr.md | head -1)")
-$ echo $iteration
+$ iteration=$(dirname "$(ls -t coherence/runs/*/*/iteration.json | head -1)")
 $ cat $iteration/pr.md
 $ git -C "$(jq -r .workspace.path $iteration/iteration.json)" show --stat
-# run at 2026-09-26T21:48:02Z from the uml-pr-review root
-coherence/runs/2026-09-26/frontend-workflows-characterisation-tests
+# run at 2026-09-26T22:10:50Z from the uml-pr-review root
 # test(workflows): pin EmailLinksTable rendering of truncated, duplicate, and counted links
 
 ## What changed
@@ -345,7 +386,7 @@ Date:   Sat Sep 26 23:33:48 2026 +0200
 # The next commands reuse $iteration=coherence/runs/2026-09-26/frontend-workflows-characterisation-tests from the block above.
 
 $ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
-# run at 2026-09-26T21:48:02Z from the uml-pr-review root
+# run at 2026-09-26T22:10:50Z from the uml-pr-review root
 {
   "mode": "dry-run",
   "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
@@ -357,10 +398,10 @@ $ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summ
 
 ## 7. Open your first draft pull request
 # The exception: this command would push to Silthus/posthog and open a draft on PostHog/posthog, which is Michael's call.
-# It ran exactly as written, but with fakes first on PATH: a git that logs "push" and forwards everything else to /usr/bin/git, and a gh that logs its arguments and prints a placeholder URL.
+# It ran exactly as written, but with fakes first on PATH: a git that logs "push" and forwards everything else to /usr/bin/git, and a gh that logs its arguments and prints a placeholder URL. check.sh refuses to run unless both fakes resolve first.
 
 $ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md --draft
-# run at 2026-09-26T21:48:02Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
+# run at 2026-09-26T22:10:50Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
 {
   "mode": "draft",
   "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
@@ -374,7 +415,7 @@ fake gh, nothing sent: gh pr create --draft --repo PostHog/posthog --base master
 # exit 0 in 0 s
 
 $ jq .proposal $iteration/iteration.json
-# run at 2026-09-26T21:48:02Z from the uml-pr-review root
+# run at 2026-09-26T22:10:50Z from the uml-pr-review root
 {
   "mode": "draft",
   "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
@@ -383,7 +424,7 @@ $ jq .proposal $iteration/iteration.json
 # exit 0 in 0 s
 
 $ gh pr list --repo PostHog/posthog --author @me --draft
-# run at 2026-09-26T21:48:02Z from the uml-pr-review root
+# run at 2026-09-26T22:10:50Z from the uml-pr-review root
 106759	feat(workflows): add a pill search bar to the workflows list	Silthus:workflows-list-v2/search-bar	DRAFT	2026-09-25T14:10:12Z
 106561	feat(workflows): add slim summary list for workflows and email templates	Silthus:workflows-list-v2/slim-list	DRAFT	2026-09-25T11:09:41Z
 106553	fix(workflows): keep the library template link when inserting a template	Silthus:workflows/keep-email-template-link	DRAFT	2026-09-25T10:55:17Z
@@ -396,7 +437,7 @@ $ gh pr list --repo PostHog/posthog --author @me --draft
 # Restore the dry-run state (pr.md footer and iteration.json) with the re-render command from step 6:
 
 $ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
-# run at 2026-09-26T21:48:03Z from the uml-pr-review root
+# run at 2026-09-26T22:10:51Z from the uml-pr-review root
 {
   "mode": "dry-run",
   "body": "/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a9da5afc6e09a5868/coherence/runs/2026-09-26/frontend-workflows-characterisation-tests/pr.md",
@@ -406,10 +447,16 @@ $ bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summ
 }
 # exit 0 in 0 s
 
+$ git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
+$ git -C ~/dev/posthog branch -D "$(jq -r .workspace.branch $iteration/iteration.json)"
+# run at 2026-09-26T22:10:51Z from the uml-pr-review root
+Deleted branch coherence/workflows/frontend-workflows-characterisation-tests (was 8eb2dda92c3).
+# exit 0 in 5 s
+
 ## 8. Answer inbox questions
 
 $ bun coherence/inbox.ts list
-# run at 2026-09-26T21:48:03Z from the uml-pr-review root
+# run at 2026-09-26T22:10:56Z from the uml-pr-review root
 [
   {
     "number": 83,
@@ -436,7 +483,7 @@ $ bun coherence/inbox.ts list
 # resolve answers Michael's questions, so it ran only against the fake gh, with stand-in values for <number> and the answer.
 
 $ bun coherence/inbox.ts resolve 82 --answer "<option and detail>"
-# run at 2026-09-26T21:48:04Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
+# run at 2026-09-26T22:10:57Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
 {
   "resolved": 82
 }
@@ -447,7 +494,7 @@ fake gh, nothing sent: gh issue close 82 --repo Silthus/uml-pr-review
 # exit 0 in 0 s
 
 $ bun coherence/inbox.ts resolve 83 --skip
-# run at 2026-09-26T21:48:04Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
+# run at 2026-09-26T22:10:57Z from the uml-pr-review root, with a fake gh and a fake git push first on PATH (/tmp/wf73/fakebin): nothing reaches GitHub
 {
   "skipped": 83
 }
@@ -459,7 +506,7 @@ fake gh, nothing sent: gh issue close 83 --reason 'not planned' --repo Silthus/u
 ## 9. Tune it
 
 $ bun coherence/targets.ts --repo ~/dev/posthog --scope products/workflows --commit upstream/master --posthog-signals coherence/signals/reports/workflows-ci-2026-09-26.json --active-days 3 | head -20
-# run at 2026-09-26T21:48:04Z from the uml-pr-review root
+# run at 2026-09-26T22:10:57Z from the uml-pr-review root
 Targets in products/workflows at 57ca35773084, churn from 2026-06-28 to 2026-09-26
 score = pressure × pain × safety, each in [0, 1]; counts saturate as n / (n + half). Pressure is the mean of commits, touched source lines, and authors over the window; agent co-authored commits are evidence only. Pain is 1 − Π(1 − c) over its available components, so any strong pain counts and a missing provider only drops out. Safety is (0.5 + 0.5 × tested share) × (1 − 0.5 × saturated traffic). Ties break on pain × safety. Files that pull requests updated within the active days touch are busy; modules with only busy files are skipped.
 Available: complexity, review findings, open pull requests, ci.test_failures, ci.test_retries
@@ -469,7 +516,7 @@ Unavailable: logs.warn_error_lines (project 2 not reachable: switch-project retu
 Unavailable: apm.requests (project 2 not reachable: switch-project returned 404)
 Unavailable: usage.pageviews (project 2 not reachable: switch-project returned 404)
 Not scored: errors.users, apm.p95_ms, usage.users, ci.test_p95_ms
-Active pull requests: 1002 in PostHog/posthog, updated within 3 days
+Active pull requests: 1001 in PostHog/posthog, updated within 3 days
 Skipped products/workflows: every file is busy in #107266
 Skipped products/workflows/backend/templates: every file is busy in #102580
 Skipped products/workflows/frontend/Workflows/Reputation: every file is busy in #102652
@@ -480,6 +527,6 @@ Skipped products/workflows/frontend/Workflows/misc: every file is busy in #91710
   2.  58.06  products/workflows/backend/services  pressure 0.73 × pain 0.95 × safety 0.85  -> facade (boundary)
   3.  53.78  products/workflows/frontend/Workflows/hogflows/steps  pressure 0.82 × pain 0.91 × safety 0.72  -> characterisation-tests (mechanical)
   4.  44.48  products/workflows/frontend/Workflows  pressure 0.89 × pain 0.73 × safety 0.68  -> characterisation-tests (mechanical)
-# exit 0 in 89 s
+# exit 0 in 85 s
 
 # done

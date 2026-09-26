@@ -23,7 +23,7 @@ The full log with every command and its output is [`transcript-tools.md`](transc
 
    It chose `products/workflows/frontend/Workflows`: characterisation tests, mechanical, because tests import 14 of its 38 files. Choose does not print why it passes over a target; the agent said so in its summary.
 4. **Workspace** `$TMPDIR/coherence-workflows-frontend-workflows-characterisation-tests` on branch `coherence/workflows/frontend-workflows-characterisation-tests`, with 20 busy files listed.
-5. **Act.** The agent read `EmailLinksTable.tsx`, the neighbouring `WorkflowSceneHeader.test.tsx`, and the row type. It picked a component that is not busy, wrote `EmailLinksTable.test.tsx` (7 tests), and ran `oxfmt` and `oxlint` from the main checkout. PostHog's pre-commit hook failed (`bin/hogli: exec: python: not found`, the hook needs the flox Python), so it committed with `--no-verify`, as the skill says, and named the skipped hook in the summary.
+5. **Act.** The agent read `EmailLinksTable.tsx`, the neighbouring `WorkflowSceneHeader.test.tsx`, and the row type. It picked a component that is not busy, wrote `EmailLinksTable.test.tsx` (7 tests), and ran `oxfmt` and `oxlint` from the main checkout; the captured output shows only oxfmt's line, and verify's lint result (0 findings) is the evidence for the file. PostHog's pre-commit hook failed (`bin/hogli: exec: python: not found`, the hook needs the flox Python), so it committed with `--no-verify`, as the skill says, and named the skipped hook in the summary.
 6. **Verify passed.** 112 of 300 lines, one file, inside the scope, no busy file touched, 0 lint findings before and after. jest ran in the workspace with the main checkout's `frontend/node_modules` borrowed: 7 of 7 passed in 1.4 s.
 7. **Propose** (dry run) wrote [`pr.md`](pr.md) from the agent's [`summary.md`](summary.md). Nothing was pushed.
 8. **Record** appended the ledger entry ([`ledger-entry.jsonl`](ledger-entry.jsonl)). Choose then printed `done`: budget 1 of 1 spent.
@@ -58,7 +58,7 @@ One test file for one of the module's 24 untested files moves the scope's tests 
 
 ## The Python test path
 
-The iteration touched only a frontend file, so verify ran no pytest. To exercise the Python path anyway, the runner's `runTests` ran one workflows Python test in the same workspace, with the main checkout's flox venv and the local dev services up. pytest crashed before collection: the venv follows the main checkout (`protobuf` 5.29.6), and the fresh base needs 6.31.1. The runner reported that as `failed`, not `not run`, so a Python iteration on a fresh base would fail verify although no test ran. Evidence: [`python-test-path.txt`](python-test-path.txt). Recorded as [#85](https://github.com/Silthus/uml-pr-review/issues/85).
+The iteration touched only a frontend file, so verify ran no pytest. To exercise the Python path anyway, I called the runner's `runTests` by hand (through `check-scripts/python-test-path.ts.txt`) on one workflows Python test in the same workspace, with the main checkout's flox venv and the local dev services up. pytest crashed before collection: the venv follows the main checkout (`protobuf` 5.29.6), and the fresh base needs 6.31.1. The runner reported that as `failed`, not `not run`, so a Python iteration on a fresh base would fail verify although no test ran. Evidence: [`python-test-path.txt`](python-test-path.txt). Recorded as [#85](https://github.com/Silthus/uml-pr-review/issues/85).
 
 ## Questions raised
 
@@ -69,12 +69,13 @@ None. The run raised no new inbox question: the two boundary targets above it al
 - [#85](https://github.com/Silthus/uml-pr-review/issues/85): verify reports pytest "failed" when the borrowed venv cannot load PostHog's conftest.
 - [#86](https://github.com/Silthus/uml-pr-review/issues/86): `sense --fetch` fails headless when the SSH agent needs approval.
 - [#87](https://github.com/Silthus/uml-pr-review/issues/87): `session.ts` cannot pass `--runs`, `--active-days`, or `--max-questions`, and promoting a dry run to a draft leaves the ledger's `pullRequest` at the `pr.md` path.
+- [#88](https://github.com/Silthus/uml-pr-review/issues/88), from the review: a dry-run proposal permanently uses up its target. The ledger on `main` now holds two dry runs (`hogflows/steps` and `frontend/Workflows`) whose branches are gone, so the next run skips ranks 3 and 4 until their lines are deleted.
 
 None is a one-liner, so none is fixed here. Because of #87, this run used the default runs directory instead of a fresh one; the ledger's memory then made it pick a new target instead of repeating PR #84's.
 
 ## Incident during the README check
 
-The first check of the `--draft` and `inbox resolve` commands was meant to run against a fake `gh`, but the fake was not executable, so the real `gh` ran. No branch was pushed and GitHub refused the draft pull request, but #82 got a placeholder comment and was closed, and #83 was closed as not planned. Both were restored within minutes: the comment deleted, both reopened, and the inbox lists both as open again. Details: [`incident-fake-gh.txt`](incident-fake-gh.txt). The clean rerun is [`readme-check.txt`](readme-check.txt).
+The first check of the `--draft` and `inbox resolve` commands was meant to run against a fake `gh`, but the fake was not executable, so the real `gh` ran. No branch was pushed and GitHub refused the draft pull request, but #82 got a placeholder comment and was closed, and #83 was closed as not planned. Both were restored two minutes later (closed 21:43:42Z, reopened 21:45:40Z): the comment deleted, both reopened, and the inbox lists both as open again. Details: [`incident-fake-gh.txt`](incident-fake-gh.txt). The clean rerun is [`readme-check.txt`](readme-check.txt).
 
 ## Cleanup
 

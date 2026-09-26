@@ -17,11 +17,16 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "typescript": "^5"
   },
   "dependencies": {
     "@vscode/tree-sitter-wasm": "^0.3.1",
+    "@xyflow/react": "^12.12.0",
     "elkjs": "^0.12.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "web-tree-sitter": "^0.27.0",
     "zod": "^4.6.5"
   }

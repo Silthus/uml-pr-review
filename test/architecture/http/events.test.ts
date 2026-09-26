@@ -56,12 +56,13 @@ test("each event type reaches the event stream of its own repository only, in se
 
 test("a client that disconnects leaves no listener behind, and the other stream keeps receiving", async () => {
   const repositoryId = await commonDir(shopA);
-  const leaving = new AbortController();
-  await server.api(inRepository("/api/events", shopA), { signal: leaving.signal });
+  const disconnect = new AbortController();
+  const leaving = await openEventStream(await server.api(inRepository("/api/events", shopA), { signal: disconnect.signal }));
   const staying = await openEventStream(await server.api(inRepository("/api/events", shopA)));
   expect(server.bus.listenerCount(repositoryId)).toBe(2);
 
-  leaving.abort();
+  disconnect.abort();
+  await expect(leaving.next(1)).rejects.toThrow("The operation was aborted.");
   await until(() => server.bus.listenerCount(repositoryId) === 1);
   await server.api(inRepository("/api/plans", shopA), jsonBody({ title: "After the disconnect", goal: "Still delivered." }));
   const [event] = await staying.next(1);

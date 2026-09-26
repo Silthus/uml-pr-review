@@ -14,7 +14,7 @@
     "followUpSession": {
       "source": "codex",
       "transcript": "/Users/mreichenbach/.codex/sessions/2026/09/22/rollout-2026-09-22T12-11-05-01a0c898-fec7-7f52-8a48-c25d699a320f.jsonl",
-      "model": "gpt-6-sol",
+      "model": "gpt-5.6-sol",
       "role": "Sub-agent of the T3 thread 'Audit Open PRs and Issues' (7f1c73c8-4f6e-4a8b-b5ff-8a57103912ce) that wrote 335c502 after Michael asked to route the workflows import through the product facade."
     }
   },
@@ -29,10 +29,13 @@
       "excerpts": "whole message"
     }
   ],
-  "taskStatementNotes": "Kept message 0 whole: it defines the feature (a Workflows quick button under the home search box, plus prompts the agent can answer: list workflows, recent email runs, create workflows). Dropped message 1 (1f2525e1, 'Cool, sounds good. Let's file the PR, but exclude the AI prompts that don't work right now. ...'): it approves the agent's plan and splits the work into two PRs; its one requirement ('exclude the AI prompts that don't work right now') refers to prompts the agent proposed, so it is about how the work was split, not what to build. Dropped message 3 (77ded5fc, 'For the stacked second PR, let's disconnect it. ... we remove the question from the home menu ...'): it only makes #103522 and #103523 shippable independently, which does not apply to a single-diff replay. Dropped messages 2 (retry commit signing) and 4 (Slack bullet list): pure process. Because message 0 asks for both the home button and the agent capability, the historical answer to this statement is #103523 plus its companion #103522 (see companionPrs).",
+  "taskStatementNotes": "Kept message 0 whole: it defines the feature (a Workflows quick button under the home search box, plus prompts the agent can answer: list workflows, recent email runs, create workflows). Dropped message 1 (1f2525e1, 'Cool, sounds good. Let's file the PR, but exclude the AI prompts that don't work right now. ...'). It approves a proposal the agent made after building the button: the in-app agent could not answer three of the four suggested prompts, so the agent offered a follow-up PR that teaches it to search and list workflows. That follow-up is #103523. The message's requirement, 'exclude the AI prompts that don't work right now', changed the prompts shipped in #103522. Both the approval and the requirement only make sense against the agent's proposal, which a replay does not see, so the message is not part of the statement. Dropped message 3 (77ded5fc, 'For the stacked second PR, let's disconnect it. ... we remove the question from the home menu ...'): it only makes #103522 and #103523 shippable independently, which does not apply to a single-diff replay. Dropped messages 2 (retry commit signing) and 4 (Slack bullet list): pure process. Caveat for scoring: message 0 asks for the home button and prompts; it does not ask to extend the in-app agent. That half of the historical work came from the agent's proposal and Michael's approval. The like-for-like Arm A reference for this statement is sessionAnswerDiff (both halves on one base); #103523's final diff is the agent half only, and it carries the facade signal.",
   "attachments": [
     "/Users/mreichenbach/.t3/userdata/attachments/4f139124-bbbb-4054-8257-b79675b4c611-f4c34a28-8e44-4f6b-a9dc-6bc27e3d1df9.png"
   ],
+  "imageTokens": {
+    "t3-context://v1/image/image_fd0a47cc-4bd9-4139-b4be-163b45289f9e": "/Users/mreichenbach/.t3/userdata/attachments/4f139124-bbbb-4054-8257-b79675b4c611-f4c34a28-8e44-4f6b-a9dc-6bc27e3d1df9.png"
+  },
   "diffStat": {
     "final": {
       "base": "8872766beaada4ca8611d8a501b573c19fdf971e",
@@ -61,7 +64,12 @@
     }
   },
   "whyChosen": "Crosses a product boundary: the AI agent (ee/hogai) gains a workflows entity, and its first commit imported workflows models directly instead of going through products/workflows/backend/facade (fixed in 335c502).",
-  "notes": "baseCommit 29bb275 is the merge-base with upstream master of the first pushed commit e39a5bc (2026-09-21 04:43Z). The T3 worktree started on the fork's master f637db9 (upstream 7b46385 plus one fork-only agent-config commit), and the agent branched feat/workflows-home-badge from upstream master 29bb275 before its first commit; feat/agent-workflows-entity was stacked on it. The first commit's parent differs: when Michael asked to disconnect the stack (05:40Z), the agent rebuilt the branch as d8e4fa0 on upstream master cea129a (force-push at 05:41Z), dropping the homepage change. GitHub's baseRefOid 8872766 is master at the last merge-from-master (2026-09-23), not the start point. firstPushHead e39a5bc sits on cffe971 (the original #103522 badge commit), so diffStat.firstPush covers both halves of the statement. d8e4fa0 imported products.workflows.backend.models.HogFlow into ee/hogai directly; the required Django CI failed, Michael asked to route the import through the product facade, and a Codex sub-agent did so in 335c502 (new facade functions, a facade testing helper and a tach.toml line). The final diff is merge-base(baseRefOid, finalHead)..finalHead, which equals the PR's GitHub diff.",
+  "notes": "baseCommit 29bb275 is the merge-base with upstream master of the first pushed commit e39a5bc (2026-09-21 04:43Z). The T3 worktree started on the fork's master f637db9 (upstream 7b46385 plus one fork-only agent-config commit), and the agent branched feat/workflows-home-badge from the local upstream/master 29bb275 before its first commit; feat/agent-workflows-entity was stacked on it. That ref was last fetched on 2026-09-18, so the base is about 2.5 days older than upstream master was when the session started (cea129a, 2026-09-21 01:49Z). A second head, 75951bd ('fix(homepage): ask for draft workflows in the review prompt'), was pushed on top of e39a5bc at 05:32Z. The first commit's parent differs from baseCommit: when Michael asked to disconnect the stack (05:40Z), the agent rebuilt the branch as d8e4fa0 on upstream master cea129a and force-pushed it over 75951bd at 05:41Z, dropping the homepage change. GitHub's baseRefOid 8872766 is master at the last merge-from-master (2026-09-23), not the start point. firstPushHead e39a5bc sits on cffe971 (the original #103522 badge commit), so diffStat.firstPush covers both halves of the statement. d8e4fa0 imported products.workflows.backend.models.HogFlow into ee/hogai directly; the required Django CI failed, Michael asked to route the import through the product facade, and a Codex sub-agent did so in 335c502 (new facade functions, a facade testing helper and a tach.toml line). The final diff is merge-base(baseRefOid, finalHead)..finalHead, which equals the PR's GitHub diff.",
+  "sessionAnswerDiff": {
+    "base": "29bb275923ba5fa96e337ac54f99264f04ac089a",
+    "head": "e39a5bc53762677e867bb267f0bddc209b8b6de3",
+    "why": "The session's first pushed answer to the statement: the home-screen Workflows topic (cffe971, later #103522) and the agent search/list capability (e39a5bc, later #103523), on one base. Equal to diffStat.firstPush."
+  },
   "companionPrs": [
     {
       "pr": 103522,
@@ -69,7 +77,7 @@
       "title": "feat(homepage): add a workflows topic to the PostHog AI suggestions",
       "finalHead": "3eac6c164dac5d4901554f873befcd3ce34b2e9f",
       "finalDiffBase": "4b49bd8db2cb4be7c4dfe29d3bc5524f7470a675",
-      "why": "Same session and same task statement: #103522 is the home-screen Workflows button, #103523 the agent search/list half. Arm A's full answer is the union of both diffs."
+      "why": "Same session and same task statement: #103522 is the home-screen Workflows button, #103523 the agent search/list half. #103522 was later rebased onto #103523's merge commit, so its final diff sits on a different base; use sessionAnswerDiff for a single-base view of both halves."
     }
   ],
   "otherCommits": {

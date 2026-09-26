@@ -1072,11 +1072,19 @@
           ]
         }
       },
-      "ladder": null
+      "ladder": {
+        "source": "sha256:de437a9a9907976750546d76451800e584fc7de61ebb5ccf77e53ffa61fc8295",
+        "rules": 30,
+        "levels": {
+          "documented": 13,
+          "review-only": 16,
+          "structural": 1
+        }
+      }
     }
   },
   "timing": {
-    "milliseconds": 3459,
+    "milliseconds": 3418,
     "cache": {
       "hits": 0,
       "misses": 555

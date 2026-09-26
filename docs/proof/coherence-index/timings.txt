@@ -1,11 +1,11 @@
-workflows cold wall=3502ms internal=3459ms cache={"hits":0,"misses":555}
-workflows warm wall=1450ms internal=1409ms cache={"hits":555,"misses":0}
+workflows cold wall=3460ms internal=3418ms cache={"hits":0,"misses":555}
+workflows warm wall=1436ms internal=1396ms cache={"hits":555,"misses":0}
 workflows cold == warm index
-surveys cold wall=1767ms internal=1726ms cache={"hits":0,"misses":89}
-surveys warm wall=1182ms internal=1141ms cache={"hits":89,"misses":0}
+surveys cold wall=1741ms internal=1702ms cache={"hits":0,"misses":89}
+surveys warm wall=1178ms internal=1139ms cache={"hits":89,"misses":0}
 surveys cold == warm index
-error_tracking cold wall=2969ms internal=2928ms cache={"hits":0,"misses":775}
-error_tracking warm wall=1594ms internal=1552ms cache={"hits":775,"misses":0}
+error_tracking cold wall=2924ms internal=2884ms cache={"hits":0,"misses":775}
+error_tracking warm wall=1598ms internal=1559ms cache={"hits":775,"misses":0}
 error_tracking cold == warm index
 workflows fully cold wall=9316ms internal=9267ms cache={"hits":0,"misses":555}
 fully cold (fresh clone) == warm index

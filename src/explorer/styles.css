@@ -572,6 +572,11 @@ a:hover {
   --package-line: var(--purple);
 }
 
+.package.ghost.tone-selected {
+  --package-tab: var(--accent);
+  --package-line: var(--accent);
+}
+
 .package.ghost .package-body {
   border-style: dashed;
   background: color-mix(in srgb, var(--purple-soft) 40%, var(--surface));
@@ -620,7 +625,7 @@ a:hover {
   box-sizing: border-box;
 }
 
-.package.container .package-body {
+.package.frame .package-body {
   background: color-mix(in srgb, var(--package-body) 45%, transparent);
 }
 

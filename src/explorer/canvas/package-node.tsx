@@ -7,7 +7,7 @@ import { stereotypeOf } from "./stereotype.ts";
 
 export function PackageNode({ data }: NodeProps<PackageFlowNode>) {
   const actions = useCanvasActions();
-  const classes = ["package", `tone-${data.tone}`, data.container ? "container" : "leaf", data.ghost ? "ghost" : "", data.fresh ? "fresh" : "", data.status ? `status-${data.status}` : ""].filter(Boolean).join(" ");
+  const classes = ["package", `tone-${data.tone}`, data.container ? "frame" : "leaf", data.ghost ? "ghost" : "", data.fresh ? "fresh" : "", data.status ? `status-${data.status}` : ""].filter(Boolean).join(" ");
   return (
     <div className={classes} title={data.path}>
       <Handle type="target" position={Position.Left} className="hidden-handle" />

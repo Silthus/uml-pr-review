@@ -197,7 +197,7 @@ describe("ExplorerApp", () => {
     const dependedOnBy = view.getByRole("region", { name: "Depended on by" });
     expect(within(dependedOnBy).getByText("None outside tests.")).toBeTruthy();
     const facadeTab = view.getByRole("button", { name: `${facade} package` });
-    expect(facadeTab.closest(".package")?.className).toContain("tone-outgoing");
+    await waitFor(() => expect(facadeTab.closest(".package")?.className).toContain("tone-outgoing"));
 
     await act(async () => {
       fireEvent.click(view.getByRole("button", { name: "Focus connections" }));
@@ -343,7 +343,6 @@ describe("ExplorerApp", () => {
     const showAll = await view.findByRole("button", { name: "show all modules in products" });
 
     expect(view.getAllByRole("button", { name: /^products\/product_\d+ package$/ })).toHaveLength(12);
-    expect(showAll.closest<HTMLElement>(".react-flow__node")?.style.pointerEvents).not.toBe("none");
 
     await act(async () => {
       fireEvent.click(showAll);
@@ -407,6 +406,19 @@ describe("ExplorerApp", () => {
     expect(new URLSearchParams(location.search).get("plan")).toBe(plan.id);
   });
 
+  test("a comment on a dependency that was never planned is listed as unplanned, not dropped", async () => {
+    const comment: PlanComment = { id: "c1", target: { kind: "seam", from: "products/error_tracking/frontend", to: "products/error_tracking/backend/facade" }, author: "human", body: "Keep this one as it is.", at, revision: 3 };
+    installFetch({ openPlan: { ...plan, revision: 3, comments: [comment] } });
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
+
+    const thread = planPanel(view).getByRole("region", { name: "Comments on unplanned seam products/error_tracking/frontend → products/error_tracking/backend/facade" });
+    expect(within(thread).getByText("unplanned seam")).toBeTruthy();
+    expect(within(thread).getByText(comment.body)).toBeTruthy();
+  });
+
   test("a comment on a seam the plan drops stays visible with its original target and the reply", async () => {
     const comment: PlanComment = { id: "c1", target: { kind: "seam", from: logic, to: models }, author: "human", body: "Route this through the facade instead of the models.", at, revision: 3 };
     installFetch({ openPlan: { ...plan, revision: 3, comments: [comment] } });
@@ -415,10 +427,11 @@ describe("ExplorerApp", () => {
     await view.findByRole("heading", { name: "repo" });
     await settle();
     const reply = "Done. The models seam is gone; logic reads flags through the facade.";
-    const dropped: ArchitecturePlan = { ...plan, revision: 4, seams: plan.seams.filter((seam) => seam.to !== models), comments: [{ ...comment, resolution: { by: "agent", reply, at, revision: 4 } }] };
+    const dropping: ArchitecturePlan["revisions"][number] = { number: 4, at, actor: "agent", client: "claude", kind: "edit", operations: [{ op: "drop_seam", from: logic, to: models }, { op: "resolve_comment", commentId: "c1", reply }] };
+    const dropped: ArchitecturePlan = { ...plan, revision: 4, seams: plan.seams.filter((seam) => seam.to !== models), comments: [{ ...comment, resolution: { by: "agent", reply, at, revision: 4 } }], revisions: [...plan.revisions, dropping] };
 
     await act(async () => {
-      FakeEventSource.instances[0]?.emit({ seq: 4, at, repositoryId: "/repo/.git", type: "plan_patch", planId: plan.id, revision: { number: 4, at, actor: "agent", client: "claude", kind: "edit", operations: [{ op: "drop_seam", from: logic, to: models }, { op: "resolve_comment", commentId: "c1", reply }] }, plan: dropped });
+      FakeEventSource.instances[0]?.emit({ seq: 4, at, repositoryId: "/repo/.git", type: "plan_patch", planId: plan.id, revision: dropping, plan: dropped });
     });
     await settle();
 
@@ -428,7 +441,7 @@ describe("ExplorerApp", () => {
     expect(within(thread).getByText(reply)).toBeTruthy();
 
     await act(async () => {
-      fireEvent.click(within(thread).getByRole("button", { name: `${logic} → ${models}` }));
+      fireEvent.click(within(thread).getByRole("button", { name: `Show seam ${logic} → ${models}` }));
     });
 
     const inspectorThread = view.getByRole("region", { name: `seam ${logic} → ${models}` });

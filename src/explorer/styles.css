@@ -253,8 +253,13 @@ a:hover {
 }
 
 .header-controls select {
-  max-width: 220px;
+  width: 220px;
   text-overflow: ellipsis;
+}
+
+.switch:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
 .search {
@@ -524,6 +529,12 @@ a:hover {
 
 .react-flow__node {
   transition: opacity 180ms;
+}
+
+.package-tab,
+.disclosure,
+.more-node button {
+  pointer-events: all;
 }
 
 .package {
@@ -1225,11 +1236,11 @@ a:hover {
   padding: 0;
 }
 
-.dropped-thread {
+.outside-thread {
   margin-bottom: 10px;
 }
 
-.dropped-thread header {
+.outside-thread header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

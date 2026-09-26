@@ -9,13 +9,11 @@ export type MoreFlowNode = Node<MoreNodeData, "more">;
 export type FlowNode = PackageFlowNode | MoreFlowNode;
 export type DependencyFlowEdge = Edge<DependencyEdgeData & { points: Point[]; labelAt: Point | null; label: string; fresh: boolean }, "dependency">;
 
-const clickable = { pointerEvents: "all" } as const;
-
 export function toFlowNodes(scene: Scene, fresh: ReadonlySet<string>): FlowNode[] {
   const positions = new Map(scene.layout.nodes.map((node) => [node.id, node]));
   return scene.graph.nodes.map((node): FlowNode => {
     const laidOut = positions.get(node.id)!;
-    const shared = { id: node.id, parentId: node.parentId ?? undefined, position: { x: laidOut.x, y: laidOut.y }, width: laidOut.width, height: laidOut.height, draggable: false, connectable: false, deletable: false, selectable: false, style: clickable };
+    const shared = { id: node.id, parentId: node.parentId ?? undefined, position: { x: laidOut.x, y: laidOut.y }, width: laidOut.width, height: laidOut.height, draggable: false, connectable: false, deletable: false, selectable: false };
     if (node.type === "more") return { ...shared, type: "more", data: node.data };
     return { ...shared, type: "package", data: { ...node.data, fresh: fresh.has(node.id) }, className: node.data.container ? "is-container" : "is-leaf", zIndex: node.data.container ? 0 : 1 };
   });

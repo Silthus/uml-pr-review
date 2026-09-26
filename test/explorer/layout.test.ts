@@ -152,6 +152,36 @@ describe("plan focus on the real PostHog plan (10 modules, 8 seams)", () => {
   });
 });
 
+describe("plan focus context", () => {
+  test("selecting a context node keeps it on the canvas with its own dependencies", () => {
+    const logic = "products/error_tracking/backend/logic";
+    const withLogic = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan, selection: { kind: "module", path: logic } });
+    const contextNode = withLogic.nodes.map((node) => node.id).find((id) => !plannedAndSeamEnds.includes(id))!;
+
+    const graph = buildVisibleGraph(planFocusModel, { ...mapView, plan: realPlan, selection: { kind: "module", path: contextNode } });
+
+    expect(graph.nodes.find((node) => node.id === contextNode)?.data.tone).toBe("selected");
+    expect(graph.edges.some((edge) => edge.source === contextNode || edge.target === contextNode)).toBe(true);
+  });
+
+  test("selecting a module keeps the seams' import counts and never draws a module inside a seam end", () => {
+    const source: ArchitectureSource = {
+      "app/logic/a.py": ["lib/api.py", "lib/inner/deep.py"],
+      "app/logic/b.py": ["lib/api.py"],
+      "app/logic/c.py": ["lib/api.py"],
+      "lib/api.py": [],
+      "lib/inner/deep.py": [],
+    };
+    const localModel = new ArchitectureModel(architectureOf(source));
+    const plan = planOf(["app/logic"], [["app/logic", "lib"]]);
+    const seamImports = (selection: ViewState["selection"]) => buildVisibleGraph(localModel, { ...mapView, plan, selection }).edges.find((edge) => edge.data.seam !== null)?.data.imports;
+
+    expect(seamImports(null)).toBe(4);
+    expect(seamImports({ kind: "module", path: "app/logic" })).toBe(4);
+    expect(buildVisibleGraph(localModel, { ...mapView, plan, selection: { kind: "module", path: "app/logic" } }).nodes.map((node) => node.id)).not.toContain("lib/inner");
+  });
+});
+
 function fitZoom(bounds: { width: number; height: number }, viewport: { width: number; height: number }): number {
   const zoom = Math.min((viewport.width * (1 - 2 * fitPadding)) / bounds.width, (viewport.height * (1 - 2 * fitPadding)) / bounds.height);
   return Math.min(zoomRange.max, Math.max(zoomRange.min, zoom));

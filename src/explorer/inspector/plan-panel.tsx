@@ -15,7 +15,7 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
   const moduleStatus = new Map(conformance?.modules.map((module) => [module.path, module.status]) ?? []);
   const seamStatus = new Map(conformance?.seams.map((seam) => [`${seam.from}->${seam.to}`, seam.status]) ?? []);
   const planComments = plan.comments.filter((comment) => comment.target.kind === "plan");
-  const droppedThreads = threadsOnDroppedElements(plan);
+  const outsideThreads = threadsOutsidePlan(plan);
   return (
     <section className="panel plan" aria-label="Architecture plan">
       <p className="eyebrow">{`Architecture plan · revision ${plan.revision}`}</p>
@@ -60,11 +60,11 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
           </li>
         ))}
       </ul>
-      {droppedThreads.length > 0 ? (
+      {outsideThreads.length > 0 ? (
         <>
-          <h3>Comments on dropped elements <span className="count">{droppedThreads.length}</span></h3>
-          {droppedThreads.map((thread) => (
-            <DroppedThread key={thread.key} thread={thread} onSelectModule={onSelectModule} onSelectSeam={onSelectSeam} />
+          <h3>Comments outside the plan <span className="count">{outsideThreads.reduce((total, thread) => total + thread.comments.length, 0)}</span></h3>
+          {outsideThreads.map((thread) => (
+            <OutsideThread key={thread.key} thread={thread} onSelectModule={onSelectModule} onSelectSeam={onSelectSeam} />
           ))}
         </>
       ) : null}
@@ -80,34 +80,47 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
   );
 }
 
-type DroppedThreadView = { key: string; target: Exclude<CommentTarget, { kind: "plan" }>; comments: PlanComment[] };
+type ElementTarget = Exclude<CommentTarget, { kind: "plan" }>;
+type OutsideThread = { key: string; target: ElementTarget; dropped: boolean; comments: PlanComment[] };
 
-function threadsOnDroppedElements(plan: ArchitecturePlan): DroppedThreadView[] {
-  const threads = new Map<string, DroppedThreadView>();
+function threadsOutsidePlan(plan: ArchitecturePlan): OutsideThread[] {
+  const threads = new Map<string, OutsideThread>();
   for (const comment of plan.comments) {
     const { target } = comment;
-    if (target.kind === "plan" || !isDropped(plan, target)) continue;
-    const key = target.kind === "module" ? `module:${target.path}` : `seam:${target.from}->${target.to}`;
-    const thread = threads.get(key) ?? { key, target, comments: [] };
+    if (target.kind === "plan" || isPlanned(plan, target)) continue;
+    const key = targetKey(target);
+    const thread = threads.get(key) ?? { key, target, dropped: wasDropped(plan, target), comments: [] };
     thread.comments.push(comment);
     threads.set(key, thread);
   }
   return [...threads.values()];
 }
 
-function isDropped(plan: ArchitecturePlan, target: Exclude<CommentTarget, { kind: "plan" }>): boolean {
-  if (target.kind === "module") return !plan.modules.some((module) => module.path === target.path);
-  return !plan.seams.some((seam) => seam.from === target.from && seam.to === target.to);
+function targetKey(target: ElementTarget): string {
+  return target.kind === "module" ? `module:${target.path}` : `seam:${target.from}->${target.to}`;
 }
 
-function DroppedThread({ thread, onSelectModule, onSelectSeam }: { thread: DroppedThreadView; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void }) {
+function isPlanned(plan: ArchitecturePlan, target: ElementTarget): boolean {
+  if (target.kind === "module") return plan.modules.some((module) => module.path === target.path);
+  return plan.seams.some((seam) => seam.from === target.from && seam.to === target.to);
+}
+
+function wasDropped(plan: ArchitecturePlan, target: ElementTarget): boolean {
+  return plan.revisions.some((revision) =>
+    revision.operations.some((operation) =>
+      target.kind === "module" ? operation.op === "drop_module" && operation.path === target.path : operation.op === "drop_seam" && operation.from === target.from && operation.to === target.to,
+    ),
+  );
+}
+
+function OutsideThread({ thread, onSelectModule, onSelectSeam }: { thread: OutsideThread; onSelectModule(path: string): void; onSelectSeam(from: string, to: string): void }) {
   const { target } = thread;
   const label = target.kind === "module" ? target.path : `${target.from} → ${target.to}`;
   return (
-    <section className="dropped-thread" aria-label={`Comments on dropped ${target.kind} ${label}`}>
+    <section className="outside-thread" aria-label={`Comments on ${thread.dropped ? "dropped" : "unplanned"} ${target.kind} ${label}`}>
       <header>
-        <span className="chip chip-action action-remove">dropped {target.kind}</span>
-        <button type="button" className="link" aria-label={label} onClick={() => (target.kind === "module" ? onSelectModule(target.path) : onSelectSeam(target.from, target.to))}>
+        <span className="chip">{thread.dropped ? "dropped" : "unplanned"} {target.kind}</span>
+        <button type="button" className="link" aria-label={`Show ${target.kind} ${label}`} onClick={() => (target.kind === "module" ? onSelectModule(target.path) : onSelectSeam(target.from, target.to))}>
           {target.kind === "module" ? <ModulePath path={target.path} /> : <span className="seam-ends"><ModulePath path={target.from} /> <span className="arrow">→</span> <ModulePath path={target.to} /></span>}
         </button>
       </header>

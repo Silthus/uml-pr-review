@@ -150,7 +150,7 @@ async function routeScenario(request: Request): Promise<Response> {
 async function routePublish(request: Request): Promise<Response> {
   if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
   published = true;
-  emit({ seq: seq++, at: plan.updatedAt, repositoryId: payload.repository.id, type: "plan_patch", planId: plan.id, revision: plan.revisions[0]!, plan });
+  emit({ seq: seq++, at: plan.updatedAt, repositoryId: payload.repository.id, type: "plan_patch", planId: plan.id, revision: plan.revisions.at(-1)!, plan });
   return Response.json({ ok: true });
 }
 

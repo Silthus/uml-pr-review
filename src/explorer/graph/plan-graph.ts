@@ -10,10 +10,10 @@ type WeightedEdge = { source: string; target: string; imports: number };
 
 export function buildPlanGraph(model: ArchitectureModel, view: ViewState, plan: ArchitecturePlan): VisibleGraph {
   const planned = new Set(plan.modules.map((module) => module.path));
-  const seamEnds = new Set(plan.seams.flatMap((seam) => [seam.from, seam.to]));
+  const anchors = new Set([...planned, ...plan.seams.flatMap((seam) => [seam.from, seam.to])]);
   const focused = view.selection?.kind === "module" ? view.selection.path : null;
-  const context = focused ? contextFarEnds(model, focused, view.includeTests).filter((path) => !planned.has(path) && !seamEnds.has(path) && !isWithinAny(path, planned) && !isAncestorOfAny(path, planned)) : [];
-  const drawn = [...new Set([...planned, ...seamEnds, ...context])].filter((path) => path !== ".");
+  const context = focused ? [focused, ...contextFarEnds(model, focused, view.includeTests)].filter((path) => standsBeside(path, anchors)) : [];
+  const drawn = [...new Set([...anchors, ...context])].filter((path) => path !== ".");
   const marks = planMarks(plan, view.conformance);
 
   const nodes: GraphNode[] = drawn.map((path) => {
@@ -51,12 +51,8 @@ function dependenciesAmong(model: ArchitectureModel, drawn: ReadonlySet<string>,
   });
 }
 
-function isWithinAny(path: string, roots: ReadonlySet<string>): boolean {
-  return [...roots].some((root) => path.startsWith(`${root}/`));
-}
-
-function isAncestorOfAny(path: string, roots: ReadonlySet<string>): boolean {
-  return [...roots].some((root) => root.startsWith(`${path}/`));
+function standsBeside(path: string, anchors: ReadonlySet<string>): boolean {
+  return !anchors.has(path) && ![...anchors].some((anchor) => path.startsWith(`${anchor}/`) || anchor.startsWith(`${path}/`));
 }
 
 function seamOverlay(seam: Seam, view: ViewState, comments: number): SeamOverlay {

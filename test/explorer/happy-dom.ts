@@ -1,7 +1,10 @@
 import { afterAll } from "bun:test";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
-GlobalRegistrator.register();
+const nativeWorker = globalThis.Worker;
+
+GlobalRegistrator.register({ url: "http://localhost/" });
+globalThis.Worker = nativeWorker;
 
 afterAll(async () => {
   await GlobalRegistrator.unregister();

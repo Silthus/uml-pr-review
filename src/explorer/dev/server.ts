@@ -40,9 +40,10 @@ const streams = new Set<ReadableStreamDefaultController<string>>();
 const server = Bun.serve({
   port,
   hostname: "127.0.0.1",
-  development: true,
+  development: process.env.NODE_ENV !== "production",
   routes: {
     "/": explorer,
+    "/dev/scenario": async (request) => routeScenario(request),
     "/api/architecture": () => Response.json(payload),
     "/api/plans": (request) => routePlans(request),
     "/api/plans/:id": (request) => routePlan(request),
@@ -130,6 +131,46 @@ async function routeCheck(request: Request): Promise<Response> {
   return Response.json(conformance);
 }
 
+async function routeScenario(request: Request): Promise<Response> {
+  if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
+  void playScenario();
+  return Response.json({ ok: true });
+}
+
+async function playScenario() {
+  const client = "claude-code";
+  const activity = (tool: string, summary: string) => emit({ seq: seq++, at: new Date().toISOString(), repositoryId: payload.repository.id, type: "agent_activity", id: `a${seq}`, client, tool, status: "ok", summary, planId: plan.id, durationMs: 180 });
+  await pause(600);
+  activity("describe_module", "describe_module products/feature_flags/backend/facade");
+  emit({ seq: seq++, at: new Date().toISOString(), repositoryId: payload.repository.id, type: "selection_hint", client, tool: "describe_module", target: { kind: "module", path: "products/feature_flags/backend/facade" }, planId: plan.id });
+  await pause(2200);
+  applyAgentOperations([
+    { op: "upsert_module", path: "products/feature_flags/backend/facade", action: "modify", responsibility: "Expose flag usage per issue through the public facade." },
+    { op: "upsert_seam", from: "products/error_tracking/frontend", to: "products/error_tracking/backend/facade", action: "keep", rationale: "The issue UI keeps reading through its own backend facade." },
+  ]);
+  activity("edit_plan", "edit_plan: +1 module, +1 seam");
+  await pause(2600);
+  const pending = plan.comments.find((comment) => comment.author === "human" && !comment.resolution);
+  if (pending) {
+    applyAgentOperations([{ op: "resolve_comment", commentId: pending.id, reply: "Agreed. Routing every flag read through the facade and dropping the direct model import." }]);
+    activity("edit_plan", "edit_plan: resolved 1 human comment");
+    await pause(1800);
+  }
+  activity("check_plan", "check_plan: 1 violation");
+  await routeCheck(new Request("http://localhost/api/plans/x/check", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" }));
+}
+
+function applyAgentOperations(operations: PlanOperation[]) {
+  const revision = plan.revision + 1;
+  plan = { ...applyOperations(plan, operations, undefined, revision), revisions: [...plan.revisions, { number: revision, at: new Date().toISOString(), actor: "agent", client: "claude-code", kind: "edit", operations }] };
+  plan = { ...plan, modules: plan.modules.map((module) => (module.origin === "human" && operations.some((operation) => operation.op === "upsert_module" && operation.path === module.path) ? { ...module, origin: "agent" } : module)) };
+  emit({ seq: seq++, at: plan.updatedAt, repositoryId: payload.repository.id, type: "plan_patch", planId: plan.id, revision: plan.revisions.at(-1)!, plan });
+}
+
+function pause(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 function routeEvents(): Response {
   let active: ReadableStreamDefaultController<string> | null = null;
   const stream = new ReadableStream<string>({
@@ -158,6 +199,7 @@ function applyOperations(current: ArchitecturePlan, operations: PlanOperation[],
   let next = { ...current, revision, updatedAt: timestamp, modules: [...current.modules], seams: [...current.seams], comments: [...current.comments] };
   for (const operation of operations) {
     if (operation.op === "add_comment") next.comments = [...next.comments, { id: `c${next.comments.length + 1}`, target: operation.target, author: "human", body: operation.body, at: timestamp, revision }];
+    if (operation.op === "resolve_comment") next.comments = next.comments.map((comment) => (comment.id === operation.commentId ? { ...comment, resolution: { by: "agent", reply: operation.reply, at: timestamp, revision } } : comment));
     if (operation.op === "upsert_module") next.modules = [...next.modules.filter((module) => module.path !== operation.path), { path: operation.path, action: operation.action, responsibility: operation.responsibility, origin: "human" }];
     if (operation.op === "drop_module") next.modules = next.modules.filter((module) => module.path !== operation.path);
     if (operation.op === "upsert_seam") next.seams = [...next.seams.filter((seam) => seam.from !== operation.from || seam.to !== operation.to), { from: operation.from, to: operation.to, action: operation.action, interface: operation.interface, rationale: operation.rationale, origin: "human" }];

@@ -1,9 +1,9 @@
 import "./happy-dom.ts";
 import { beforeEach, describe, expect, test } from "bun:test";
-import { act, fireEvent, render, waitFor, within } from "@testing-library/react";
+import { act, configure, fireEvent, render, waitFor, within } from "@testing-library/react";
 import type { ArchitectureEvent, ArchitecturePlan, ConformanceResult, PlanSummary } from "../../src/architecture/contracts/index.ts";
+import { ExplorerApp } from "../../src/explorer/app.tsx";
 import { architectureOf } from "../support/architecture.ts";
-import { ExplorerApp } from "../../src/explorer/main.tsx";
 
 const root = "/repo";
 const at = "2026-09-26T10:15:00.000Z";
@@ -22,6 +22,7 @@ const payload = architectureOf(
     "products/feature_flags/backend/facade/api.py": [{ to: "products/feature_flags/backend/models/flag.py", line: 3 }],
     "products/feature_flags/backend/models/flag.py": [],
     "products/feature_flags/backend/tests/test_flags.py": [{ to: "products/error_tracking/backend/logic/service.py", line: 6 }],
+    "posthog/settings.py": [],
   },
   { repository: { id: "/repo/.git", root, commonDir: "/repo/.git", name: "repo" } },
 );
@@ -77,7 +78,7 @@ const conformance: ConformanceResult = {
   counts: { violations: 1, pending: 1, warnings: 0 },
   planId: plan.id,
   planRevision: plan.revision,
-  planStatus: "locked",
+  planStatus: "draft",
   phase: "progress",
   worktree: root,
   baseCommit,
@@ -88,7 +89,6 @@ const conformance: ConformanceResult = {
 class FakeEventSource extends EventTarget {
   static instances: FakeEventSource[] = [];
   readonly url: string;
-  closeCalled = false;
 
   constructor(url: string) {
     super();
@@ -96,16 +96,14 @@ class FakeEventSource extends EventTarget {
     FakeEventSource.instances.push(this);
   }
 
-  close() {
-    this.closeCalled = true;
-  }
+  close() {}
 
   emit(event: ArchitectureEvent) {
     this.dispatchEvent(new MessageEvent(event.type, { data: JSON.stringify(event) }));
   }
 }
 
-function installFetch(statusByUrl = new Map<string, number>()) {
+function installFetch(statusByUrl = new Map<string, number>(), plans: PlanSummary[] = [summary]) {
   const calls: { url: string; init?: RequestInit }[] = [];
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
@@ -113,11 +111,16 @@ function installFetch(statusByUrl = new Map<string, number>()) {
     const status = statusByUrl.get(url) ?? 200;
     if (url.startsWith("/api/architecture")) return Response.json(payload, { status });
     if (url.startsWith("/api/plans/flags-on-issues/operations") && status === 409) return Response.json({ error: "stale revision", plan: { ...plan, revision: 3 } }, { status });
-    if (url.startsWith("/api/plans/flags-on-issues/operations")) return Response.json({ plan: { ...plan, revision: 3, comments: [{ id: "c1", target: { kind: "module", path: logic }, author: "human", body: "Please keep this behind the facade.", at, revision: 3 }] }, warnings: [] });
+    if (url.startsWith("/api/plans/flags-on-issues/operations")) {
+      const body = JSON.parse(String(init?.body)) as { operations: ArchitecturePlan["revisions"][number]["operations"] };
+      const operation = body.operations[0];
+      const comments = operation?.op === "add_comment" ? [{ id: "c1", target: operation.target, author: "human" as const, body: operation.body, at, revision: 3 }] : [];
+      return Response.json({ plan: { ...plan, revision: 3, comments }, warnings: [] });
+    }
     if (url.startsWith("/api/plans/flags-on-issues/check")) return Response.json(conformance, { status });
     if (url.startsWith("/api/plans/flags-on-issues/lock")) return Response.json({ plan: { ...plan, status: "locked", revision: 3 } }, { status });
     if (url.startsWith("/api/plans/flags-on-issues")) return Response.json({ plan, conformance: null }, { status });
-    if (url.startsWith("/api/plans")) return Response.json([summary], { status });
+    if (url.startsWith("/api/plans")) return Response.json(plans, { status });
     throw new Error(`Unexpected fetch ${url}`);
   }) as typeof fetch;
   return calls;
@@ -128,12 +131,13 @@ function renderExplorer(search = `?path=${encodeURIComponent(root)}&plan=flags-o
   return render(<ExplorerApp />);
 }
 
-async function waitForLayout() {
+async function settle() {
   await act(async () => {
-    await Promise.resolve();
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 20));
   });
 }
+
+configure({ asyncUtilTimeout: 5000 });
 
 beforeEach(() => {
   document.body.innerHTML = "";
@@ -143,104 +147,177 @@ beforeEach(() => {
 });
 
 describe("ExplorerApp", () => {
-  test("loads the architecture through the REST contract and expands nested UML packages", async () => {
-    installFetch();
+  test("loads the architecture over REST and opens packages in place", async () => {
+    installFetch(new Map(), []);
 
-    const view = renderExplorer();
+    const view = renderExplorer(`?path=${encodeURIComponent(root)}`);
 
     expect(await view.findByRole("heading", { name: "repo" })).toBeTruthy();
-    await waitForLayout();
     expect(view.getByRole("link", { name: "Pull requests" }).getAttribute("href")).toBe(`/pulls?path=${encodeURIComponent(root)}`);
-    expect(await view.findByRole("button", { name: /products package/i })).toBeTruthy();
+    expect(await view.findByRole("button", { name: "products package" })).toBeTruthy();
+    expect(view.queryByRole("button", { name: "products/error_tracking package" })).toBeNull();
 
     await act(async () => {
       fireEvent.click(view.getByRole("button", { name: "expand products" }));
     });
 
-    expect(await view.findByRole("button", { name: /error_tracking package/i })).toBeTruthy();
-    expect(view.getAllByText("«directory»").length).toBeGreaterThan(0);
-    expect(view.getByText("Tests hidden")).toBeTruthy();
+    expect(await view.findByRole("button", { name: "products/error_tracking package" })).toBeTruthy();
+    expect(view.getByRole("button", { name: "collapse products" })).toBeTruthy();
+    expect(view.queryByRole("button", { name: "products/feature_flags/backend/tests package" })).toBeNull();
 
+    await act(async () => {
+      fireEvent.click(view.getByRole("button", { name: "expand products/feature_flags" }));
+    });
+    const expandBackend = await view.findByRole("button", { name: "expand products/feature_flags/backend" });
+    await act(async () => {
+      fireEvent.click(expandBackend);
+    });
     await act(async () => {
       fireEvent.click(view.getByRole("switch", { name: "Show tests" }));
     });
 
-    expect(view.getByText("Tests visible")).toBeTruthy();
-    expect(await view.findByRole("button", { name: /tests package/i })).toBeTruthy();
+    expect(await view.findByRole("button", { name: "products/feature_flags/backend/tests package" })).toBeTruthy();
   });
 
-  test("selection highlights incoming and outgoing dependencies with file-line evidence", async () => {
+  test("selecting a package turns on the connection lens and lists file-level evidence", async () => {
     installFetch();
 
     const view = renderExplorer();
-    const logicPackage = await view.findByRole("button", { name: /logic package/i });
+    const logicTab = await view.findByRole("button", { name: `${logic} package` });
     await act(async () => {
-      fireEvent.click(logicPackage);
+      fireEvent.click(logicTab);
     });
-    await waitForLayout();
+    await settle();
 
-    expect(view.getByRole("heading", { name: logic })).toBeTruthy();
-    const outgoing = view.getByRole("region", { name: "Depends on" });
-    expect(within(outgoing).getByRole("button", { name: /products\/feature_flags\/backend\/facade/i })).toBeTruthy();
-    expect(within(outgoing).getByText("products/error_tracking/backend/logic/service.py:12 → products/feature_flags/backend/facade/api.py")).toBeTruthy();
-    expect(view.getAllByText("outgoing").length).toBeGreaterThan(0);
+    expect(view.getByRole("heading", { name: "logic" })).toBeTruthy();
+    const dependsOn = view.getByRole("region", { name: "Depends on" });
+    expect(within(dependsOn).getByRole("button", { name: "products/feature_flags" })).toBeTruthy();
+    expect(within(dependsOn).getByTitle("products/error_tracking/backend/logic/service.py:12 imports products/feature_flags/backend/facade/api.py")).toBeTruthy();
+    expect(within(dependsOn).getByTitle("products/error_tracking/backend/logic/service.py:18 imports products/feature_flags/backend/models/flag.py")).toBeTruthy();
+    const dependedOnBy = view.getByRole("region", { name: "Depended on by" });
+    expect(within(dependedOnBy).getByText("None outside tests.")).toBeTruthy();
+    const facadeTab = view.getByRole("button", { name: `${facade} package` });
+    expect(facadeTab.closest(".package")?.className).toContain("tone-outgoing");
+    expect(view.getByRole("button", { name: "posthog package" }).closest(".package")?.className).toContain("tone-dimmed");
   });
 
-  test("follow agent reacts to selection hints from SSE", async () => {
+  test("follow agent moves the selection on selection hints and stays put when switched off", async () => {
     installFetch();
 
     const view = renderExplorer();
     await view.findByRole("heading", { name: "repo" });
-    await waitForLayout();
-    await act(async () => {
-      fireEvent.click(view.getByRole("switch", { name: "Follow agent" }));
-    });
+    await settle();
 
     await act(async () => {
       FakeEventSource.instances[0]?.emit({ seq: 3, at, repositoryId: "/repo/.git", type: "selection_hint", client: "claude", tool: "describe_module", target: { kind: "module", path: facade }, planId: plan.id });
     });
 
-    expect(await view.findByRole("heading", { name: facade })).toBeTruthy();
-    expect(view.getByText("claude focused products/feature_flags/backend/facade")).toBeTruthy();
+    expect(await view.findByRole("heading", { name: "facade" })).toBeTruthy();
+    expect(view.getByText(`claude is looking at ${facade}`)).toBeTruthy();
+
+    await act(async () => {
+      fireEvent.click(view.getByRole("switch", { name: "Follow agent" }));
+    });
+    await act(async () => {
+      FakeEventSource.instances[0]?.emit({ seq: 4, at, repositoryId: "/repo/.git", type: "selection_hint", client: "claude", tool: "describe_module", target: { kind: "module", path: models }, planId: plan.id });
+    });
+
+    expect(view.getByRole("heading", { name: "facade" })).toBeTruthy();
   });
 
-  test("comments post plan operations and refetch after a stale revision", async () => {
-    const staleUrl = `/api/plans/flags-on-issues/operations?path=${encodeURIComponent(root)}`;
-    const calls = installFetch(new Map([[staleUrl, 409]]));
-
-    const view = renderExplorer();
-    const logicPackage = await view.findByRole("button", { name: /logic package/i });
-    await act(async () => {
-      fireEvent.click(logicPackage);
-    });
-    await waitForLayout();
-    await act(async () => {
-      fireEvent.change(view.getByRole("textbox", { name: "Comment" }), { target: { value: "Please keep this behind the facade." } });
-      fireEvent.click(view.getByRole("button", { name: "Add comment" }));
-    });
-
-    await waitFor(() => expect(calls.filter((call) => call.url.startsWith("/api/plans/flags-on-issues"))).toHaveLength(3));
-    const operationCall = calls.find((call) => call.url === staleUrl);
-    expect(JSON.parse(String(operationCall?.init?.body))).toEqual({
-      expectedRevision: 2,
-      operations: [{ op: "add_comment", target: { kind: "module", path: logic }, body: "Please keep this behind the facade." }],
-      note: "Human comment from explorer",
-    });
-    expect(view.getByText("Plan changed elsewhere; refreshed revision 3.")).toBeTruthy();
-  });
-
-  test("check results render conformance status and file-line findings", async () => {
+  test("a plan patch from the agent replaces the plan and reveals its new module", async () => {
     installFetch();
 
     const view = renderExplorer();
     await view.findByRole("heading", { name: "repo" });
-    await waitForLayout();
+    await settle();
+    const patched: ArchitecturePlan = { ...plan, revision: 3, modules: [...plan.modules, { path: facade, action: "modify", responsibility: "Expose flags per issue.", origin: "agent" }] };
+
+    await act(async () => {
+      FakeEventSource.instances[0]?.emit({ seq: 5, at, repositoryId: "/repo/.git", type: "plan_patch", planId: plan.id, revision: { number: 3, at, actor: "agent", client: "claude", kind: "edit", operations: [{ op: "upsert_module", path: facade, action: "modify", responsibility: "Expose flags per issue." }] }, plan: patched });
+    });
+    await settle();
+
+    expect(view.getByText("Architecture plan · revision 3")).toBeTruthy();
+    expect(view.getByText(`agent revision 3: modify ${facade}`)).toBeTruthy();
+    expect((await view.findByRole("button", { name: `${facade} package` })).closest(".package")?.className).toContain("fresh");
+  });
+
+  test("comments post plan operations and a stale revision is explained after the plan is reloaded", async () => {
+    const operationsUrl = `/api/plans/flags-on-issues/operations?path=${encodeURIComponent(root)}`;
+    const calls = installFetch(new Map([[operationsUrl, 409]]));
+
+    const view = renderExplorer();
+    const logicTab = await view.findByRole("button", { name: `${logic} package` });
+    await act(async () => {
+      fireEvent.click(logicTab);
+    });
+    await settle();
+    await act(async () => {
+      fireEvent.input(view.getByRole("textbox", { name: "Comment on logic" }), { target: { value: "Please keep this behind the facade." } });
+    });
+    await act(async () => {
+      fireEvent.submit(view.getByRole("form", { name: "New comment on logic" }));
+    });
+
+    await waitFor(() => expect(calls.some((call) => call.url === operationsUrl)).toBe(true));
+    expect(JSON.parse(String(calls.find((call) => call.url === operationsUrl)?.init?.body))).toEqual({
+      expectedRevision: 2,
+      operations: [{ op: "add_comment", target: { kind: "module", path: logic }, body: "Please keep this behind the facade." }],
+      note: "Comment from the explorer",
+    });
+    expect(await view.findByText(/rejected: the plan changed to revision 3/)).toBeTruthy();
+    expect(view.getByText("Architecture plan · revision 3")).toBeTruthy();
+  });
+
+  test("hand edits and the lock go through the plan operations contract", async () => {
+    const calls = installFetch();
+
+    const view = renderExplorer();
+    const facadeTab = await view.findByRole("button", { name: `${facade} package` });
+    await act(async () => {
+      fireEvent.click(facadeTab);
+    });
+    await settle();
+    await act(async () => {
+      fireEvent.click(view.getByRole("button", { name: "Add to plan" }));
+    });
+    await act(async () => {
+      fireEvent.input(view.getByRole("textbox", { name: "Responsibility" }), { target: { value: "Expose flags per issue." } });
+    });
+    await act(async () => {
+      fireEvent.submit(view.getByRole("form", { name: "Planned module" }));
+    });
+
+    await waitFor(() => expect(calls.some((call) => call.url.includes("/operations"))).toBe(true));
+    expect(JSON.parse(String(calls.find((call) => call.url.includes("/operations"))?.init?.body)).operations).toEqual([{ op: "upsert_module", path: facade, action: "modify", responsibility: "Expose flags per issue." }]);
+
+    await act(async () => {
+      fireEvent.click(view.getByRole("button", { name: "Lock plan" }));
+    });
+
+    await waitFor(() => expect(calls.some((call) => call.url.includes("/lock"))).toBe(true));
+    expect(JSON.parse(String(calls.find((call) => call.url.includes("/lock"))?.init?.body))).toEqual({ locked: true, expectedRevision: 3 });
+    expect(await view.findByRole("button", { name: "Unlock" })).toBeTruthy();
+  });
+
+  test("a check paints conformance on the plan and lists findings at file:line", async () => {
+    installFetch();
+
+    const view = renderExplorer();
+    await view.findByRole("heading", { name: "repo" });
+    await settle();
     await act(async () => {
       fireEvent.click(view.getByRole("button", { name: "Check" }));
     });
+    await settle();
 
-    expect((await view.findAllByText("Violating")).length).toBeGreaterThan(0);
-    expect(view.getByText("products/error_tracking/backend/logic/service.py:18")).toBeTruthy();
-    expect(view.getByText("Import through products/feature_flags/backend/facade/api.py instead.")).toBeTruthy();
+    const planPanel = view.getByRole("region", { name: "Architecture plan" });
+    expect(within(planPanel).getByText(/violating · progress/)).toBeTruthy();
+    expect(within(planPanel).getByText("Import through products/feature_flags/backend/facade/api.py instead.")).toBeTruthy();
+    expect(within(planPanel).getByTitle("products/error_tracking/backend/logic/service.py:18")).toBeTruthy();
+    const violatingSeam = within(planPanel).getAllByTitle(models).map((path) => path.closest("li")).find((row) => row?.textContent?.includes("violating"));
+    expect(violatingSeam?.textContent).toContain(`${logic} → ${models}`);
+    expect(within(planPanel).getAllByTitle(facade).some((path) => path.closest("li")?.textContent?.includes("conforming"))).toBe(true);
   });
 });

@@ -1,13 +1,5 @@
-# red: bun test test/explorer/explorer.dom.test.tsx -t breakdown (before the change, on origin/main 25201b0 + the new test)
-32 |   // throw errors w/ suggestions for better queries. Opt in so off by default.
-34 |   // called when getBy* queries fail. (message, container) => Error
-37 |     const error = new Error([message, `Ignored nodes: comments, ${config.defaultIgnore}\n${prettifiedDOM}`].filter(Boolean).join('\n\n'));
-TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name "modify products/error_tracking/backend/logic"
-  Name "modify products / error_tracking / backend / logic":
-  Name "modify products / error_tracking / frontend":
-  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / facade":
-  Name "add products / error_tracking / backend / logic → products / feature_flags / backend / models":
-    [0mShow feature flag usage on error tracking issues.[0m
-          [0merror_tracking[0m
-          [0merror_tracking[0m
-            [0merror_tracking[0m
+# red: bun test test/explorer/explorer.dom.test.tsx -t breakdown, with src/explorer at origin/main 25201b0 and the new test
+TestingLibraryElementError: Unable to find an element with the text: Read issue flag usage.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+(fail) ExplorerApp > the plan panel reads as the plan's breakdown: responsibilities, seam interfaces, and rationale [60.18ms]
+ 0 pass
+ 1 fail

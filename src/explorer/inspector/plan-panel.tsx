@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import type { ArchitecturePlan, CommentTarget, ElementStatus, PlanComment, PlannedModule, Seam } from "../../architecture/contracts/index.ts";
 import { statusGlyph } from "../canvas/package-node.tsx";
 import { currentConformance, type CheckView } from "../state/check-provenance.ts";
@@ -20,7 +20,7 @@ export function PlanPanel({ plan, check, actions, onSelectModule, onSelectSeam }
     <section className="panel plan" aria-label="Architecture plan">
       <p className="eyebrow">{`Architecture plan · revision ${plan.revision}`}</p>
       <h2>{plan.title}</h2>
-      <Goal text={plan.goal} />
+      <Goal key={`${plan.id}:${plan.goal}`} text={plan.goal} />
       <div className="plan-state">
         <span className={`chip chip-lock ${plan.status}`}>{locked ? "Locked" : "Draft"}</span>
         <CheckChip check={check} />
@@ -75,7 +75,7 @@ function Goal({ text }: { text: string }) {
   useLayoutEffect(() => {
     const element = paragraph.current;
     setClamped(element !== null && element.scrollHeight > element.clientHeight);
-  }, [text]);
+  }, []);
   return (
     <>
       <p ref={paragraph} className={`goal ${expanded ? "" : "clamped"}`}>{text}</p>
@@ -85,31 +85,35 @@ function Goal({ text }: { text: string }) {
 }
 
 function PlannedModuleEntry({ module, status, onSelect }: { module: PlannedModule; status: ElementStatus | undefined; onSelect(path: string): void }) {
+  const detailId = useId();
   return (
-    <li aria-label={`${module.action} ${module.path}`}>
-      <button type="button" className="link plan-entry" onClick={() => onSelect(module.path)}>
+    <li>
+      <button type="button" className="link plan-entry" aria-label={`${module.action} ${module.path}`} aria-describedby={detailId} onClick={() => onSelect(module.path)}>
         <span className="plan-entry-head">
           <span className={`chip chip-action action-${module.action}`}>{module.action}</span>
           <ModulePath path={module.path} />
           <StatusChip status={status} />
         </span>
-        <span className="plan-entry-text">{module.responsibility}</span>
+        <span id={detailId} className="plan-entry-text">{module.responsibility}</span>
       </button>
     </li>
   );
 }
 
 function PlannedSeamEntry({ seam, status, onSelect }: { seam: Seam; status: ElementStatus | undefined; onSelect(from: string, to: string): void }) {
+  const detailId = useId();
   return (
-    <li aria-label={`${seam.action} ${seam.from} → ${seam.to}`}>
-      <button type="button" className="link plan-entry" onClick={() => onSelect(seam.from, seam.to)}>
+    <li>
+      <button type="button" className="link plan-entry" aria-label={`${seam.action} ${seam.from} → ${seam.to}`} aria-describedby={detailId} onClick={() => onSelect(seam.from, seam.to)}>
         <span className="plan-entry-head">
           <span className={`chip chip-action seam-${seam.action}`}>{seam.action}</span>
           <span className="seam-ends"><ModulePath path={seam.from} /> <span className="arrow">→</span> <ModulePath path={seam.to} /></span>
           <StatusChip status={status} />
         </span>
-        {seam.interface ? <SeamInterface files={seam.interface.files} symbols={seam.interface.symbols} within={seam.to} /> : null}
-        {seam.rationale ? <span className="plan-entry-text muted">{seam.rationale}</span> : null}
+        <span id={detailId} className="plan-entry-detail">
+          {seam.interface ? <SeamInterface files={seam.interface.files} symbols={seam.interface.symbols} within={seam.to} /> : null}
+          {seam.rationale ? <span className="plan-entry-text rationale">{seam.rationale}</span> : null}
+        </span>
       </button>
     </li>
   );
@@ -120,7 +124,7 @@ function SeamInterface({ files, symbols, within }: { files: string[]; symbols: s
     <span className="plan-entry-via">
       {"via "}
       {files.map((file, index) => (
-        <span key={file}>
+        <span key={index}>
           {index > 0 ? ", " : ""}
           <ModulePath path={relativeTo(file, within)} title={file} />
         </span>

@@ -1186,6 +1186,11 @@ a:hover {
   vertical-align: 1px;
 }
 
+.plan-entry-detail {
+  display: grid;
+  gap: 2px;
+}
+
 .plan-entry-text {
   display: block;
   font-size: 12px;
@@ -1194,12 +1199,21 @@ a:hover {
   overflow-wrap: anywhere;
 }
 
+.plan-entry-text.rationale {
+  color: var(--ink-3);
+}
+
 .plan-entry-via {
   display: block;
   font-family: var(--mono);
   font-size: 11px;
   line-height: 1.5;
   color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.plan-entry-via .module-path {
+  font-size: inherit;
   overflow-wrap: anywhere;
 }
 
@@ -1214,7 +1228,7 @@ a:hover {
   overflow: hidden;
 }
 
-.goal-toggle {
+button.link.goal-toggle {
   font-size: 12px;
   color: var(--ink-3);
   margin-top: -2px;

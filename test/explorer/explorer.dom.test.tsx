@@ -343,17 +343,17 @@ describe("ExplorerApp", () => {
     await view.findByRole("heading", { name: "repo" });
     await settle();
 
-    const moduleRow = planPanel(view).getByRole("listitem", { name: `modify ${logic}` });
-    expect(moduleRow.textContent).toContain("Read issue flag usage.");
-    const seamRow = planPanel(view).getByRole("listitem", { name: `add ${logic} → ${facade}` });
-    const via = within(seamRow).getByText(/^via/);
+    const moduleRow = planPanel(view).getByText("Read issue flag usage.").closest("li");
+    expect(within(moduleRow!).getByRole("button", { name: `modify ${logic}` })).toBeTruthy();
+    const seamRow = planPanel(view).getByText("Route through the facade.").closest("li");
+    const seamButton = within(seamRow!).getByRole("button", { name: `add ${logic} → ${facade}` });
+    const via = within(seamRow!).getByText(/^via/);
     expect(via.textContent).toBe("via api.py, types.py (flags_for_issue)");
     expect(within(via).getByTitle(`${facade}/api.py`)).toBeTruthy();
-    expect(within(seamRow).getByText("Route through the facade.")).toBeTruthy();
-    expect(within(planPanel(view).getByRole("listitem", { name: `add ${logic} → ${models}` })).queryByText(/^via/)).toBeNull();
+    expect(within(planPanel(view).getByText("Intentional violation fixture.").closest("li")!).queryByText(/^via/)).toBeNull();
 
     await act(async () => {
-      fireEvent.click(within(seamRow).getByRole("button"));
+      fireEvent.click(seamButton);
     });
     expect(view.getByText("add seam")).toBeTruthy();
   });

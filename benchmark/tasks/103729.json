@@ -1,0 +1,79 @@
+{
+  "pr": 103729,
+  "title": "chore(error-tracking): share the git link composer across the frontend",
+  "url": "https://github.com/PostHog/posthog/pull/103729",
+  "state": "MERGED",
+  "session": {
+    "source": "wayfinder-ticket",
+    "ticket": {
+      "number": 89,
+      "url": "https://github.com/Silthus/posthog/issues/89",
+      "title": "Promote the git link composer to a shared location",
+      "bodyLastEditedAt": null
+    },
+    "map": "https://github.com/Silthus/posthog/issues/68",
+    "worker": {
+      "name": "wf68-89-implement",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44/subagents/agent-a93c2303b037dd644.jsonl",
+      "dispatchMessageUuid": "7a8dba5a-7230-429f-b937-3ab350148393",
+      "dispatchedAt": "2026-09-21T12:23:24.288Z",
+      "model": "claude-opus-5"
+    },
+    "orchestrator": {
+      "t3ThreadId": "ba683255-9f48-4b95-825b-e696fab60ab9",
+      "t3ThreadTitle": "Drive Wayfinder Map 68",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44.jsonl",
+      "t3Database": "/Users/mreichenbach/.t3/userdata/state.sqlite"
+    },
+    "originalModel": "claude-opus-5"
+  },
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "finalHead": "e9994205f91f8a1042f48e8689b9d55dbb3c60a0",
+  "firstPushHead": "017637483d657016a58264c502b42202b011c2ef",
+  "taskStatement": "Part of #68. Specified by #79 ([spec](https://github.com/Silthus/posthog/issues/79#issuecomment-5760343402)).\n\n## What to build\n\n`GitMetadataParser` becomes the one file in the repository that knows GitHub, GitLab and Bitbucket. It moves out of error tracking into a shared location and keeps its four importers working. Nothing changes on screen: a reader of the error tracking Releases surface sees the same pixels before and after. Three later tickets consume it, so it lands first.\n\n## Write scope\n\n- `frontend/src/lib/components/Git/**` (new home; the spec proposes this path, see Gap 3 on #79)\n- `products/error_tracking/frontend/components/ReleasesPreview/**`\n- `products/error_tracking/frontend/scenes/ErrorTrackingConfigurationScene/releases/Releases.tsx`\n- `products/error_tracking/frontend/components/ExceptionCard/Tabs/StackTraceTab/StackTraceActions.tsx`\n- `frontend/src/lib/components/Errors/Frame/framesCodeSourceLogic.ts`\n\nNo other ticket writes these paths.\n\n## Proof gate\n\n- [ ] `gitMetadataParser.spec.ts` moves with the file and passes with no change to an assertion\n- [ ] `pnpm --filter=@posthog/frontend typescript:check` passes\n- [ ] The error tracking Releases surface renders the same before and after, with both screenshots on the PR\n- [ ] No re-export shim is left behind (see `/writing-ui-components`)\n\n## Blocked by\n\nNothing. Starts immediately.\n\n## Stack base and ship target\n\n- Branch cut from `upstream/master`.\n- A PR against upstream `PostHog/posthog`, opened with `--head Silthus:<branch>`. Nothing merges into the fork's `master`.\n- Stacking rules from the repo `CLAUDE.md`: use `gh stack`, keep the stack shallow, merge the base before you extend it. Never run `gh stack merge`. Never force-push a branch that is in the merge queue, and that includes restacking a stack whose base is queued.\n- Invoke `/writing-ui-components`, `/writing-tests`, `/reviewing-with-coderabbit` and `/writing-pr-descriptions`.\n\n\n## Scope\nExactly what the ticket says: a pure move of the git link composer out of `products/error_tracking/frontend/` to the shared location the spec proposes (`frontend/src/lib/components/Git/`, confirm it against `/placing-product-frontend-code` and `/writing-ui-components`, and against `product:lint` isolation rules), update the importers, no behavior change, no new features, no widening. Keep existing comments. Minimal diff.",
+  "taskStatementSources": [
+    {
+      "kind": "ticketBody",
+      "url": "https://github.com/Silthus/posthog/issues/89",
+      "text": "whole body"
+    },
+    {
+      "kind": "dispatchPrompt",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44/subagents/agent-a93c2303b037dd644.jsonl",
+      "uuid": "7a8dba5a-7230-429f-b937-3ab350148393",
+      "excerpts": [
+        "## Scope\nExactly what the ticket says: a pure move of the git link composer out of `products/error_tracking/frontend/` to the shared location the spec proposes (`frontend/src/lib/components/Git/`, confirm it against `/placing-product-frontend-code` and `/writing-ui-components`, and against `product:lint` isolation rules), update the importers, no behavior change, no new features, no widening. Keep existing comments. Minimal diff."
+      ]
+    }
+  ],
+  "taskStatementNotes": "The statement is what the worker actually received, in order: the ticket body (verbatim, the whole body as it stood when the worker was dispatched), then verbatim excerpts of the conductor's dispatch prompt that carry requirements, each excerpt joined with a blank line. Dropped from the dispatch prompt: the protocol reading list, the claim, branch, tooling, push and PR instructions, the proof bundle and the reporting rules, which are process. The whole dispatch prompt is kept verbatim in dispatchPrompt for a runner that wants the literal input. The worker was also told to read other issues on Silthus/posthog (the map #68, the spec on #79 and the resolutions the ticket links); those are not inlined here. Kept from the dispatch prompt: the '## Scope' section.",
+  "dispatchPrompt": "You are the implement worker for Wayfinder ticket Silthus/posthog#89 \"Promote the git link composer to a shared location\" on map #68 \"Workflows as code: shippable v1\". Your name is `wf68-89-implement`. You are Claude Opus 5; name your real model in every trailer and PR body. Wall-time cap: 3 hours, then a durable report (resolution or park) before idle. CodeRabbit slot 2 is reserved for you.\n\n## Protocol, read in this order\n`~/.claude/skills/wayfinder/SKILL.md`, `~/.claude/skills/orchestration-wayfinder/SKILL.md`, `~/.claude/skills/orchestration-wayfinder/SHIP.md`, `docs/agents/issue-tracker.md`, the repo `CLAUDE.md` (all of it; the mandatory skill invocations apply), `frontend/src/AGENTS.md`. Then the ticket: `gh issue view 89 --repo Silthus/posthog --json body,comments`, the map body (`gh issue view 68 ...`), and the spec on #79 (`gh issue view 79 --repo Silthus/posthog --json comments`, the comment titled as the spec). Pass `--repo Silthus/posthog` on every `gh issue` command. Never write issues to PostHog/posthog. Everything you push is public.\n\n## Claim\n`gh issue edit 89 --repo Silthus/posthog --add-assignee Silthus` and a claim comment \"Claimed by worker wf68-89-implement (Claude Opus 5), <date>\". If assignment is refused, the comment is the claim.\n\n## Branch and ship target\n- `git fetch upstream master && git checkout -b feat/workflows-shared-git-link upstream/master`. Never branch from the fork's master. If git is blocked by an isolation guard in your worktree, stop and report to me at once.\n- PATH: prepend `/Users/mreichenbach/.t3/worktrees/posthog/t3code-cf2b8b25/.flox/run/aarch64-darwin.posthog-dev/bin`. Missing deps: `pnpm install`. Never npm or yarn.\n- Push to `origin` (Silthus/posthog). PR against upstream: `gh pr create --repo PostHog/posthog --base master --head Silthus:feat/workflows-shared-git-link`. Conventional title, `chore(...)` or `feat(...)` as fits a pure move. Body per `.github/pull_request_template.md`, invoke `/writing-pr-descriptions` first, fill \"Agent context\" with your real model and the ticket link. Invoke `/reviewing-with-coderabbit` before creating; the CLI is installed but signed out, so record that the PR opens without a local pass, never substitute another review for it.\n- Commits signed with SSH via 1Password. If signing fails, stop and tell me; never `--no-verify`, never disable signing. Never enqueue or merge; the terminal you can reach is an open, green, proven PR, which you park on.\n\n## Scope\nExactly what the ticket says: a pure move of the git link composer out of `products/error_tracking/frontend/` to the shared location the spec proposes (`frontend/src/lib/components/Git/`, confirm it against `/placing-product-frontend-code` and `/writing-ui-components`, and against `product:lint` isolation rules), update the importers, no behavior change, no new features, no widening. Keep existing comments. Minimal diff.\n\n## Proof bundle (SHIP.md), every claim an artifact on the ticket\n- Existing tests for the composer pass in the new location; if none exist, one behavior test per `/writing-tests` is allowed only if you can name the regression it catches (a broken host mapping after the move). No red/green theater for a pure move: state that plainly.\n- `pnpm --filter=@posthog/frontend typescript:check`, `pnpm --filter=@posthog/frontend lint`, `hogli product:lint --all` (or the frontend equivalent that guards product isolation), and the error tracking Jest tests that import the composer, all green on the final tree. Paste command and result on the ticket.\n- Render one Storybook story or the error tracking surface that uses the link before and after, with a headless browser, and attach both screenshots on the fork's orphan branch `pr-assets-workflows-read-only` (add files `wf89-*.png`, commit signed, push) embedded by raw URL. Storybook in a fresh worktree: `pnpm turbo --filter=@posthog/storybook start`; if vite shows overlay errors, build quill (`pnpm -r --filter '@posthog/quill-*' --filter '@posthog/quill' build`), ensure `node_modules/@posthog/quill` and `node_modules/@posthog/hogvm` links exist, restart. Use a port that is free (6006 and 6007 may be taken).\n- Adversarial review: spawn one fresh Opus sub-agent that never saw the build, brief it with the ticket, the diff, and the proof bundle, cast to break the move (a missed importer, a lost behavior, a product isolation violation). Close every finding as fixed with the bundle re-run, or accepted with the reason on the ticket.\n\n## Reporting\nPark comment on #89 when the PR is open: PR URL, head sha, proof bundle links, review findings and their disposition, \"Decisions locked so far\", \"Pending for the human\": a maintainer must approve fork CI and enqueue. Label `wayfinder:awaiting-human`, end with `<!-- orchestration-wayfinder-cue:claude:wf68-89-implement -->`. Do not edit map #68. Do not close #89; the ticket closes only on a merged commit.\n\nFinal message to me: PR URL, head sha, one line per proof artifact, findings summary, anything you could not prove. Distilled.",
+  "attachments": [],
+  "imageTokens": {},
+  "diffStat": {
+    "final": {
+      "base": "754fa69e9d80a13418543ede38875b6f084ab534",
+      "head": "e9994205f91f8a1042f48e8689b9d55dbb3c60a0",
+      "files": 6,
+      "additions": 4,
+      "deletions": 10,
+      "modules": [
+        "frontend/src/lib",
+        "products/error_tracking/frontend"
+      ]
+    },
+    "firstPush": {
+      "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+      "head": "017637483d657016a58264c502b42202b011c2ef",
+      "files": 6,
+      "additions": 4,
+      "deletions": 10,
+      "modules": [
+        "frontend/src/lib",
+        "products/error_tracking/frontend"
+      ]
+    }
+  },
+  "whyChosen": "A pure move across a product boundary: a git link composer leaves products/error_tracking for frontend/src/lib, and every importer must follow without a re-export shim.",
+  "notes": "baseCommit c8357af is upstream master when the worker branched (worktree reflog, 12:24Z) and the first commit's parent. firstPushHead 0176374 is the amended commit pushed at 12:43Z; the PR opened at 12:44Z. The branch was rebased and force-pushed on 2026-09-24 as e999420 and merged on 2026-09-25; the change itself is the same six files."
+}

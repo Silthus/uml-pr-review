@@ -1,0 +1,96 @@
+{
+  "pr": 103843,
+  "title": "feat(workflows): add the @posthog/workflows package and its SDK",
+  "url": "https://github.com/PostHog/posthog/pull/103843",
+  "state": "CLOSED",
+  "session": {
+    "source": "wayfinder-ticket",
+    "ticket": {
+      "number": 92,
+      "url": "https://github.com/Silthus/posthog/issues/92",
+      "title": "The @posthog/workflows package and its SDK",
+      "bodyLastEditedAt": null
+    },
+    "map": "https://github.com/Silthus/posthog/issues/68",
+    "worker": {
+      "name": "wf68-92-implement",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44/subagents/agent-a71884deec2b98c06.jsonl",
+      "dispatchMessageUuid": "a3eca6ef-46b0-42cc-9018-389745ab57d4",
+      "dispatchedAt": "2026-09-21T12:24:03.605Z",
+      "model": "claude-opus-5"
+    },
+    "orchestrator": {
+      "t3ThreadId": "ba683255-9f48-4b95-825b-e696fab60ab9",
+      "t3ThreadTitle": "Drive Wayfinder Map 68",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44.jsonl",
+      "t3Database": "/Users/mreichenbach/.t3/userdata/state.sqlite"
+    },
+    "originalModel": "claude-opus-5"
+  },
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "finalHead": "5f722bb6c8071eee829c8f5ea975cd0800316f89",
+  "firstPushHead": "0865e373e646bbe5c7d68ff0ab07c86334eb8d98",
+  "taskStatement": "Part of #68. Specified by #79 ([spec](https://github.com/Silthus/posthog/issues/79#issuecomment-5760343402)), locked by #69 and #74.\n\n## What to build\n\nThe package a customer installs, and the typed authoring surface inside it. `@posthog/workflows` lives at `products/workflows/packages/workflows/`, is `\"private\": true`, declares the bin name `posthog-workflows`, builds with `tsc`, copies quill's four-condition `exports` map and `files: [\"dist\"]`, and gets an explicit `pnpm-workspace.yaml` entry because the `products/*` glob matches one level only. There is no publish workflow at v1.\n\nThe authoring shape is one declarative record. A step is a value with no id and no position, so a step placed two times makes two nodes. A sub-path is a non-empty tuple, so an empty branch is a compile error. An action id is the slug of a required step name, unique inside the workflow, with an optional `id` override for a rename, and emit refuses two steps whose slugs collide. The v1 surface is the actions `trigger`, `delay`, `function`, `conditional_branch` and `exit`, the triggers `event` and `schedule`, a loose `.function({ template_id, inputs })` escape hatch, and a typed `.email()` with inline content that refuses `template_uuid`. `secret('ENV_NAME')` sits on the step value. The file carries `status`, default `draft`, and the variables with their default values, in the shape the existing serializer accepts: a list of `{key, type, default}` with unique keys, 5120 bytes in total. Every error carries `status`, `message`, `why` and `fix`. This ticket emits and validates a workflow definition; it ships no CLI.\n\nLift the type rules, the error contract and the emit shape from `prototype/workflows-composable-steps` by reading them. The branch is throwaway and is not merged.\n\n## Write scope\n\n- `products/workflows/packages/workflows/**`, except `src/cli/**`, which the CLI ticket owns\n- `pnpm-workspace.yaml`\n\n## Proof gate\n\n- [ ] The definition round trip is identical\n- [ ] A slug collision is refused with the four fields\n- [ ] An empty sub-path is a compile error, pinned by a type test\n- [ ] A duration literal refuses a value that is not a duration, from inside a `const`\n- [ ] Variables over the size cap, and duplicate variable keys, are refused\n- [ ] `pnpm --filter=@posthog/workflows build` and the package tests run green\n- [ ] One emitted workflow definition is in the PR body\n\n## Blocked by\n\nNothing. Starts immediately.\n\n## Stack base and ship target\n\n- Branch cut from `upstream/master`. This ticket touches none of the files the read-only branch touches.\n- A PR against upstream `PostHog/posthog`, opened with `--head Silthus:<branch>`. Nothing merges into the fork's `master`.\n- Stacking rules from the repo `CLAUDE.md`: use `gh stack`, keep the stack shallow, merge the base before you extend it. Never run `gh stack merge`. Never force-push a branch that is in the merge queue, and that includes restacking a stack whose base is queued.\n- Invoke `/writing-tests`, `/writing-user-facing-copy` for every printed string, `/writing-code-comments`, `/reviewing-with-coderabbit` and `/writing-pr-descriptions`.\n\n\nPrior art to read, not merge: `origin/prototype/workflows-composable-steps` (`products/workflows/prototypes/workflows-composable-steps/`, shape B declarative record with `steps: path(...)`), `origin/prototype/workflows-cli-generator` (loader and emit), `origin/prototype/workflows-as-code` (type-level rules, error contract `status`/`message`/`why`/`fix`, change-detection projection), `origin/research/workflows-package-shape` (`products/workflows/docs/research/workflows-package-shape.md`). Lift rules by reading them; build fresh.\n\n## Scope\nExactly the ticket's write scope: `products/workflows/packages/workflows/**` except `src/cli/**` (that is #93), plus the `pnpm-workspace.yaml` entry. Locked facts: package name `@posthog/workflows`, `\"private\": true`, bin name `posthog-workflows` declared but the CLI entry itself is #93's (leave a stub only if the package does not build without it, and say so), build with `tsc`, four-condition `exports` map and `files: [\"dist\"]` copied from quill, no publish workflow, versioning deferred. SDK: shape B declarative record, `key` required on the workflow options, per-step required `name` with slug-derived action ids and optional `id` override, colliding slugs refused with the four error fields, `secret('ENV_NAME')` on the step value, `status` in source defaulting to `draft`, the v1 surface from #69 (prototype actions, event and schedule triggers, loose `.function()` escape hatch, typed email inline), emit to the workflow definition JSON that the real `HogFlowSerializer` accepts (read `products/workflows/backend/api/hog_flow.py` and the graph schema; do not fork the schema). Every error carries `status`, `message`, `why`, `fix`. Minimal: no feature the spec does not name, no abstraction for one caller. Michael's rule: minimal changes, no overengineering, YAGNI.",
+  "taskStatementSources": [
+    {
+      "kind": "ticketBody",
+      "url": "https://github.com/Silthus/posthog/issues/92",
+      "text": "whole body"
+    },
+    {
+      "kind": "dispatchPrompt",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44/subagents/agent-a71884deec2b98c06.jsonl",
+      "uuid": "a3eca6ef-46b0-42cc-9018-389745ab57d4",
+      "excerpts": [
+        "Prior art to read, not merge: `origin/prototype/workflows-composable-steps` (`products/workflows/prototypes/workflows-composable-steps/`, shape B declarative record with `steps: path(...)`), `origin/prototype/workflows-cli-generator` (loader and emit), `origin/prototype/workflows-as-code` (type-level rules, error contract `status`/`message`/`why`/`fix`, change-detection projection), `origin/research/workflows-package-shape` (`products/workflows/docs/research/workflows-package-shape.md`). Lift rules by reading them; build fresh.",
+        "## Scope\nExactly the ticket's write scope: `products/workflows/packages/workflows/**` except `src/cli/**` (that is #93), plus the `pnpm-workspace.yaml` entry. Locked facts: package name `@posthog/workflows`, `\"private\": true`, bin name `posthog-workflows` declared but the CLI entry itself is #93's (leave a stub only if the package does not build without it, and say so), build with `tsc`, four-condition `exports` map and `files: [\"dist\"]` copied from quill, no publish workflow, versioning deferred. SDK: shape B declarative record, `key` required on the workflow options, per-step required `name` with slug-derived action ids and optional `id` override, colliding slugs refused with the four error fields, `secret('ENV_NAME')` on the step value, `status` in source defaulting to `draft`, the v1 surface from #69 (prototype actions, event and schedule triggers, loose `.function()` escape hatch, typed email inline), emit to the workflow definition JSON that the real `HogFlowSerializer` accepts (read `products/workflows/backend/api/hog_flow.py` and the graph schema; do not fork the schema). Every error carries `status`, `message`, `why`, `fix`. Minimal: no feature the spec does not name, no abstraction for one caller. Michael's rule: minimal changes, no overengineering, YAGNI."
+      ]
+    }
+  ],
+  "taskStatementNotes": "The statement is what the worker actually received, in order: the ticket body (verbatim, the whole body as it stood when the worker was dispatched), then verbatim excerpts of the conductor's dispatch prompt that carry requirements, each excerpt joined with a blank line. Dropped from the dispatch prompt: the protocol reading list, the claim, branch, tooling, push and PR instructions, the proof bundle and the reporting rules, which are process. The whole dispatch prompt is kept verbatim in dispatchPrompt for a runner that wants the literal input. The worker was also told to read other issues on Silthus/posthog (the map #68, the spec on #79 and the resolutions the ticket links); those are not inlined here. Kept from the dispatch prompt: the 'Prior art to read, not merge' paragraph (the prototype branches it names live on the fork Silthus/posthog, not upstream) and the '## Scope' section.",
+  "dispatchPrompt": "You are the implement worker for Wayfinder ticket Silthus/posthog#92 \"The `@posthog/workflows` package and its SDK\" on map #68 \"Workflows as code: shippable v1\". Your name is `wf68-92-implement`. You are Claude Opus 5; name your real model in every trailer and PR body. Wall-time cap: 4 hours, then a durable report (resolution or park) before idle. CodeRabbit slot 3 is reserved for you.\n\n## Protocol, read in this order\n`~/.claude/skills/wayfinder/SKILL.md`, `~/.claude/skills/orchestration-wayfinder/SKILL.md`, `~/.claude/skills/orchestration-wayfinder/SHIP.md`, `docs/agents/issue-tracker.md`, the repo `CLAUDE.md` (all of it; mandatory skill invocations apply), `products/README.md`, `products/architecture.md`, `products/workflows/CONTRIBUTING.md`, `products/workflows/skills/building-workflows/references/graph-schema.md`. Then the ticket: `gh issue view 92 --repo Silthus/posthog --json body,comments`, the map body (`gh issue view 68 ...`), the spec on #79 (`gh issue view 79 --repo Silthus/posthog --json comments`), and the resolutions the ticket points at (#69, #70, #71, #72, #73, #74: read their last comments). Pass `--repo Silthus/posthog` on every `gh issue` command. Never write issues to PostHog/posthog. Everything you push is public.\n\nPrior art to read, not merge: `origin/prototype/workflows-composable-steps` (`products/workflows/prototypes/workflows-composable-steps/`, shape B declarative record with `steps: path(...)`), `origin/prototype/workflows-cli-generator` (loader and emit), `origin/prototype/workflows-as-code` (type-level rules, error contract `status`/`message`/`why`/`fix`, change-detection projection), `origin/research/workflows-package-shape` (`products/workflows/docs/research/workflows-package-shape.md`). Lift rules by reading them; build fresh.\n\n## Claim\n`gh issue edit 92 --repo Silthus/posthog --add-assignee Silthus` and a claim comment \"Claimed by worker wf68-92-implement (Claude Opus 5), <date>\". If assignment is refused, the comment is the claim.\n\n## Branch and ship target\n- `git fetch upstream master && git checkout -b feat/workflows-package-sdk upstream/master`. Never branch from the fork's master. If git is blocked by an isolation guard in your worktree, stop and report to me at once.\n- PATH: prepend `/Users/mreichenbach/.t3/worktrees/posthog/t3code-cf2b8b25/.flox/run/aarch64-darwin.posthog-dev/bin` (node 24, pnpm). Never npm or yarn.\n- Push to `origin` (Silthus/posthog). PR against upstream: `gh pr create --repo PostHog/posthog --base master --head Silthus:feat/workflows-package-sdk`, conventional `feat(workflows): ...` title, body per `.github/pull_request_template.md` after invoking `/writing-pr-descriptions`, \"Agent context\" with your real model and the ticket link. Invoke `/reviewing-with-coderabbit` before creating; the CLI is installed but signed out, so record that the PR opens without a local pass, never substitute another review for it.\n- Commits signed with SSH via 1Password; if signing fails, stop and tell me; never `--no-verify`, never disable signing. Never enqueue or merge; the terminal you can reach is an open, green, proven PR, which you park on.\n\n## Scope\nExactly the ticket's write scope: `products/workflows/packages/workflows/**` except `src/cli/**` (that is #93), plus the `pnpm-workspace.yaml` entry. Locked facts: package name `@posthog/workflows`, `\"private\": true`, bin name `posthog-workflows` declared but the CLI entry itself is #93's (leave a stub only if the package does not build without it, and say so), build with `tsc`, four-condition `exports` map and `files: [\"dist\"]` copied from quill, no publish workflow, versioning deferred. SDK: shape B declarative record, `key` required on the workflow options, per-step required `name` with slug-derived action ids and optional `id` override, colliding slugs refused with the four error fields, `secret('ENV_NAME')` on the step value, `status` in source defaulting to `draft`, the v1 surface from #69 (prototype actions, event and schedule triggers, loose `.function()` escape hatch, typed email inline), emit to the workflow definition JSON that the real `HogFlowSerializer` accepts (read `products/workflows/backend/api/hog_flow.py` and the graph schema; do not fork the schema). Every error carries `status`, `message`, `why`, `fix`. Minimal: no feature the spec does not name, no abstraction for one caller. Michael's rule: minimal changes, no overengineering, YAGNI.\n\n## Proof bundle (SHIP.md), every claim an artifact on the ticket\n- Red then green: write the SDK tests first (`/tdd`, `/writing-tests`), one behavior per case, parameterized where variations share a shape. Show the failing run before the implementation and the passing run after, as pasted command output on the ticket.\n- Full local gate on the final tree: the package's own `tsc` build and tests, `pnpm install --frozen-lockfile` clean, root `pnpm --filter=@posthog/frontend typescript:check` unaffected, `hogli product:lint --all` (isolation), `hogli ci:preflight --strict` if it runs. Paste command and result.\n- Emit compatibility: a test that feeds an emitted definition to the real serializer is out of your scope (backend), so instead validate the emitted JSON against the graph schema doc and record one emitted example file on the ticket. State plainly that the round trip against the real API is #96's live push.\n- No user-facing UI, so no screenshot; the package README counts as user-facing copy (`/writing-user-facing-copy`), keep it short, no real identity values in examples (locked on #72: the CLI refuses the placeholder).\n- Adversarial review: spawn one fresh Opus sub-agent that never saw the build, brief it with the ticket, the diff, and the proof bundle, cast to break the type rules (an empty branch that compiles, a duplicate slug that emits, a secret that leaks into the definition, an emit that the serializer would reject). Close every finding as fixed with the bundle re-run, or accepted with the reason on the ticket.\n\n## Reporting\nPark comment on #92 when the PR is open: PR URL, head sha, proof bundle links, review findings and disposition, \"Decisions locked so far\", \"Pending for the human\": a maintainer must approve fork CI and enqueue. Label `wayfinder:awaiting-human`, end with `<!-- orchestration-wayfinder-cue:claude:wf68-92-implement -->`. Do not edit map #68. Do not close #92; it closes only on a merged commit.\n\nFinal message to me: PR URL, head sha, one line per proof artifact, findings summary, anything you could not prove, and any decision the spec left open that you had to make. Distilled.",
+  "attachments": [],
+  "imageTokens": {},
+  "diffStat": {
+    "final": {
+      "base": "754fa69e9d80a13418543ede38875b6f084ab534",
+      "head": "5f722bb6c8071eee829c8f5ea975cd0800316f89",
+      "files": 20,
+      "additions": 3487,
+      "deletions": 3,
+      "modules": [
+        "frontend",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "products/workflows/packages"
+      ]
+    },
+    "firstPush": {
+      "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+      "head": "0865e373e646bbe5c7d68ff0ab07c86334eb8d98",
+      "files": 18,
+      "additions": 1638,
+      "deletions": 3,
+      "modules": [
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "products/workflows/packages"
+      ]
+    }
+  },
+  "whyChosen": "A new package inside a product: it must be placed and wired per products/architecture.md and pnpm-workspace.yaml, and emit the definition the existing HogFlowSerializer accepts without forking its schema.",
+  "notes": "baseCommit c8357af is upstream master when the worker branched (worktree reflog, 12:27Z) and the first commit's parent. The worker amended its commit twice; 0865e37 (15:10Z) is the first head on the remote, fetched back at 15:13Z, and the PR opened with it at 15:14Z. The PR was closed unmerged on 2026-09-24 with a real diff.Only three modules by the path rule (pnpm-lock.yaml, pnpm-workspace.yaml, products/workflows/packages); architecturally it is one new package plus workspace wiring.",
+  "sessionAnswerDiff": {
+    "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+    "head": "0865e373e646bbe5c7d68ff0ab07c86334eb8d98",
+    "files": 18,
+    "additions": 1638,
+    "deletions": 3,
+    "modules": [
+      "pnpm-lock.yaml",
+      "pnpm-workspace.yaml",
+      "products/workflows/packages"
+    ],
+    "why": "The worker's answer to the ticket as first pushed. The final PR's fifteen commits add later work on top (agent-facing JSDoc Michael asked for, then SDK fixes and features such as step descriptions from the copy-code thread), so it holds much more than the ticket asked for."
+  }
+}

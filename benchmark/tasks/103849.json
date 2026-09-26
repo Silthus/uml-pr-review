@@ -1,0 +1,96 @@
+{
+  "pr": 103849,
+  "title": "feat(workflows): give a workflow a key and filter the list on it",
+  "url": "https://github.com/PostHog/posthog/pull/103849",
+  "state": "OPEN",
+  "session": {
+    "source": "wayfinder-ticket",
+    "ticket": {
+      "number": 91,
+      "url": "https://github.com/Silthus/posthog/issues/91",
+      "title": "A workflow carries a key, and the list filters on key and on owner",
+      "bodyLastEditedAt": "2026-09-21T14:58:09Z"
+    },
+    "map": "https://github.com/Silthus/posthog/issues/68",
+    "worker": {
+      "name": "wf68-91-implement",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44/subagents/agent-a430239e8f1975529.jsonl",
+      "dispatchMessageUuid": "bc56782e-899f-4749-8a82-e65e036f9cb3",
+      "dispatchedAt": "2026-09-21T14:59:26.314Z",
+      "model": "claude-opus-5"
+    },
+    "orchestrator": {
+      "t3ThreadId": "ba683255-9f48-4b95-825b-e696fab60ab9",
+      "t3ThreadTitle": "Drive Wayfinder Map 68",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44.jsonl",
+      "t3Database": "/Users/mreichenbach/.t3/userdata/state.sqlite"
+    },
+    "originalModel": "claude-opus-5"
+  },
+  "baseCommit": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+  "finalHead": "e7c3f16b57cd35e53154780fef15dccf7cc34fd5",
+  "firstPushHead": "30cbe4cbbaaf43a2dc822ce8a9c5b053baf64729",
+  "taskStatement": "Part of #68. Specified by #79 ([spec](https://github.com/Silthus/posthog/issues/79#issuecomment-5760343402)), locked by #72 ([resolution](https://github.com/Silthus/posthog/issues/72#issuecomment-5755808227)).\n\n## What to build\n\nA workflow carries a client-chosen `key`, unique for each team, which is how `push` finds the workflow it owns. `HogFlow` gains a nullable `key` with a unique constraint for each team, and a `validate_key` that follows the feature flag precedent: the charset check, the scoped pre-check, and the constraint violation re-raised as the same field error. `key` is writable on create and refused on update, because a PATCH that changes a key would be adoption by the back door. `key` joins the list filter, which is the whole resolve path. The `managed_by` list filter moves to the UI ticket (#94), because provenance itself (#76) is on hold. The UUID primary key does not change, and no key-based addressing reaches the detail route or MCP.\n\n## Write scope\n\n- `products/workflows/backend/models/hog_flow/hog_flow.py`\n- `products/workflows/backend/api/hog_flow.py`\n- `products/workflows/backend/migrations/0028_*` and `max_migration.txt`\n- `products/workflows/backend/api/test/test_hog_flow.py` and one new test module\n- `products/workflows/frontend/generated/**` (regenerated, never hand-edited)\n- `services/mcp/src/api/generated.ts`\n\n## Proof gate\n\n- [ ] A create with a key echoes the key back\n- [ ] A key that breaks the charset is a 400 with `code=\"invalid_key\"`\n- [ ] A key already taken in the team is a 400 with `code=\"unique\"`, from the pre-check and from the database race\n- [ ] A PATCH that changes a key is refused\n- [ ] `?key=` resolves exactly one row, scoped to the team\n- [ ] The unique index is built concurrently\n- [ ] `hogli build:openapi` output is in the diff\n\n## Blocked by\n\nNothing. Re-planned on 2026-09-21 after reviewer feedback on the read-only PR: the client side ships and is proven first, and this key column is the one backend change the CLI needs to find a workflow it owns. It no longer waits for the revisions ticket and does not stack on the read-only branch.\n\n## Stack base and ship target\n\n- Branch cut from `upstream/master`. Migration number: the next free one on `upstream/master` (`0026` if the read-only PR has not merged), and say so in the PR.\n- A draft PR against upstream `PostHog/posthog`, opened with `--head Silthus:<branch>`. It stays a draft until Michael has tested the CLI against it and says so. Nothing merges into the fork's `master`.\n- Invoke `/improving-drf-endpoints`, `/django-migrations`, `/writing-tests`, `/reviewing-with-coderabbit` and `/writing-pr-descriptions`.\n\n\nContext that changed today: a PostHog reviewer pushed back on the read-only PR, and Michael reordered the map: the client side ships first, and this `key` column is the one backend change the CLI needs. The read-only PR (#76) is on hold. Your branch is cut from `upstream/master`, not stacked on anything. The PR stays a draft until Michael tests the CLI against it.\n\n## Scope, exactly\nNullable `key` CharField(max_length=400) on `HogFlow` with `UniqueConstraint(fields=[\"team\",\"key\"], name=\"unique_key_for_team\")`, migration adding the column and building the unique index concurrently (see `EventDefinition`'s `UniqueConstraintByExpression(concurrently=True, ...)` precedent, and `/django-migrations`). `\"key\"` in `HogFlowFilterSet.Meta.fields` and in `HogFlowSerializer.Meta.fields`, writable on create, refused on update with a clear field error, `validate_key` copying the feature flag precedent (`feature_flag.py` `validate_key`: charset `^[a-zA-Z0-9_-]+$` with `code=\"invalid_key\"`, scoped `.exists()` pre-check with `code=\"unique\"`, IntegrityError re-raised as the same field error). `help_text` on the field. Regenerate types with `hogli build:openapi` and include `products/workflows/frontend/generated/**` and `services/mcp/src/api/generated.ts` in the diff. Not in scope: `managed_by` filter, key-based addressing on the detail route or MCP, anything UI. Minimal diff, no overengineering, one-line comments.",
+  "taskStatementSources": [
+    {
+      "kind": "ticketBody",
+      "url": "https://github.com/Silthus/posthog/issues/91",
+      "text": "whole body"
+    },
+    {
+      "kind": "dispatchPrompt",
+      "transcript": "/Users/mreichenbach/.claude/projects/-Users-mreichenbach--t3-worktrees-posthog-t3code-cf2b8b25/09aca2c5-1765-47a8-9d26-929dd94f4f44/subagents/agent-a430239e8f1975529.jsonl",
+      "uuid": "bc56782e-899f-4749-8a82-e65e036f9cb3",
+      "excerpts": [
+        "Context that changed today: a PostHog reviewer pushed back on the read-only PR, and Michael reordered the map: the client side ships first, and this `key` column is the one backend change the CLI needs. The read-only PR (#76) is on hold. Your branch is cut from `upstream/master`, not stacked on anything. The PR stays a draft until Michael tests the CLI against it.",
+        "## Scope, exactly\nNullable `key` CharField(max_length=400) on `HogFlow` with `UniqueConstraint(fields=[\"team\",\"key\"], name=\"unique_key_for_team\")`, migration adding the column and building the unique index concurrently (see `EventDefinition`'s `UniqueConstraintByExpression(concurrently=True, ...)` precedent, and `/django-migrations`). `\"key\"` in `HogFlowFilterSet.Meta.fields` and in `HogFlowSerializer.Meta.fields`, writable on create, refused on update with a clear field error, `validate_key` copying the feature flag precedent (`feature_flag.py` `validate_key`: charset `^[a-zA-Z0-9_-]+$` with `code=\"invalid_key\"`, scoped `.exists()` pre-check with `code=\"unique\"`, IntegrityError re-raised as the same field error). `help_text` on the field. Regenerate types with `hogli build:openapi` and include `products/workflows/frontend/generated/**` and `services/mcp/src/api/generated.ts` in the diff. Not in scope: `managed_by` filter, key-based addressing on the detail route or MCP, anything UI. Minimal diff, no overengineering, one-line comments."
+      ]
+    }
+  ],
+  "taskStatementNotes": "The statement is what the worker actually received, in order: the ticket body (verbatim, the whole body as it stood when the worker was dispatched), then verbatim excerpts of the conductor's dispatch prompt that carry requirements, each excerpt joined with a blank line. Dropped from the dispatch prompt: the protocol reading list, the claim, branch, tooling, push and PR instructions, the proof bundle and the reporting rules, which are process. The whole dispatch prompt is kept verbatim in dispatchPrompt for a runner that wants the literal input. The worker was also told to read other issues on Silthus/posthog (the map #68, the spec on #79 and the resolutions the ticket links); those are not inlined here. Kept from the dispatch prompt: the 'Context that changed today' paragraph and the '## Scope, exactly' section. The ticket's title changed after dispatch (the worker saw 'A workflow carries a key, and the list filters on key'); its body did not (last edited 14:58:09Z, dispatch 14:59:26Z).",
+  "dispatchPrompt": "You are the implement worker for Wayfinder ticket Silthus/posthog#91 \"A workflow carries a key, and the list filters on key\" on map #68. Your name is `wf68-91-implement`. You are Claude Opus 5; name your real model in every trailer and PR body. Wall-time cap: 3 hours, then a durable report before idle. CodeRabbit slot 1 is reserved for you.\n\nContext that changed today: a PostHog reviewer pushed back on the read-only PR, and Michael reordered the map: the client side ships first, and this `key` column is the one backend change the CLI needs. The read-only PR (#76) is on hold. Your branch is cut from `upstream/master`, not stacked on anything. The PR stays a draft until Michael tests the CLI against it.\n\n## Protocol, read in this order\n`~/.claude/skills/wayfinder/SKILL.md`, `~/.claude/skills/orchestration-wayfinder/SKILL.md`, `~/.claude/skills/orchestration-wayfinder/SHIP.md`, `docs/agents/issue-tracker.md`, the repo `CLAUDE.md` (all; mandatory skill invocations apply: `/improving-drf-endpoints`, `/django-migrations`, `/writing-tests`, `/writing-code-comments`, `/writing-pr-descriptions`, `/reviewing-with-coderabbit`). Then the ticket `gh issue view 91 --repo Silthus/posthog --json body,comments` (its body was re-planned today; follow it), the map body, the #72 resolution (`gh issue view 72 --repo Silthus/posthog --json comments`, last comment), and the spec on #79. Pass `--repo Silthus/posthog` on every `gh issue` command. Never write issues to PostHog/posthog. Everything pushed is public.\n\n## Claim\n`gh issue edit 91 --repo Silthus/posthog --add-assignee Silthus` plus a claim comment \"Claimed by worker wf68-91-implement (Claude Opus 5), <date>\".\n\n## Branch, tooling, ship target\n- `git fetch upstream master && git checkout -b feat/workflows-key upstream/master`. If plain `git` is refused by the worktree guard, use `/usr/bin/git -C <worktree>`.\n- PATH: prepend `/Users/mreichenbach/.t3/worktrees/posthog/t3code-cf2b8b25/.flox/run/aarch64-darwin.posthog-dev/bin`. If `pnpm install` fails on TLS, set `NODE_EXTRA_CA_CERTS` to the nix CA bundle (a previous worker used `/tmp/chat-actions-ca.pem`). Fresh worktree needs `pnpm install --frozen-lockfile`, `pnpm quill:build`, `pnpm --filter=@posthog/hogvm build` before jest or typecheck. Backend tests via `hogli test`.\n- Push to `origin` (Silthus/posthog). Draft PR: `gh pr create --repo PostHog/posthog --base master --head Silthus:feat/workflows-key --draft`, title `feat(workflows): ...`, body per `.github/pull_request_template.md`. Do not mark it ready. Never enqueue or merge.\n- 1Password signing is failing on this machine right now. When `git commit` fails with a 1Password error: stage everything, write the message to `/tmp/wf91-commit-msg.txt`, post the park comment on the ticket with the proof so far, and report to me; I commit from my session once Michael unlocks it. Never `--no-verify`, never disable signing.\n\n## Scope, exactly\nNullable `key` CharField(max_length=400) on `HogFlow` with `UniqueConstraint(fields=[\"team\",\"key\"], name=\"unique_key_for_team\")`, migration adding the column and building the unique index concurrently (see `EventDefinition`'s `UniqueConstraintByExpression(concurrently=True, ...)` precedent, and `/django-migrations`). `\"key\"` in `HogFlowFilterSet.Meta.fields` and in `HogFlowSerializer.Meta.fields`, writable on create, refused on update with a clear field error, `validate_key` copying the feature flag precedent (`feature_flag.py` `validate_key`: charset `^[a-zA-Z0-9_-]+$` with `code=\"invalid_key\"`, scoped `.exists()` pre-check with `code=\"unique\"`, IntegrityError re-raised as the same field error). `help_text` on the field. Regenerate types with `hogli build:openapi` and include `products/workflows/frontend/generated/**` and `services/mcp/src/api/generated.ts` in the diff. Not in scope: `managed_by` filter, key-based addressing on the detail route or MCP, anything UI. Minimal diff, no overengineering, one-line comments.\n\n## Proof bundle (SHIP.md)\n- Red then green (`/tdd`): the ticket's proof gate cases as tests in a new module beside `test_hog_flow_code_managed.py` or in `test_hog_flow.py` where the fixtures already exist; parameterize the refusals. Show the failing run before and the passing run after, pasted on the ticket.\n- Full gate on the final tree: `hogli test` on the workflows API tests, `ruff`, `uv run mypy --cache-fine-grained .`, `python manage.py makemigrations --check --dry-run`, `hogli build:openapi` then clean `git status`, `hogli ci:preflight --strict`. Paste command and result.\n- Migration proof: the SQL from `sqlmigrate` pasted, showing `CREATE UNIQUE INDEX CONCURRENTLY` and no table rewrite.\n- Adversarial review: one fresh Opus sub-agent, blind to the build, briefed with the ticket, the diff and the bundle, cast to break it (a PATCH that sneaks a key change, cross-team key collision passing, NULL keys colliding, a race between the pre-check and the insert). Close each finding as fixed or accepted on the ticket. Its report may arrive with me instead of you; if you hear nothing in 15 minutes, ask me.\n\n## Reporting\nPark comment on #91 when the draft PR is open: PR URL, head sha, proof links, findings and dispositions, \"Pending for the human\": Michael tests the CLI against this branch. Label `wayfinder:awaiting-human`, end with `<!-- orchestration-wayfinder-cue:claude:wf68-91-implement -->`. Do not edit #68. Do not close #91.\n\nFinal message to me: PR URL, head sha, the migration number you used, one line per proof artifact, findings summary, anything unproven.",
+  "attachments": [],
+  "imageTokens": {},
+  "diffStat": {
+    "final": {
+      "base": "d6ae6a9ea78220cdeaec4185f5baacd182563bfc",
+      "head": "e7c3f16b57cd35e53154780fef15dccf7cc34fd5",
+      "files": 16,
+      "additions": 416,
+      "deletions": 5,
+      "modules": [
+        "products/workflows/backend",
+        "products/workflows/frontend",
+        "services/mcp/src",
+        "services/mcp/tests"
+      ]
+    },
+    "firstPush": {
+      "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+      "head": "30cbe4cbbaaf43a2dc822ce8a9c5b053baf64729",
+      "files": 11,
+      "additions": 343,
+      "deletions": 4,
+      "modules": [
+        "products/workflows/backend",
+        "products/workflows/frontend",
+        "services/mcp/src"
+      ]
+    }
+  },
+  "whyChosen": "A backend change that crosses from the workflows product into generated clients (frontend types and the MCP server) and must choose where key validation lives, following the feature flag precedent.",
+  "notes": "baseCommit c8357af is upstream master when the worker ran `git checkout -b feat/workflows-key upstream/master` (worktree reflog, 15:01Z); it is also the first commit's parent. firstPushHead 30cbe4c is the head of the first push at 15:18Z; the PR was opened at 15:20Z. The branch was later merged with master, then rebased and force-pushed three times (2026-09-23 and 2026-09-24), so the migrations were renumbered from 0026/0027 to 0027/0028.",
+  "sessionAnswerDiff": {
+    "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",
+    "head": "2eb89349aca77ed31ab931030e9171e0a77e321f",
+    "files": 11,
+    "additions": 390,
+    "deletions": 4,
+    "modules": [
+      "products/workflows/backend",
+      "products/workflows/frontend",
+      "services/mcp/src"
+    ],
+    "why": "The worker's own answer to the ticket: its two commits (the key, then a fix for test-running a keyed workflow) before later review rounds. The final PR adds follow-ups Michael requested on 2026-09-22 through a Codex sub-agent of the PR audit thread (regenerated MCP snapshots, dropping key on duplicate, safe unknown ?key=) and a migration renumbering after rebases."
+  }
+}

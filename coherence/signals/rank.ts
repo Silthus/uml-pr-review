@@ -60,7 +60,7 @@ export async function rankTargets({ repository, scope, commit = "HEAD", rules: r
     measureModules(repository, scopePath, commit),
     readChurn(repository, commit, scopePath, days),
     provide("review findings", () => (rulesPath === undefined ? Promise.reject(new Error("no --rules file given")) : readHarvestedRules(rulesPath))),
-    provide("open pull requests", () => openPullRequests(since)),
+    provide("open pull requests", openPullRequests),
   ]);
   const baselines = await readBaselineEntries(modules.root, modules.tree, modules.scope);
   const signalRows = signals === null ? [] : widestWindowRows(signals);

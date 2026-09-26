@@ -172,10 +172,18 @@ async function pytest(workspace: string, files: string[]): Promise<TestRun> {
 }
 
 async function jest(workspace: string, files: string[]): Promise<TestRun> {
-  const binary = join(workspace, "node_modules", ".bin", "jest");
-  if (!existsSync(binary)) return notRun("jest", files, `the workspace has no node_modules; install them in ${workspace} to run jest`);
-  const result = await execute(workspace, [binary, "--ci", ...files], undefined, testTimeoutMs);
+  const packageRoot = nearestJestPackage(workspace, dirname(files[0]!));
+  if (packageRoot === null) return notRun("jest", files, `no node_modules/.bin/jest between ${dirname(files[0]!)} and the workspace root; install the dependencies in ${workspace} to run jest`);
+  const paths = files.map((file) => join(workspace, file));
+  const result = await execute(packageRoot, [join(packageRoot, "node_modules", ".bin", "jest"), "--ci", ...paths], undefined, testTimeoutMs);
   return { runner: "jest", files, status: result.code === 0 ? "passed" : "failed", reason: null, output: tail(`${result.stdout}\n${result.stderr}`) };
+}
+
+function nearestJestPackage(workspace: string, directory: string): string | null {
+  for (let current = directory; ; current = dirname(current)) {
+    if (existsSync(join(workspace, current, "node_modules", ".bin", "jest"))) return join(workspace, current);
+    if (current === "." || current === "/") return null;
+  }
 }
 
 function notRun(runner: TestRun["runner"], files: string[], reason: string, output = ""): TestRun {

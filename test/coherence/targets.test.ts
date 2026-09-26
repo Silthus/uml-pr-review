@@ -209,18 +209,6 @@ describe("ranking", () => {
   );
 
   test(
-    "asks the pull request provider only for the active window",
-    async () => {
-      const asked: Date[] = [];
-      await rankTargets(request({ openPullRequests: async (since) => (asked.push(since), { repository: "acme/app", pullRequests: [] }) }));
-
-      expect(asked).toHaveLength(1);
-      expect(Date.now() - asked[0]!.getTime()).toBeCloseTo(14 * 86_400_000, -5);
-    },
-    toolTimeoutMs,
-  );
-
-  test(
     "lifts PostHog signal rows to the module that owns their path",
     async () => {
       const report = await rankTargets(request());

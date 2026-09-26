@@ -4,7 +4,7 @@ import { run } from "../../src/git.ts";
 
 export type OpenPullRequest = { number: number; updatedAt: string; files: string[] };
 export type OpenPullRequestList = { repository: string; pullRequests: OpenPullRequest[] };
-export type OpenPullRequests = (since: Date) => Promise<OpenPullRequestList>;
+export type OpenPullRequests = () => Promise<OpenPullRequestList>;
 
 const GhPullRequestsSchema = z.array(z.object({ number: z.number().int(), updatedAt: z.string(), changedFiles: z.number().int(), files: z.array(z.object({ path: z.string() })) }));
 const githubRemote = /github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?\/?$/;
@@ -12,10 +12,9 @@ const listLimit = "5000";
 const preferredRemotes = ["upstream", "origin"];
 
 export function githubOpenPullRequests(repository: string, slug?: string): OpenPullRequests {
-  return async (since) => {
+  return async () => {
     const repo = slug ?? (await githubSlug(repository));
-    const updated = `updated:>=${since.toISOString().slice(0, 10)}`;
-    const output = await run(repository, ["gh", "pr", "list", "--repo", repo, "--state", "open", "--search", updated, "--limit", listLimit, "--json", "number,updatedAt,changedFiles,files"]);
+    const output = await run(repository, ["gh", "pr", "list", "--repo", repo, "--state", "open", "--limit", listLimit, "--json", "number,updatedAt,changedFiles,files"]);
     const listed = GhPullRequestsSchema.parse(JSON.parse(output));
     const pullRequests: OpenPullRequest[] = [];
     for (const { number, updatedAt, changedFiles, files } of listed) {

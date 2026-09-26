@@ -180,7 +180,7 @@ Where the output lands:
 
 - `coherence/runs/<date>/workflows.sense.json`: the ranking and inbox state the run started from.
 - `coherence/runs/<date>/<slug>/`: one directory per iteration, with `iteration.json` (runner state), `summary.md` (the agent's words), and `pr.md` (the pull request body).
-- `coherence/runs/ledger.jsonl`: one line per proposal or question. A proposal keeps its module out of later runs only while it is pending: a dry run while its branch exists in your clone, and a draft pull request while it is open (`gh pr view`, read-only). Deleting a dry run's branch gives the module back. A merged pull request marks its step done once the sensed base contains the merge, so the module's next recipe step becomes eligible.
+- `coherence/runs/ledger.jsonl`: one line per proposal or question. A proposal keeps its module out of later runs only while it is pending: a dry run while its branch exists in your clone, and a draft pull request while it is open (`gh pr view`, read-only). Deleting a dry run's branch gives the module back. A merged pull request gives the module back once the sensed base contains the merge; the ranking then picks the module's next recipe step from that base.
 - `$TMPDIR/coherence-workflows-<slug>`: the scratch worktree, on branch `coherence/workflows/<slug>` in your PostHog clone.
 - `$TMPDIR/coherence-session-<ms>.jsonl`: the transcript.
 - New `coherence:question` issues in this repository, when the agent hits a boundary decision.
@@ -197,6 +197,13 @@ git -C "$(jq -r .workspace.path $iteration/iteration.json)" show --stat
 
 ```sh
 bun coherence/loop/propose.ts --iteration $iteration --summary $iteration/summary.md
+```
+
+A dry run keeps its module out of later runs while its branch exists. If you will not promote it, drop it, and the next run may pick the module again:
+
+```sh
+git -C ~/dev/posthog worktree remove --force "$(jq -r .workspace.path $iteration/iteration.json)"
+git -C ~/dev/posthog branch -D "$(jq -r .workspace.branch $iteration/iteration.json)"
 ```
 
 ### 7. Open your first draft pull request

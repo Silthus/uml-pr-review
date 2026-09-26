@@ -176,7 +176,7 @@ beforeAll(async () => {
       [draftPullRequest]: { state: "OPEN", mergeCommit: null },
       [closedPullRequest]: { state: "CLOSED", mergeCommit: null },
       [mergedPullRequest]: { state: "MERGED", mergeCommit: { oid: (await repository.git("rev-parse", "HEAD")).trim() } },
-      [mergedAfterTheBase]: { state: "MERGED", mergeCommit: { oid: "f".repeat(40) } },
+      [mergedAfterTheBase]: { state: "MERGED", mergeCommit: { oid: (await repository.git("commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "merged after the base")).trim() } },
     },
   });
   const sensed = await step<{ sense: string; error?: string }>("sense.ts", ["--repo", repository.dir, "--scope", "products/a", "--base", "main", "--github", "acme/app", "--rules", join(scratch, "rules.json"), "--runs", join(scratch, "runs")]);
@@ -309,8 +309,8 @@ describe("an earlier proposal holds its module only while it is pending", () => 
     expect((await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: closedPullRequest }))).target.module).toBe(jobs);
   });
 
-  test("a merged pull request marks its step done, so the module's next recipe step is eligible", async () => {
-    const choice = await choiceAfter(ledgerEntry({ step: "facade", verification: "boundary", mode: "draft", pullRequest: mergedPullRequest }));
+  test("a merged pull request gives its module back once the sensed base contains the merge", async () => {
+    const choice = await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: mergedPullRequest }));
 
     expect(choice).toMatchObject({ action: "act", target: { module: jobs, step: "characterisation-tests" } });
   });

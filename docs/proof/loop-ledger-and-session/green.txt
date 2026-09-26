@@ -1,6 +1,6 @@
 bun test v1.4.2 (50a8a8387)
 
- 34 pass
+ 35 pass
  0 fail
- 88 expect() calls
-Ran 34 tests across 4 files. [7.15s]
+ 91 expect() calls
+Ran 35 tests across 4 files. [7.66s]

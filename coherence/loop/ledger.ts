@@ -1,7 +1,8 @@
-import { appendFile, mkdir } from "node:fs/promises";
+import { appendFile, mkdir, rename } from "node:fs/promises";
 import { dirname } from "node:path";
 import { z } from "zod";
 import { git, run } from "../../src/git.ts";
+import type { Sense } from "./state.ts";
 
 const ScoreChangeSchema = z.object({ before: z.number().nullable(), after: z.number().nullable() });
 
@@ -23,7 +24,7 @@ export const LedgerEntrySchema = z.object({
   step: z.string(),
   verification: z.string(),
   outcome: OutcomeSchema,
-  mode: ProposalModeSchema.nullable(),
+  mode: ProposalModeSchema.nullable().default(null),
   indexDelta: IndexDeltaSchema.nullable(),
   questions: z.array(z.string()),
   branch: z.string().nullable(),
@@ -37,7 +38,7 @@ export type IndexDelta = z.infer<typeof IndexDeltaSchema>;
 export type Outcome = z.infer<typeof OutcomeSchema>;
 export type ProposalMode = z.infer<typeof ProposalModeSchema>;
 export type LedgerEntry = z.infer<typeof LedgerEntrySchema>;
-export type SensedRun = { id: string; scope: string; repository: string; base: { commit: string } };
+export type SensedRun = Pick<Sense, "id" | "scope" | "repository" | "base">;
 
 export async function readLedger(path: string): Promise<LedgerEntry[]> {
   const file = Bun.file(path);
@@ -61,7 +62,7 @@ export async function recordPromotion(path: string, { sense, module }: { sense: 
   if (index === -1) return null;
   const promoted: LedgerEntry = { ...entries[index]!, mode: "draft", pullRequest };
   entries[index] = promoted;
-  await Bun.write(path, entries.map(serialized).join(""));
+  await replaceFile(path, entries.map(serialized).join(""));
   return promoted;
 }
 
@@ -96,6 +97,12 @@ function succeeds(command: Promise<unknown>): Promise<boolean> {
     () => true,
     () => false,
   );
+}
+
+async function replaceFile(path: string, content: string): Promise<void> {
+  const replacement = `${path}.${process.pid}.tmp`;
+  await Bun.write(replacement, content);
+  await rename(replacement, path);
 }
 
 function serialized(entry: LedgerEntry): string {

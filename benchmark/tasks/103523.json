@@ -75,7 +75,15 @@
   "sessionAnswerDiff": {
     "base": "29bb275923ba5fa96e337ac54f99264f04ac089a",
     "head": "e39a5bc53762677e867bb267f0bddc209b8b6de3",
-    "why": "The session's first pushed answer to the statement: the home-screen Workflows topic (cffe971, later #103522) and the agent search/list capability (e39a5bc, later #103523), on one base. Equal to diffStat.firstPush."
+    "files": 5,
+    "additions": 83,
+    "deletions": 2,
+    "modules": [
+      "ee/hogai/context",
+      "ee/hogai/tools",
+      "frontend/src/scenes"
+    ],
+    "why": "The session's first pushed answer: the home-screen Workflows topic (cffe971, later #103522) and the agent search/list capability (e39a5bc, later #103523), on the base the session worked on. It follows message 1, the approval of the agent's proposal (see taskStatementNotes). Equal to diffStat.firstPush. None of its five files changed between 29bb275 and baseCommit cea129a."
   },
   "companionPrs": [
     {

@@ -33,7 +33,7 @@
     "files": 4477,
     "prChangedFiles": 6,
     "matches": false,
-    "explanation": "baseCommit is the worker's branch point, not the parent of the PR's first own commit (prFirstOwnCommitParent), because the branch was rebased after the worker ran and that parent postdates the task. The branch was restacked on 2026-09-24 onto copies of #104156's three commits over newer upstream master, so base..finalHead also carries upstream changes. The PR's own diff is diffStat.final: 6 files, including #104156's change.",
+    "explanation": "baseCommit is the worker's branch point, not the parent of the PR's first own commit (prFirstOwnCommitParent), because the branch was rebased after the worker ran and that parent postdates the task. The branch was restacked on 2026-09-24 onto copies of #104156's three fix commits over newer upstream master, so base..finalHead also carries upstream changes, and the PR's first commit (c78b107) is a #104156 copy, not #104202's own. The PR's diff is diffStat.final: 6 files, including #104156's change.",
     "prFirstOwnCommitParent": "bfa602e8af3503ec72675782516ffaadae22ccee"
   },
   "finalHead": "0f3db18cad793e6533ea4a0eb7dfcd07669bb7f2",
@@ -112,6 +112,6 @@
       "products/workflows",
       "products/workflows/backend"
     ],
-    "why": "sessionAnswerDiff is the worker's own answer to this statement: its last commit before any input beyond the statement (review dispositions from the conductor, human follow-ups, later sessions). Here that is 428f50c. The worker's second commit 80e1937 answered its own adversarial review, whose threat list sits in the dropped 'Ship gate' section. The final PR was restacked on 2026-09-24 onto copies of the three first-revision commits of PostHog/posthog#104156, so its diff also holds #104156's changes, which the ticket did not ask for."
+    "why": "sessionAnswerDiff is the worker's own answer to this statement: its last commit before any input beyond the statement (review dispositions from the conductor, human follow-ups, later sessions). Here that is 428f50c. The worker's second commit 80e1937 answered its own adversarial review, whose threat list sits in the dropped 'Ship gate' section. The final PR was restacked on 2026-09-24 onto copies of the three first-revision fix commits of PostHog/posthog#104156, so its diff also holds #104156's changes, which the ticket did not ask for."
   }
 }

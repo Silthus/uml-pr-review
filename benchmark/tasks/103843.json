@@ -106,7 +106,7 @@
       "prototype/workflows-as-code": "51813e135fa8ff8b094705678f6ef9cfffbc259e",
       "research/workflows-package-shape": "e1f2c2f375446184614d7afe4635eff7b07b4b88"
     },
-    "why": "The prior-art branches the statement names live only on the fork Silthus/posthog; the SHAs are their tips at dispatch time (each ref was updated once, before 2026-09-21 05:25Z, and is present in ~/dev/posthog). The issues are the resolutions the worker was told to read."
+    "why": "The prior-art branches the statement names live only on the fork Silthus/posthog; the SHAs are their tips at dispatch time (each ref's last update was before 2026-09-21 05:25Z, and each is present in ~/dev/posthog). The issues are the resolutions the worker was told to read."
   },
   "sessionAnswerDiff": {
     "base": "c8357afb6ad184ba33a6e99e10fb0d6ef38ee715",

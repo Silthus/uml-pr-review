@@ -88,7 +88,7 @@
     }
   },
   "whyChosen": "A backend change that crosses from the workflows product into generated clients (frontend types and the MCP server) and must choose where key validation lives, following the feature flag precedent.",
-  "notes": "baseCommit c8357af is what the worker branched from (`git checkout -b feat/workflows-key upstream/master`, worktree reflog 15:01Z) and the first commit's parent. Its `git fetch upstream master` failed on SSH access, so this is the local upstream/master ref (2026-09-21 11:59Z), a few commits behind the real upstream tip at the time. firstPushHead 30cbe4c is the head of the first push at 15:18Z; the PR opened at 15:20Z. The branch was later merged with master, then rebased and force-pushed three times (2026-09-23 and 2026-09-24), which renumbered the migrations from 0026/0027 to 0027/0028.",
+  "notes": "baseCommit c8357af is what the worker branched from (`git checkout -b feat/workflows-key upstream/master`, worktree reflog 15:01Z) and the first commit's parent. Its `git fetch upstream master` failed on SSH access, so this is the local upstream/master ref (2026-09-21 11:59Z), about 65 commits (three hours) behind the real upstream tip at the time. firstPushHead 30cbe4c is the head of the first push at 15:18Z; the PR opened at 15:20Z. The branch was later merged with master, then rebased and force-pushed three times (2026-09-23 and 2026-09-24), which renumbered the migrations from 0026/0027 to 0027/0028.",
   "taskContext": {
     "referencedIssues": [
       "https://github.com/Silthus/posthog/issues/68 (map)",

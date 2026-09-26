@@ -15,9 +15,9 @@ const layerConstraints = { first: "FIRST", last: "LAST" } as const;
 const directions = { map: "DOWN", lens: "RIGHT", plan: "RIGHT" } as const;
 const hierarchy = { map: "INCLUDE_CHILDREN", lens: "INCLUDE_CHILDREN", plan: "SEPARATE_CHILDREN" } as const;
 const spacing = {
-  map: { nodeNode: "20", betweenLayers: "44" },
-  lens: { nodeNode: "12", betweenLayers: "64" },
-  plan: { nodeNode: "16", betweenLayers: "44" },
+  map: { nodeNode: "20", betweenLayers: "44", edgeNode: "18", edgeEdge: "10" },
+  lens: { nodeNode: "12", betweenLayers: "44", edgeNode: "8", edgeEdge: "6" },
+  plan: { nodeNode: "16", betweenLayers: "44", edgeNode: "18", edgeEdge: "10" },
 } as const;
 
 type ElkSession = { elk: InstanceType<typeof ELK>; failure: Promise<never> };
@@ -98,8 +98,8 @@ function toElkGraph(graph: VisibleGraph, children: ElkNode[]): ElkNode {
       "elk.edgeRouting": "ORTHOGONAL",
       "elk.edgeLabels.inline": "true",
       "elk.spacing.nodeNode": spacing[graph.mode].nodeNode,
-      "elk.spacing.edgeNode": dense ? "12" : "18",
-      "elk.spacing.edgeEdge": dense ? "6" : "10",
+      "elk.spacing.edgeNode": dense ? "12" : spacing[graph.mode].edgeNode,
+      "elk.spacing.edgeEdge": dense ? "6" : spacing[graph.mode].edgeEdge,
       "elk.spacing.edgeLabel": "6",
       "elk.spacing.componentComponent": "36",
       "elk.layered.spacing.nodeNodeBetweenLayers": spacing[graph.mode].betweenLayers,

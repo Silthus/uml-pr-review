@@ -38,7 +38,7 @@ export function useViewState(initialFocus: string | null, initialExpanded: strin
   const [allEdges, setAllEdges] = useState(false);
   const [planVisible, setPlanVisible] = useState(true);
   const [followAgent, setFollowAgent] = useState(true);
-  const [focus, setFocus] = useState<FocusRequest | null>(() => initialFocusRequest(initialFocus, initialExpanded));
+  const [focus, setFocus] = useState<FocusRequest | null>(() => (initialFocus && initialMode === "lens" ? { ids: "all", version: 1 } : initialFocusRequest(initialFocus, initialExpanded)));
 
   const requestFocus = useCallback((ids: string[] | "all") => setFocus((current) => ({ ids, version: (current?.version ?? 0) + 1 })), []);
 

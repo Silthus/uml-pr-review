@@ -5,8 +5,10 @@ import type { GraphEdge, GraphNode, Layer, MoreNodeData, Tone } from "./types.ts
 export const leafHeight = 76;
 export const containerMinHeight = 120;
 export const headerHeight = 62;
-const moreNodeSize = { width: 150, height: 56 };
-const maxNodeWidth = 300;
+const moreNodeSize = { width: 176, height: 58 };
+const moreDetailCharWidth = 6.2;
+const moreDetailLineHeight = 14;
+const maxNodeWidth = 288;
 const labelCharWidth = 8.4;
 const tabLineHeight = 19;
 const contextCharWidth = 6.4;
@@ -50,14 +52,15 @@ export function ghostModule(path: string, parent: string | null): ModuleView {
 }
 
 export function moreNode(id: string, parentId: string | null, data: Omit<MoreNodeData, "tone">, layer?: Layer): GraphNode {
-  return { id, type: "more", parentId, layer, ...moreNodeSize, data: { ...data, tone: "neutral" } };
+  const detailLines = Math.ceil((data.detail.length * moreDetailCharWidth) / (moreNodeSize.width - 24));
+  return { id, type: "more", parentId, layer, width: moreNodeSize.width, height: moreNodeSize.height + Math.max(0, detailLines - 1) * moreDetailLineHeight, data: { ...data, tone: "neutral" } };
 }
 
 export function packageSize(module: ModuleView, options: Pick<PackageOptions, "container" | "context" | "ghost">, marks: PlanMarks): { width: number; height: number } {
   const lines = labelLines(module.label);
   const longest = Math.max(...lines.map((line) => line.length));
   const context = options.context ?? null;
-  const width = Math.max(200, Math.min(maxNodeWidth, longest * labelCharWidth + 72));
+  const width = Math.max(192, Math.min(maxNodeWidth, longest * labelCharWidth + 72));
   const contextLines = context ? contextLinesOf(context, width) : 0;
   const chips = marks.actions.has(module.path) || marks.statuses.has(module.path) ? chipRowHeight : 0;
   const extra = (lines.length - 1) * tabLineHeight + contextLines * contextLineHeight + chips;
@@ -85,12 +88,11 @@ export function labelLines(label: string): string[] {
   if (label.length <= roomPerLine) return [label];
   const lines: string[] = [];
   let current = "";
-  for (const segment of label.split("/")) {
-    const candidate = current ? `${current}/${segment}` : segment;
-    if (current && candidate.length > roomPerLine) {
-      lines.push(`${current}/`);
-      current = segment;
-    } else current = candidate;
+  for (const piece of label.split(/(?<=[/-])/)) {
+    if (current && (current + piece).length > roomPerLine) {
+      lines.push(current);
+      current = piece;
+    } else current += piece;
   }
   return [...lines, current];
 }

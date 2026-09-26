@@ -7,8 +7,6 @@ import { CommentThread } from "./comments.tsx";
 import { DependencyList } from "./dependency-list.tsx";
 import { ModulePath } from "./module-path.tsx";
 
-const farEndLimit = 12;
-
 export function SelectedModule({ module, model, plan, conformance, includeTests, actions, onSelect, onFocusConnections, lensOpen }: { module: ModuleView; model: ArchitectureModel; plan: ArchitecturePlan | null; conformance: ConformanceResult | null; includeTests: boolean; actions: PlanActions; onSelect(path: string): void; onFocusConnections(path: string): void; lensOpen: boolean }) {
   const planned = plan?.modules.find((entry) => entry.path === module.path) ?? null;
   const status = conformance?.modules.find((entry) => entry.path === module.path)?.status ?? null;
@@ -30,8 +28,8 @@ export function SelectedModule({ module, model, plan, conformance, includeTests,
         {lensOpen ? null : <div className="actions"><button type="button" className="primary" onClick={() => onFocusConnections(module.path)}>Focus connections</button></div>}
         {plan ? <ModulePlanActions module={module} planned={planned} plan={plan} actions={actions} /> : null}
       </section>
-      <DependencyList title="Depends on" direction="out" subject={module.path} dependencies={model.dependencies(module.path, "out", { includeTests }).slice(0, farEndLimit)} model={model} includeTests={includeTests} onSelect={onSelect} />
-      <DependencyList title="Depended on by" direction="in" subject={module.path} dependencies={model.dependencies(module.path, "in", { includeTests }).slice(0, farEndLimit)} model={model} includeTests={includeTests} onSelect={onSelect} />
+      <DependencyList title="Depends on" direction="out" subject={module.path} dependencies={model.dependencies(module.path, "out", { includeTests })} model={model} includeTests={includeTests} onSelect={onSelect} />
+      <DependencyList title="Depended on by" direction="in" subject={module.path} dependencies={model.dependencies(module.path, "in", { includeTests })} model={model} includeTests={includeTests} onSelect={onSelect} />
       {plan ? (
         <section className="panel">
           <h3>Comments</h3>

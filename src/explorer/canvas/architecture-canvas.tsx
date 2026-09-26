@@ -87,7 +87,7 @@ function Canvas({ scene, fresh, focus, pending, error, loading, theme, lensPath,
 }
 
 function useFocus(scene: Scene | null, focus: FocusRequest | null) {
-  const { fitView } = useReactFlow();
+  const { fitView, fitBounds } = useReactFlow();
   const handled = useRef(0);
   const fittedInitially = useRef(false);
   useEffect(() => {
@@ -97,15 +97,37 @@ function useFocus(scene: Scene | null, focus: FocusRequest | null) {
       if (ids === "all" || ids.length > 0) {
         handled.current = focus.version;
         fittedInitially.current = true;
-        void fitView({ nodes: ids === "all" ? undefined : ids.map((id) => ({ id })), duration: 360, padding: ids === "all" ? 0.04 : 0.08, maxZoom: 1.15 });
+        if (ids === "all") void fitBounds(sceneBounds(scene), { duration: 360, padding: 0.03 });
+        else void fitView({ nodes: ids.map((id) => ({ id })), duration: 360, padding: 0.08, maxZoom: 1.15 });
         return;
       }
     }
     if (!fittedInitially.current) {
       fittedInitially.current = true;
-      void fitView({ padding: 0.04, duration: 0, maxZoom: 1.15 });
+      void fitBounds(sceneBounds(scene), { duration: 0, padding: 0.03 });
     }
-  }, [scene, focus, fitView]);
+  }, [scene, focus, fitView, fitBounds]);
+}
+
+function sceneBounds(scene: Scene): { x: number; y: number; width: number; height: number } {
+  const positions = new Map(scene.layout.nodes.map((node) => [node.id, node]));
+  const absolute = (id: string): { x: number; y: number } => {
+    const node = positions.get(id)!;
+    const parent = node.parentId ? absolute(node.parentId) : { x: 0, y: 0 };
+    return { x: parent.x + node.x, y: parent.y + node.y };
+  };
+  const points = [
+    ...scene.layout.nodes.flatMap((node) => {
+      const at = absolute(node.id);
+      return [at, { x: at.x + node.width, y: at.y + node.height }];
+    }),
+    ...scene.layout.edges.flatMap((edge) => edge.points),
+  ];
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y };
 }
 
 function withLensNodes(scene: Scene, ids: string[]): string[] {

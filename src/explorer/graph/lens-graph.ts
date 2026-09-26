@@ -18,19 +18,17 @@ export function buildLensGraph(model: ArchitectureModel, view: ViewState, subjec
   const incoming = model.dependencies(subject.path, "in", { includeTests: view.includeTests }).filter((far) => far.module !== ".");
   const farEnds = farEndSides(outgoing.slice(0, lensFarEndCap), incoming.slice(0, lensFarEndCap));
   const container = keptChildren.length > 0;
-  const ownId = container && subject.directFiles > 0 ? `own:${subject.path}` : null;
 
   const nodes: GraphNode[] = [
     packageNode(subject, { parentId: null, container, expanded: container, hiddenChildren: foldedChildren.length, context: contextOf(subject.path) }, marks),
     ...keptChildren.map((child) => packageNode(child, { parentId: subject.path, container: false, expanded: false, hiddenChildren: child.childCount }, marks)),
-    ...(ownId ? [packageNode({ ...ghostModule(subject.path, subject.parent), label: "own files", kind: subject.kind, directFiles: subject.directFiles, totalFiles: subject.directFiles }, { parentId: subject.path, container: false, expanded: false, hiddenChildren: 0 }, marks, ownId)] : []),
     ...(foldedChildren.length > 0 ? [moreNode(moreNodeId(subject.path), subject.path, { parent: subject.path, hidden: foldedChildren.length, label: `+${foldedChildren.length} more`, detail: "smaller modules", expandable: false })] : []),
     ...[...farEnds].map(([path, side]) => packageNode(model.module(path) ?? ghostModule(path, null), { parentId: null, container: false, expanded: false, hiddenChildren: model.module(path)?.childCount ?? 0, context: contextOf(path), layer: side === "in" ? "first" : side === "out" ? "last" : undefined }, marks)),
     ...restNode(restIds.in, incoming.slice(lensFarEndCap), "dependents", "first"),
     ...restNode(restIds.out, outgoing.slice(lensFarEndCap), "dependencies", "last"),
   ];
 
-  const inside = new Map<string, string>([[subject.path, ownId ?? subject.path], ...keptChildren.map((child): [string, string] => [child.path, child.path]), ...foldedChildren.map((child): [string, string] => [child.path, moreNodeId(subject.path)])]);
+  const inside = new Map<string, string>([[subject.path, subject.path], ...keptChildren.map((child): [string, string] => [child.path, child.path]), ...foldedChildren.map((child): [string, string] => [child.path, moreNodeId(subject.path)])]);
   const outside = (path: string, direction: "in" | "out") => (farEnds.has(path) ? path : path === subject.path || inside.has(path) ? null : restIds[direction]);
   const lifted = model.lift(new Set([...ancestorsOf(subject.path), subject.path]), { includeTests: view.includeTests }).dependencies;
   const edges: GraphEdge[] = [];
@@ -61,7 +59,7 @@ function farEndSides(outgoing: FarDependency[], incoming: FarDependency[]): Map<
 function restNode(id: string, rest: FarDependency[], noun: string, layer: "first" | "last"): GraphNode[] {
   if (rest.length === 0) return [];
   const imports = rest.reduce((total, far) => total + far.imports, 0);
-  return [moreNode(id, null, { parent: null, hidden: rest.length, label: `+${rest.length} more ${noun}`, detail: `${compactNumber(imports)} imports, listed in the inspector`, expandable: false }, layer)];
+  return [moreNode(id, null, { parent: null, hidden: rest.length, label: `+${rest.length} more ${noun}`, detail: `${compactNumber(imports)} imports, see inspector`, expandable: false }, layer)];
 }
 
 function nodeExists(nodes: GraphNode[], id: string): boolean {

@@ -1,4 +1,5 @@
 node_modules
 *.html
+!src/**/*.html
 !test/**/*.html
 .DS_Store

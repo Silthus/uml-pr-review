@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PR Review Diagram</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main id="pick" class="page" hidden>
+      <header class="masthead">
+        <p class="eyebrow">uml-pr-review</p>
+        <h1>Draw the architecture a pull request touches.</h1>
+      </header>
+
+      <section class="card">
+        <h2>Repository</h2>
+        <form id="repository-form" class="row">
+          <input id="repository-path" name="path" placeholder="/Users/you/dev/project" autocomplete="off" spellcheck="false" />
+          <button type="button" id="choose-folder" class="secondary">Choose folder…</button>
+          <button type="submit">Open</button>
+        </form>
+        <p id="repository-error" class="error" hidden></p>
+        <ul id="recent-repositories" class="recents"></ul>
+      </section>
+
+      <section id="pulls" class="card" hidden>
+        <div class="pulls-head">
+          <div>
+            <h2 id="repository-name"></h2>
+            <p id="repository-root" class="muted mono"></p>
+          </div>
+          <div class="segmented" role="group" aria-label="Pull request scope">
+            <button type="button" data-scope="mine" aria-pressed="true">Mine</button>
+            <button type="button" data-scope="all" aria-pressed="false">All open</button>
+          </div>
+        </div>
+        <input id="pull-filter" placeholder="Filter by title, number, branch, or author" autocomplete="off" />
+        <p id="pulls-status" class="muted"></p>
+        <ol id="pull-list" class="pull-list"></ol>
+      </section>
+    </main>
+
+    <main id="review" class="review" hidden>
+      <nav class="toolbar">
+        <button type="button" id="back" class="ghost">← Pull requests</button>
+        <span id="review-title" class="toolbar-title"></span>
+        <a id="review-github" target="_blank" rel="noreferrer">GitHub ↗</a>
+        <a id="review-standalone" target="_blank" rel="noreferrer">Open artifact ↗</a>
+      </nav>
+      <div class="stage">
+        <iframe id="artifact" title="Pull request diagram"></iframe>
+        <div id="review-status" class="overlay" hidden>
+          <div class="spinner" aria-hidden="true"></div>
+          <p id="review-message"></p>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="./app.ts"></script>
+  </body>
+</html>

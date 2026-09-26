@@ -1,0 +1,2129 @@
+{
+  "product": "Workflows",
+  "source": {
+    "repo": "PostHog/posthog",
+    "commit": "57ca357730843205c2d659098ac8e4c5e07a6698",
+    "scopes": [
+      "products/workflows",
+      "nodejs/src/cdp/services/hogflows"
+    ],
+    "since": "2026-03-01",
+    "harvestedAt": "2026-09-26T19:55:31.910Z"
+  },
+  "vocabulary": [
+    {
+      "term": "Workflow",
+      "definition": "The user-facing name for one automation: a directed graph of actions wired by edges with exactly one trigger action. Stored as a HogFlow row.",
+      "avoid": [
+        "hog flow",
+        "hogflow",
+        "campaign",
+        "flow"
+      ]
+    },
+    {
+      "term": "HogFlow",
+      "definition": "The internal code and model name of a workflow (HogFlow, hog_flow, /hog_flows API). Appears only in code identifiers and routes, never in UI copy, MCP descriptions or skills.",
+      "avoid": [
+        "workflow (in code identifiers)"
+      ]
+    },
+    {
+      "term": "Action",
+      "definition": "One id-addressed node of the workflow graph. Its type comes from the closed set SUPPORTED_ACTION_TYPES (trigger, function, function_email, function_sms, function_push, delay, wait_until_condition, wait_until_time_window, conditional_branch, random_cohort_branch, exit). The editor calls it a step.",
+      "avoid": [
+        "hog function",
+        "task",
+        "node (outside the canvas)"
+      ]
+    },
+    {
+      "term": "Edge",
+      "definition": "A directed link from one action to the next. A continue edge is the fall-through or timeout path; a branch edge carries an index into the source action's conditions or cohorts.",
+      "avoid": [
+        "connection",
+        "link"
+      ]
+    },
+    {
+      "term": "Trigger",
+      "definition": "The single trigger action that starts every run. Its config.type is the trigger type (event, batch, schedule, webhook, manual, tracking_pixel, data-warehouse-table, data-warehouse-view, internal-event). The top-level trigger field is derived from it and read-only.",
+      "avoid": [
+        "entry point",
+        "event (for the trigger itself)"
+      ]
+    },
+    {
+      "term": "Row-scoped trigger",
+      "definition": "A trigger whose runs have no PostHog person: data-warehouse-table, data-warehouse-view and internal-event (Slack, GitHub). Person-dependent actions are rejected on these workflows.",
+      "avoid": [
+        "person-less workflow",
+        "DWH workflow"
+      ]
+    },
+    {
+      "term": "Status",
+      "definition": "The lifecycle state of the live workflow row: draft, active or archived. Changed by explicit lifecycle actions (enable, disable, archive).",
+      "avoid": [
+        "draft (when meaning staged changes)"
+      ]
+    },
+    {
+      "term": "Staged draft",
+      "definition": "Pending content edits held in the draft column of an active workflow. Nothing reaches people until it is published or discarded.",
+      "avoid": [
+        "draft status",
+        "unsaved changes"
+      ]
+    },
+    {
+      "term": "Publish",
+      "definition": "Promote the staged draft to the live row after strict revalidation and a publish-impact preview. Bumps version and appends a revision.",
+      "avoid": [
+        "save",
+        "deploy"
+      ]
+    },
+    {
+      "term": "Revision",
+      "definition": "An append-only snapshot of a workflow's live content at one version. Restoring a revision copies it into the staged draft; workers never read revisions.",
+      "avoid": [
+        "history entry",
+        "backup"
+      ]
+    },
+    {
+      "term": "Version",
+      "definition": "The integer on the live workflow that identifies which content produced a metric. Metrics are keyed <flow id>/<version> under app_source hog_flow_version.",
+      "avoid": [
+        "revision id"
+      ]
+    },
+    {
+      "term": "Run",
+      "definition": "One execution of a workflow for one person or row, persisted as an invocation (Cyclotron job) that can park on a delay or wait and wake later.",
+      "avoid": [
+        "job",
+        "execution",
+        "instance"
+      ]
+    },
+    {
+      "term": "Batch",
+      "definition": "A one-off dispatch of a batch-trigger workflow to a person audience defined by person properties or cohorts. Broadcast is the product surface built on batch workflows.",
+      "avoid": [
+        "blast",
+        "campaign send"
+      ]
+    },
+    {
+      "term": "Schedule",
+      "definition": "A recurring cadence (rrule, timezone, variables) attached to a batch or schedule workflow; the scheduler reads the live trigger when it fires.",
+      "avoid": [
+        "cron",
+        "scheduled run"
+      ]
+    },
+    {
+      "term": "Blast radius",
+      "definition": "The audience preview for a batch dispatch. It returns the recipient count and a confirm token bound to the stored trigger filters that programmatic dispatch must present.",
+      "avoid": [
+        "audience count"
+      ]
+    },
+    {
+      "term": "Conversion",
+      "definition": "A goal (events and property filters within a window) counted at most once per run and credited to the version that sent the message.",
+      "avoid": [
+        "goal event",
+        "exit event"
+      ]
+    },
+    {
+      "term": "Function template",
+      "definition": "A Hog template (template_id) that a function step runs, from nodejs/src/cdp/templates. Email, SMS and push steps use the fixed literals template-email, template-twilio and template-native-push.",
+      "avoid": [
+        "email template",
+        "workflow template"
+      ]
+    },
+    {
+      "term": "Email template",
+      "definition": "A saved library message design referenced by template_uuid. Its body is snapshotted into the step at save; later template edits do not propagate.",
+      "avoid": [
+        "template_id",
+        "function template"
+      ]
+    },
+    {
+      "term": "Secret input",
+      "definition": "A function-step or trigger input marked secret in its template schema. It is stored encrypted in encrypted_inputs and returned as {secret: true}.",
+      "avoid": [
+        "credential field",
+        "api key input"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Workflow API",
+      "role": "gateway/validator",
+      "responsibility": "The hog_flows DRF viewset and serializers: the write chokepoint that validates action configs and graph structure, compiles bytecode, masks secrets, routes active-workflow edits to drafts and declares API scopes.",
+      "paths": [
+        "products/workflows/backend/api/hog_flow.py",
+        "products/workflows/backend/api/graph_validation.py",
+        "products/workflows/backend/api/graph_operations.py",
+        "products/workflows/backend/api/publish_impact.py",
+        "products/workflows/backend/api/action_redirects.py",
+        "products/workflows/backend/utils/durations.py"
+      ]
+    },
+    {
+      "name": "Draft and revision store",
+      "role": "store",
+      "responsibility": "The HogFlow row (live content, staged draft, version, encrypted inputs), append-only HogFlowRevision snapshots, and the management commands that rewrite stored rows.",
+      "paths": [
+        "products/workflows/backend/models/hog_flow/",
+        "products/workflows/backend/models/hog_flow_revision.py",
+        "products/workflows/backend/management/commands/"
+      ]
+    },
+    {
+      "name": "Flow manager",
+      "role": "adapter/cache",
+      "responsibility": "Loads and caches workflows for the Node workers, merges decrypted secret inputs, and reacts to reload signals from Django.",
+      "paths": [
+        "nodejs/src/cdp/services/hogflows/hogflow-manager.service.ts",
+        "nodejs/src/cdp/services/hogflows/hogflow-functions.service.ts"
+      ]
+    },
+    {
+      "name": "Executor",
+      "role": "interpreter/executor",
+      "responsibility": "Walks a run through the graph one action at a time via a handler per action type, parks and wakes delays and waits, evaluates exits and conversions, and runs test invocations.",
+      "paths": [
+        "nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts",
+        "nodejs/src/cdp/services/hogflows/actions/",
+        "nodejs/src/cdp/services/hogflows/duration.ts"
+      ]
+    },
+    {
+      "name": "Batch and schedule dispatcher",
+      "role": "scheduler",
+      "responsibility": "Resolves batch audiences, gates dispatch on an active workflow and a blast-radius confirm token, and fires recurring schedules.",
+      "paths": [
+        "products/workflows/backend/services/batch_audience.py",
+        "products/workflows/backend/services/audience_v2.py",
+        "products/workflows/backend/models/hog_flow_schedule/",
+        "products/workflows/backend/models/hog_flow_batch_job/",
+        "nodejs/src/cdp/services/hogflows/hogflow-batch-person-query.service.ts"
+      ]
+    },
+    {
+      "name": "Editor",
+      "role": "editor/UI state",
+      "responsibility": "The kea logics and scenes that load, edit, autosave, stage and publish workflows and broadcasts, and parse every action against the editor's strict step schema.",
+      "paths": [
+        "products/workflows/frontend/Workflows/workflowLogic.ts",
+        "products/workflows/frontend/Workflows/hogflows/hogFlowEditorLogic.tsx",
+        "products/workflows/frontend/Workflows/hogflows/steps/types.ts",
+        "products/workflows/frontend/Broadcasts/"
+      ]
+    },
+    {
+      "name": "Step and trigger registry",
+      "role": "registry",
+      "responsibility": "Side-effect registrations of trigger types and action categories, the Hog templates steps run, and async functions available to Hog code.",
+      "paths": [
+        "products/workflows/frontend/Workflows/hogflows/registry/",
+        "nodejs/src/cdp/templates/",
+        "nodejs/src/cdp/async-functions/"
+      ]
+    },
+    {
+      "name": "Messaging providers",
+      "role": "adapter/provider",
+      "responsibility": "Sends email, SMS and push through SES, Twilio and native push, and handles sender domains, tracking codes, sending tiers and reputation.",
+      "paths": [
+        "products/workflows/backend/providers/",
+        "products/workflows/backend/services/email_sending_tier.py",
+        "nodejs/src/cdp/services/messaging/"
+      ]
+    },
+    {
+      "name": "Metrics and conversions",
+      "role": "observer/metrics",
+      "responsibility": "Emits app metrics under hog_flow and hog_flow_version, watches conversion goals, and exposes Prometheus counters for silent degradations.",
+      "paths": [
+        "nodejs/src/cdp/services/hogflows/conversion-watcher.ts",
+        "nodejs/src/cdp/services/hogflows/billing-utils.ts",
+        "products/workflows/CONTRIBUTING.md"
+      ]
+    },
+    {
+      "name": "Agent surface",
+      "role": "gateway (agents)",
+      "responsibility": "The MCP tool definitions generated from the OpenAPI schema, plus the building-workflows and designing-email-templates skills that teach agents the graph contract.",
+      "paths": [
+        "products/workflows/mcp/tools.yaml",
+        "products/workflows/skills/"
+      ]
+    },
+    {
+      "name": "Facade",
+      "role": "gateway/facade",
+      "responsibility": "The product's public Python surface for other products and core; today a small api.py.",
+      "paths": [
+        "products/workflows/backend/facade/"
+      ]
+    }
+  ],
+  "caveats": [
+    {
+      "statement": "Web-builder drafts validate leniently while programmatic callers (MCP, raw API) validate strictly (_should_validate_strictly, hog_flow.py L850). An invalid config can sit in a web draft until publish or enable revalidates it.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/81905#discussion_r3776904952",
+          "origin": "pr#81905",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "a stage_draft content save on an active workflow now validates leniently like every other draft"
+        }
+      ]
+    },
+    {
+      "statement": "Graph validation is a hard error only on the /graph patch endpoint. Create and full PATCH only log structural errors, because existing active workflows already carry broken graphs.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/63583#discussion_r3427963910",
+          "origin": "pr#63583",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Scoped the hard validation to just the new /graph endpoint, where the graph is clean by construction."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/63583#discussion_r3427964062",
+          "origin": "pr#63583",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "a handful of active flows have non-exit nodes with no outgoing edge today"
+        }
+      ]
+    },
+    {
+      "statement": "A decrypt failure on encrypted_inputs is fail-open: the flow runs without its secrets (parity with HogFunction), and only the cdp_hogflow_encrypted_inputs_decrypt_failed counter signals it.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3632133931",
+          "origin": "pr#72913",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Failing closed would drop every flow in the batch on a transient key issue"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3637166337",
+          "origin": "pr#72913",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "If decrypt fails we warn and carry on, but the secret's already stripped from `actions`, so the step runs without it"
+        }
+      ]
+    },
+    {
+      "statement": "Only agent callers (MCP, PostHog AI) must present the blast-radius confirm token. The web builder keeps its own confirm UI and headless API keys dispatch without one.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73225#discussion_r3643942550",
+          "origin": "pr#73225",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "If the web builder later adopts the token flow we can drop the exemption."
+        }
+      ]
+    },
+    {
+      "statement": "Workflow views still live in backend/api/, so the 'routes must only import presentation' import-linter contract carries four ignore_imports lines for workflows.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/pyproject.toml#L740",
+          "origin": "doc:pyproject.toml",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "TODO: views still registered from backend/api/ — move them into presentation/ and drop the line"
+        }
+      ]
+    },
+    {
+      "statement": "Counter metrics cannot attribute a bounce, open or complaint to its send, so time-windowed rates are approximations that can exceed 100% at window edges.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/74762#discussion_r3682801318",
+          "origin": "pr#74762",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Per-email send-time attribution isn't possible with counter metrics"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/78136#discussion_r3719551492",
+          "origin": "pr#78136",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "per-send attribution is not available in the app metrics data model"
+        }
+      ]
+    },
+    {
+      "statement": "The batch audience cap is a dispatch-time pre-gate. An email step added to an already queued batch skips it; only the send-time tier buckets still apply.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/89923#discussion_r3880168522",
+          "origin": "pr#89923",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "The batch audience cap is a dispatch-time pre-gate; adding an email step to a queued batch skips it"
+        }
+      ]
+    },
+    {
+      "statement": "Durations clamp silently per unit, and a delay_until date is re-read on every wake, so a date that moves closer does not wake a parked run earlier.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L167",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Per-unit caps are **silently clamped**"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L191",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "A date that **moves closer** is not: nothing wakes the run early"
+        }
+      ]
+    },
+    {
+      "statement": "The HogFlow post_save worker reload fires inside the transaction (only post_delete defers to on_commit), so management commands defer the reload themselves.",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/85239#discussion_r3812984346",
+          "origin": "pr#85239",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the reload publish moved to transaction.on_commit"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "constraints-live-in-the-serializer",
+      "statement": "Workflow constraints are enforced in HogFlowSerializer, so the editor, the API and MCP share one check; frontend checks are UX only.",
+      "kind": "paved-path",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341",
+          "origin": "pr#59468",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "i think we should handle all of this on the serializer level btw"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3349111767",
+          "origin": "pr#59468",
+          "author": "Gilbert09",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "I moved enforcement to the serializer so the API, MCP, and frontend share one source of truth."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/60388#discussion_r3318391214",
+          "origin": "pr#60388",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "I think we could just add a validation into `HogFlowSerializer` when activating without the full graph"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3349112781",
+          "origin": "pr#59468",
+          "author": "Gilbert09",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "warehouse-triggered flows go through the same `hog_flows` serializer — which now enforces all the row-scoped constraints server-side"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/90938#discussion_r3882210853",
+          "origin": "pr#90938",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Added `_validate_run_scout_action` to `HogFlowSerializer`, wired into the existing per-template save-time validation dispatch"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Practice holds (HogFlowSerializer.validate at hog_flow.py L3192 carries per-template and per-trigger checks), but no doc says new constraints belong there: products/workflows/CONTRIBUTING.md and root AGENTS.md are silent; checked both at 57ca357.",
+      "proposedLevel": "documented",
+      "howToEnforce": "Add a CONTRIBUTING.md section: every rule that decides whether a workflow may be saved or activated lives in HogFlowSerializer (or graph_validation.py); editor checks mirror it for UX only.",
+      "confidence": "high",
+      "value": 4,
+      "effort": 1,
+      "occurrences": 3,
+      "humanAuthors": 4,
+      "reviewers": 2
+    },
+    {
+      "id": "row-scoped-triggers-reject-person-steps",
+      "statement": "Workflows with a row-scoped trigger reject person-dependent steps and exit only at the end.",
+      "kind": "guarantee",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341",
+          "origin": "pr#59468",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "i think we should force the dwh triggered workflows to exit_only_at_end and not give the option to avoid things blowing up when folks assume there are person properties"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3349114295",
+          "origin": "pr#59468",
+          "author": "Gilbert09",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`data-warehouse-table` triggers are coerced to `exit_only_at_end`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/84460#discussion_r3895035867",
+          "origin": "pr#84460",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "confirmed pre-existing across all three row-scoped triggers already shipped (data-warehouse-table/view, slack-message)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L76",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Runs have no associated person, so person-dependent steps are unavailable."
+        }
+      ],
+      "currentLevel": "structural",
+      "currentLevelBasis": "hog_flow.py L3230-3245 rejects PERSON_DEPENDENT_ACTION_TYPES and coerces exit_only_at_end when the trigger is in ROW_SCOPED_TRIGGER_TYPES (models/hog_flow/hog_flow.py L90-101) on every serializer write at 57ca357. Gaps: a reviewer-noted pre-existing delay-validation gap spans all row-scoped triggers, and the sets are hand-copied into workflowLogic.ts L123.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Keep the serializer gate; close the delay gap in _validate_delay and derive the frontend set from the API (see closed-type-sets-have-one-home).",
+      "confidence": "high",
+      "value": 3,
+      "effort": 2,
+      "occurrences": 3,
+      "humanAuthors": 3,
+      "reviewers": 2
+    },
+    {
+      "id": "closed-type-sets-have-one-home",
+      "statement": "Action types, trigger types, and the person-dependent and row-scoped sets are declared once and checked for parity across Django, the Node worker and the editor.",
+      "kind": "guarantee",
+      "component": "Step and trigger registry",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91572#discussion_r3894329629",
+          "origin": "pr#91572",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Mirroring the Python producer's _TRIGGERING_SUBTYPES set here would duplicate a Python-owned business rule across the language boundary"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62649#discussion_r3429112588",
+          "origin": "pr#62649",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "agents follow whatever the schema says, so the two enums shouldn't disagree without a reason."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L40",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Use **only** these `type` values — they are the complete supported set."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "Each side is closed on its own (serializer ChoiceField over SUPPORTED_ACTION_TYPES with test_every_supported_action_type_is_accepted; Node actionHandlers typed Record<HogFlowAction['type'], ActionHandler> in hogflow-executor.service.ts L112), but parity is held by 'Keep in sync with' comments in models/hog_flow/hog_flow.py L22-24, L43, L89, L97 and workflowLogic.ts L123. No cross-language test found at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A parity test that reads the enums from the generated OpenAPI schema and asserts them equal to nodejs/src/cdp/schema/hogflow.ts and the editor's steps/types.ts; expose the row-scoped and person-dependent sets through the API instead of hand copies.",
+      "confidence": "medium",
+      "value": 4,
+      "effort": 3,
+      "occurrences": 3,
+      "humanAuthors": 1,
+      "reviewers": 1
+    },
+    {
+      "id": "graph-structure-validated-on-every-write",
+      "statement": "Every graph write passes validate_graph: unique action ids, one trigger, real edge endpoints, in-range branch indexes and a resolution edge on every wait.",
+      "kind": "guarantee",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62649#discussion_r3429112580",
+          "origin": "pr#62649",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "nothing actually enforces this index:0 convention."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62649#discussion_r3430859026",
+          "origin": "pr#62649",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "any `wait_until_condition` without a branch edge at index 0 now raises"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/63583#discussion_r3422283457",
+          "origin": "pr#63583",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "We validate that edges point at real nodes - should we also validate that non-exit nodes have an outgoing edge?"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3632135646",
+          "origin": "pr#72913",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "duplicate action ids are now a hard validation error on every write path, not just `/graph`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/49947#discussion_r2900710261",
+          "origin": "pr#49947",
+          "author": "sortafreel",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "workflow action IDs are externally supplied and not contract-validated for uniqueness/safe-key constraints"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L111",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "A `wait_until_condition` needs a `branch` edge at `index: 0` (resolution) **and** a `continue` edge (timeout)."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "graph_validation.py validate_graph raises on the /graph endpoint only; hog_flow.py L3271-3279 calls it advisory (log only) on create and PATCH. Duplicate ids are hard on every path (hog_flow.py L3195-3204) and ids are max_length=200 (L1218). graph-schema.md L111 documents the wait edge at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Backfill the legacy active flows that fail validate_graph, then make validate_graph a hard error in HogFlowSerializer.validate for create, PATCH, publish and restore.",
+      "confidence": "high",
+      "value": 4,
+      "effort": 3,
+      "occurrences": 5,
+      "humanAuthors": 3,
+      "reviewers": 3
+    },
+    {
+      "id": "server-compiles-all-bytecode",
+      "statement": "Only the server compiles bytecode; client-supplied bytecode is discarded on every write path.",
+      "kind": "guarantee",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/57847#discussion_r3335658853",
+          "origin": "pr#57847",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "we now strip any client-supplied `bytecode` from the stored filters, so a malformed draft can never carry executable bytecode into activation"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/63545#discussion_r3414126437",
+          "origin": "pr#63545",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "documenting the `{hash, ttl, threshold?}` shape (and that bytecode is server-compiled)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62649#pullrequestreview-4516516322",
+          "origin": "pr#62649",
+          "author": "ghost",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
+          "quote": "Bytecode stripping covers all paths correctly."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L190",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "**Never send `bytecode`.** The server compiles the expression at save time and discards anything the client sent."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "graph-schema.md L190 tells callers never to send bytecode. Stripping is done field by field (hog_flow.py L1888 delay_until, L2067 masking, L3328 conversion drafts) rather than at one chokepoint, so each new filter-bearing field relies on the reviewer. No semgrep rule or enumerating test found at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Strip every client bytecode/bytecode_error key recursively once in HogFlowSerializer.to_internal_value (like _without_bytecode_contracts), plus one test that posts bytecode into every filter slot and asserts the stored value is server-compiled.",
+      "confidence": "high",
+      "value": 4,
+      "effort": 2,
+      "occurrences": 4,
+      "humanAuthors": 2,
+      "reviewers": 0
+    },
+    {
+      "id": "active-workflows-change-only-through-publish",
+      "statement": "Content edits to an active workflow stage a draft; only publish promotes it, after strict revalidation.",
+      "kind": "guarantee",
+      "component": "Draft and revision store",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/81905#discussion_r3776904952",
+          "origin": "pr#81905",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "publish still revalidates strictly before promoting"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/70823#discussion_r3585946833",
+          "origin": "pr#70823",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Publish fully revalidates regardless, so a malformed draft can never promote"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/60388#discussion_r3316614760",
+          "origin": "pr#60388",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "We don't want the agent to be able to create rogue edits and disrupt this."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/81323#pullrequestreview-4914901622",
+          "origin": "pr#81323",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "I think it's easy to miss now considering before saving would already publish."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/SKILL.md#L43",
+          "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Editing an active workflow stages a **draft** instead of changing what's running: nothing reaches real people until you publish."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "SKILL.md L43 documents it. perform_update (hog_flow.py L4405-4423) routes MCP content edits to the draft and rejects actions/edges on MCP update, but the web builder opts in per request with stage_draft and raw-API callers that omit it keep deploy-on-save, at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Route every content write on an active workflow to the draft in perform_update regardless of caller, and retire the deploy-on-save branch for raw-API callers behind a flag.",
+      "confidence": "high",
+      "value": 4,
+      "effort": 3,
+      "occurrences": 5,
+      "humanAuthors": 2,
+      "reviewers": 1
+    },
+    {
+      "id": "stale-writes-fence-on-the-loaded-stamp",
+      "statement": "Every write to workflow content fences on the stamp the writer loaded, bumps the stamp it changes, and returns 409 when the row moved.",
+      "kind": "guarantee",
+      "component": "Draft and revision store",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/81323#discussion_r3760280129",
+          "origin": "pr#81323",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`discard_draft` now bumps the live `updated_at`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/81323#discussion_r3760280774",
+          "origin": "pr#81323",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "a concurrent metadata edit that bumped `updated_at` now 409s instead of being silently overwritten"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/101505#discussion_r4025420816",
+          "origin": "pr#101505",
+          "author": "luke-belton",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "A save that clears the draft now fences on the newer of `updated_at` and `draft_updated_at`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/85239#discussion_r3812983888",
+          "origin": "pr#85239",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "bumps updated_at for live changes and draft_updated_at for draft-only changes, so the editor's stale-write fence rejects a tab opened before the cleanup"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/105625#discussion_r4107381109",
+          "origin": "pr#105625",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Launch now re-reads the broadcast before it touches schedules and stops with the edited-elsewhere notice if the saved copy moved"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/105625#discussion_r4088885006",
+          "origin": "pr#105625",
+          "author": "coderabbitai",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
+          "quote": "The autosave sends `base_updated_at` so an unseen assistant save is not overwritten."
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "The fence is parsed and compared separately in perform_update, graph and action_email (hog_flow.py L4432, L4642, L4739), restore uses expected_draft_updated_at (L5102), and omitting base_updated_at keeps last-writer-wins (L4431). No shared helper or test enumerating write actions at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "One guarded_write(locked_flow, request) helper that parses base stamps, picks the right guard timestamp and raises StaleWorkflowUpdateError, used by every content-writing action; a test enumerates those actions and asserts 409 on a stale base.",
+      "confidence": "high",
+      "value": 5,
+      "effort": 3,
+      "occurrences": 4,
+      "humanAuthors": 3,
+      "reviewers": 0
+    },
+    {
+      "id": "backfills-lock-rows-and-bump-stamps",
+      "statement": "Workflow data fixes run as management commands that lock each row, compare-and-set, bump its stamp and reload workers after commit.",
+      "kind": "paved-path",
+      "component": "Draft and revision store",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62355#discussion_r3389167931",
+          "origin": "pr#62355",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "It would probably just be better to default to management commands unless there's a good reason not to"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62355#discussion_r3388588274",
+          "origin": "pr#62355",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "We do that per flow so that will be n-db queries and each one will require a lock."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/85239#discussion_r3812983692",
+          "origin": "pr#85239",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the live-run now re-reads each row with select_for_update inside transaction.atomic and strips the locked value, matching the rewrite_email_asset_url pattern"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/85239#pullrequestreview-4971111043",
+          "origin": "pr#85239",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "even after running it, there might be some placeholders present, if customers have workflow editor opened with the old version and save after this command is executed"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/89924#discussion_r3880399385",
+          "origin": "pr#89924",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "The backfill write is now compare-and-set against the state the decision was computed from"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Seven commands under products/workflows/backend/management/commands each hand-roll locking; no shared base class and nothing in CONTRIBUTING.md. Root AGENTS.md L182 only says to wrap writes in transaction.atomic ([review]) at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "A HogFlowRowCommand base that iterates team-scoped rows, locks each with select_for_update, bumps updated_at or draft_updated_at by the column it changed, and reloads workers on_commit; new commands subclass it.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 3,
+      "occurrences": 3,
+      "humanAuthors": 3,
+      "reviewers": 2
+    },
+    {
+      "id": "secrets-masked-in-every-representation",
+      "statement": "Secret inputs are encrypted at rest and masked in every outward representation: actions, trigger, draft, activity log, log lines and agent context.",
+      "kind": "guarantee",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3637293575",
+          "origin": "pr#72913",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "`trigger` is its own serialized field and doesn't get masked, so I think a function-shaped trigger's secret goes out in plaintext"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3637798539",
+          "origin": "pr#72913",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "The trigger masking was gated behind the `actions` branch, so the summary serializer (which returns `trigger` but omits `actions`) skipped it."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/80639#discussion_r3750861704",
+          "origin": "pr#80639",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "redactWorkflowSecretInputs strips secret values (and their compiled bytecode) from function steps, webhook/manual/pixel triggers, and mappings before the editor state is serialized"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/70823#discussion_r3586204077",
+          "origin": "pr#70823",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "HogFlow's draft field is now in field_with_masked_contents, so activity entries record that a draft was staged/published/discarded but never its contents"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/70823#discussion_r3585946988",
+          "origin": "pr#70823",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "2996a5b redacts configuration from both the hog function and hog flow invocation log lines"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/83804#discussion_r3802613616",
+          "origin": "pr#83804",
+          "author": "greptile-apps",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
+          "quote": "**Trigger-only secrets remain plaintext**"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Chokepoint functions exist (partition_flow_secrets L387, mask_trigger_config L490, strip_content_secrets L527 in hog_flow.py) but each serializer (full, minimal, summary, draft, revision) calls them itself, and the frontend redacts separately in workflowAgentContext.ts. No test enumerates representations at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A totality test that builds a flow with a secret in an action, the trigger and the draft, renders every HogFlow serializer, the revision endpoints, the activity-log diff and the agent-context builder, and asserts the plaintext never appears.",
+      "confidence": "high",
+      "value": 5,
+      "effort": 2,
+      "occurrences": 4,
+      "humanAuthors": 2,
+      "reviewers": 1
+    },
+    {
+      "id": "child-rows-take-team-from-their-workflow",
+      "statement": "Rows that hang off a workflow take team_id from the workflow, and cross-team isolation is asserted through the API.",
+      "kind": "guarantee",
+      "component": "Draft and revision store",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72572#discussion_r3623789207",
+          "origin": "pr#72572",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "HogFlowRevision.save() now pins team_id to hog_flow.team_id before RootTeamMixin's canonicalization"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72543#discussion_r3622844774",
+          "origin": "pr#72543",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "derives `team_id` from the workflow row itself"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/68133#pullrequestreview-4745189470",
+          "origin": "pr#68133",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "add a cross-team isolation test, it's the core security property of this endpoint"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72573#discussion_r3629296112",
+          "origin": "pr#72573",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "none of the append tests would catch a regression in the endpoint itself (team scoping, ordering, content leak)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/50191#discussion_r2900154399",
+          "origin": "pr#50191",
+          "author": "sortafreel",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Revision join does not enforce team/flow ownership, allowing cross-tenant content mix on FK corruption"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91572#discussion_r3895149125",
+          "origin": "pr#91572",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`isOwnSlackMessage` now also checks the resolved integration's `team_id` against the invoking workflow's team"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Root AGENTS.md L170 lints only that tenant models have team_id (idor-lookup-without-team, check-idor-model-coverage.py). Taking team_id from the parent workflow is held by review, except HogFlowRevision.save, which pins it.",
+      "proposedLevel": "structural",
+      "howToEnforce": "A HogFlowChildMixin whose save() pins team_id from hog_flow, applied to every model with a hog_flow FK, plus a test enumerating those models via apps.get_models().",
+      "confidence": "high",
+      "value": 4,
+      "effort": 2,
+      "occurrences": 6,
+      "humanAuthors": 4,
+      "reviewers": 3
+    },
+    {
+      "id": "custom-actions-declare-scopes-and-object-access",
+      "statement": "Every custom hog_flow action declares its API scopes, adds person:read or group:read when it exposes or dispatches to people, and filters per-workflow data by object access.",
+      "kind": "boundary",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73522#discussion_r3646021418",
+          "origin": "pr#73522",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "batch_jobs and schedules POST now require hog_flow:write plus person:read (matching the user_blast_radius / invocation_results / assets precedent in this viewset)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/61655#discussion_r3376284096",
+          "origin": "pr#61655",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Shouldn't this one also include `group:read`?"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/68133#discussion_r3620011080",
+          "origin": "pr#68133",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the per-workflow breakdown is now intersected with `user_access_control.filter_queryset_by_access_level(...)` (same pattern as `metrics_global`)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/83342#discussion_r3803370096",
+          "origin": "pr#83342",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the fallback skipped the object-level check entirely because there's no row left to check against"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/75237#discussion_r3681522176",
+          "origin": "pr#75237",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`aws` is now gated behind the same `can_read_all_workflows` check as `reputation`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73522#discussion_r3645727762",
+          "origin": "pr#73522",
+          "author": "veria-ai",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
+          "quote": "**High: Write-only keys can export person data**"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "scope_object_write_actions (hog_flow.py L4032) and a hand-written if-chain in dangerously_get_required_scopes (L4059-4102) decide person:read and group:read; object checks are per action (L4284, L5186, L5451, L5545). Undeclared actions fail closed for API keys, but data classification is review-only at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A test that walks HogFlowViewSet's router actions, asserts each is in scope_object_read_actions or scope_object_write_actions, and asserts person:read for every action whose response serializer carries distinct_id, person_id or invocation_globals.",
+      "confidence": "high",
+      "value": 4,
+      "effort": 2,
+      "occurrences": 5,
+      "humanAuthors": 3,
+      "reviewers": 1
+    },
+    {
+      "id": "dispatch-requires-a-previewed-audience",
+      "statement": "Every dispatch to a batch audience, from any caller, first previews the audience and presents the confirm token bound to it.",
+      "kind": "guarantee",
+      "component": "Batch and schedule dispatcher",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73225#discussion_r3643941753",
+          "origin": "pr#73225",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the token is now validated against the stored trigger filters (the audience that actually dispatches), and the job's filters field is a server-side snapshot rather than caller input"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/61001#discussion_r3341385166",
+          "origin": "pr#61001",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "a run on a non-active workflow now 400s instead of minting a queued job the consumer would just drop"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73225#discussion_r3645210482",
+          "origin": "pr#73225",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the schedules POST now rejects non-active workflows for programmatic callers before the token check"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/93383#discussion_r3916725241",
+          "origin": "pr#93383",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Converting a workflow's live trigger to `batch` now pauses every active schedule on it, on all three paths that change the live config: update, graph edit, and publish."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/SKILL.md#L22",
+          "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "scheduling it needs the `workflows-blast-radius` preview and its confirm token"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/105625#discussion_r4092021923",
+          "origin": "pr#105625",
+          "author": "posthog",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
+          "quote": "The batch job can then send an email the user did not review."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "The building-workflows skill documents the preview and token. In code, _require_audience_confirm_token guards batch_jobs and schedules POST only when get_event_source(request) is in AGENT_EVENT_SOURCES (hog_flow.py L5768, L5874 at 57ca357); the web builder has its own confirm UI and headless API keys stay token-free by design, and a new dispatch path can skip the guard.",
+      "proposedLevel": "structural",
+      "howToEnforce": "One dispatch chokepoint that takes a BlastRadiusConfirmation value only the preview can mint, used by every batch and schedule path; decide as a team whether headless callers keep their exemption.",
+      "confidence": "medium",
+      "value": 4,
+      "effort": 3,
+      "occurrences": 5,
+      "humanAuthors": 1,
+      "reviewers": 0
+    },
+    {
+      "id": "lifecycle-changes-are-explicit",
+      "statement": "Enable, disable, archive and publish are explicit actions; a content save never changes status.",
+      "kind": "paved-path",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91486#discussion_r3894363710",
+          "origin": "pr#91486",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "A form save no longer sends `status` at all."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/60388#discussion_r3323214919",
+          "origin": "pr#60388",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Opted for explicit workflow-enable, workflow-disable, workflow-archive tools."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/60388#discussion_r3318170238",
+          "origin": "pr#60388",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "I think we should also enforce this check for creation of active workflows and deletion"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/SKILL.md#L21",
+          "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Don't enable on your own initiative."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md#L9",
+          "origin": "doc:products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "`workflows-create` — create a workflow. Always created as a `draft`."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "The skill documents explicit enable (SKILL.md L21) and draft-on-create (lifecycle-and-debugging.md L9). status stays writable on HogFlowSerializer (not in read_only_fields, hog_flow.py L3168) and status-only PATCH is the lifecycle path (L4415), so a combined content-and-status PATCH is still accepted at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Make status read-only on HogFlowSerializer and expose enable, disable and archive as dedicated viewset actions that validate strictly.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 3,
+      "occurrences": 4,
+      "humanAuthors": 2,
+      "reviewers": 1
+    },
+    {
+      "id": "registry-owns-trigger-and-step-types",
+      "statement": "A new trigger or step type lives in its own registry file, registered by side-effect import, and needs no change to workflowLogic.ts.",
+      "kind": "boundary",
+      "component": "Step and trigger registry",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/47035#discussion_r2877422332",
+          "origin": "pr#47035",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "would be cool to move this into `registry/triggers/`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91466#discussion_r3894062146",
+          "origin": "pr#91466",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "no way to keep this dynamic? I'm about to add github as a trigger in support of loops."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3349112235",
+          "origin": "pr#59468",
+          "author": "Gilbert09",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "a registered trigger's `ConfigComponent` was only mounted for `type === 'event'` configs"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L78",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Registration is done via module side effects. Your trigger file must be imported by the workflows frontend bundle."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L347",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "**Forgot the side-effect import**: triggers/actions must be imported by their `index.ts`"
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "CONTRIBUTING.md L78 and L347 document it. workflowLogic.ts still hardcodes ROW_SCOPED_TRIGGER_TYPES (L123) and per-trigger-type literals (L765-854, repeated), and registerTriggerType silently ignores a duplicate value (triggerTypeRegistry.ts). No lint rule found in .semgrep/rules or the oxlint config at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A test that every backend TRIGGER_TYPES value (and each WORKFLOW_SAFE_INTERNAL_EVENTS entry) has a registered trigger definition, and an oxlint no-restricted-syntax rule banning trigger-type string literals in workflowLogic.ts.",
+      "confidence": "high",
+      "value": 4,
+      "effort": 2,
+      "occurrences": 4,
+      "humanAuthors": 3,
+      "reviewers": 2
+    },
+    {
+      "id": "configs-are-typed-unions",
+      "statement": "Trigger and step configs are typed as discriminated unions end to end, so an unsupported shape is a compile error, not a runtime surprise.",
+      "kind": "guarantee",
+      "component": "Step and trigger registry",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/100259#discussion_r4006503486",
+          "origin": "pr#100259",
+          "author": "gantoine",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "so adding a template with a trigger that has no fixture config is a compile error instead of an invalid fixture"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/103843#discussion_r4069025491",
+          "origin": "pr#103843",
+          "author": "Silthus",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`tests/types.test-d.ts` fails the build if a conversion variant compiles again"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/57470#discussion_r3182447995",
+          "origin": "pr#57470",
+          "author": "pauldambra",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "ties the two ends together so a future SimpleOption shape change surfaces here as a type error rather than as a silently empty UI"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "TriggerTypeDefinition in registry/triggers/triggerTypeRegistry.ts types matchConfig, buildConfig, ConfigComponent and validate with any at 57ca357; the step union lives in hogflows/steps/types.ts but the registry does not use it.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Make TriggerTypeDefinition generic over its config type (Extract<HogFlowAction['config'], {type: T}>) and key the registry by the trigger-type union so a missing or mistyped definition fails typecheck.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 3,
+      "occurrences": 3,
+      "humanAuthors": 3,
+      "reviewers": 1
+    },
+    {
+      "id": "template-ids-resolve-and-fixed-channels-are-server-checked",
+      "statement": "Every template_id a step references resolves to a real Hog template; email, SMS and push steps carry their channel's literal, inferred and checked by the server.",
+      "kind": "guarantee",
+      "component": "Step and trigger registry",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/78208#discussion_r3720060567",
+          "origin": "pr#78208",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`template_id` on these three step types is a constant fully determined by the step type"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/89923#discussion_r3880399581",
+          "origin": "pr#89923",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the serializer rejects a fixed-template step carrying another channel's literal template on user-driven saves, so the mislabeled step cannot be authored anymore"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/89923#discussion_r3880399174",
+          "origin": "pr#89923",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "The detector now treats any step carrying template-email as an email step"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L348",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "**Template id mismatch**: `config.template_id` in the frontend must exactly match `template.id` in the backend."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L134",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "their `template_id` is the fixed literal `template-email` / `template-twilio` / `template-native-push`"
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "Fixed channels are structural server-side (_FIXED_TEMPLATE_IDS and _apply_fixed_template_id, hog_flow.py L595-656). The frontend-to-backend template id match for registry action categories is only documented (CONTRIBUTING.md L348); no test found at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A test that collects every template_id the frontend registry/actions emit and asserts each exists among the Hog templates Django and Node load.",
+      "confidence": "high",
+      "value": 3,
+      "effort": 2,
+      "occurrences": 4,
+      "humanAuthors": 2,
+      "reviewers": 0
+    },
+    {
+      "id": "test-runs-share-production-trigger-predicates",
+      "statement": "A test run decides whether a payload fires the trigger with the same predicate the production consumer uses.",
+      "kind": "guarantee",
+      "component": "Executor",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91572#discussion_r3894329252",
+          "origin": "pr#91572",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "mirroring the warehouse-events consumer's eligibilityFn"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91572#discussion_r3894977753",
+          "origin": "pr#91572",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`TriggerHandler` now takes an integration lookup and mirrors the consumer's own-app exclusion"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91572#discussion_r3905964595",
+          "origin": "pr#91572",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "We could use `isOwnGithubEvent` here instead of the manual check (like in the consumer)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/61480#discussion_r3358014508",
+          "origin": "pr#61480",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Could that make a group condition match in the test run but not in prod?"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md#L22",
+          "origin": "doc:products/workflows/skills/building-workflows/references/lifecycle-and-debugging.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "`status=skipped` means this payload would not fire the trigger"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "actions/trigger.handler.ts L41-95 re-implements the internal-events and warehouse-events consumers' eligibility checks with 'Mirrors the consumer' comments; no shared function at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Export one eligibility predicate per trigger kind from the consumers and call it from TriggerHandler, so test and production cannot diverge.",
+      "confidence": "high",
+      "value": 3,
+      "effort": 2,
+      "occurrences": 3,
+      "humanAuthors": 2,
+      "reviewers": 1
+    },
+    {
+      "id": "unroutable-steps-fail-the-run-visibly",
+      "statement": "When the executor cannot route or schedule a step, the run fails visibly; it never picks a branch or continues silently.",
+      "kind": "guarantee",
+      "component": "Executor",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73577#discussion_r3646766386",
+          "origin": "pr#73577",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "silently picking a branch arm would send everyone down one A/B path with no assignment logic"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/82920#discussion_r3802666144",
+          "origin": "pr#82920",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "In all of them the run ends there, marked failed, and the next step never runs."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73577#discussion_r3646782559",
+          "origin": "pr#73577",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "made the runtime's cumulative sum NaN and silently routed everyone to the last cohort rather than blocking execution"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/82920#discussion_r3801820608",
+          "origin": "pr#82920",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "what are the use-cases of a delay that could not work out when to continue?"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/70740#discussion_r3579876681",
+          "origin": "pr#70740",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "A miss on an untouched flow keeps the failure log, `failed` metric, and `result.error`, so malformed definitions stay visible"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Handler totality is structural (Record<HogFlowAction['type'], ActionHandler>, hogflow-executor.service.ts L112), but per-handler behaviour on malformed configs is held by comments (L796 'must never fall through') and scattered unit tests at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A parameterized executor test that feeds each action type a malformed config (missing edge, NaN weight, unparseable date) and asserts a failed result with an error, never a silent continue.",
+      "confidence": "high",
+      "value": 3,
+      "effort": 2,
+      "occurrences": 3,
+      "humanAuthors": 3,
+      "reviewers": 1
+    },
+    {
+      "id": "silent-degradations-emit-a-counter",
+      "statement": "Every skip, clamp, fail-open or ignored input logs a warning and increments a Prometheus counter; per-workflow app metrics count only real runs.",
+      "kind": "paved-path",
+      "component": "Metrics and conversions",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3637166337",
+          "origin": "pr#72913",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Should it fail closed here, or at least worth a metric so we can alert on this?"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3637516127",
+          "origin": "pr#72913",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "added a `cdp_hogflow_encrypted_inputs_decrypt_failed` counter so rotation skew is alertable"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/94051#discussion_r3967997808",
+          "origin": "pr#94051",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "the whole thing is ignored and it returns null without any err log or indication why things broke here"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/92672#discussion_r3914469107",
+          "origin": "pr#92672",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Right now it's the only signal that a workflow asked for a longer window than it got."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/55282#discussion_r3110991844",
+          "origin": "pr#55282",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Adding an app metric here would pollute the per-workflow metrics with ghost run data."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/49947#discussion_r2900710255",
+          "origin": "pr#49947",
+          "author": "sortafreel",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Decryption failure handling can trigger log storms without alertable telemetry"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Counters exist case by case (cdp_hogflow_encrypted_inputs_decrypt_failed in hogflow-manager.service.ts L18, awaited-step and conversion clamp counters); CONTRIBUTING.md has no observability section at 57ca357.",
+      "proposedLevel": "documented",
+      "howToEnforce": "Add a CONTRIBUTING.md rule: any fallback, clamp or skip in nodejs/src/cdp/services/hogflows logs at warn and increments a cdp_hogflow_* counter; app metrics stay for runs a customer can see.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 1,
+      "occurrences": 5,
+      "humanAuthors": 4,
+      "reviewers": 3
+    },
+    {
+      "id": "post-run-metrics-carry-the-message-version",
+      "statement": "Metrics emitted after a run ends take the version the message carried, never a fresh lookup of the workflow.",
+      "kind": "guarantee",
+      "component": "Metrics and conversions",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/75100#discussion_r3713684974",
+          "origin": "pr#75100",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "conversions are the exception here - they credit the run-start version, steps/emails credit execution time"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/75100#pullrequestreview-4855916631",
+          "origin": "pr#75100",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "it's actually the run-start version, only the same thing if nothing republishes mid-run"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L341",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "the version has to come from whatever the message carried, never from a fresh lookup of the workflow."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L336",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "reading it on arrival would blame the newest version for the previous one's sends"
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "CONTRIBUTING.md L310-343 documents the dual hog_flow / hog_flow_version series and the version-from-message rule; no test or type prevents a webhook emitter from looking up the live version at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Give the metric emitter a MessageVersion type that can only be built from a parsed tracking code or run state, so the SES webhook and conversion paths cannot pass a looked-up flow.version.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 3,
+      "occurrences": 2,
+      "humanAuthors": 1,
+      "reviewers": 1
+    },
+    {
+      "id": "one-duration-grammar",
+      "statement": "Every workflow duration is parsed by one grammar, identical in Django and the Node worker.",
+      "kind": "guarantee",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/81114#discussion_r3757761854",
+          "origin": "pr#81114",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "both share one `_duration_error()` message so the documented parity is enforced rather than asserted"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L164",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "a number plus unit `s` | `m` | `h` | `d`"
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "backend/utils/durations.py and nodejs/src/cdp/services/hogflows/duration.ts each declare the regex with a header comment saying they must match; test_durations.py and duration.test.ts test separately with no shared cases at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A shared JSON fixture of valid and invalid durations (with expected seconds) read by both test_durations.py and duration.test.ts.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 1,
+      "occurrences": 2,
+      "humanAuthors": 1,
+      "reviewers": 0
+    },
+    {
+      "id": "stored-payloads-are-size-bounded",
+      "statement": "Every stored or echoed workflow payload has a server-side size bound.",
+      "kind": "guarantee",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/68133#pullrequestreview-4745189470",
+          "origin": "pr#68133",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "cap the per-workflow section - it's unbounded"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/71844#discussion_r3602572372",
+          "origin": "pr#71844",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "action ids now have max_length=200 at the serializer"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/78272#discussion_r3722010134",
+          "origin": "pr#78272",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "materialized content is now capped cumulatively per save at `DATA_UPLOAD_MAX_MEMORY_SIZE` (20 MB)"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91581#discussion_r3894714644",
+          "origin": "pr#91581",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "merged variable overrides are now capped at 5KB, reusing the existing constant that already bounds variable definitions"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/97303#discussion_r3970349694",
+          "origin": "pr#97303",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "Django caps at 4096 bytes total and 1500 characters per string"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/84460#discussion_r3895036015",
+          "origin": "pr#84460",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Agreed a bounded schema is the right fix eventually"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Caps are added field by field (action id max_length=200 at hog_flow.py L1218, variables 5KB, action_redirects 512 entries, materialized content 20 MB); no inventory or test of unbounded JSONFields at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A test that walks HogFlowSerializer and its nested serializers and fails on any JSONField, ListField or CharField without a size validator or max_length.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 3,
+      "occurrences": 6,
+      "humanAuthors": 1,
+      "reviewers": 1
+    },
+    {
+      "id": "flags-gate-adoption-not-execution",
+      "statement": "A feature flag gates adding a new step or setting; steps already stored keep validating and running when the flag is off.",
+      "kind": "paved-path",
+      "component": "Workflow API",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/85511#discussion_r3822135887",
+          "origin": "pr#85511",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "The serializer seeds the stored action ids that already reference a flag-gated template and the gate skips them"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/94051#discussion_r3956941733",
+          "origin": "pr#94051",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "The handler now honors an existing wait even when the flag is off. The flag only controls new waits."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/87647#discussion_r3842522292",
+          "origin": "pr#87647",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "A test run echoing a stored or draft-staged limit now passes the gate regardless of flag state, while new adoption stays flag-gated."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/102233#discussion_r4042422867",
+          "origin": "pr#102233",
+          "author": "posthog",
+          "source": "bot-review",
+          "byPullRequestAuthor": false,
+          "quote": "matching the two grandfather clauses this file already carries for the same reason"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Grandfathering is hand-rolled per gate (_wait_condition_already_stored at hog_flow.py L255, clauses near L942, L1703, L3082); CONTRIBUTING.md L350 only says to use an existing flag from lib/constants at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "One grandfathered(instance, action_id, key) helper that every flag gate in HogFlowSerializer must call, plus a parameterized test flipping each gated flag off on a stored flow.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 2,
+      "occurrences": 4,
+      "humanAuthors": 2,
+      "reviewers": 0
+    },
+    {
+      "id": "stored-configs-stay-readable",
+      "statement": "Stored action configs stay readable across deploys: a shape change normalizes old rows on read and ships safely in either deploy order.",
+      "kind": "guarantee",
+      "component": "Draft and revision store",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L97",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Keep configs serializable and stable: configs are persisted as part of the workflow."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/72576#discussion_r3622709314",
+          "origin": "pr#72576",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the worker's zod schema now accepts a bare string (both standalone and inside a list) and transforms it to {key}, so pre-existing rows parse into the canonical shape"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73225#discussion_r3644550195",
+          "origin": "pr#73225",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "with a trigger fallback only for callers predating the field, so deploys in either order stay safe"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/97929#discussion_r3981513117",
+          "origin": "pr#97929",
+          "author": "arthurdedeus",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the mixed-version deploy is fine, all workflows using this trigger are either in draft or being tested."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/86672#discussion_r3848003756",
+          "origin": "pr#86672",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "no stored configs use the old trigger type in either region yet"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/CONTRIBUTING.md#L337",
+          "origin": "doc:products/workflows/CONTRIBUTING.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "The tracking-code layouts are compatible in one direction only, so this rolled out in two phases"
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "CONTRIBUTING.md L97 and L337 state it; compatibility is argued per PR (often by querying production rows). No corpus of historic configs is parsed in tests at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A checked-in corpus of anonymized historic action configs that every change must still parse through the Node zod schema (nodejs/src/cdp/schema/hogflow.ts), HogFlowSerializer and the editor's step schema.",
+      "confidence": "medium",
+      "value": 4,
+      "effort": 3,
+      "occurrences": 5,
+      "humanAuthors": 3,
+      "reviewers": 1
+    },
+    {
+      "id": "editor-schema-accepts-what-the-server-stores",
+      "statement": "Anything the server accepts as an action config parses under the editor's strict step schema.",
+      "kind": "guarantee",
+      "component": "Editor",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/SKILL.md#L10",
+          "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "a malformed node saves but then **breaks the editor view** for the whole workflow"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/62649#discussion_r3429112567",
+          "origin": "pr#62649",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "a test there stops a future patch-path refactor from silently bringing the editor crash back"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/references/graph-schema.md#L3",
+          "origin": "doc:products/workflows/skills/building-workflows/references/graph-schema.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Treat the shapes below as required, not advisory."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/63583#discussion_r3422112444",
+          "origin": "pr#63583",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "there's a chance active workflows that users used to be able to save, they won't be able to save now"
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "SKILL.md L10 and graph-schema.md L3 warn agents; the backend stores actions as loose JSON and the editor's schema in hogflows/steps/types.ts is separate. graph_validation.py says it mirrors the frontend branch-edge model by comment at 57ca357.",
+      "proposedLevel": "structural",
+      "howToEnforce": "Export the editor's step schema as JSON Schema at build time and validate HogFlowActionSerializer.config against it, or run every serializer test fixture through the editor schema in CI.",
+      "confidence": "medium",
+      "value": 5,
+      "effort": 4,
+      "occurrences": 4,
+      "humanAuthors": 2,
+      "reviewers": 2
+    },
+    {
+      "id": "dispatch-is-idempotent",
+      "statement": "Every dispatch path is idempotent: a retry, double click or mode switch never sends to the same audience twice or counts a conversion twice.",
+      "kind": "guarantee",
+      "component": "Batch and schedule dispatcher",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91581#discussion_r3894714334",
+          "origin": "pr#91581",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the run action now accepts an `Idempotency-Key` header, backed by a cache-based reservation, so a retry returns the first result instead of firing a second AI task"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/105480#discussion_r4088412850",
+          "origin": "pr#105480",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the same audience would have received the email again at the scheduled time"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/82953#discussion_r3855169919",
+          "origin": "pr#82953",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "so a run is still counted exactly once and the double-count the watcher split was built to avoid cannot happen"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Idempotency-Key exists only on the run action (hog_flow.py L5969); batch_jobs and schedules rely on the UI and the confirm token; the executor dedupes ghost runs with a TTL key. No shared idempotency mechanism at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "Accept Idempotency-Key on batch_jobs and schedules POST through the same reservation helper as run, with a test per dispatch action replaying the same key.",
+      "confidence": "medium",
+      "value": 4,
+      "effort": 3,
+      "occurrences": 3,
+      "humanAuthors": 2,
+      "reviewers": 0
+    },
+    {
+      "id": "facade-is-the-only-way-in",
+      "statement": "Core and other products reach workflows only through backend/facade, and workflows reaches signals and tasks only through their facades.",
+      "kind": "boundary",
+      "component": "Facade",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/tach.toml#L1087",
+          "origin": "doc:tach.toml",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "Facade-only: the Run scout action's endpoint starts a scout run through"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/104871#discussion_r4087640959",
+          "origin": "pr#104871",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`products/workflows/backend/facade/api.py` has no backfill surface at all."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/76015#discussion_r3703973829",
+          "origin": "pr#76015",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "`products.messaging` is now declared in `products.workflows`' `depends_on` in tach.toml"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "tach.toml L1088-1105 lints which modules products.workflows may import, and products.tasks sits in the canonical [[interfaces]] block, so workflows reaching tasks goes through its facade. The other direction is open: products.workflows is not in that block, so core and other products import workflows models directly and only review holds it.",
+      "proposedLevel": "linted",
+      "howToEnforce": "Add products.workflows to the canonical tach [[interfaces]] block with a legacy-leaks block listing today's model imports, add backend:contract-check to products/workflows/package.json, and shrink the leak list.",
+      "confidence": "high",
+      "value": 3,
+      "effort": 4,
+      "occurrences": 3,
+      "humanAuthors": 2,
+      "reviewers": 0
+    },
+    {
+      "id": "agent-facing-text-matches-runtime",
+      "statement": "Serializer help_text, tools.yaml and the skills describe what the server and worker actually do, in the same terms across tools.",
+      "kind": "paved-path",
+      "component": "Agent surface",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/73577#discussion_r3646782755",
+          "origin": "pr#73577",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "the help_text now states an unallocated remainder routes to the last cohort, matching the runtime"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/61655#discussion_r3376230645",
+          "origin": "pr#61655",
+          "author": "dmarchuk",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "probably better to keep it consistent for agents too"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/74195#discussion_r3665460797",
+          "origin": "pr#74195",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "take `workflow_id` while the other 26 tools take `id`"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/91572#discussion_r3894329007",
+          "origin": "pr#91572",
+          "author": "mayteio",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "a skip now reads as 'fix a fabricated payload, but treat a skip on a real, copied payload as a broken trigger filter instead'"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/101588#pullrequestreview-5232046810",
+          "origin": "pr#101588",
+          "author": "meikelmosby",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "worth adding something to the mcp for agents to tell them what is allowed and what not"
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "MCP tools are generated from OpenAPI (root AGENTS.md L189 [review]); help_text and skills are hand-written and reviewed. tools.yaml still mixes id and workflow_id parameter names at 57ca357.",
+      "proposedLevel": "documented",
+      "howToEnforce": "Add to CONTRIBUTING.md: a behaviour change updates help_text, tools.yaml and the building-workflows skill in the same PR; unify workflow_id to id in the three odd tools.",
+      "confidence": "medium",
+      "value": 3,
+      "effort": 1,
+      "occurrences": 5,
+      "humanAuthors": 3,
+      "reviewers": 2
+    },
+    {
+      "id": "say-workflow-not-hog-flow",
+      "statement": "User- and agent-facing text says 'workflow'; 'HogFlow' stays in code identifiers and routes.",
+      "kind": "vocabulary",
+      "component": "Agent surface",
+      "evidence": [
+        {
+          "url": "https://github.com/PostHog/posthog/pull/49670#discussion_r2879038689",
+          "origin": "pr#49670",
+          "author": "skoob13",
+          "source": "review",
+          "byPullRequestAuthor": false,
+          "quote": "Do we refer to workflows as hogflows? I've heard this naming for the first time."
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/pull/49670#discussion_r2879154760",
+          "origin": "pr#49670",
+          "author": "VojtechBartos",
+          "source": "review",
+          "byPullRequestAuthor": true,
+          "quote": "removed the HogFlow(s) references from the descriptions since docs not mentioning it at all"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/57ca357730843205c2d659098ac8e4c5e07a6698/products/workflows/skills/building-workflows/SKILL.md#L8",
+          "origin": "doc:products/workflows/skills/building-workflows/SKILL.md",
+          "author": "repository",
+          "source": "doc",
+          "byPullRequestAuthor": false,
+          "quote": "\"Hog flow\" is the internal code name (`HogFlow`), not a user-facing term."
+        }
+      ],
+      "currentLevel": "documented",
+      "currentLevelBasis": "building-workflows SKILL.md L8 states it; no check scans tools.yaml descriptions or serializer help_text at 57ca357.",
+      "proposedLevel": "linted",
+      "howToEnforce": "A test over products/workflows/mcp/tools.yaml descriptions, the generated OpenAPI descriptions for hog_flows and frontend copy that fails on 'hog flow' or 'hogflow' outside identifiers.",
+      "confidence": "high",
+      "value": 2,
+      "effort": 1,
+      "occurrences": 2,
+      "humanAuthors": 2,
+      "reviewers": 1
+    },
+    {
+      "id": "code-managed-workflows-are-read-only",
+      "statement": "A workflow managed from code is read-only in the UI and links to its source.",
+      "kind": "guarantee",
+      "component": "Editor",
+      "evidence": [
+        {
+          "url": "local:t3/896884be-14e4-4a9e-9da4-397fff67c0b0#dfd22683-df36-49e5-b32d-38ba0845bffe",
+          "origin": "session:t3/896884be-14e4-4a9e-9da4-397fff67c0b0",
+          "author": "Silthus",
+          "source": "session",
+          "byPullRequestAuthor": false,
+          "quote": "For code, they should be read-only."
+        },
+        {
+          "url": "local:t3/896884be-14e4-4a9e-9da4-397fff67c0b0#dfd22683-df36-49e5-b32d-38ba0845bffe",
+          "origin": "session:t3/896884be-14e4-4a9e-9da4-397fff67c0b0",
+          "author": "Silthus",
+          "source": "session",
+          "byPullRequestAuthor": false,
+          "quote": "every workflow needs to get a type: type code, type GUI, type MCP, maybe even"
+        },
+        {
+          "url": "local:t3/ba683255-9f48-4b95-825b-e696fab60ab9#c2d899c2-8f19-4aab-b741-fd9d32d489f6",
+          "origin": "session:t3/ba683255-9f48-4b95-825b-e696fab60ab9",
+          "author": "Silthus",
+          "source": "session",
+          "byPullRequestAuthor": false,
+          "quote": "I would see it, actually, as the note panel being disabled as a read-only thing, but then with a link to the actual code also in the header."
+        }
+      ],
+      "currentLevel": "review-only",
+      "currentLevelBasis": "Workflows-as-code is not merged at 57ca357 (no products/workflows/packages directory); HogFlow has origin_product but no managed-by field, and nothing blocks UI edits to a code-managed flow.",
+      "proposedLevel": "structural",
+      "howToEnforce": "A managed_by field on HogFlow; HogFlowSerializer rejects content writes from other sources on code-managed flows, and the editor renders them read-only with a link to the source.",
+      "confidence": "low",
+      "value": 3,
+      "effort": 3,
+      "occurrences": 2,
+      "humanAuthors": 1,
+      "reviewers": 0
+    }
+  ],
+  "backlog": [
+    "constraints-live-in-the-serializer",
+    "agent-facing-text-matches-runtime",
+    "silent-degradations-emit-a-counter",
+    "one-duration-grammar",
+    "secrets-masked-in-every-representation",
+    "child-rows-take-team-from-their-workflow",
+    "custom-actions-declare-scopes-and-object-access",
+    "registry-owns-trigger-and-step-types",
+    "server-compiles-all-bytecode",
+    "say-workflow-not-hog-flow",
+    "stale-writes-fence-on-the-loaded-stamp",
+    "flags-gate-adoption-not-execution",
+    "template-ids-resolve-and-fixed-channels-are-server-checked",
+    "test-runs-share-production-trigger-predicates",
+    "unroutable-steps-fail-the-run-visibly",
+    "active-workflows-change-only-through-publish",
+    "dispatch-requires-a-previewed-audience",
+    "graph-structure-validated-on-every-write",
+    "stored-configs-stay-readable",
+    "closed-type-sets-have-one-home",
+    "dispatch-is-idempotent",
+    "editor-schema-accepts-what-the-server-stores",
+    "stored-payloads-are-size-bounded",
+    "lifecycle-changes-are-explicit",
+    "backfills-lock-rows-and-bump-stamps",
+    "configs-are-typed-unions",
+    "code-managed-workflows-are-read-only",
+    "post-run-metrics-carry-the-message-version",
+    "facade-is-the-only-way-in"
+  ],
+  "sourceNotes": [
+    "680 human review comments from 206 PRs; mayteio (299), dmarchuk (140) and meikelmosby (87) dominate. Many human-account comments are agent-written replies to bot findings (Claude Code, talyn.dev); they were used as evidence of the rule the author accepted, not as independent reviewers.",
+    "About 190 'Fixed in / Thanks / LGTM' replies and one-off findings (UI copy, layout nits, SES metric math, rrule picker state, papaparse pinning) were ignored unless the same class recurred across PRs.",
+    "Of 1518 bot comments (posthog 663, greptile 367, coderabbit 152, stamphog 95, veria 92), a handful were cited where they corroborated a human rule: secret masking, base_updated_at fencing, person:read scopes, blast-radius review.",
+    "Code checks at 57ca357 found no workflows-specific semgrep or oxlint rules; most cross-language invariants (action types, row-scoped triggers, durations, trigger eligibility) are held by 'Keep in sync' comments, and products.workflows has no tach interface block.",
+    "The 12 session turns are mostly workflows-as-code planning; one turn that was mostly a pasted teammate Slack message was not quoted, and only the read-only code-managed rule came from sessions.",
+    "Scope: `products/workflows` plus `nodejs/src/cdp/services/hogflows`, the workflow runtime. CODEOWNERS gives team-workflows all of `nodejs/src/cdp`; the rest of CDP (destinations, hog functions) was left out to keep the draft about workflows.",
+    "Sessions: T3 threads that run Claude also write the Claude Code store, so the same turn shows up twice and is counted once. Codex subagent sessions and Claude Code sidechains were skipped, but a T3 or Claude session an orchestrator started can still slip in, so every cited session quote was checked by hand to be Michael's own words.",
+    "Jev on the AI gateway allowed 5 requests a minute, so it only classified session turns (5 per call). Review comments went to the Opus clustering pass unfiltered.",
+    "Shape: PostHog's internal Coherence discussion (@daniloc and Marce Coll) argued for a project glossary and theory-first development, with a THEORY.md of vocabulary, abstractions, invariants, boundaries, and non-goals, and for component roles that carry guarantees. The ladder is Coherence's: convention, totality-checked, enshrined.",
+    "Counts: an occurrence is one PR or session. Independent reviewers exclude the PR's own author, so a PR author accepting a bot finding counts as an occurrence but not as a reviewer. Authorless reviews (deleted accounts, some GitHub Apps) count as bots."
+  ]
+}

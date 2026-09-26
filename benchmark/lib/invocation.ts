@@ -8,17 +8,34 @@ export const architectureServer = { name: "uml-pr-review", url: "http://127.0.0.
 const implementInstruction = "Implement this in the working directory. Do not commit, push, or open a pull request.";
 const planningInstruction = "Use the planning-architecture skill. You have standing approval to lock your plan once it is drafted.";
 const inheritedEnvironment = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "TERM", "LANG", "LC_ALL", "TMPDIR"];
+const blockedPushTarget = "file:///dev/null/pushes-are-blocked-in-benchmark-replays/";
+const githubPushPrefixes = ["git@github.com:", "ssh://git@github.com/", "https://github.com/"];
 const isolatedEnvironment = {
   CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1",
   GH_TOKEN: "blocked-by-benchmark",
-  GH_CONFIG_DIR: "/tmp/bench-gh-config-empty",
   GIT_SSH_COMMAND: "false",
   GIT_TERMINAL_PROMPT: "0",
-  GIT_CONFIG_COUNT: "1",
-  GIT_CONFIG_KEY_0: "remote.origin.pushurl",
-  GIT_CONFIG_VALUE_0: "file:///dev/null/pushes-are-blocked-in-benchmark-replays",
+  ...gitConfigEnvironment(githubPushPrefixes.map((prefix) => [`url.${blockedPushTarget}.pushInsteadOf`, prefix])),
+};
+const githubSandbox = {
+  sandbox: {
+    enabled: true,
+    failIfUnavailable: true,
+    allowUnsandboxedCommands: false,
+    network: { deniedDomains: ["github.com", "*.github.com", "api.github.com", "*.githubusercontent.com"] },
+  },
 };
 const outwardTools = ["Bash(git push:*)", "Bash(gh:*)", "Bash(curl:*api.github.com*)"];
+
+function gitConfigEnvironment(entries: [string, string][]): Record<string, string> {
+  return Object.fromEntries([
+    ["GIT_CONFIG_COUNT", String(entries.length)],
+    ...entries.flatMap(([key, value], index) => [
+      [`GIT_CONFIG_KEY_${index}`, key],
+      [`GIT_CONFIG_VALUE_${index}`, value],
+    ]),
+  ]);
+}
 
 export type Invocation = { command: string[]; prompt: string; env: Record<string, string> };
 
@@ -49,6 +66,8 @@ export function invocationFor(task: Task, arm: ReplayArm, skill: string, environ
       "--output-format",
       "stream-json",
       "--verbose",
+      "--settings",
+      JSON.stringify(githubSandbox),
       "--disallowedTools",
       ...outwardTools,
       "--strict-mcp-config",

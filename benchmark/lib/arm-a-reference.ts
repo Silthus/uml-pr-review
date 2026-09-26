@@ -8,7 +8,7 @@ export type ArmAReference = { kind: "session-answer" | "rebased-pr" | "pull-requ
 export function armAReference(task: Task): ArmAReference {
   const answer = CommitRangeSchema.safeParse(task.sessionAnswerDiff);
   if (answer.success) return { kind: "session-answer", base: answer.data.base, head: answer.data.head };
-  const final = CommitRangeSchema.safeParse(task.diffStat);
-  if (final.success && final.data.head === task.finalHead && final.data.base !== task.baseCommit) return { kind: "rebased-pr", base: final.data.base, head: final.data.head };
+  const final = z.object({ final: CommitRangeSchema }).loose().safeParse(task.diffStat);
+  if (final.success && final.data.final.base !== task.baseCommit) return { kind: "rebased-pr", base: final.data.final.base, head: final.data.final.head };
   return { kind: "pull-request", base: task.baseCommit, head: task.finalHead };
 }

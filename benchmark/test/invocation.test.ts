@@ -36,10 +36,13 @@ describe("replay invocations", () => {
     for (const arm of ["B", "C"] as const) {
       const { command, env } = invocationFor(task, arm, "SKILL", environment);
 
-      expect(env).toMatchObject({ GH_TOKEN: "blocked-by-benchmark", GIT_SSH_COMMAND: "false", GIT_CONFIG_KEY_0: "remote.origin.pushurl" });
-      expect(env.GIT_CONFIG_VALUE_0).toStartWith("file:///dev/null/");
-      expect(command).toContain("Bash(git push:*)");
-      expect(command).toContain("Bash(gh:*)");
+      const sandbox = JSON.parse(flagValue(command, "--settings")!).sandbox;
+      const pushRewrites = Object.entries(env).filter(([key]) => key.startsWith("GIT_CONFIG_VALUE_")).map(([, value]) => value);
+
+      expect(sandbox).toMatchObject({ enabled: true, failIfUnavailable: true, allowUnsandboxedCommands: false });
+      expect(sandbox.network.deniedDomains).toContain("github.com");
+      expect(pushRewrites).toEqual(["git@github.com:", "ssh://git@github.com/", "https://github.com/"]);
+      expect(env).toMatchObject({ GH_TOKEN: "blocked-by-benchmark", GIT_SSH_COMMAND: "false", GIT_CONFIG_COUNT: "3" });
     }
   });
 

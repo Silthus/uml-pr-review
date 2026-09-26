@@ -1,0 +1,14 @@
+bun test v1.4.2 (50a8a8387)
+
+test/explorer/explorer.dom.test.tsx:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'ExplorerApp' not found in module '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a41ec32711057f84a/src/explorer/main.tsx'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [73.00ms]

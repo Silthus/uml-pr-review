@@ -1,0 +1,40 @@
+Red runs of the outside-in tests through createRepositoryIndexer, before the code that makes them pass.
+
+1. `bun test test/architecture/index` before src/architecture/index/ existed:
+
+bun test v1.4.2 (50a8a8387)
+
+test/architecture/index/module-tree.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../../src/architecture/index/index.ts' from '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a03c913c0474be6fe/test/architecture/index/module-tree.test.ts'
+-------------------------------
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [3.00ms]
+
+2. The tsconfig `extends` case against the ported resolver, which (like the prototype) only read files named
+   exactly `tsconfig.json` and so never saw `tsconfig.base.json` where the `paths` live:
+
+test/architecture/index/imports.test.ts:
+134 |   test("resolves tsconfig paths through extends, longest pattern first, and workspace packages by name", () => {
+135 |     expect(importsFrom("web/src/aliases.ts")).toEqual([
+                                                    ^
+error: expect(received).toEqual(expected)
+@@ -4,4 +4,2 @@
+    "web/src/aliases.ts:4 -> packages/ui/src/index.ts static",
+-   "web/src/aliases.ts:1 -> web/lib/format.ts static",
+-   "web/src/aliases.ts:2 -> web/src/scenes/home.tsx static",
+  ]
+- Expected  - 2
++ Received  + 0
+(fail) TypeScript and JavaScript imports > resolves tsconfig paths through extends, longest pattern first, and workspace packages by name [0.04ms]
+150 |   test("counts every import that resolved inside the repository, assets included", () => {
+152 |     expect(payload.stats.imports).toBe(Object.values(resolvedByFile).reduce((sum, count) => sum + count, 0));
+error: expect(received).toBe(expected)
+Expected: 34
+Received: 32
+(fail) unresolved imports > counts every import that resolved inside the repository, assets included [0.36ms]

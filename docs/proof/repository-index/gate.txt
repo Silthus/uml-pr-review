@@ -1,0 +1,7 @@
+
+ 109 pass
+ 0 fail
+ 194 expect() calls
+Ran 109 tests across 9 files. [3.16s]
+$ tsc --noEmit
+typecheck exit 0

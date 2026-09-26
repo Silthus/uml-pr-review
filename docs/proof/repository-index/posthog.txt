@@ -1,0 +1,52 @@
+PostHog at f637db96 (the commit the prototype measured), 18-core Apple Silicon, Bun 1.4.2, 8 workers (min(cores, 8)).
+All runs happen in a temporary worktree; ~/dev/posthog itself is only read.
+
+$ git -C ~/dev/posthog worktree add --detach /tmp/posthog-index-25 HEAD
+
+$ bun scripts/measure-index.ts /tmp/posthog-index-25 --cold
+repository  /private/tmp/posthog-index-25 (posthog) at f637db96f1fc853ea6a83694f02b94ab690bdcaf
+cold        6.53 s  parsed 39028, cache hits 0, failed 0
+warm        0.86 s  parsed 0, cache hits 39028, failed 0  (fresh indexer, cache on disk)
+snapshot    0.25 s  tree 14cef23eb5ea69d71dd081bedb1afb513409326b (clean: equals HEAD's tree)
+real index  byte-identical, git status unchanged
+resolution  99.97 % in-repository (174312 resolved, 57 unresolved)
+modules     6574 (16 top level, 86 products)
+files       41535 files, 166755 file imports, payload 15.0 MB
+
+Dirty worktree: an import appended to products/error_tracking/backend/facade/api.py and an untracked
+products/error_tracking/backend/logic/probe_25.py. The snapshot line is now snapshot plus a re-index of the new tree.
+
+$ bun scripts/measure-index.ts /tmp/posthog-index-25
+repository  /private/tmp/posthog-index-25 (posthog) at f637db96f1fc853ea6a83694f02b94ab690bdcaf
+first       0.86 s  parsed 0, cache hits 39028, failed 0
+warm        0.87 s  parsed 0, cache hits 39028, failed 0  (fresh indexer, cache on disk)
+snapshot    0.80 s  tree 9d7b2137487a24594b30ed555e741d43d360aef7
+real index  byte-identical, git status unchanged
+resolution  99.97 % in-repository (174312 resolved, 57 unresolved)
+modules     6574 (16 top level, 86 products)
+files       41535 files, 166755 file imports, payload 15.0 MB
+
+Cleanup:
+$ git -C ~/dev/posthog worktree remove --force /tmp/posthog-index-25
+$ git -C ~/dev/posthog worktree prune
+$ rm -rf ~/dev/posthog/.git/uml-pr-review
+$ git -C ~/dev/posthog status --porcelain | wc -l    0 (0 before)
+$ git -C ~/dev/posthog worktree list | wc -l         69 (69 before)
+$ git -C ~/dev/posthog rev-parse HEAD                f637db96f1fc853ea6a83694f02b94ab690bdcaf (unchanged)
+
+Compared with the prototype (prototype/repository-index/out/findings.md):
+
+| Measure                        | Prototype                 | Production                 | Bar       |
+|--------------------------------|---------------------------|----------------------------|-----------|
+| Cold, 8 workers                | 5.95 s extraction only    | 6.53 s whole payload       | <= 10 s   |
+| Warm                           | 1.39 s (+ aggregation)    | 0.86 s whole payload       | <= 1.5 s  |
+| Snapshot, clean worktree       | 0.25 s (add -A + write)   | 0.25 s                     | <= 0.5 s  |
+| Blobs parsed cold              | 39,194                    | 39,028                     |           |
+| In-repository resolution       | 174,312 / 57 = 99.97 %    | 174,312 / 57 = 99.97 %     | >= 99.9 % |
+| Modules / top level / products | 6,574 / 16 / 86           | 6,574 / 16 / 86            | 16 / 86   |
+| Files / file imports           | 41,535 / 166,755          | 41,535 / 166,755           |           |
+| Payload                        | 6.7 MB (no names, roles)  | 15.0 MB                    | ~8 MB est.|
+
+Differences: production parses only files that are part of the module tree (no dot-folders, node_modules, or
+symbolic links), hence 166 fewer blobs. The payload carries imported names (6.2 MB of the 15 MB), file roles, and
+the unresolved list, which the prototype's file did not.

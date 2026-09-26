@@ -1,0 +1,157 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/loop-session.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'sessionOptions' not found in module '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a3942f7b2aa4bb28b/coherence/loop/session.ts'.
+-------------------------------
+
+
+test/coherence/loop.test.ts:
+287 |   async function choiceAfter(earlier: LedgerEntry): Promise<Chosen> {
+288 |     return (await step<Chosen>("choose.ts", ["--sense", await freshRuns((sense) => ({ ...sense, maxQuestions: 0 }), [earlier])])).json;
+289 |   }
+290 | 
+291 |   test("a dry run whose branch is gone gives its module back", async () => {
+292 |     expect((await choiceAfter(ledgerEntry({ branch: jobsBranch }))).target.module).toBe(jobs);
+                                                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "products/a/backend/jobs"
+Received: "products/a/backend/store"
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a3942f7b2aa4bb28b/test/coherence/loop.test.ts:292:84)
+(fail) an earlier proposal holds its module only while it is pending > a dry run whose branch is gone gives its module back [18.06ms]
+304 |   test("a draft pull request holds its module while it is open", async () => {
+305 |     expect((await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: openPullRequest }))).target.module).not.toBe(jobs);
+306 |   });
+307 | 
+308 |   test("a draft pull request closed without merging gives its module back", async () => {
+309 |     expect((await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: closedPullRequest }))).target.module).toBe(jobs);
+                                                                                                                    ^
+error: expect(received).toBe(expected)
+
+Expected: "products/a/backend/jobs"
+Received: "products/a/backend/store"
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a3942f7b2aa4bb28b/test/coherence/loop.test.ts:309:111)
+(fail) an earlier proposal holds its module only while it is pending > a draft pull request closed without merging gives its module back [18.01ms]
+426 |       const create = (await gh.calls()).find(({ args }) => args[0] === "pr" && args[1] === "create" && args.includes(`me:${change.branch}`));
+427 | 
+428 |       expect(proposed.json).toMatchObject({ mode: "draft", pullRequest: "https://github.com/acme/app/pull/4242" });
+429 |       expect(await forkBranches()).toContain(change.branch);
+430 |       expect(create?.args).toEqual(["pr", "create", "--draft", "--repo", "acme/app", "--base", "main", "--head", `me:${change.branch}`, "--title", "Pin dispatch with characterisation tests", "--body-file", join(change.iteration, "pr.md")]);
+431 |       expect((await step<{ entry: LedgerEntry }>("record.ts", ["--iteration", change.iteration, "--outcome", "proposed"])).json.entry).toMatchObject({ mode: "draft", pullRequest: draftPullRequest });
+                                                                                                                                             ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "mode": "draft",
++   "at": "2026-09-26T22:24:06.570Z",
++   "branch": "coherence/a/backend-jobs-characterisation-tests",
++   "indexDelta": {
++     "composite": {
++       "after": 59.4,
++       "before": 58.9,
++     },
++     "dimensions": {
++       "architecture": {
++         "after": 59.7,
++         "before": 59.7,
++       },
++       "complexity": {
++         "after": 49.6,
++         "before": 49.6,
++       },
++       "smells": {
++         "after": 75,
++         "before": 75,
++       },
++       "tests": {
++         "after": 55.6,
++         "before": 53.1,
++       },
++     },
++     "scope": "products/a/backend",
++   },
++   "module": "products/a/backend/jobs",
++   "note": null,
++   "outcome": "proposed",
+    "pullRequest": "https://github.com/acme/app/pull/4242",
++   "questions": [],
++   "scope": "products/a",
++   "sense": "2026-09-26T22:24:06.048Z",
++   "step": "characterisation-tests",
++   "verification": "mechanical",
+  }
+
+- Expected  - 1
++ Received  + 35
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a3942f7b2aa4bb28b/test/coherence/loop.test.ts:431:136)
+(fail) the dry-run and draft switch > --draft pushes the branch to the fork and opens a draft pull request on upstream [552.92ms]
+440 |       await step("propose.ts", ["--iteration", change.iteration, "--summary", await summaryFile()]);
+441 |       await step("record.ts", ["--iteration", change.iteration, "--outcome", "proposed"]);
+442 | 
+443 |       await step("propose.ts", ["--iteration", change.iteration, "--summary", await summaryFile(), "--draft"]);
+444 | 
+445 |       expect(await readLedgerOf(change.iteration)).toEqual([expect.objectContaining({ module: "products/a/backend/jobs", outcome: "proposed", mode: "draft", pullRequest: draftPullRequest })]);
+                                                         ^
+error: expect(received).toEqual(expected)
+
+@@ -1,7 +1,39 @@
+  [
+-   ObjectContaining {
+-     "mode": "draft",
++   {
++     "at": "2026-09-26T22:24:06.977Z",
++     "branch": "coherence/a/backend-jobs-characterisation-tests",
++     "indexDelta": {
++       "composite": {
++         "after": 59.4,
++         "before": 58.9,
++       },
++       "dimensions": {
++         "architecture": {
++           "after": 59.7,
++           "before": 59.7,
++         },
++         "complexity": {
++           "after": 49.6,
++           "before": 49.6,
++         },
++         "smells": {
++           "after": 75,
++           "before": 75,
++         },
++         "tests": {
++           "after": 55.6,
++           "before": 53.1,
++         },
++       },
++       "scope": "products/a/backend",
++     },
+      "module": "products/a/backend/jobs",
++     "note": null,
+      "outcome": "proposed",
+-     "pullRequest": "https://github.com/acme/app/pull/4242",
++     "pullRequest": "2026-09-26/backend-jobs-characterisation-tests/pr.md",
++     "questions": [],
++     "scope": "products/a",
++     "sense": "2026-09-26T22:24:06.601Z",
++     "step": "characterisation-tests",
++     "verification": "mechanical",
+    },
+
+- Expected  - 3
++ Received  + 35
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a3942f7b2aa4bb28b/test/coherence/loop.test.ts:445:52)
+(fail) the dry-run and draft switch > promoting a recorded dry run with --draft puts the pull request in its ledger entry [514.10ms]
+
+ 16 pass
+ 5 fail
+ 1 error
+ 51 expect() calls
+Ran 21 tests across 2 files. [5.51s]

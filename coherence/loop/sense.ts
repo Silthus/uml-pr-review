@@ -7,7 +7,7 @@ import { githubOpenPullRequests } from "../signals/pull-requests.ts";
 import { activePullRequestDays, rankTargets } from "../signals/rank.ts";
 import { readSignalReport } from "../signals/report.ts";
 import { emit, today, usageError, wholeNumber } from "./cli.ts";
-import { defaultRunsDirectory, scopeName, senseFile, writeJson, type Sense } from "./state.ts";
+import { defaultMaxQuestions, defaultRunsDirectory, scopeName, senseFile, writeJson, type Sense } from "./state.ts";
 
 const usage =
   "Usage: bun coherence/loop/sense.ts --repo <path> --scope <path> [--base <ref>] [--fetch] [--budget <n>] [--max-questions <n>] [--posthog-signals <SignalReport.json>] [--rules <rules.json>] [--github <owner/name>] [--active-days <n>] [--runs <dir>]";
@@ -22,7 +22,7 @@ const { values } = parseArgs({
     base: { type: "string" },
     fetch: { type: "boolean", default: false },
     budget: { type: "string", default: "1" },
-    "max-questions": { type: "string", default: "2" },
+    "max-questions": { type: "string", default: String(defaultMaxQuestions) },
     "posthog-signals": { type: "string" },
     rules: { type: "string" },
     github: { type: "string" },

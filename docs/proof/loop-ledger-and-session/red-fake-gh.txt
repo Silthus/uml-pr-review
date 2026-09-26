@@ -1,0 +1,22 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/loop-fake-gh.test.ts:
+12 |       await chmod(gh.executable, 0o644);
+13 | 
+14 |       const child = Bun.spawn(["bun", inbox, "list"], { stdout: "pipe", stderr: "pipe", env: gh.env });
+15 |       const [stdout, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
+16 | 
+17 |       expect(code).toBe(1);
+                        ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a3942f7b2aa4bb28b/test/coherence/loop-fake-gh.test.ts:17:20)
+(fail) a run against the fake gh > cannot reach GitHub even when the fake stops being executable and the real gh runs instead [869.42ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [878.00ms]

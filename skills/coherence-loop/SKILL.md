@@ -16,7 +16,7 @@ Run every command from the root of this repository. The request names:
 
 Get a signals report. When PostHog MCP tools are available, follow `coherence/signals/export-ci.md` for the scope and save the report to `coherence/signals/reports/<scope name>-ci-<date>.json`. Otherwise use the newest report for the scope in `coherence/signals/reports/`, or none.
 
-Run `bun coherence/loop/sense.ts --repo <repository> --scope <scope> --budget <n>`, adding `--posthog-signals <report>` and `--fetch` as the request says.
+Run `bun coherence/loop/sense.ts --repo <repository> --scope <scope> --budget <n>`, adding `--posthog-signals <report>`, `--fetch`, `--runs`, `--active-days`, and `--max-questions` as the request says.
 
 Done when it prints a `sense` path and a ranked `targets` list.
 

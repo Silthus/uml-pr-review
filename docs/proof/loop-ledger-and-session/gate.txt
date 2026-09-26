@@ -1,0 +1,6 @@
+ 461 pass
+ 0 fail
+Ran 461 tests across 48 files. [31.55s]
+bun test exit 0
+$ tsc --noEmit
+typecheck exit 0

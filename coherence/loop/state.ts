@@ -5,6 +5,7 @@ import type { TargetReport } from "../signals/rank.ts";
 import type { Verification } from "./verification.ts";
 
 export const defaultRunsDirectory = join(import.meta.dir, "..", "runs");
+export const defaultMaxQuestions = 2;
 
 export const QuestionSchema = z.object({
   number: z.number().int(),

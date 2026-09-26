@@ -1,0 +1,17 @@
+{
+  "repository": "/Users/mreichenbach/dev/posthog",
+  "base": "57ca357730843205c2d659098ac8e4c5e07a6698",
+  "proposals": [
+    {
+      "module": "products/workflows/frontend/Workflows/hogflows/steps",
+      "mode": "dry-run",
+      "branch": "coherence/workflows/frontend-workflows-hogflows-steps-characterisation-tests"
+    },
+    {
+      "module": "products/workflows/frontend/Workflows",
+      "mode": "dry-run",
+      "branch": "coherence/workflows/frontend-workflows-characterisation-tests"
+    }
+  ],
+  "held": []
+}

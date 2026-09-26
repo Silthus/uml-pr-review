@@ -56,6 +56,12 @@ const rules = {
 const characterisationTest = "from products.a.backend.jobs.runner import dispatch\n\n\ndef test_dispatch_returns_the_matching_branch():\n    assert dispatch(3) == 3\n\n\ndef test_dispatch_falls_back_to_minus_one():\n    assert dispatch(99) == -1\n";
 const summary = "## What changed\n\nCharacterisation tests pin `dispatch`.\n\n## Review in 2 minutes\n\nRead the two tests; they call the public function only.\n";
 
+const openPullRequest = "https://github.com/acme/app/pull/11";
+const closedPullRequest = "https://github.com/acme/app/pull/12";
+const mergedPullRequest = "https://github.com/acme/app/pull/13";
+const mergedAfterTheBase = "https://github.com/acme/app/pull/14";
+const draftPullRequest = "https://github.com/acme/app/pull/4242";
+
 let repository: TemporaryRepository;
 let fork: string;
 let scratch: string;
@@ -102,7 +108,26 @@ function question(overrides: Partial<Question>): Question {
 }
 
 function ledgerEntry(overrides: Partial<LedgerEntry>): LedgerEntry {
-  return { at: new Date().toISOString(), sense: "earlier", scope: "products/a", module: "products/a/backend/jobs", step: "characterisation-tests", verification: "mechanical", outcome: "proposed", indexDelta: null, questions: [], branch: null, pullRequest: null, note: null, ...overrides };
+  return {
+    at: new Date().toISOString(),
+    sense: "earlier",
+    scope: "products/a",
+    module: "products/a/backend/jobs",
+    step: "characterisation-tests",
+    verification: "mechanical",
+    outcome: "proposed",
+    mode: "dry-run",
+    indexDelta: null,
+    questions: [],
+    branch: "coherence/a/backend-jobs-characterisation-tests",
+    pullRequest: `${day}/backend-jobs-characterisation-tests/pr.md`,
+    note: null,
+    ...overrides,
+  };
+}
+
+async function readLedgerOf(iteration: string): Promise<LedgerEntry[]> {
+  return (await Bun.file(join(iteration, "..", "..", "ledger.jsonl")).text()).split("\n").filter(Boolean).map((line) => JSON.parse(line) as LedgerEntry);
 }
 
 type Chosen = { iteration: string; action: "act" | "ask" | "done"; reason?: string; target: Iteration["target"]; answer?: Question | null; question?: Iteration["question"] };
@@ -145,7 +170,15 @@ beforeAll(async () => {
   await repository.git("remote", "add", "upstream", "https://github.com/acme/app.git");
   await repository.git("config", `url.${fork}.insteadOf`, "https://github.com/me/app.git");
   await writeFile(join(scratch, "rules.json"), JSON.stringify(rules));
-  gh = await fakeGh();
+  gh = await fakeGh({
+    pullRequestStates: {
+      [openPullRequest]: { state: "OPEN", mergeCommit: null },
+      [draftPullRequest]: { state: "OPEN", mergeCommit: null },
+      [closedPullRequest]: { state: "CLOSED", mergeCommit: null },
+      [mergedPullRequest]: { state: "MERGED", mergeCommit: { oid: (await repository.git("rev-parse", "HEAD")).trim() } },
+      [mergedAfterTheBase]: { state: "MERGED", mergeCommit: { oid: "f".repeat(40) } },
+    },
+  });
   const sensed = await step<{ sense: string; error?: string }>("sense.ts", ["--repo", repository.dir, "--scope", "products/a", "--base", "main", "--github", "acme/app", "--rules", join(scratch, "rules.json"), "--runs", join(scratch, "runs")]);
   if (sensed.code !== 0) throw new Error(`sense failed: ${sensed.json.error}`);
   senseTemplate = (await Bun.file(sensed.json.sense).json()) as Sense;
@@ -221,12 +254,10 @@ describe("choosing the target", () => {
     expect(choice).toMatchObject({ action: "act", target: { module: "products/a/backend/jobs" } });
   });
 
-  test("moves past a module with an open question and a step proposed before", async () => {
-    const sensePath = await freshRuns((sense) => ({ ...sense, questions: [question({})] }), [ledgerEntry({})]);
-    const choice = (await step<Chosen>("choose.ts", ["--sense", sensePath])).json;
+  test("moves past a module with an open question", async () => {
+    const choice = (await step<Chosen>("choose.ts", ["--sense", await freshRuns((sense) => ({ ...sense, questions: [question({})] }))])).json;
 
-    expect(choice.action).toBe("act");
-    expect(["products/a/backend/core", "products/a/backend/jobs"]).not.toContain(choice.target.module);
+    expect(choice).toMatchObject({ action: "act", target: { module: "products/a/backend/jobs" } });
   });
 
   test(
@@ -246,6 +277,46 @@ describe("choosing the target", () => {
     const choice = (await step<Chosen>("choose.ts", ["--sense", await freshRuns((sense) => ({ ...sense, maxQuestions: 0 }))])).json;
 
     expect(choice).toMatchObject({ action: "act", target: { module: "products/a/backend/jobs", step: "characterisation-tests" } });
+  });
+});
+
+describe("an earlier proposal holds its module only while it is pending", () => {
+  const jobs = "products/a/backend/jobs";
+  const jobsBranch = "coherence/a/backend-jobs-characterisation-tests";
+
+  async function choiceAfter(earlier: LedgerEntry): Promise<Chosen> {
+    return (await step<Chosen>("choose.ts", ["--sense", await freshRuns((sense) => ({ ...sense, maxQuestions: 0 }), [earlier])])).json;
+  }
+
+  test("a dry run whose branch is gone gives its module back", async () => {
+    expect((await choiceAfter(ledgerEntry({ branch: jobsBranch }))).target.module).toBe(jobs);
+  });
+
+  test("a dry run holds its module while its branch exists", async () => {
+    await repository.git("branch", jobsBranch, "main");
+    try {
+      expect((await choiceAfter(ledgerEntry({ branch: jobsBranch }))).target.module).not.toBe(jobs);
+    } finally {
+      await repository.git("branch", "-D", jobsBranch);
+    }
+  });
+
+  test("a draft pull request holds its module while it is open", async () => {
+    expect((await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: openPullRequest }))).target.module).not.toBe(jobs);
+  });
+
+  test("a draft pull request closed without merging gives its module back", async () => {
+    expect((await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: closedPullRequest }))).target.module).toBe(jobs);
+  });
+
+  test("a merged pull request marks its step done, so the module's next recipe step is eligible", async () => {
+    const choice = await choiceAfter(ledgerEntry({ step: "facade", verification: "boundary", mode: "draft", pullRequest: mergedPullRequest }));
+
+    expect(choice).toMatchObject({ action: "act", target: { module: jobs, step: "characterisation-tests" } });
+  });
+
+  test("a merged pull request holds its module until the sensed base contains the merge", async () => {
+    expect((await choiceAfter(ledgerEntry({ mode: "draft", pullRequest: mergedAfterTheBase }))).target.module).not.toBe(jobs);
   });
 });
 
@@ -357,6 +428,21 @@ describe("the dry-run and draft switch", () => {
       expect(proposed.json).toMatchObject({ mode: "draft", pullRequest: "https://github.com/acme/app/pull/4242" });
       expect(await forkBranches()).toContain(change.branch);
       expect(create?.args).toEqual(["pr", "create", "--draft", "--repo", "acme/app", "--base", "main", "--head", `me:${change.branch}`, "--title", "Pin dispatch with characterisation tests", "--body-file", join(change.iteration, "pr.md")]);
+      expect((await step<{ entry: LedgerEntry }>("record.ts", ["--iteration", change.iteration, "--outcome", "proposed"])).json.entry).toMatchObject({ mode: "draft", pullRequest: draftPullRequest });
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "promoting a recorded dry run with --draft puts the pull request in its ledger entry",
+    async () => {
+      const change = await verifiedChange();
+      await step("propose.ts", ["--iteration", change.iteration, "--summary", await summaryFile()]);
+      await step("record.ts", ["--iteration", change.iteration, "--outcome", "proposed"]);
+
+      await step("propose.ts", ["--iteration", change.iteration, "--summary", await summaryFile(), "--draft"]);
+
+      expect(await readLedgerOf(change.iteration)).toEqual([expect.objectContaining({ module: "products/a/backend/jobs", outcome: "proposed", mode: "draft", pullRequest: draftPullRequest })]);
     },
     toolTimeoutMs,
   );

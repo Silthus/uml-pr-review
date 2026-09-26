@@ -72,10 +72,12 @@ function fakeServer({ initialPlans = [plan], conformance = null }: { initialPlan
   const pendingWrites: ((response: Response) => void)[] = [];
   const heldReads: (() => void)[] = [];
   let holding = false;
+  let failing = false;
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
     if (init?.method === "POST") return new Promise<Response>((resolve) => pendingWrites.push(resolve));
     if (holding) await new Promise<void>((resolve) => heldReads.push(resolve));
+    if (failing) throw new Error("connection lost");
     if (url.startsWith("/api/architecture")) return Response.json(payload);
     if (url.startsWith("/api/plans?")) return Response.json([...plans.values()].map(summaryOf));
     const requested = plans.get(url.slice("/api/plans/".length).split("?")[0] ?? "");
@@ -93,6 +95,9 @@ function fakeServer({ initialPlans = [plan], conformance = null }: { initialPlan
     },
     holdReads() {
       holding = true;
+    },
+    failReads(value: boolean) {
+      failing = value;
     },
     async releaseReads() {
       holding = false;
@@ -164,6 +169,46 @@ describe("explorer live state", () => {
     await act(() => server.releaseReads());
 
     expect(shownRevision(view)).toBe("Architecture plan · revision 3");
+  });
+
+  test("a resync that overtakes a plan load still leaves the explorer ready", async () => {
+    const server = fakeServer({ initialPlans: [plan, secondPlan] });
+    const view = await renderExplorer();
+
+    server.holdReads();
+    await act(async () => {
+      fireEvent.change(view.getByRole("combobox", { name: "Plan" }), { target: { value: secondPlan.id } });
+    });
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+    await act(() => server.releaseReads());
+
+    expect(view.getByRole("heading", { name: secondPlan.title })).toBeTruthy();
+    await waitFor(() => expect(view.getByLabelText("Architecture canvas").getAttribute("aria-busy")).toBe("false"));
+  });
+
+  test("a failed resync shows its error until the next resync succeeds", async () => {
+    const server = fakeServer();
+    const view = await renderExplorer();
+
+    server.failReads(true);
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+    expect((await view.findByRole("alert")).textContent).toContain("connection lost");
+
+    server.failReads(false);
+    await act(async () => FakeEventSource.latest.fail());
+    await act(async () => FakeEventSource.latest.open());
+    await waitFor(() => expect(view.queryByRole("alert")).toBeNull());
+  });
+
+  test("a plan id that no longer exists falls back to the first plan", async () => {
+    fakeServer();
+    history.replaceState(null, "", `?path=${encodeURIComponent(root)}&plan=deleted-plan`);
+    const view = render(<ExplorerApp />);
+
+    expect(await view.findByText("Architecture plan · revision 1")).toBeTruthy();
+    expect((view.getByRole("combobox", { name: "Plan" }) as HTMLSelectElement).value).toBe(plan.id);
   });
 
   test("choosing another plan opens it, and choosing no plan closes the panel", async () => {
@@ -255,7 +300,7 @@ describe("explorer live state", () => {
     expect(provenance.textContent).toContain("conforming");
     expect(provenance.querySelector("time")?.getAttribute("datetime")).toBe(at);
     expect(provenance.textContent).toContain("revision 2");
-    expect(provenance.textContent).toContain(root);
+    expect(provenance.textContent).toContain(`This explorer shows ${root}.`);
     expect(panel.getByRole("button", { name: /^modify app/ }).textContent).not.toContain("conforming");
   });
 

@@ -19,7 +19,7 @@ import { useViewState } from "./state/use-view-state.ts";
 
 const emptyGraph: VisibleGraph = { mode: "map", nodes: [], edges: [] };
 
-function isNewerHead(payload: ArchitecturePayload, index: { root: string; commit: string | null; tree: string }): boolean {
+function indexesAnotherTree(payload: ArchitecturePayload, index: { root: string; commit: string | null; tree: string }): boolean {
   return index.root === payload.repository.root && index.commit !== null && index.tree !== payload.tree;
 }
 
@@ -50,7 +50,7 @@ export function ExplorerApp() {
       else view.selectSeam(target.from, target.to);
     },
     reindex: (index) => {
-      if (repository.state && isNewerHead(repository.state.payload, index)) repository.refreshArchitecture();
+      if (repository.state && indexesAnotherTree(repository.state.payload, index)) repository.refreshArchitecture();
     },
     resync: repository.resyncPlans,
   });

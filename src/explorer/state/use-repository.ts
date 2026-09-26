@@ -67,22 +67,31 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
     setChoice(nextChoice);
   }, []);
 
-  const fetchPlansInto = useCallback(
-    async (client: ExplorerApi, base: () => RepositoryState | null): Promise<boolean> => {
-      const request = beginRequest();
-      const loaded = await client.loadPlans(choiceRef.current === undefined ? stateRef.current?.plan?.id : choiceRef.current);
-      const current = base();
-      if (!current || !appliesFetched("plans", request)) return false;
-      commit(acceptPlans(current, loaded, choiceRef.current));
-      return true;
-    },
-    [beginRequest, appliesFetched, commit],
-  );
-
   const failWith = useCallback((caught: unknown) => {
     setLoadState("error");
     setError(messageOf(caught));
   }, []);
+
+  const settle = useCallback(() => {
+    setLoadState("ready");
+    setError(null);
+  }, []);
+
+  const fetchPlansInto = useCallback(
+    async (client: ExplorerApi, base: () => RepositoryState | null): Promise<void> => {
+      const request = beginRequest();
+      try {
+        const loaded = await client.loadPlans(choiceRef.current === undefined ? stateRef.current?.plan?.id : choiceRef.current);
+        const current = base();
+        if (!current || !appliesFetched("plans", request)) return;
+        commit(acceptPlans(current, loaded, choiceRef.current));
+        settle();
+      } catch (caught) {
+        if (stillWanted(request)) failWith(caught);
+      }
+    },
+    [beginRequest, appliesFetched, commit, settle, stillWanted, failWith],
+  );
 
   const load = useCallback(() => {
     if (!api || !path) return;
@@ -92,12 +101,9 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
     const architecture = stateRef.current ? Promise.resolve(stateRef.current.payload) : api.loadArchitecture();
     architecture
       .then((payload) => {
-        if (!appliesFetched("architecture", request)) return false;
+        if (!appliesFetched("architecture", request)) return;
         rememberRepository(path);
         return fetchPlansInto(api, () => stateRef.current ?? { path, payload, plans: [], plan: null, conformance: null });
-      })
-      .then((applied) => {
-        if (applied) setLoadState("ready");
       })
       .catch((caught: unknown) => {
         if (stillWanted(request)) failWith(caught);
@@ -107,9 +113,8 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
   useEffect(load, [api, choice]);
 
   const resyncPlans = useCallback(() => {
-    if (!api) return;
-    fetchPlansInto(api, () => stateRef.current).catch(failWith);
-  }, [api, fetchPlansInto, failWith]);
+    if (api) void fetchPlansInto(api, () => stateRef.current);
+  }, [api, fetchPlansInto]);
 
   const refreshArchitecture = useCallback(() => {
     if (!api) return;
@@ -118,10 +123,14 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
       .loadArchitecture()
       .then((payload) => {
         const current = stateRef.current;
-        if (current && appliesFetched("architecture", request)) commit(acceptArchitecture(current, payload));
+        if (!current || !appliesFetched("architecture", request)) return;
+        commit(acceptArchitecture(current, payload));
+        settle();
       })
-      .catch(failWith);
-  }, [api, beginRequest, appliesFetched, commit, failWith]);
+      .catch((caught: unknown) => {
+        if (stillWanted(request)) failWith(caught);
+      });
+  }, [api, beginRequest, appliesFetched, commit, settle, stillWanted, failWith]);
 
   const accept = useCallback(
     (reconcile: (current: RepositoryState) => RepositoryState): boolean => {
@@ -186,7 +195,7 @@ export function useRepository(initialPath: string | null, initialPlanId: PlanCho
 
 function staleMessage(plan: ArchitecturePlan | undefined): string {
   const revision = plan ? `revision ${plan.revision}` : "a newer revision";
-  return `Not saved: the plan is now at ${revision}. Check it, then submit again.`;
+  return `The plan is now at ${revision}; your change was not applied. Review it, then try again.`;
 }
 
 function messageOf(caught: unknown): string {

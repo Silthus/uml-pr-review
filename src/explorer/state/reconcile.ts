@@ -10,7 +10,7 @@ export function acceptArchitecture(state: RepositoryState, payload: Architecture
 export function acceptPlans(state: RepositoryState, loaded: PlansSnapshot, choice: PlanChoice): RepositoryState {
   const merged = { ...state, plans: mergeSummaries(state.plans, loaded.plans) };
   if (!loaded.plan) return choice === null ? { ...merged, plan: null, conformance: null } : merged;
-  const withPlan = acceptPlan(merged, loaded.plan, choice);
+  const withPlan = acceptPlan(merged, loaded.plan, availableChoice(choice, loaded.plans));
   return loaded.conformance ? acceptStoredCheck(withPlan, loaded.conformance) : withPlan;
 }
 
@@ -27,6 +27,10 @@ export function acceptStoredCheck(state: RepositoryState, result: ConformanceRes
 
 export function acceptLiveCheck(state: RepositoryState, result: ConformanceResult): RepositoryState {
   return result.worktree === state.payload.repository.root ? acceptStoredCheck(state, result) : state;
+}
+
+function availableChoice(choice: PlanChoice, plans: PlanSummary[]): PlanChoice {
+  return typeof choice === "string" && !plans.some((summary) => summary.id === choice) ? undefined : choice;
 }
 
 function opensPlan(state: RepositoryState, plan: ArchitecturePlan, choice: PlanChoice): boolean {

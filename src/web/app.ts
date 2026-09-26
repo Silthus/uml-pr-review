@@ -15,6 +15,7 @@ const view = {
   repositoryPath: element<HTMLInputElement>("repository-path"),
   chooseFolder: element<HTMLButtonElement>("choose-folder"),
   repositoryError: element("repository-error"),
+  architectureLink: element<HTMLAnchorElement>("architecture-link"),
   recents: element("recent-repositories"),
   pulls: element("pulls"),
   repositoryName: element("repository-name"),
@@ -55,7 +56,7 @@ function navigate(route: Route) {
   if (route.path) params.set("path", route.path);
   if (route.pr) params.set("pr", String(route.pr));
   const search = params.size ? `?${params}` : "";
-  if (search !== location.search) history.pushState(null, "", `/${search}`);
+  if (search !== location.search) history.pushState(null, "", `/pulls${search}`);
   void render();
 }
 
@@ -87,6 +88,7 @@ function showPicker() {
   view.pick.hidden = false;
   document.title = repository ? `${repository.repo} · PR Review Diagram` : "PR Review Diagram";
   renderRecents();
+  view.architectureLink.href = repository ? `/?path=${encodeURIComponent(repository.root)}` : "/";
   view.pulls.hidden = !repository;
   if (repository) {
     view.repositoryName.textContent = repository.repo;
@@ -121,7 +123,7 @@ function renderPulls() {
 function pullItem(pull: PullRequestSummary): HTMLLIElement {
   const item = document.createElement("li");
   const link = document.createElement("a");
-  link.href = `/?path=${encodeURIComponent(repository!.root)}&pr=${pull.number}`;
+  link.href = `/pulls?path=${encodeURIComponent(repository!.root)}&pr=${pull.number}`;
   link.addEventListener("click", (event) => {
     if (event.metaKey || event.ctrlKey) return;
     event.preventDefault();

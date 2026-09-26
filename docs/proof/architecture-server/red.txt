@@ -1,0 +1,28 @@
+$ bun test test/architecture/mcp/scenario.test.ts
+bun test v1.4.2 (50a8a8387)
+
+test/architecture/mcp/scenario.test.ts:
+2447 | 			})
+2448 | 		};
+2449 | 	}
+2450 | 	if (outcome.status >= 500) return {
+2451 | 		kind: "error",
+2452 | 		error: new SdkHttpError(SdkErrorCode.EraNegotiationFailed, `Version negotiation failed: the server answered the probe with HTTP ${outcome.status}`, {
+                ^
+SdkHttpError: Version negotiation failed: the server answered the probe with HTTP 501
+ data: {
+  status: 501,
+  statusText: "Not Implemented",
+  text: "not implemented",
+},
+ code: "ERA_NEGOTIATION_FAILED"
+
+      at classifyHttpError (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ae8f0b3334c470268/node_modules/@modelcontextprotocol/client/dist/index.mjs:2452:10)
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ae8f0b3334c470268/node_modules/@modelcontextprotocol/client/dist/index.mjs:2773:20)
+      at async negotiateEra (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ae8f0b3334c470268/node_modules/@modelcontextprotocol/client/dist/index.mjs:2804:18)
+      at async _connectNegotiated (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ae8f0b3334c470268/node_modules/@modelcontextprotocol/client/dist/index.mjs:3344:44)
+(fail) an agent plans a change, hears the human, and implements it until the plan conforms [3.82ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [88.00ms]

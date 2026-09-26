@@ -1,0 +1,123 @@
+{
+  "status": "graded",
+  "model": "typesafe-ai/jev",
+  "gradedAt": "2026-09-26T15:10:34.499Z",
+  "runs": {
+    "final": {
+      "files": [
+        {
+          "subject": "ee/hogai/context/entity_search/context.py",
+          "answers": {
+            "readability": 0.65,
+            "singleResponsibility": 0.59,
+            "namingClarity": 0.86,
+            "errorHandling": 0.76,
+            "idiomaticFit": 0.83
+          }
+        },
+        {
+          "subject": "ee/hogai/tools/search.py",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.86,
+            "namingClarity": 0.96,
+            "errorHandling": 0.95,
+            "idiomaticFit": 0.99
+          }
+        },
+        {
+          "subject": "products/workflows/backend/facade/api.py",
+          "answers": {
+            "readability": 0.72,
+            "singleResponsibility": 0.8,
+            "namingClarity": 0.83,
+            "errorHandling": 0.79,
+            "idiomaticFit": 0.8
+          }
+        },
+        {
+          "subject": "products/workflows/backend/facade/testing.py",
+          "answers": {
+            "readability": 1,
+            "singleResponsibility": 0.96,
+            "namingClarity": 0.96,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.82
+          }
+        },
+        {
+          "subject": "tach.toml",
+          "answers": {
+            "readability": 0.98,
+            "singleResponsibility": 0.92,
+            "namingClarity": 0.99,
+            "errorHandling": 0.98,
+            "idiomaticFit": 0.95
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "ee/hogai/context/entity_search/test/test_context.py",
+          "answers": {
+            "assertsBehaviour": 0.85,
+            "edgeCases": 0.73
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.91,
+          "staysOnTask": 0.9,
+          "explicitInterfaces": 0.89
+        }
+      },
+      "fileQuality": 87.4,
+      "score": 87.1
+    },
+    "first-push": {
+      "files": [
+        {
+          "subject": "ee/hogai/context/entity_search/context.py",
+          "answers": {
+            "readability": 0.87,
+            "singleResponsibility": 0.84,
+            "namingClarity": 0.97,
+            "errorHandling": 0.76,
+            "idiomaticFit": 0.98
+          }
+        },
+        {
+          "subject": "ee/hogai/tools/search.py",
+          "answers": {
+            "readability": 0.97,
+            "singleResponsibility": 0.88,
+            "namingClarity": 0.97,
+            "errorHandling": 0.94,
+            "idiomaticFit": 0.99
+          }
+        }
+      ],
+      "tests": [
+        {
+          "subject": "ee/hogai/context/entity_search/test/test_context.py",
+          "answers": {
+            "assertsBehaviour": 0.88,
+            "edgeCases": 0.58
+          }
+        }
+      ],
+      "diff": {
+        "subject": "diff",
+        "answers": {
+          "testsCoverBehaviour": 0.92,
+          "staysOnTask": 0.96,
+          "explicitInterfaces": 0.78
+        }
+      },
+      "fileQuality": 91.7,
+      "score": 88.6
+    }
+  }
+}

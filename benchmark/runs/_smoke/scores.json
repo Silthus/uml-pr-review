@@ -1,0 +1,103 @@
+{
+  "pr": "_smoke",
+  "baseCommit": "8872766beaada4ca8611d8a501b573c19fdf971e",
+  "scoredAt": "2026-09-26T15:25:15.645Z",
+  "arms": {
+    "B-1": {
+      "arm": "B",
+      "exit": {
+        "reason": "completed",
+        "code": 0
+      },
+      "application": "clean",
+      "files": [
+        "products/workflows/backend/facade/api.py"
+      ],
+      "boundary": {
+        "facadeBypasses": [],
+        "testFacadeBypasses": [],
+        "newCrossProductDependencies": [],
+        "newCycles": [],
+        "newUnresolvedImports": []
+      },
+      "focus": {
+        "filesChanged": 1,
+        "linesAdded": 4,
+        "linesRemoved": 0,
+        "modulesTouched": 1,
+        "tachModulesTouched": 1,
+        "newCrossModuleEdges": 0,
+        "testsAdded": 0
+      },
+      "build": {
+        "pythonFiles": 1,
+        "pyCompileFailures": [],
+        "ruff": {
+          "available": true,
+          "violations": []
+        },
+        "typescript": "skipped: PostHog's tsc run takes minutes on the whole frontend, too slow per arm"
+      },
+      "staticQuality": {
+        "complexity": {
+          "changedFunctions": 1,
+          "maxCcn": 1,
+          "meanCcn": 1,
+          "overTen": 0,
+          "ccnDelta": 1
+        },
+        "changedFunctions": [
+          {
+            "file": "products/workflows/backend/facade/api.py",
+            "name": "workflows_product_name",
+            "signature": "workflows_product_name( )",
+            "ccn": 1,
+            "nloc": 2,
+            "params": 0,
+            "tokens": 8
+          }
+        ],
+        "duplication": {
+          "clones": 0,
+          "duplicatedLines": 0,
+          "percentage": 0
+        }
+      },
+      "tests": {
+        "testLinesAdded": 0,
+        "productionLinesAdded": 4,
+        "testRatio": 0,
+        "subjects": [
+          "workflows_product_name"
+        ],
+        "unreferenced": [
+          "workflows_product_name"
+        ],
+        "referenceCoverage": 0,
+        "dynamic": {
+          "status": "not run",
+          "reason": "no changed Python test files"
+        }
+      },
+      "hygiene": 100,
+      "focusScore": 100,
+      "alignment": null,
+      "process": {
+        "toolCalls": 2,
+        "edits": 1,
+        "toolCallsBeforeFirstEdit": 1,
+        "secondsBeforeFirstEdit": 10,
+        "architectureToolCalls": 0,
+        "architectureExplorationBeforeEdit": 1,
+        "architectureReasoningBeforeEdit": 0,
+        "firstArchitectureThought": null,
+        "turns": 3,
+        "wallSeconds": 17,
+        "costUsd": 0.0571954
+      }
+    }
+  },
+  "consistency": {
+    "B": null
+  }
+}

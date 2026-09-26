@@ -1,0 +1,12 @@
+diff --git a/products/workflows/backend/facade/api.py b/products/workflows/backend/facade/api.py
+index d35249cf7ad6..4a0a2093a4db 100644
+--- a/products/workflows/backend/facade/api.py
++++ b/products/workflows/backend/facade/api.py
+@@ -30,3 +30,7 @@ def accept_ses_event(delivery: WebhookDelivery) -> None:
+     from products.workflows.backend.services.ses_tenant_events import handle_ses_tenant_event  # noqa: PLC0415
+ 
+     handle_ses_tenant_event(delivery)
++
++
++def workflows_product_name() -> str:
++    return "workflows"

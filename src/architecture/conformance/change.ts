@@ -2,13 +2,11 @@ import type { ArchitecturePayload, ArchitecturePlan, ChangedFile, PlannedModule,
 import type { ArchitectureModel } from "../model/index.ts";
 import { compare, depthOf, isWithin } from "./paths.ts";
 import { mostSpecificMatch } from "./seams.ts";
-import { fileIndexOf, filesWithin, holds, importsFrom, type Range } from "./sorted-payload.ts";
+import { counterpartImports, fileIndexOf, filesWithin, holds, type ImportTuple, importsFrom, type Range } from "./sorted-payload.ts";
 
 export type Location = { file: string; line: number };
 export type FileImport = { file: string; line: number; target: string; names: string[]; test: boolean };
 export type UnresolvedImport = { file: string; line: number; specifier: string };
-
-type ImportTuple = ArchitecturePayload["imports"][number];
 
 export class Change {
   readonly plan: ArchitecturePlan;
@@ -47,10 +45,14 @@ export class Change {
   }
 
   addedImports(): FileImport[] {
-    return this.#presentPaths.flatMap((path) => {
-      const atBase = new Set(importsOfFile(this.base.payload, path).map((imported) => imported.target));
-      return importsOfFile(this.head.payload, path).filter(({ target }) => !atBase.has(target));
+    const { payload } = this.head;
+    const atBase = counterpartImports(payload, this.base.payload);
+    const added: FileImport[] = [];
+    payload.imports.forEach((tuple, index) => {
+      const names = addedNames(tuple[4], atBase[index]?.[4]);
+      if (names) added.push({ ...fileImportOf(payload, tuple), names });
     });
+    return added;
   }
 
   addedUnresolvedImports(): UnresolvedImport[] {
@@ -114,10 +116,10 @@ export class Change {
   }
 }
 
-function importsOfFile(payload: ArchitecturePayload, path: string): FileImport[] {
-  const index = fileIndexOf(payload, path);
-  if (index === undefined) return [];
-  return tuplesFrom(payload, { start: index, end: index + 1 }).map((tuple) => fileImportOf(payload, tuple));
+function addedNames(headNames: string[], baseNames: string[] | undefined): string[] | undefined {
+  if (baseNames === undefined) return headNames;
+  const gained = headNames.filter((name) => !baseNames.includes(name));
+  return gained.length > 0 ? gained : undefined;
 }
 
 function tuplesFrom(payload: ArchitecturePayload, sources: Range): ImportTuple[] {

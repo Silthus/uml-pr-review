@@ -148,6 +148,29 @@ describe("unplanned-dependency", () => {
     ]);
   });
 
+  test("reports a dependency that a file without source changes gains when resolver configuration retargets its import", () => {
+    const findings = findingsOf({
+      plan: planOf({ modules: [modifyLogic] }),
+      both: { [fingerprint]: [`${models}/issue.py`] },
+      head: { [fingerprint]: [team] },
+      changes: [modified(issues)],
+    });
+
+    expect(findings).toEqual([
+      {
+        rule: "unplanned-dependency",
+        severity: "violation",
+        file: fingerprint,
+        line: 1,
+        subject: { kind: "module", path: logic },
+        target: team,
+        test: false,
+        message: `${fingerprint}:1 imports \`${team}\`: a new dependency from \`${logic}\` on \`posthog\` that the plan does not name.`,
+        fix: `Remove the import, or ask the human to unlock the plan and add seam \`${logic}\` -> \`posthog/models\`.`,
+      },
+    ]);
+  });
+
   test("is a warning from a test file", () => {
     const testFile = `${logic}/tests/test_issues.py`;
     const findings = findingsOf({
@@ -331,6 +354,40 @@ describe("off-interface", () => {
     ]);
   });
 
+  test("reports only the names an existing import of an interface file gains outside the symbols", () => {
+    const findings = findingsOf({
+      plan: planOf({ modules: [modifyLogic], seams: [seamThroughApi(["flags_for"])] }),
+      both: issuesImporting({ to: flagsApi, line: 3, names: ["flags_for", "legacy_flags"] }),
+      head: issuesImporting({ to: flagsApi, line: 3, names: ["flags_for", "legacy_flags", "FeatureFlagSerializer"] }),
+      changes: [modified(issues, 3)],
+    });
+
+    expect(findings).toEqual([
+      {
+        rule: "off-interface",
+        severity: "violation",
+        file: issues,
+        line: 3,
+        subject: { kind: "seam", from: logic, to: flagsFacade },
+        target: flagsApi,
+        test: false,
+        message: `${issues}:3 imports \`FeatureFlagSerializer\` from \`${flagsApi}\`, but seam \`${logic}\` -> \`${flagsFacade}\` allows only flags_for.`,
+        fix: `Use flags_for, or expose what you need through \`${flagsApi}\` (symbols flags_for).`,
+      },
+    ]);
+  });
+
+  test("stays silent when an existing import keeps names it already had outside the symbols", () => {
+    const findings = findingsOf({
+      plan: planOf({ modules: [modifyLogic], seams: [seamThroughApi(["flags_for", "flag_usage"])] }),
+      both: issuesImporting({ to: flagsApi, line: 3, names: ["flags_for", "legacy_flags"] }),
+      head: issuesImporting({ to: flagsApi, line: 3, names: ["flag_usage", "flags_for", "legacy_flags"] }),
+      changes: [modified(issues, 3)],
+    });
+
+    expect(findings).toEqual([]);
+  });
+
   test.each<{ case: string; names: string[] }>([
     { case: "the names are unknown", names: [] },
     { case: "every name is an interface symbol", names: ["flags_for"] },
@@ -438,7 +495,7 @@ describe("removed seams", () => {
 
   test("reports at most 20 remaining imports per removed seam", () => {
     const importers = Object.fromEntries(Array.from({ length: 25 }, (_, index) => [`${legacy}/report_${String(index).padStart(2, "0")}.py`, [featureFlag]]));
-    const findings = findingsOf({ plan: removeLegacyFlags, head: importers, changes: [modified(`${legacy}/cohorts.py`)] });
+    const findings = findingsOf({ plan: removeLegacyFlags, both: importers, changes: [modified(`${legacy}/cohorts.py`)] });
 
     expect(findings.filter(({ rule }) => rule === "seam-not-removed")).toHaveLength(20);
     expect(findings.at(-1)?.file).toBe(`${legacy}/report_18.py`);
@@ -573,6 +630,28 @@ describe("missing-module", () => {
       },
     ]);
   });
+
+  test.each(["progress", "final"] as const)("is a warning at a test file in a %s check when the unchanged modified module holds only tests", (phase) => {
+    const logicTests = `${logic}/tests`;
+    const findings = findingsOf({
+      plan: planOf({ modules: [{ path: logicTests, action: "modify", responsibility: "cover flag usage" }] }),
+      changes: [],
+      phase,
+    });
+
+    expect(findings).toEqual([
+      {
+        rule: "missing-module",
+        severity: "warning",
+        file: `${logicTests}/test_issues.py`,
+        line: 1,
+        subject: { kind: "module", path: logicTests },
+        test: true,
+        message: `\`${logicTests}\` is unchanged; the plan modifies it to cover flag usage.`,
+        fix: `Make the planned change in \`${logicTests}\`, or ask the human to unlock the plan and drop \`${logicTests}\` from it.`,
+      },
+    ]);
+  });
 });
 
 describe("module-not-removed", () => {
@@ -599,6 +678,37 @@ describe("module-not-removed", () => {
         fix: `Delete the remaining files in \`${legacy}\` and move their importers as the plan's seams say.`,
       },
     ]);
+  });
+
+  test.each(["progress", "final"] as const)("is a warning at a test file in a %s check when only tests remain", (phase) => {
+    const logicTests = `${logic}/tests`;
+    const findings = findingsOf({ plan: planOf({ modules: [{ path: logicTests, action: "remove" }] }), changes: [], phase });
+
+    expect(findings).toEqual([
+      {
+        rule: "module-not-removed",
+        severity: "warning",
+        file: `${logicTests}/test_issues.py`,
+        line: 1,
+        subject: { kind: "module", path: logicTests },
+        test: true,
+        message: `\`${logicTests}\` still holds 1 source file; the plan removes it.`,
+        fix: `Delete the remaining files in \`${logicTests}\` and move their importers as the plan's seams say.`,
+      },
+    ]);
+  });
+
+  test("anchors at a remaining production file before a test file", () => {
+    const legacyTest = `${legacy}/tests/test_cohorts.py`;
+    const findings = findingsOf({
+      plan: planOf({ modules: [{ path: legacy, action: "remove" }] }),
+      head: { [legacyTest]: [], [`${legacy}/utils.py`]: [] },
+      removed: [`${legacy}/cohorts.py`],
+      changes: [deleted(`${legacy}/cohorts.py`), added(legacyTest), added(`${legacy}/utils.py`)],
+      phase: "final",
+    });
+
+    expect(findings.map(({ severity, file, test }) => ({ severity, file, test }))).toEqual([{ severity: "violation", file: `${legacy}/utils.py`, test: false }]);
   });
 
   test("stays silent once every file is gone", () => {

@@ -1,0 +1,23 @@
+{
+  "label": "cold-imports-18w-cachewrite",
+  "commit": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "mode": "imports",
+  "workers": 18,
+  "cache": "/tmp/uml-pr-review-prototype-cache.sqlite",
+  "trackedFiles": 51502,
+  "sourceFiles": 40210,
+  "extraction": {
+    "files": 40210,
+    "uniqueBlobs": 39194,
+    "cacheHits": 0,
+    "parsed": 39194,
+    "failed": 0,
+    "bytesParsed": 374733390,
+    "symbols": 0
+  },
+  "timingsMs": {
+    "listTree": 51,
+    "extract": 5922
+  },
+  "peakRssMb": 2039
+}

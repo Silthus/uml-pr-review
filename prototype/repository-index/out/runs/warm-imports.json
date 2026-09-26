@@ -1,0 +1,23 @@
+{
+  "label": "warm-imports",
+  "commit": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "mode": "imports",
+  "workers": 18,
+  "cache": "/tmp/uml-pr-review-prototype-cache.sqlite",
+  "trackedFiles": 51502,
+  "sourceFiles": 40210,
+  "extraction": {
+    "files": 40210,
+    "uniqueBlobs": 39194,
+    "cacheHits": 39194,
+    "parsed": 0,
+    "failed": 0,
+    "bytesParsed": 0,
+    "symbols": 0
+  },
+  "timingsMs": {
+    "listTree": 51,
+    "extract": 280
+  },
+  "peakRssMb": 38
+}

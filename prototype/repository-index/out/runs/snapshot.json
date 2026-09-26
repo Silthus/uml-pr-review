@@ -1,0 +1,56 @@
+{
+  "worktreeAddMs": 3885,
+  "edits": [
+    "M products/error_tracking/backend/facade/api.py",
+    "A products/error_tracking/backend/logic/prototype_probe.py",
+    "D products/error_tracking/frontend/components/ActivityDescriber.test.tsx"
+  ],
+  "seededAddAllMs": 220,
+  "seededWriteTreeMs": 31,
+  "unseededAddAllMs": 2576,
+  "head": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "seededTree": "6c8f7bb36d9215bedcfc9ef01b800f55751d28e3",
+  "unseededTree": "e889c1a758e7863ae2789bec48521a846c71277b",
+  "treesEqual": false,
+  "diffAgainstHead": [
+    "M\tproducts/error_tracking/backend/facade/api.py",
+    "A\tproducts/error_tracking/backend/logic/prototype_probe.py",
+    "D\tproducts/error_tracking/frontend/components/ActivityDescriber.test.tsx"
+  ],
+  "worktreeIndexUntouched": true,
+  "mainIndexUntouched": true,
+  "statusUnchanged": true,
+  "statusLines": [
+    "M products/error_tracking/backend/facade/api.py",
+    " D products/error_tracking/frontend/components/ActivityDescriber.test.tsx",
+    "?? products/error_tracking/backend/logic/prototype_probe.py"
+  ],
+  "reindex": {
+    "exitCode": 0,
+    "timingsMs": {
+      "listTree": 50,
+      "extract": 299,
+      "resolverSetup": 27,
+      "moduleTree": 39,
+      "resolve": 552,
+      "architectureJsonBytes": 6741731
+    },
+    "extraction": {
+      "files": 40210,
+      "uniqueBlobs": 39194,
+      "cacheHits": 39192,
+      "parsed": 2,
+      "failed": 0,
+      "bytesParsed": 29453,
+      "symbols": 0
+    },
+    "fileEdges": 166754
+  },
+  "newProbeEdges": [
+    "products/error_tracking/backend/facade/api.py -> products/feature_flags/backend/facade/__init__.py",
+    "products/error_tracking/backend/logic/prototype_probe.py -> posthog/models/team/__init__.py"
+  ],
+  "worktreeRemoveMs": 2207,
+  "mainIndexUntouchedAfterCleanup": true,
+  "worktreeGone": true
+}

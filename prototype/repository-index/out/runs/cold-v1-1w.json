@@ -1,0 +1,23 @@
+{
+  "label": "cold-v1-1w",
+  "commit": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "mode": "v1",
+  "workers": 1,
+  "cache": "none",
+  "trackedFiles": 51502,
+  "sourceFiles": 40210,
+  "extraction": {
+    "files": 40210,
+    "uniqueBlobs": 39194,
+    "cacheHits": 0,
+    "parsed": 39194,
+    "failed": 0,
+    "bytesParsed": 374733390,
+    "symbols": 371435
+  },
+  "timingsMs": {
+    "listTree": 51,
+    "extract": 38323
+  },
+  "peakRssMb": 610
+}

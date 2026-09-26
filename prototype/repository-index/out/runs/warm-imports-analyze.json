@@ -1,0 +1,1160 @@
+{
+  "label": "warm-imports-analyze",
+  "commit": "f637db96f1fc853ea6a83694f02b94ab690bdcaf",
+  "mode": "imports",
+  "workers": 18,
+  "cache": "/tmp/uml-pr-review-prototype-cache.sqlite",
+  "trackedFiles": 51502,
+  "sourceFiles": 40210,
+  "extraction": {
+    "files": 40210,
+    "uniqueBlobs": 39194,
+    "cacheHits": 39194,
+    "parsed": 0,
+    "failed": 0,
+    "bytesParsed": 0,
+    "symbols": 0
+  },
+  "resolution": {
+    "totals": {
+      "internal": 173173,
+      "asset": 1139,
+      "external": 91542,
+      "unresolved": 57,
+      "resolvedRate": 0.9997
+    },
+    "families": {
+      "py common.*": {
+        "internal": 94,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 94,
+        "resolvedRate": 1
+      },
+      "py ee.*": {
+        "internal": 1993,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 1993,
+        "resolvedRate": 1
+      },
+      "py other": {
+        "internal": 630,
+        "asset": 0,
+        "external": 65562,
+        "unresolved": 0,
+        "v1Hit": 5,
+        "resolvedRate": 1
+      },
+      "py posthog.*": {
+        "internal": 30700,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 1,
+        "v1Hit": 29961,
+        "resolvedRate": 1
+      },
+      "py products.*": {
+        "internal": 45660,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 45291,
+        "resolvedRate": 1
+      },
+      "py relative": {
+        "internal": 3842,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 3839,
+        "resolvedRate": 1
+      },
+      "ts @common/*": {
+        "internal": 3,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 0,
+        "resolvedRate": 1
+      },
+      "ts @posthog/*": {
+        "internal": 14135,
+        "asset": 6,
+        "external": 2173,
+        "unresolved": 24,
+        "v1Hit": 0,
+        "resolvedRate": 0.9983
+      },
+      "ts lib/*": {
+        "internal": 15924,
+        "asset": 10,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 15923,
+        "resolvedRate": 1
+      },
+      "ts other": {
+        "internal": 1996,
+        "asset": 36,
+        "external": 23807,
+        "unresolved": 6,
+        "v1Hit": 1792,
+        "resolvedRate": 0.9971
+      },
+      "ts products/*": {
+        "internal": 3020,
+        "asset": 8,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 3020,
+        "resolvedRate": 1
+      },
+      "ts public/*": {
+        "internal": 0,
+        "asset": 127,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 0,
+        "resolvedRate": 1
+      },
+      "ts relative": {
+        "internal": 31853,
+        "asset": 763,
+        "external": 0,
+        "unresolved": 9,
+        "v1Hit": 32596,
+        "resolvedRate": 0.9997
+      },
+      "ts scenes/*": {
+        "internal": 7394,
+        "asset": 27,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 7394,
+        "resolvedRate": 1
+      },
+      "ts storybook/*": {
+        "internal": 0,
+        "asset": 0,
+        "external": 0,
+        "unresolved": 17,
+        "v1Hit": 0,
+        "resolvedRate": 0
+      },
+      "ts ~/*": {
+        "internal": 15929,
+        "asset": 162,
+        "external": 0,
+        "unresolved": 0,
+        "v1Hit": 11711,
+        "resolvedRate": 1
+      }
+    },
+    "topUnresolvedShapes": [
+      {
+        "shape": "ts alias storybook/*",
+        "count": 17,
+        "example": "frontend/src/lib/components/MarkdownNotebook/MarkdownNotebook.stories.tsx: storybook/test"
+      },
+      {
+        "shape": "ts alias @posthog/quill",
+        "count": 15,
+        "example": "services/mcp/src/ui-apps/apps/debug.tsx: @posthog/quill"
+      },
+      {
+        "shape": "ts alias @posthog/quill-charts",
+        "count": 9,
+        "example": "services/mcp/src/ui-apps/components/FunnelVisualizer.tsx: @posthog/quill-charts"
+      },
+      {
+        "shape": "ts absolute /",
+        "count": 3,
+        "example": "rust/cymbal/tests/static/chunk-PGUQKT6S-no-map.js: /static/chunk-W2W3QRMT.js"
+      },
+      {
+        "shape": "ts alias @shared/*",
+        "count": 3,
+        "example": "services/mcp/src/hono/dispatcher.ts: @shared/guidelines.md"
+      },
+      {
+        "shape": "ts relative .js",
+        "count": 2,
+        "example": "cli/tests/_cases/inject/chunk.js: ./index-D_JuKIur.js"
+      },
+      {
+        "shape": "ts relative .mjs",
+        "count": 2,
+        "example": "frontend/@posthog/lemon-ui/build.mjs: ../../utils.mjs"
+      },
+      {
+        "shape": "ts relative .node",
+        "count": 2,
+        "example": "rust/common/hogvm/node/index.js: ./index.node"
+      },
+      {
+        "shape": "ts relative .cjs",
+        "count": 1,
+        "example": "common/hogql_parser/index.cjs: ./hogql_parser_wasm.cjs"
+      },
+      {
+        "shape": "ts relative .testType",
+        "count": 1,
+        "example": "frontend/src/scenes/sceneLogic.test.tsx: ./sceneLogic.testType"
+      },
+      {
+        "shape": "ts relative",
+        "count": 1,
+        "example": "frontend/src/test/keaTestModule.js: ../../node_modules/kea"
+      },
+      {
+        "shape": "py posthog.tasks.*",
+        "count": 1,
+        "example": "posthog/migrations/0114_fix_team_event_names.py: posthog.tasks.calculate_event_property_usage"
+      }
+    ],
+    "v1Comparison": {
+      "agree": 153580,
+      "disagree": 39,
+      "resolvedExternal": 0,
+      "disagreeExamples": [
+        "nodejs/src/ingestion/common/cookieless/cookieless-manager.test.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/common/cookieless/cookieless-manager.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/common/steps/event-preprocessing/resolve-team.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/common/steps/record-ingestion-lag.test.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/common/steps/record-ingestion-lag.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/pipelines/sessionreplay/consumer.test.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/pipelines/sessionreplay/session-replay-lag-reporter.test.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts",
+        "nodejs/src/ingestion/pipelines/sessionreplay/session-replay-lag-reporter.ts: ~/common/metrics -> v1 nodejs/src/ingestion/common/metrics.ts, new nodejs/src/common/metrics.ts"
+      ],
+      "externalExamples": []
+    },
+    "topExternalHeads": [
+      [
+        "py django",
+        12809
+      ],
+      [
+        "py typing",
+        7584
+      ],
+      [
+        "ts kea",
+        4385
+      ],
+      [
+        "py unittest",
+        3733
+      ],
+      [
+        "ts react",
+        3651
+      ],
+      [
+        "py datetime",
+        3642
+      ],
+      [
+        "py rest_framework",
+        2779
+      ],
+      [
+        "py pytest",
+        2757
+      ],
+      [
+        "py parameterized",
+        2542
+      ],
+      [
+        "py dataclasses",
+        2485
+      ],
+      [
+        "py collections",
+        2099
+      ],
+      [
+        "py json",
+        2009
+      ],
+      [
+        "ts @posthog/icons",
+        1934
+      ],
+      [
+        "py structlog",
+        1907
+      ],
+      [
+        "py requests",
+        1824
+      ],
+      [
+        "py temporalio",
+        1769
+      ],
+      [
+        "ts vitest",
+        1611
+      ],
+      [
+        "py uuid",
+        1607
+      ],
+      [
+        "ts kea-router",
+        956
+      ],
+      [
+        "ts @testing-library/react",
+        924
+      ],
+      [
+        "py re",
+        793
+      ],
+      [
+        "py urllib",
+        742
+      ],
+      [
+        "ts @storybook/react",
+        741
+      ],
+      [
+        "py time",
+        712
+      ],
+      [
+        "ts kea-loaders",
+        707
+      ],
+      [
+        "ts posthog-js",
+        683
+      ],
+      [
+        "ts kea-test-utils",
+        657
+      ],
+      [
+        "ts @phosphor-icons/react",
+        502
+      ],
+      [
+        "py time_machine",
+        496
+      ],
+      [
+        "py asyncio",
+        478
+      ],
+      [
+        "py pydantic",
+        477
+      ],
+      [
+        "ts kea-forms",
+        477
+      ],
+      [
+        "py os",
+        469
+      ],
+      [
+        "ts zod",
+        468
+      ],
+      [
+        "py pathlib",
+        467
+      ],
+      [
+        "py drf_spectacular",
+        443
+      ],
+      [
+        "py posthoganalytics",
+        430
+      ],
+      [
+        "py logging",
+        405
+      ],
+      [
+        "ts clsx",
+        396
+      ],
+      [
+        "ts @testing-library/jest-dom",
+        391
+      ],
+      [
+        "ts @tanstack/react-query",
+        372
+      ],
+      [
+        "py contextlib",
+        354
+      ],
+      [
+        "ts node:fs",
+        350
+      ],
+      [
+        "ts @radix-ui/themes",
+        345
+      ],
+      [
+        "py asgiref",
+        340
+      ],
+      [
+        "ts node:path",
+        317
+      ],
+      [
+        "py hashlib",
+        307
+      ],
+      [
+        "py prometheus_client",
+        304
+      ],
+      [
+        "py pyarrow",
+        299
+      ],
+      [
+        "py functools",
+        284
+      ],
+      [
+        "py sys",
+        275
+      ],
+      [
+        "ts inversify",
+        273
+      ],
+      [
+        "py tenacity",
+        251
+      ],
+      [
+        "py io",
+        249
+      ],
+      [
+        "py langchain_core",
+        249
+      ],
+      [
+        "ts @testing-library/user-event",
+        237
+      ],
+      [
+        "ts luxon",
+        230
+      ],
+      [
+        "py enum",
+        228
+      ],
+      [
+        "ts @posthog/brand",
+        211
+      ],
+      [
+        "py types",
+        196
+      ]
+    ]
+  },
+  "moduleDirectoryTargets": [],
+  "graph": {
+    "treeFiles": 41535,
+    "modules": 6574,
+    "fileEdges": 166755,
+    "edgesFromTestFiles": 40336,
+    "edgeKinds": {
+      "static": 153921,
+      "type": 7217,
+      "lazy": 3615,
+      "reexport": 1204,
+      "dynamic": 762,
+      "require": 36
+    },
+    "edgesByLanguage": {
+      "typescript->typescript": 86999,
+      "python->python": 79675,
+      "javascript->javascript": 55,
+      "typescript->javascript": 23,
+      "javascript->typescript": 3
+    }
+  },
+  "tree": {
+    "kinds": {
+      "directory": 3846,
+      "tests": 1175,
+      "python-package": 931,
+      "layer": 151,
+      "package": 146,
+      "scene": 90,
+      "product": 86,
+      "migrations": 78,
+      "generated": 67,
+      "django-app": 3,
+      "root": 1
+    },
+    "depthHistogram": {
+      "0": 1,
+      "1": 16,
+      "2": 274,
+      "3": 834,
+      "4": 1696,
+      "5": 987,
+      "6": 462,
+      "7": 1540,
+      "8": 750,
+      "9": 10,
+      "10": 4
+    },
+    "widestModules": [
+      "products/warehouse_sources/backend/temporal/data_imports/sources (1346 children)",
+      "frontend/src/lib/components (130 children)",
+      "products (90 children)",
+      "products/desktop/packages/ui/src/features (70 children)",
+      "services/mcp/src/generated (66 children)",
+      "products/desktop/packages/core (57 children)",
+      "frontend/src/scenes (56 children)",
+      "frontend/src/lib/lemon-ui (53 children)"
+    ],
+    "topLevel": [
+      {
+        "id": "bin",
+        "label": "bin",
+        "kind": "directory",
+        "files": 27,
+        "children": 1,
+        "childModules": [
+          "test [tests, 3]"
+        ]
+      },
+      {
+        "id": "cli",
+        "label": "cli",
+        "kind": "package",
+        "files": 80,
+        "children": 2,
+        "childModules": [
+          "src [directory, 63]",
+          "tests [tests, 16]"
+        ]
+      },
+      {
+        "id": "common",
+        "label": "common",
+        "kind": "python-package",
+        "files": 160,
+        "children": 11,
+        "childModules": [
+          "esbuilder [package, 5]",
+          "fixtures/ai-multimodal [directory, 1]",
+          "hogql_parser [package, 3]",
+          "hogvm [python-package, 79]",
+          "ingestion/acceptance_tests [python-package, 8]",
+          "migration_utils [python-package, 1]",
+          "plugin_transpiler [package, 3]",
+          "replay-headless [package, 15]",
+          "replay-shared [package, 37]",
+          "storybook [package, 6]",
+          "tailwind [package, 1]"
+        ]
+      },
+      {
+        "id": "docs/onboarding",
+        "label": "docs/onboarding",
+        "kind": "package",
+        "files": 278,
+        "children": 10,
+        "childModules": [
+          "ai-observability [directory, 55]",
+          "error-tracking [directory, 27]",
+          "experiments [directory, 28]",
+          "feature-flags [directory, 34]",
+          "logs [directory, 11]",
+          "metrics [directory, 2]",
+          "product-analytics [directory, 52]",
+          "session-replay [directory, 22]",
+          "surveys [directory, 20]",
+          "web-analytics [directory, 26]"
+        ]
+      },
+      {
+        "id": "ee",
+        "label": "ee",
+        "kind": "django-app",
+        "files": 888,
+        "children": 16,
+        "childModules": [
+          "admin [directory, 2]",
+          "api [python-package, 132]",
+          "benchmarks [python-package, 3]",
+          "billing [directory, 33]",
+          "clickhouse [python-package, 35]",
+          "hogai [python-package, 522]",
+          "management/commands [directory, 6]",
+          "migrations [migrations, 67]",
+          "models [python-package, 12]",
+          "partners [python-package, 31]",
+          "sqs [directory, 2]",
+          "support_sidebar_max [python-package, 5]",
+          "surveys/summaries [directory, 2]",
+          "tasks [python-package, 23]",
+          "test/fixtures [tests, 1]",
+          "vercel [python-package, 6]"
+        ]
+      },
+      {
+        "id": "frontend",
+        "label": "frontend",
+        "kind": "package",
+        "files": 5353,
+        "children": 17,
+        "childModules": [
+          "@posthog/lemon-ui [package, 2]",
+          "bin [directory, 33]",
+          "plugins [directory, 3]",
+          "exporter [directory, 22]",
+          "generated/core [generated, 3]",
+          "layout [directory, 187]",
+          "lib [directory, 1592]",
+          "mocks [directory, 8]",
+          "models [directory, 22]",
+          "queries [directory, 251]",
+          "render-query [directory, 2]",
+          "scenes [directory, 3027]",
+          "styles [directory, 1]",
+          "taxonomy [directory, 7]",
+          "test [tests, 35]",
+          "toolbar [directory, 126]",
+          "vendor [directory, 2]"
+        ]
+      },
+      {
+        "id": "funnel-udf",
+        "label": "funnel-udf",
+        "kind": "package",
+        "files": 17,
+        "children": 2,
+        "childModules": [
+          "codec [directory, 3]",
+          "io [directory, 4]"
+        ]
+      },
+      {
+        "id": "livestream/bot",
+        "label": "livestream/bot",
+        "kind": "package",
+        "files": 1,
+        "children": 0,
+        "childModules": []
+      },
+      {
+        "id": "nodejs",
+        "label": "nodejs",
+        "kind": "package",
+        "files": 1683,
+        "children": 9,
+        "childModules": [
+          "bin [directory, 2]",
+          "ai-observability [directory, 13]",
+          "cdp [directory, 536]",
+          "common [directory, 213]",
+          "ingestion [directory, 705]",
+          "logs [directory, 61]",
+          "servers [directory, 23]",
+          "session-replay [directory, 49]",
+          "tests [tests, 69]"
+        ]
+      },
+      {
+        "id": "packages",
+        "label": "packages",
+        "kind": "directory",
+        "files": 469,
+        "children": 2,
+        "childModules": [
+          "llm-normalizer [package, 87]",
+          "quill [package, 382]"
+        ]
+      },
+      {
+        "id": "playwright",
+        "label": "playwright",
+        "kind": "package",
+        "files": 71,
+        "children": 3,
+        "childModules": [
+          "e2e [tests, 43]",
+          "page-models [directory, 15]",
+          "utils [directory, 10]"
+        ]
+      },
+      {
+        "id": "posthog",
+        "label": "posthog",
+        "kind": "django-app",
+        "files": 5033,
+        "children": 48,
+        "childModules": [
+          "admin [python-package, 63]",
+          "api [python-package, 334]",
+          "async_migrations [package, 30]",
+          "caching [python-package, 20]",
+          "cdp [directory, 100]",
+          "clickhouse [python-package, 430]",
+          "comment [python-package, 3]",
+          "dags [python-package, 94]",
+          "db_backends/failopen [directory, 1]",
+          "egress [python-package, 55]",
+          "github [python-package, 7]",
+          "heatmaps [directory, 1]",
+          "helpers [python-package, 42]",
+          "hogql [directory, 387]",
+          "hogql_queries [python-package, 135]",
+          "ingress [python-package, 41]",
+          "integration_secrets [python-package, 6]",
+          "kafka_client [python-package, 11]",
+          "llm [python-package, 13]",
+          "local_bootstrap [python-package, 5]",
+          "logging [directory, 2]",
+          "management [directory, 200]",
+          "migration_helpers [python-package, 16]",
+          "migrations [migrations, 1271]",
+          "models [python-package, 394]",
+          "object_tags [python-package, 4]",
+          "openapi [directory, 4]",
+          "personhog_client [python-package, 45]",
+          "plugins [python-package, 9]",
+          "query_cache [python-package, 17]",
+          "query_scan [python-package, 25]",
+          "rbac [directory, 6]",
+          "resource_limits [python-package, 5]",
+          "schema_migrations [python-package, 19]",
+          "security [python-package, 13]",
+          "session [django-app, 19]",
+          "session_recordings [python-package, 84]",
+          "settings [python-package, 44]",
+          "slo [python-package, 6]",
+          "storage [python-package, 33]"
+        ]
+      },
+      {
+        "id": "products",
+        "label": "products",
+        "kind": "python-package",
+        "files": 24887,
+        "children": 90,
+        "childModules": [
+          "access_control [product, 60]",
+          "actions [product, 56]",
+          "aeo [product, 26]",
+          "ai_gateway [product, 13]",
+          "ai_observability [product, 677]",
+          "ai_training [product, 22]",
+          "alerts [product, 183]",
+          "analytics_platform [product, 21]",
+          "annotations [product, 38]",
+          "apm [product, 41]",
+          "approvals [product, 38]",
+          "autoresearch [product, 66]",
+          "batch_exports [product, 234]",
+          "billing [product, 7]",
+          "billing_alerts [product, 52]",
+          "business_knowledge [product, 120]",
+          "canvas [product, 75]",
+          "cdp [product, 78]",
+          "cohorts [product, 100]",
+          "context_layer [product, 36]",
+          "conversations [product, 405]",
+          "core_events [product, 5]",
+          "customer_analytics [product, 479]",
+          "dashboards [product, 310]",
+          "data_catalog [product, 114]",
+          "data_modeling [product, 198]",
+          "data_quality [product, 141]",
+          "data_tools [product, 21]",
+          "data_warehouse [product, 356]",
+          "demo [product, 34]",
+          "desktop [package, 4939]",
+          "early_access_features [product, 41]",
+          "endpoints [product, 135]",
+          "engineering_analytics [product, 286]",
+          "error_tracking [product, 532]",
+          "event_definitions [product, 28]",
+          "experiments [product, 333]",
+          "exports [product, 100]",
+          "feature_flags [product, 205]",
+          "field_notes [product, 15]"
+        ]
+      },
+      {
+        "id": "rust",
+        "label": "rust",
+        "kind": "package",
+        "files": 1442,
+        "children": 44,
+        "childModules": [
+          "affected-services [package, 7]",
+          "batch-import-worker [package, 54]",
+          "capture [package, 129]",
+          "capture-apm-metrics [package, 7]",
+          "capture-load-gen [package, 4]",
+          "capture-logs [package, 22]",
+          "cohort-core [package, 38]",
+          "cohort-event-shuffler [package, 12]",
+          "cohort-seeder [package, 60]",
+          "cohort-stream-processor [package, 121]",
+          "common [directory, 169]",
+          "cymbal [package, 148]",
+          "cymbal-proto [package, 3]",
+          "deltalite [directory, 23]",
+          "embedding-worker [package, 10]",
+          "feature-flags [package, 125]",
+          "flags-consumer [package, 29]",
+          "hogql/parser [package, 18]",
+          "hypercache-server [package, 13]",
+          "ingestion-consumer [package, 27]",
+          "ingestion-control-plane [package, 20]",
+          "ingestion-worker-proto [package, 2]",
+          "kafka-assigner [package, 18]",
+          "kafka-assigner-proto [package, 2]",
+          "kafka-deduplicator [package, 80]",
+          "personhog-common [package, 12]",
+          "personhog-coordination [package, 17]",
+          "personhog-identity [package, 32]",
+          "personhog-leader [package, 30]",
+          "personhog-proto [package, 2]",
+          "personhog-replica [package, 36]",
+          "personhog-router [package, 14]",
+          "personhog-stateright [package, 5]",
+          "personhog-test-harness [package, 22]",
+          "personhog-writer [package, 13]",
+          "pgapi [package, 8]",
+          "pgcollector [package, 19]",
+          "prometheus-rw-proto [package, 2]",
+          "property-defs-rs [package, 25]",
+          "property-vals-rs [package, 11]"
+        ]
+      },
+      {
+        "id": "services",
+        "label": "services",
+        "kind": "directory",
+        "files": 895,
+        "children": 8,
+        "childModules": [
+          "agent-proxy [package, 31]",
+          "hogql-language-service/cmd/demo/assets [package, 1]",
+          "integration-service [package, 21]",
+          "llm-gateway [package, 136]",
+          "mcp [package, 644]",
+          "oauth-proxy [package, 23]",
+          "stripe-app [package, 22]",
+          "stripe-mock [package, 17]"
+        ]
+      },
+      {
+        "id": "tools",
+        "label": "tools",
+        "kind": "directory",
+        "files": 246,
+        "children": 11,
+        "childModules": [
+          "hedgebox-dummy [package, 18]",
+          "hogbox-preview [directory, 12]",
+          "hogli [package, 21]",
+          "hogli-commands/hogli_commands [python-package, 114]",
+          "infra-scripts [directory, 9]",
+          "openapi-codegen [package, 11]",
+          "owners [package, 10]",
+          "phrocs [package, 1]",
+          "query-performance-ai/query_performance_ai [python-package, 25]",
+          "traffic-sim [directory, 8]",
+          "workflow-plan [package, 9]"
+        ]
+      }
+    ],
+    "topLevelSiblingEdges": [
+      "products -> frontend: 14982",
+      "products -> posthog: 13794",
+      "posthog -> products: 1976",
+      "ee -> posthog: 1558",
+      "frontend -> products: 1320",
+      "products -> packages: 740",
+      "ee -> products: 434",
+      "docs/onboarding -> frontend: 264",
+      "products -> ee: 192",
+      "posthog -> ee: 171",
+      "frontend -> packages: 103",
+      "frontend -> docs/onboarding: 69",
+      "services -> products: 52",
+      "posthog -> common: 44",
+      "frontend -> common: 40",
+      "products -> services: 40",
+      "playwright -> frontend: 27",
+      "products -> tools: 15",
+      "products -> playwright: 14",
+      "nodejs -> common: 13",
+      "nodejs -> rust: 12",
+      "common -> posthog: 11",
+      "products -> common: 10",
+      "bin -> posthog: 6",
+      "bin -> products: 3",
+      "frontend -> playwright: 3",
+      "services -> tools: 2",
+      "tools -> common: 2",
+      "tools -> products: 2",
+      "common -> frontend: 1",
+      "ee -> common: 1",
+      "frontend -> tools: 1",
+      "livestream/bot -> products: 1",
+      "services -> frontend: 1",
+      "services -> packages: 1",
+      "tools -> posthog: 1"
+    ],
+    "productsSiblingEdgeCount": 444,
+    "productsSiblingEdgesTop": [
+      "data_warehouse -> warehouse_sources: 215",
+      "signals -> tasks: 98",
+      "posthog_ai -> tasks: 84",
+      "warehouse_sources -> data_warehouse: 62",
+      "data_warehouse -> data_modeling: 51",
+      "experiments -> feature_flags: 51",
+      "signals -> skills: 51",
+      "replay_vision -> signals: 41",
+      "revenue_analytics -> warehouse_sources: 40",
+      "engineering_analytics -> warehouse_sources: 37",
+      "review_hog -> signals: 36",
+      "customer_analytics -> warehouse_sources: 33",
+      "web_analytics -> analytics_platform: 30",
+      "customer_analytics -> access_control: 29",
+      "tasks -> signals: 29",
+      "logs -> alerts: 28",
+      "tasks -> slack_app: 28",
+      "marketing_analytics -> warehouse_sources: 27",
+      "ai_observability -> access_control: 26",
+      "data_quality -> data_catalog: 26",
+      "signals -> posthog_ai: 26",
+      "data_quality -> warehouse_sources: 25",
+      "managed_warehouse -> warehouse_sources: 24",
+      "replay_vision -> alerts: 24",
+      "data_modeling -> warehouse_sources: 23",
+      "data_quality -> data_modeling: 23",
+      "signals -> warehouse_sources: 23",
+      "canvas -> tasks: 22",
+      "feature_flags -> cohorts: 22",
+      "product_analytics -> actions: 21"
+    ],
+    "errorTracking": {
+      "id": "products/error_tracking",
+      "label": "error_tracking",
+      "kind": "product",
+      "files": 532,
+      "children": [
+        {
+          "id": "products/error_tracking/backend",
+          "label": "backend",
+          "kind": "layer",
+          "files": 220,
+          "children": 10
+        },
+        {
+          "id": "products/error_tracking/dags",
+          "label": "dags",
+          "kind": "python-package",
+          "files": 4,
+          "children": 1
+        },
+        {
+          "id": "products/error_tracking/frontend",
+          "label": "frontend",
+          "kind": "layer",
+          "files": 297,
+          "children": 9
+        },
+        {
+          "id": "products/error_tracking/mcp/apps",
+          "label": "mcp/apps",
+          "kind": "directory",
+          "files": 7,
+          "children": 0
+        },
+        {
+          "id": "products/error_tracking/skills/diagnosing-stacktrace-symbolication/scripts",
+          "label": "skills/diagnosing-stacktrace-symbolication/scripts",
+          "kind": "directory",
+          "files": 1,
+          "children": 0
+        }
+      ],
+      "siblingEdges": [
+        "dags -> backend: 2"
+      ],
+      "layerSiblingEdges": {
+        "backend": [
+          "presentation -> facade: 28",
+          "tests -> logic: 9",
+          "facade -> logic: 8",
+          "facade -> hogql_queries: 6",
+          "tests -> temporal: 6",
+          "facade -> temporal: 5",
+          "test -> facade: 5",
+          "temporal -> logic: 4",
+          "logic -> tasks: 3",
+          "tests -> presentation: 3",
+          "tasks -> temporal: 2",
+          "logic -> temporal: 1",
+          "management/commands -> logic: 1",
+          "tasks -> logic: 1",
+          "temporal -> facade: 1",
+          "test -> hogql_queries: 1",
+          "tests -> facade: 1",
+          "tests -> hogql_queries: 1",
+          "tests -> tasks: 1"
+        ],
+        "dags": [],
+        "frontend": [
+          "scenes -> components: 65",
+          "components -> scenes: 11",
+          "components -> __mocks__: 7",
+          "scenes -> generated: 7",
+          "components -> generated: 6",
+          "components -> hooks: 5",
+          "scenes -> logics: 5",
+          "components -> logics: 4",
+          "hooks -> scenes: 3",
+          "hooks -> components: 2",
+          "logics -> components: 2",
+          "posthogAi -> components: 2",
+          "scenes -> hooks: 2",
+          "__mocks__ -> components: 1",
+          "logics -> generated: 1",
+          "logics -> scenes: 1",
+          "posthogAi -> scenes: 1",
+          "scenes -> emptyState: 1"
+        ],
+        "mcp/apps": [],
+        "skills/diagnosing-stacktrace-symbolication/scripts": []
+      },
+      "outgoingProducts": [
+        "error_tracking -> lib: 461",
+        "error_tracking -> scenes: 115",
+        "error_tracking -> queries: 114",
+        "error_tracking -> models: 99",
+        "error_tracking -> @posthog/lemon-ui: 90",
+        "error_tracking -> frontend: 87",
+        "error_tracking -> posthog: 63",
+        "error_tracking -> api: 48",
+        "error_tracking -> hogql: 45",
+        "error_tracking -> test: 37",
+        "error_tracking -> clickhouse: 33",
+        "error_tracking -> temporal: 25",
+        "error_tracking -> quill: 22",
+        "error_tracking -> test: 21",
+        "error_tracking -> access_control: 15",
+        "error_tracking -> layout: 14",
+        "error_tracking -> mocks: 13",
+        "error_tracking -> hogql_queries: 11",
+        "error_tracking -> migration_helpers: 11",
+        "error_tracking -> posthog_ai: 10",
+        "error_tracking -> kafka_client: 9",
+        "error_tracking -> hogai: 8",
+        "error_tracking -> signals: 7",
+        "error_tracking -> clickhouse: 5",
+        "error_tracking -> tasks: 5"
+      ],
+      "incomingProducts": [
+        "scenes -> error_tracking: 25",
+        "dashboards -> error_tracking: 18",
+        "lib -> error_tracking: 16",
+        "clickhouse -> error_tracking: 16",
+        "frontend -> error_tracking: 6",
+        "management -> error_tracking: 6",
+        "signals -> error_tracking: 6",
+        "temporal -> error_tracking: 4",
+        "early_access_features -> error_tracking: 4",
+        "posthog_ai -> error_tracking: 4",
+        "mcp -> error_tracking: 4",
+        "hogai -> error_tracking: 3",
+        "metrics -> error_tracking: 3",
+        "posthog -> error_tracking: 2",
+        "hogql -> error_tracking: 2",
+        "models -> error_tracking: 2",
+        "tasks -> error_tracking: 2",
+        "logs -> error_tracking: 2",
+        "api -> error_tracking: 1",
+        "dags -> error_tracking: 1",
+        "hogql_queries -> error_tracking: 1",
+        "demo -> error_tracking: 1",
+        "tasks -> error_tracking: 1"
+      ],
+      "grandchildren": [
+        "backend/facade [python-package, 12]",
+        "backend/hogql_queries [python-package, 19]",
+        "backend/logic [python-package, 15]",
+        "backend/management/commands [directory, 9]",
+        "backend/migrations [migrations, 41]",
+        "backend/presentation [python-package, 22]",
+        "backend/tasks [python-package, 2]",
+        "backend/temporal [python-package, 61]",
+        "backend/test [tests, 6]",
+        "backend/tests [tests, 16]",
+        "dags/tests [tests, 2]",
+        "frontend/__mocks__ [tests, 3]",
+        "frontend/components [directory, 138]",
+        "frontend/emptyState [directory, 4]",
+        "frontend/generated [generated, 3]",
+        "frontend/hooks [directory, 5]",
+        "frontend/logics [directory, 6]",
+        "frontend/onboarding [directory, 1]",
+        "frontend/posthogAi [directory, 7]",
+        "frontend/scenes [directory, 121]"
+      ]
+    }
+  },
+  "aggregation": {
+    "visibleModules": 290,
+    "liftedEdges": 3248,
+    "firstMs": 2.17,
+    "medianMs": 0.94
+  },
+  "tach": {
+    "tachModules": 94,
+    "declaredPairs": 552,
+    "observedPairs": 512,
+    "observedAndDeclared": 508,
+    "declaredButUnobserved": 44,
+    "undeclaredObserved": 4,
+    "undeclaredExamples": [
+      "ee -> products.slack_app",
+      "products.access_control -> products.event_definitions",
+      "products.early_access_features -> products.surveys",
+      "products.event_definitions -> ee"
+    ]
+  },
+  "timingsMs": {
+    "listTree": 51,
+    "extract": 276,
+    "resolverSetup": 28,
+    "moduleTree": 36,
+    "resolve": 572,
+    "architectureJsonBytes": 6741756
+  },
+  "peakRssMb": 505
+}

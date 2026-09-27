@@ -12,6 +12,7 @@ export type ExtractionResult = { refsOf: (blob: BlobToExtract) => Extracted; cou
 type Parsed = [BlobToExtract, ImportRef[]];
 
 const currentExtractors = `${extractorVersion}/`;
+const busyTimeoutMs = 10_000;
 
 export class ExtractionStore {
   private readonly database: Database;
@@ -20,6 +21,7 @@ export class ExtractionStore {
   constructor(databasePath: string) {
     mkdirSync(dirname(databasePath), { recursive: true });
     this.database = new Database(databasePath, { create: true });
+    this.database.run(`PRAGMA busy_timeout = ${busyTimeoutMs}`);
     this.database.run("PRAGMA journal_mode = WAL");
     this.database.run("PRAGMA synchronous = NORMAL");
     this.database.run("CREATE TABLE IF NOT EXISTS extraction (sha TEXT, extractor TEXT, data TEXT, PRIMARY KEY (sha, extractor)) WITHOUT ROWID");

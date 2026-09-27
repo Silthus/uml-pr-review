@@ -8,10 +8,10 @@ export const defaultConfigFile = join(import.meta.dir, "config.json");
 export const GraderConfigSchema = z.object({
   detectors: z.array(z.enum(detectorNames)),
   weights: z.partialRecord(z.enum(detectorNames), z.number()),
-  cycles: z.object({ maxComponentFiles: z.number().int().positive() }),
+  cycles: z.object({ maxCycleLength: z.number().int().min(2) }),
   complexity: z.object({ ccnThresholds: z.array(z.number().int().positive()), nlocThreshold: z.number().int().positive() }),
   clones: z.object({ windowTokens: z.number().int().positive(), winnow: z.number().int().positive(), maxFiles: z.number().int().positive(), minFingerprints: z.number().int().positive(), gapLines: z.number().int().nonnegative() }),
-  reuse: z.object({ sharedRoots: z.array(z.string()), minNameLength: z.number().int().positive() }),
+  reuse: z.object({ minNameLength: z.number().int().positive(), maxDefinitions: z.number().int().positive() }),
   vocabulary: z.object({ termFiles: z.string() }),
 });
 

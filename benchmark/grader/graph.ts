@@ -2,74 +2,52 @@ import type { ArchitecturePayload, ImportKind } from "../../src/architecture/con
 
 export type Import = { from: string; to: string; kind: ImportKind; line: number; fromTest: boolean };
 
-export type ImportGraph = { imports: Import[]; importsFrom(path: string): Import[]; componentOf(path: string): number | undefined; componentSize(component: number): number };
+export type ImportGraph = { imports: Import[]; importsFrom(path: string): Import[]; cycleThrough(entry: Import, maxLength: number): string[] | undefined };
 
-const eagerKinds = new Set<ImportKind>(["static", "reexport", "require"]);
+const dependencyKinds = new Set<ImportKind>(["static", "reexport", "require"]);
 
 export function importGraphOf(payload: ArchitecturePayload): ImportGraph {
   const paths = payload.files.map(([path]) => path);
   const tests = new Set(payload.files.flatMap(([path, , , role]) => (role === "test" ? [path] : [])));
   const imports = payload.imports.map(([from, to, kind, line]): Import => ({ from: paths[from]!, to: paths[to]!, kind, line, fromTest: tests.has(paths[from]!) }));
   const byFile = Map.groupBy(imports, ({ from }) => from);
-  const components = stronglyConnected(imports.filter(({ kind, fromTest }) => eagerKinds.has(kind) && !fromTest));
+  const successors = new Map<string, string[]>();
+  for (const entry of imports.filter(isDependency)) {
+    const next = successors.get(entry.from);
+    if (next) next.push(entry.to);
+    else successors.set(entry.from, [entry.to]);
+  }
   return {
     imports,
     importsFrom: (path) => byFile.get(path) ?? [],
-    componentOf: (path) => components.componentOf.get(path),
-    componentSize: (component) => components.sizes[component] ?? 0,
+    cycleThrough: (entry, maxLength) => (isDependency(entry) && entry.from !== entry.to ? shortestPath(successors, entry.to, entry.from, maxLength - 1) : undefined),
   };
 }
 
-export function isOnCycle(graph: ImportGraph, { from, to, kind, fromTest }: Import): boolean {
-  if (!eagerKinds.has(kind) || fromTest) return false;
-  const component = graph.componentOf(from);
-  return component !== undefined && component === graph.componentOf(to) && graph.componentSize(component) > 1;
+function isDependency({ kind, fromTest }: Import): boolean {
+  return dependencyKinds.has(kind) && !fromTest;
 }
 
-function stronglyConnected(edges: Pick<Import, "from" | "to">[]): { componentOf: Map<string, number>; sizes: number[] } {
-  const successors = new Map<string, string[]>();
-  for (const { from, to } of edges) successors.set(from, [...(successors.get(from) ?? []), to]);
-  const order = new Map<string, number>();
-  const low = new Map<string, number>();
-  const onStack = new Set<string>();
-  const stack: string[] = [];
-  const componentOf = new Map<string, number>();
-  const sizes: number[] = [];
-  let counter = 0;
-  for (const root of successors.keys()) {
-    if (order.has(root)) continue;
-    const frames: { node: string; next: number }[] = [{ node: root, next: 0 }];
-    order.set(root, counter);
-    low.set(root, counter++);
-    stack.push(root);
-    onStack.add(root);
-    while (frames.length > 0) {
-      const frame = frames.at(-1)!;
-      const next = (successors.get(frame.node) ?? [])[frame.next++];
-      if (next !== undefined) {
-        if (!order.has(next)) {
-          order.set(next, counter);
-          low.set(next, counter++);
-          stack.push(next);
-          onStack.add(next);
-          frames.push({ node: next, next: 0 });
-        } else if (onStack.has(next)) low.set(frame.node, Math.min(low.get(frame.node)!, order.get(next)!));
-        continue;
+function shortestPath(successors: Map<string, string[]>, start: string, goal: string, maxEdges: number): string[] | undefined {
+  const previous = new Map<string, string>([[start, start]]);
+  let frontier = [start];
+  for (let depth = 0; depth < maxEdges && frontier.length > 0; depth++) {
+    const next: string[] = [];
+    for (const node of frontier) {
+      for (const successor of successors.get(node) ?? []) {
+        if (previous.has(successor)) continue;
+        previous.set(successor, node);
+        if (successor === goal) return pathTo(previous, start, goal);
+        next.push(successor);
       }
-      frames.pop();
-      const parent = frames.at(-1);
-      if (parent) low.set(parent.node, Math.min(low.get(parent.node)!, low.get(frame.node)!));
-      if (low.get(frame.node) !== order.get(frame.node)) continue;
-      const component = sizes.length;
-      let size = 0;
-      for (let member = stack.pop(); member !== undefined; member = stack.pop()) {
-        onStack.delete(member);
-        componentOf.set(member, component);
-        size++;
-        if (member === frame.node) break;
-      }
-      sizes.push(size);
     }
+    frontier = next;
   }
-  return { componentOf, sizes };
+  return undefined;
+}
+
+function pathTo(previous: Map<string, string>, start: string, goal: string): string[] {
+  const path = [goal];
+  for (let node = goal; node !== start; node = previous.get(node)!) path.unshift(previous.get(node)!);
+  return path;
 }

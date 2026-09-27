@@ -1,10 +1,10 @@
 import { isFacadeBypass } from "../../lib/boundary.ts";
 import { renamesOf, type Change, type Side } from "../change.ts";
 import type { Detector, GradeContext } from "../context.ts";
-import { isOnCycle, type Import, type ImportGraph } from "../graph.ts";
+import type { Import, ImportGraph } from "../graph.ts";
 import { difference, type DetectorName, type Violation } from "../violations.ts";
 
-type ImportRule = { detector: DetectorName; rule: string; applies(entry: Import, graph: ImportGraph, context: GradeContext): boolean; message(entry: Import): string };
+type ImportRule = { detector: DetectorName; rule: string; applies(entry: Import, graph: ImportGraph, context: GradeContext): boolean; message(entry: Import, graph: ImportGraph): string };
 
 const productBackend = /^products\/([^/]+)\/backend\//;
 
@@ -13,8 +13,8 @@ export const cycles: Detector = (context) =>
     {
       detector: "cycles",
       rule: "import-cycle",
-      applies: (entry, graph) => isOnCycle(graph, entry) && componentFiles(graph, entry) <= context.config.cycles.maxComponentFiles,
-      message: ({ from, to }) => `${from} imports ${to}, and ${to} imports back into ${from}`,
+      applies: (entry, graph) => graph.cycleThrough(entry, context.config.cycles.maxCycleLength) !== undefined,
+      message: (entry, graph) => `${entry.from} imports ${entry.to}, which leads back: ${[entry.from, ...(graph.cycleThrough(entry, context.config.cycles.maxCycleLength) ?? [])].join(" -> ")}`,
     },
   ]);
 
@@ -32,7 +32,7 @@ export const layeringImportRules: ImportRule[] = [
 export function importViolations(graph: ImportGraph, files: string[], rules: ImportRule[], context: GradeContext): Violation[] {
   return files.flatMap((file) =>
     graph.importsFrom(file).flatMap((entry) =>
-      rules.filter((rule) => rule.applies(entry, graph, context)).map((rule): Violation => ({ detector: rule.detector, rule: rule.rule, file: entry.from, line: entry.line, subject: entry.to, message: rule.message(entry) })),
+      rules.filter((rule) => rule.applies(entry, graph, context)).map((rule): Violation => ({ detector: rule.detector, rule: rule.rule, file: entry.from, line: entry.line, subject: entry.to, message: rule.message(entry, graph) })),
     ),
   );
 }
@@ -48,10 +48,6 @@ export function changedPaths(change: Change, side: Side): string[] {
     if (side === "before") return status === "added" ? [] : [previousPath];
     return status === "deleted" ? [] : [path];
   });
-}
-
-function componentFiles(graph: ImportGraph, { from }: Import): number {
-  return graph.componentSize(graph.componentOf(from)!);
 }
 
 function sameProductRule(rule: string, source: RegExp, forbidden: (target: string) => boolean, message: string): ImportRule {

@@ -1,9 +1,9 @@
 {
-  "detectors": ["cycles", "facade", "layering", "complexity", "vocabulary", "reuse", "duplication"],
-  "weights": { "cycles": 3, "facade": 3, "layering": 2, "complexity": 1, "vocabulary": 1, "reuse": 2, "duplication": 1 },
-  "cycles": { "maxComponentFiles": 50 },
-  "complexity": { "ccnThresholds": [10, 20], "nlocThreshold": 80 },
-  "clones": { "windowTokens": 25, "winnow": 20, "maxFiles": 10, "minFingerprints": 2, "gapLines": 4 },
-  "reuse": { "sharedRoots": ["frontend/src/lib/", "common/", "packages/"], "minNameLength": 8 },
+  "detectors": ["cycles", "facade", "layering", "complexity", "reuse", "duplication"],
+  "weights": { "cycles": 3, "facade": 5, "layering": 3, "complexity": 2, "vocabulary": 1, "reuse": 2, "duplication": 1 },
+  "cycles": { "maxCycleLength": 4 },
+  "complexity": { "ccnThresholds": [10, 20], "nlocThreshold": 60 },
+  "clones": { "windowTokens": 25, "winnow": 20, "maxFiles": 3, "minFingerprints": 3, "gapLines": 4 },
+  "reuse": { "minNameLength": 8, "maxDefinitions": 2 },
   "vocabulary": { "termFiles": "docs/harvest" }
 }

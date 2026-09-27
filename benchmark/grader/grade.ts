@@ -10,11 +10,12 @@ import type { Detector, DetectorResult, GradeContext } from "./context.ts";
 import { complexity } from "./detectors/complexity.ts";
 import { cycles, facade } from "./detectors/imports.ts";
 import { layering } from "./detectors/layering.ts";
-import { duplication, reuse } from "./detectors/reuse.ts";
+import { duplication } from "./detectors/clones.ts";
+import { reuse } from "./detectors/reuse.ts";
 import { vocabulary } from "./detectors/vocabulary.ts";
-import { FingerprintCache, FingerprintIndex } from "./fingerprints.ts";
+import { FingerprintCache, fingerprintIndex } from "./fingerprints.ts";
 import { importGraphOf } from "./graph.ts";
-import { sharedSymbolsAt, type SharedSymbols } from "./symbols.ts";
+import { symbolIndex } from "./symbols.ts";
 import type { DetectorName } from "./violations.ts";
 
 export type ChangedFileSummary = { path: string; addedLines: number };
@@ -28,13 +29,9 @@ export async function createGrader(repository: string, config: GraderConfig, cac
   const directory = cacheDirectory ?? join((await git(repository, ["rev-parse", "--path-format=absolute", "--git-common-dir"])).trim(), "uml-pr-review");
   const indexer = createRepositoryIndexer();
   const fingerprintCache = new FingerprintCache(directory, { windowTokens: config.clones.windowTokens, winnow: config.clones.winnow });
-  const fingerprintIndex = new FingerprintIndex(repository, fingerprintCache);
+  const fingerprints = fingerprintIndex(repository, fingerprintCache);
   const resultCache = new BlobCache(directory);
-  const sharedByCommit = new Map<string, Promise<SharedSymbols>>();
-  const sharedSymbols = (commit: string) => {
-    if (!sharedByCommit.has(commit)) sharedByCommit.set(commit, sharedSymbolsAt(repository, commit, config.reuse.sharedRoots));
-    return sharedByCommit.get(commit)!;
-  };
+  const symbols = symbolIndex(repository, resultCache);
 
   return {
     async grade(base, head) {
@@ -44,14 +41,13 @@ export async function createGrader(repository: string, config: GraderConfig, cac
         change,
         config,
         graphs: once(async () => ({ before: importGraphOf(await indexer.index(repository, { commit: base })), after: importGraphOf(await indexer.index(repository, { commit: head })) })),
-        fingerprintsAtBase: once(() => fingerprintIndex.at(base)),
+        fingerprintsAtBase: once(() => fingerprints.at(base)),
+        symbolsAtBase: once(() => symbols.at(base)),
         fingerprintCache,
-        sharedSymbols: () => sharedSymbols(base),
         resultCache,
       };
       const results: Partial<Record<DetectorName, DetectorResult>> = {};
       for (const name of config.detectors) results[name] = await detectors[name](context);
-      sharedByCommit.clear();
       return {
         base,
         head,

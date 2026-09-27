@@ -1,8 +1,8 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { git, listBlobs, readBlobs, type TreeEntry } from "../../src/architecture/index/git.ts";
-import { isProductionSource } from "./change.ts";
+import { readBlobs, type TreeEntry } from "../../src/architecture/index/git.ts";
+import { InvertedTreeIndex } from "./tree-index.ts";
 
 export type Fingerprint = { hash: number; line: number };
 export type FingerprintSettings = { windowTokens: number; winnow: number };
@@ -158,62 +158,9 @@ function decoded(data: Uint8Array): Fingerprint[] {
   return Array.from({ length: values.length / 2 }, (_, index) => ({ hash: values[index * 2]!, line: values[index * 2 + 1]! }));
 }
 
-export type RepositoryFingerprints = { tree: string; filesWith(hash: number): string[] };
-
-export class FingerprintIndex {
-  private tree: string | undefined;
-  private readonly hashesByPath = new Map<string, Set<number>>();
-  private readonly pathsByHash = new Map<number, string[]>();
-
-  constructor(
-    private readonly repository: string,
-    private readonly cache: FingerprintCache,
-  ) {}
-
-  async at(commit: string): Promise<RepositoryFingerprints> {
-    const tree = (await git(this.repository, ["rev-parse", `${commit}^{tree}`])).trim();
-    if (tree !== this.tree) await (this.tree === undefined ? this.build(tree) : this.update(this.tree, tree));
-    this.tree = tree;
-    return { tree, filesWith: (hash) => this.pathsByHash.get(hash) ?? [] };
-  }
-
-  private async build(tree: string): Promise<void> {
-    const entries = (await listBlobs(this.repository, tree)).filter(({ path }) => isProductionSource(path));
-    const fingerprints = await this.cache.ofBlobs(this.repository, entries);
-    for (const { path, sha } of entries) this.add(path, fingerprints.get(sha) ?? []);
-  }
-
-  private async update(from: string, to: string): Promise<void> {
-    const output = await git(this.repository, ["diff-tree", "-r", "-z", "--no-renames", from, to]);
-    const fields = output.split("\0");
-    const added: TreeEntry[] = [];
-    for (let index = 0; index + 1 < fields.length; index += 2) {
-      const [mode, , , sha] = fields[index]!.slice(1).split(" ");
-      const path = fields[index + 1]!;
-      if (!isProductionSource(path)) continue;
-      this.remove(path);
-      if (!/^0+$/.test(sha!)) added.push({ mode: mode!, sha: sha!, path });
-    }
-    const fingerprints = await this.cache.ofBlobs(this.repository, added);
-    for (const { path, sha } of added) this.add(path, fingerprints.get(sha) ?? []);
-  }
-
-  private add(path: string, fingerprints: Fingerprint[]): void {
-    const hashes = new Set(fingerprints.map(({ hash }) => hash));
-    this.hashesByPath.set(path, hashes);
-    for (const hash of hashes) {
-      const paths = this.pathsByHash.get(hash);
-      if (paths) paths.push(path);
-      else this.pathsByHash.set(hash, [path]);
-    }
-  }
-
-  private remove(path: string): void {
-    for (const hash of this.hashesByPath.get(path) ?? []) {
-      const remaining = (this.pathsByHash.get(hash) ?? []).filter((other) => other !== path);
-      if (remaining.length > 0) this.pathsByHash.set(hash, remaining);
-      else this.pathsByHash.delete(hash);
-    }
-    this.hashesByPath.delete(path);
-  }
+export function fingerprintIndex(repository: string, cache: FingerprintCache): InvertedTreeIndex<number> {
+  return new InvertedTreeIndex(repository, async (entries) => {
+    const fingerprints = await cache.ofBlobs(repository, entries);
+    return new Map([...fingerprints].map(([sha, found]) => [sha, found.map(({ hash }) => hash)]));
+  });
 }

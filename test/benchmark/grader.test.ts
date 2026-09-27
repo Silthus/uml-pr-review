@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readConfig, type GraderConfig } from "../../benchmark/grader/config.ts";
 import { createGrader, type GradeReport } from "../../benchmark/grader/grade.ts";
-import type { DetectorName } from "../../benchmark/grader/violations.ts";
+import { detectorNames, type DetectorName } from "../../benchmark/grader/violations.ts";
 import { repositoryWithChange, type Files } from "../support/repository.ts";
 
 let scratch: string;
@@ -17,7 +17,7 @@ beforeAll(async () => {
     join(scratch, "terms", "workflows", "rules.json"),
     JSON.stringify({ product: "Workflows", source: { scopes: ["products/workflows"] }, vocabulary: [{ term: "Workflow", avoid: ["hog flow", "hogflow", "flow"] }] }),
   );
-  config = { ...(await readConfig()), vocabulary: { termFiles: join(scratch, "terms") } };
+  config = { ...(await readConfig()), detectors: [...detectorNames], vocabulary: { termFiles: join(scratch, "terms") } };
 });
 
 afterAll(() => rm(scratch, { recursive: true, force: true }));
@@ -110,24 +110,34 @@ describe("vocabulary", () => {
 });
 
 describe("reuse", () => {
-  const shared = `export function formatDurationLabel(seconds: number): string {\n${block("duration")}\n    return String(total_0)\n}\n`;
+  const helper = "def region_to_host(region):\n    return f'https://{region}.posthog.com'\n";
 
-  test("re-declaring a shared symbol and copying shared code are introduced", async () => {
-    const copied = `export function renderDuration(seconds: number): string {\n${block("duration")}\n    return String(total_0)\n}\n`;
+  test("re-declaring a helper that exists elsewhere, and a raw element where Lemon UI exists, are introduced", async () => {
     const report = await grade(
-      { "frontend/src/lib/utils/duration.ts": shared, "frontend/src/scenes/billing/format.ts": "export const label = 'billing'\n" },
-      { "frontend/src/scenes/billing/format.ts": `export const label = 'billing'\n\nexport function formatDurationLabel(): string {\n    return ''\n}\n`, "frontend/src/scenes/billing/render.ts": copied },
+      { "posthog/utils.py": helper, "ee/api/provisioning.py": "def provision():\n    return None\n", "frontend/src/scenes/billing/Plans.tsx": "export function Plans(): JSX.Element {\n    return <div />\n}\n" },
+      {
+        "ee/api/provisioning.py": `def provision():\n    return None\n\n\n${helper.replace("region_to_host", "_region_to_host")}`,
+        "frontend/src/scenes/billing/Plans.tsx": "export function Plans(): JSX.Element {\n    return <button onClick={() => {}}>Upgrade</button>\n}\n",
+      },
     );
-    expect(rules(report, "reuse", "introduced").sort()).toEqual(["shared-clone frontend/src/scenes/billing/render.ts:2", "shared-name frontend/src/scenes/billing/format.ts:3"]);
+    expect(rules(report, "reuse", "introduced").sort()).toEqual(["name-twin ee/api/provisioning.py:5", "raw-element frontend/src/scenes/billing/Plans.tsx:2"]);
+    expect(report.detectors.reuse?.introduced.find(({ rule }) => rule === "name-twin")?.message).toContain("posthog/utils.py");
   });
 
-  test("replacing the copy with an import of the shared helper removes it", async () => {
-    const copy = `export function renderDuration(seconds: number): string {\n${block("duration")}\n    return String(total_0)\n}\n`;
+  test("replacing the twin with an import of the existing helper removes it", async () => {
     const report = await grade(
-      { "frontend/src/lib/utils/duration.ts": shared, "frontend/src/scenes/billing/render.ts": copy },
-      { "frontend/src/scenes/billing/render.ts": "import { formatDurationLabel } from 'lib/utils/duration'\n\nexport const renderDuration = formatDurationLabel\n" },
+      { "posthog/utils.py": helper, "ee/api/provisioning.py": `def provision():\n    return None\n\n\n${helper}` },
+      { "ee/api/provisioning.py": "from posthog.utils import region_to_host\n\n\ndef provision():\n    return region_to_host\n" },
     );
-    expect(rules(report, "reuse", "removed")).toEqual(["shared-clone frontend/src/scenes/billing/render.ts:2"]);
+    expect(rules(report, "reuse", "removed")).toEqual(["name-twin ee/api/provisioning.py:5"]);
+    expect(rules(report, "reuse", "introduced")).toEqual([]);
+  });
+
+  test("a name declared in many places is a convention, not a twin", async () => {
+    const report = await grade(
+      { "a/one.py": "def get_queryset_for(x):\n    return x\n", "b/two.py": "def get_queryset_for(x):\n    return x\n", "c/three.py": "def get_queryset_for(x):\n    return x\n", "d/four.py": "VALUE = 1\n" },
+      { "d/four.py": "VALUE = 1\n\n\ndef get_queryset_for(x):\n    return x\n" },
+    );
     expect(rules(report, "reuse", "introduced")).toEqual([]);
   });
 });

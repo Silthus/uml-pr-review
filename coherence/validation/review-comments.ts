@@ -39,7 +39,7 @@ export function humanReviewComments(feedback: PullRequestFeedback[], scope: stri
 
 export function classificationPacket(comments: ReviewComment[]): string {
   return comments
-    .map(({ id, pr, path, body }) => [`### ${id}`, `PR #${pr}${path ? `, file ${path}` : ", review body"}`, body.length > bodyLimit ? `${body.slice(0, bodyLimit)} [...]` : body].join("\n"))
+    .map(({ id, pr, path, body }) => [`<comment id="${id}">`, `PR #${pr}${path ? `, file ${path}` : ", review body"}`, body.length > bodyLimit ? `${body.slice(0, bodyLimit)} [...]` : body, "</comment>"].join("\n"))
     .join("\n\n");
 }
 

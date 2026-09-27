@@ -35,7 +35,7 @@ export async function locateFixes(repository: string, comments: CorpusComment[],
   return comments.map(({ id }) => located.get(id)!);
 }
 
-async function fetchHeads(repository: string, prs: number[], log: (line: string) => void): Promise<void> {
+export async function fetchHeads(repository: string, prs: number[], log: (line: string) => void): Promise<void> {
   const fetched = new Set((await git(repository, ["for-each-ref", "--format=%(refname:lstrip=3)", `refs/uml-pr-review/${refNamespace}/`])).split("\n").filter(Boolean).map(Number));
   const missing = prs.filter((pr) => !fetched.has(pr));
   for (let start = 0; start < missing.length; start += fetchChunk) {

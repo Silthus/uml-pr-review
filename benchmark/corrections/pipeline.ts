@@ -43,6 +43,22 @@ export async function prepareConfirmation(workspace: Workspace): Promise<string>
   return `${candidates.length} first-pass candidates in ${packets.length} confirmation packets`;
 }
 
+export async function prepareGaps(workspace: Workspace, stage: typeof labelStages.firstPass | typeof labelStages.confirm): Promise<string> {
+  const firstPass = stage === labelStages.firstPass;
+  const items = firstPass ? await readComments(workspace) : await firstPassCandidates(workspace, true);
+  const labelled = firstPass ? await readLabels(workspace.labels, stage, firstPassLabelSchema) : await readLabels(workspace.labels, stage, confirmationLabelSchema);
+  const missing = items.filter(({ id }) => !labelled.has(id));
+  const prefix = await freshPrefix(packetDirectory(workspace), `${stage}-gap`);
+  const packets = await writePackets(packetDirectory(workspace), prefix, missing, firstPass ? sizes.firstPass : sizes.confirm);
+  return `${missing.length} unlabelled ${stage} items${packets.length > 0 ? ` in ${packets.join(" ")}` : ""}`;
+}
+
+async function freshPrefix(directory: string, base: string): Promise<string> {
+  for (let round = 1; ; round++) {
+    if (!(await Bun.file(join(directory, `${base}${round}-001.md`)).exists())) return `${base}${round}`;
+  }
+}
+
 export async function prepareRecallCheck(workspace: Workspace): Promise<string> {
   const sample = await recallSample(workspace);
   const packets = await writePackets(packetDirectory(workspace), "recall", sample, sizes.recall);

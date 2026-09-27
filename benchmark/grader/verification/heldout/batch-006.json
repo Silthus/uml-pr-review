@@ -1,0 +1,22 @@
+[
+  {"id": "gh:100066:4019485543", "addressed": "yes", "note": "Changes flag_dependency_properties and _v1_properties to return list[FlagProperty], folding the generator helper into one list comprehension and dropping the non-generator comment."},
+  {"id": "gh:94553:3962143975", "addressed": "partly", "note": "Removes the duplicate TextChoices classes and derives serializer choices from the Literal via get_args; the literal is kept rather than removed, but dual maintenance ends."},
+  {"id": "gh:100112:4016321590", "addressed": "partly", "note": "returnVariable selector now prefers the resolved name from collectNotebookDataframeNodes(content); still computed per insight logic, no shared memoized selector in notebookLogic."},
+  {"id": "gh:87609:3855721915", "addressed": "no", "note": "Only removes the legendInteractive prop from the chart in this file; the inline summary card is not folded into RequestUsageSummaryCard."},
+  {"id": "gh:96064:3963023875", "addressed": "yes", "note": "Replaces the hand-rolled loop in parseProjectFlag with node:util parseArgs (strict, multiple string option), keeping the repeat-count and positive-integer checks."},
+  {"id": "gh:93773:3939649948", "addressed": "yes", "note": "Routes the description-only branch through listOrCount so it collapses to a count past the limit, and adds a test with four description changes."},
+  {"id": "gh:94196:3929093208", "addressed": "yes", "note": "_visible_task_queryset uses filter_queryset_by_access_level; edit/restore/access checks use check_access_level_for_object; assignee gets an object-level editor grant on assignment."},
+  {"id": "gh:98762:4073481541", "addressed": "yes", "note": "Adds a committing() context manager on the resumable source manager and wraps save_state in it, replacing the explicit commit call."},
+  {"id": "gh:94196:3929093199", "addressed": "yes", "note": "Drops the dangerously_get_permissions override and CustomerTaskPermission; assignee access now written as object-level AccessControl rows via set_object_access_control."},
+  {"id": "gh:101256:4021303010", "addressed": "yes", "note": "Adds _required_backfill_stamps helper (dict keyed by backfill kind) used by both is_flag_compatible and realtime_ready_at, removing the duplicated mapping and dead else."},
+  {"id": "gh:76933:3722137415", "addressed": "yes", "note": "Adds unique (id, dataset, team) constraints and composite foreign keys tying dataset item version's dataset_id to its item and revision, then validates them."},
+  {"id": "gh:77848:3722038654", "addressed": "no", "note": "Refactors evaluation API calls into patchEvaluation/listAllEvaluations and adds restore action, but deletion still uses a hand-rolled lemonToast with undo, not deleteWithUndo."},
+  {"id": "gh:87049:3846379679", "addressed": "yes", "note": "Builds _FIX_WRITERS_BY_CACHE_TYPE from get_args(CacheType) plus flag definitions, with flags as the single multi-writer special case."},
+  {"id": "gh:93579:3927258392", "addressed": "yes", "note": "Moves the tooltip text onto the LemonButton tooltip prop and removes the separate Tooltip/IconInfo element."},
+  {"id": "gh:101362:4028813696", "addressed": "yes", "note": "Adds _checked_connect_host helper used by _pinned_ssh_host, pinned_connect_host and _check_direct_host, with a uniform error fallback."},
+  {"id": "gh:74913:3692996855", "addressed": "yes", "note": "Splits into create and update serializers with non-null required cimd_url, read serializer marks it read-only, get_serializer_class picks by action; adds PATCH binding for legacy tokens."},
+  {"id": "gh:78977:3738244192", "addressed": "no", "note": "Adds an event restriction service handle and wait_for_restrictions_loaded helper to the test server; next_message helpers are not deduplicated."},
+  {"id": "gh:106413:4108864305", "addressed": "yes", "note": "Defines READINESS_CHUNKS Q in backfill models and uses it in finalize, inventory, realtime_state and the parity oracle, which now filters readiness chunks."},
+  {"id": "gh:84543:3806469414", "addressed": "yes", "note": "Extracts the nested ternary into a getScheduleDisabledReason function with early returns and passes its result to disabledReason."},
+  {"id": "gh:84886:3845938015", "addressed": "yes", "note": "Gives --team-id nargs='+', deletes --team-ids and its comma parsing and guards, and resolves teams into a TeamSelection."}
+]

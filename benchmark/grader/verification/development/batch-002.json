@@ -1,0 +1,22 @@
+[
+  {"id": "gh:67131:3501769894", "addressed": "partly", "note": "Regenerated defs drop the Signals-category products-enable tool after enablement moved to the core API; the core product-enablement-create tool is added but disabled."},
+  {"id": "gh:72667:3676302842", "addressed": "yes", "note": "Removes in-component per-index series summing; data prop is now the number source and series is visual-only, so callers pass aggregated data in."},
+  {"id": "gh:66684:3492312823", "addressed": "yes", "note": "Smoke script drops hand-rolled .env parser, calls load_dotenv and ensure_cloudflare_configured(Settings()) for api_base and key."},
+  {"id": "gh:63485:3415677794", "addressed": "partly", "note": "Renames tool identifier create_parser_recipe to create_ai_trace_parser; hook name useCustomParserMaxTool and other Max naming remain."},
+  {"id": "gh:53003:3021985090", "addressed": "yes", "note": "Router registration renamed from signal_grouping_pause to signal_processing with SignalProcessingViewSet; viewset restructured as a resource."},
+  {"id": "gh:59907:3311199980", "addressed": "yes", "note": "Moves ID-JAG helpers out of auth-errors into a new lib/id-jag.ts module and imports isIdJagAccessToken from there."},
+  {"id": "gh:72021:3605401066", "addressed": "yes", "note": "Extracts per-leaf loop into apply_tile_to_leaves returning a TileApplication struct; ordered commit/compose/produce/mark stays inline."},
+  {"id": "gh:65591:3473284605", "addressed": "no", "note": "Changes Python score aggregation (fallback from label/score, neutral when no signal) and adds a labels constant; both SQL queries keep duplicated projection."},
+  {"id": "gh:60985:3347278071", "addressed": "yes", "note": "Adds shared lib/utils/parseMarkdownToTipTap used by both the paste handler extension and the markdown-table migration."},
+  {"id": "gh:61940:3401217258", "addressed": "yes", "note": "Replaces manual model_activity_signal dispatch in save with ModelActivityMixin on OAuthApplication; adds signal handler registration."},
+  {"id": "gh:56729:3160773257", "addressed": "yes", "note": "Drops the cdc_enabled check; always calls cleanup_cdc_resources_on_deletion on the source impl, postgres source decides itself."},
+  {"id": "gh:61545:3435490497", "addressed": "no", "note": "Refactors research output into old/new artefact lists and fail-loud parsing; reviewers are still derived from findings, agent does not set them directly."},
+  {"id": "gh:52410:3014073886", "addressed": "yes", "note": "Removes local _has_legacy_metrics and reuses experiment_has_legacy_metrics from the experiments models module."},
+  {"id": "gh:64173:3426775655", "addressed": "yes", "note": "Replaces icontains run search with shared apply_trigram_search helper on branch/run_type, with exact SHA prefix and PR number; adds trgm migration."},
+  {"id": "gh:70883:3617301030", "addressed": "yes", "note": "Renames workflow class, inputs, workflow type string to reconcile-precalculated-data and env vars to RECONCILE_PRECALCULATED_DATA_*."},
+  {"id": "gh:52408:3184772783", "addressed": "no", "note": "Extracts resolve_effective_team_id and adds parent_team_id param to for_team; the unscoped Manager attribute and its comment are unchanged."},
+  {"id": "gh:72547:3623309746", "addressed": "yes", "note": "Removes pull_request_target label-docs job from inkeep workflow and moves docs labeling into the existing auto-assign-labels title script."},
+  {"id": "gh:70603:3579499403", "addressed": "yes", "note": "Drops the eval-time check_ongoing_interval/upper-bound guard in MetricsExtractor, relying on the existing metrics alert config validation."},
+  {"id": "gh:52409:2994865103", "addressed": "partly", "note": "Extracts context-menu rendering into getGridItemContextMenu and keys loading by kind; no GridColumn component or keyboard-nav hook extracted."},
+  {"id": "gh:66684:3492313828", "addressed": "yes", "note": "Adds is_cloudflare_configured in cloudflare.py and model_registry's _cloudflare_configured delegates to it, dropping the getattr guards."}
+]

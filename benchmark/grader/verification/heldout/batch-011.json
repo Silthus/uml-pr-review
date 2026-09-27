@@ -1,0 +1,22 @@
+[
+  {"id": "gh:97805:3973431546", "addressed": "no", "note": "Adds emailToReveal/actorEmailToRevealForLogItem and gates the avatar tooltip on it; the tooltip stays inline, no shared avatar component extracted."},
+  {"id": "gh:87609:3846876861", "addressed": "yes", "note": "Moves aggregation into a new request_usage module with a parse_sdk_breakdown helper; the loop now parses, adds per-SDK counts, and adds the remainder to other."},
+  {"id": "gh:74433:3708047395", "addressed": "no", "note": "Adds a memoized for_team_ids method building per-team UserAccessControl instances; none_denied_object_ids is unchanged and takes no predicate."},
+  {"id": "gh:79461:3761076692", "addressed": "no", "note": "Removes the batch_failure helper and its test and builds publish results in the Kafka enqueue loop; Sink trait input stays Kafka-shaped."},
+  {"id": "gh:92797:3907689809", "addressed": "yes", "note": "Drops the live import and defines a frozen VARIANT_ROLLOUT_SUM_TOLERANCE = 1e-9 inside migration 0015; also adds a hash-dependence guard."},
+  {"id": "gh:102106:4041977854", "addressed": "yes", "note": "Removes the setAccessControlsApply action and its afterMount dispatch; accessControlsApply is now a reducer whose default reads getAppContext()."},
+  {"id": "gh:104519:4080520900", "addressed": "yes", "note": "Renames TransformationGlobalsValidator to TemplateGlobalsValidator with an updated docstring and updates all call sites."},
+  {"id": "gh:102958:4065464278", "addressed": "yes", "note": "Changes the update() decorator to @approval_gate(list(V2_APPROVAL_ACTIONS)), plus unrelated v2 validation and locking changes."},
+  {"id": "gh:77334:3713584681", "addressed": "yes", "note": "Deletes the changelog pointer line from compact-instructions.md; the exec command reference already carries it via basic-functionality.md."},
+  {"id": "gh:74228:3716136586", "addressed": "no", "note": "Moves the outputs completeness check before the broker ping and downgrades its log to info; the duplicated routing match is untouched."},
+  {"id": "gh:102189:4039464238", "addressed": "yes", "note": "Turns MAX_CONFIG_BYTES into a Lazy<usize> static read from MAX_FEATURE_FLAG_FILTER_SIZE_BYTES with a 512 KiB default; also extracts field lists."},
+  {"id": "gh:95194:3961877240", "addressed": "yes", "note": "Seeders now call a public module-level read_flag_state from scorers.py instead of FlagStateUnchanged._read_state."},
+  {"id": "gh:76416:3702464428", "addressed": "yes", "note": "PiExtensionError is now defined as Pi's ExtensionError intersected with a type tag instead of a hand-written interface."},
+  {"id": "gh:104248:4070548913", "addressed": "yes", "note": "Adds a field-level validate_short_link_domain on the serializer and removes the create()-only check, so PUT/PATCH are validated."},
+  {"id": "gh:81441:3794794453", "addressed": "no", "note": "Removes the redundant enable/disable menu item and adds a reentry guard to the toggle listener; duplicate flow is not changed."},
+  {"id": "gh:82913:3821925157", "addressed": "yes", "note": "Replaces the shutdown budget consts with envconfig fields plus accessors and a startup validate_shutdown_budgets check."},
+  {"id": "gh:87609:3855721871", "addressed": "yes", "note": "Imports USAGE_EVENT_NAMES and passes the decide/local event names as query parameters instead of hardcoded SQL strings."},
+  {"id": "gh:101980:4040074109", "addressed": "yes", "note": "Adds summarizeDescriptionChange with lowercase fragments; describeDescriptionChange now returns summary too and insight/dashboard describers use it."},
+  {"id": "gh:101499:4028931064", "addressed": "no", "note": "Only edits a comment and catches RecursionError in _encoded_size; the operator classification sets are not moved to a shared home."},
+  {"id": "gh:92769:3914063744", "addressed": "yes", "note": "Renames the MCP tool inbox-reports-get-inbox to self-driving-inbox-get and updates its title, description and generated definitions."}
+]

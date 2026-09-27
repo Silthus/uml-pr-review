@@ -1,0 +1,22 @@
+[
+  {"id": "gh:89643:3911783677", "addressed": "no", "note": "Splits the ISP metric fan-out into query-building, collection and row-derivation helpers; IspSendingMetrics stays a hand-built class, no boto3 SES type imported."},
+  {"id": "gh:87609:3855721857", "addressed": "yes", "note": "Item serializer becomes a DataclassSerializer over FeatureFlagRequestUsage with help_text via extra_kwargs, keeps the component name, re-exports the dataclass, list() serializes via it."},
+  {"id": "gh:84976:3812754883", "addressed": "yes", "note": "Replaces the literal custom_agent ai_stage string with the STEP_CUSTOM_AGENT constant."},
+  {"id": "gh:74761:3687595761", "addressed": "no", "note": "Adds Prometheus write/violation counters and a once-per-write bypass counter; the incoming field still validates structurally, so the double pass and double log remain."},
+  {"id": "gh:92009:3899527166", "addressed": "yes", "note": "Scanner takes run-wide ConditionAnalyses as a parameter and only derives the per-chunk projection; prepare/execute build it once per run; stale comment replaced."},
+  {"id": "gh:98614:3982369819", "addressed": "partly", "note": "Renames live_* counts and JSON keys to compared_*, redefining the concept (also excludes encrypted and structurally invalid flags) rather than adopting the evaluable name."},
+  {"id": "gh:102914:4046782174", "addressed": "yes", "note": "Switches the stalled-schedules gauge from livemax to livemostrecent and rewrites the comment, dropping the beat-pod wording."},
+  {"id": "gh:93773:3939649971", "addressed": "yes", "note": "Condition set card now computes rollout via the shared rolloutOf helper instead of an inline null-to-100 fallback."},
+  {"id": "gh:98624:3982028428", "addressed": "yes", "note": "Adds a separate sweep_keys_not_claimed_total counter for rescheduled/cancelled keys, keeping sweep_keys_dropped_total summable as lost evictions only."},
+  {"id": "gh:83342:3801939531", "addressed": "yes", "note": "Extracts a shared verifyScopedWorkflowJwt helper used by reschedule and cancel routes, and replaces hand-rolled body checks with a zod schema."},
+  {"id": "gh:76111:3714167504", "addressed": "yes", "note": "Moves verify_marker_topic into app::completion with a typed error carrying operator guidance, shared by daemon and CLI, backed by a new metadata-only reachability probe."},
+  {"id": "gh:85191:3842625391", "addressed": "yes", "note": "BatchingPipeline feed accepts a batch context returned from next; gRPC stream id and seq move from element context into GrpcBatchContext."},
+  {"id": "gh:91844:3897270857", "addressed": "yes", "note": "in_op test helper now delegates to compare(needle, haystack, OP_IN)."},
+  {"id": "gh:103151:4069811512", "addressed": "yes", "note": "Introduces a frozen QueryRun dataclass holding the shared run fields and event properties, passed to reporting/execution helpers instead of long kwarg lists."},
+  {"id": "gh:103145:4065875888", "addressed": "yes", "note": "Pinner drops its private _is_action and uses an is_action_key helper exported from parity/eligibility.py."},
+  {"id": "gh:76416:3702595351", "addressed": "yes", "note": "Removes the handrolled session_reset, dialog_expired and state_snapshot extension events; PiExtensionError now derives from the SDK ExtensionError type."},
+  {"id": "gh:85987:3833117163", "addressed": "yes", "note": "Replaces the hand-rolled chevron expand/collapse rows with nested LemonCollapse panels."},
+  {"id": "gh:98040:4017878205", "addressed": "yes", "note": "Adds a shared TrinoCompilationBudget node budget used by scalar CTE and select-alias lowerers, plus a max generated SQL length check in the Trino printer."},
+  {"id": "gh:76416:3702660527", "addressed": "yes", "note": "Router onExtensionEvent subscription now just delegates to a PiSessionService extensionEvents(taskId, signal) method; iteration logic removed from router."},
+  {"id": "gh:84587:3811751733", "addressed": "yes", "note": "Drops the private ModelCost interface and imports the canonical one from providers/types; documents why cache_write_1h_token has no sync pair."}
+]

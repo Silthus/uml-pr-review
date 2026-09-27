@@ -1,0 +1,22 @@
+[
+  {"id": "gh:53427:3073067940", "addressed": "yes", "note": "get_primary_keys_for_schemas drops its inline information_schema query and calls the existing get_primary_key_columns helper."},
+  {"id": "gh:64506:3441819399", "addressed": "yes", "note": "Plan doc guidelines rewritten so per-product directories live under src/ingestion/pipelines/<name>/ instead of lanes/."},
+  {"id": "gh:57497:3184342753", "addressed": "yes", "note": "Adds DEFAULT_BUCKET_OPTION derived from BUCKET_OPTIONS; DEFAULT_BUCKET_MINUTES, DEFAULT_CONFIG and getBucketOption fallback now derive from it."},
+  {"id": "gh:55620:3124095485", "addressed": "no", "note": "Throttles verification token last_used_at updates via a cache sentinel and makes apply_provisioning_defaults public; blocklist storage untouched."},
+  {"id": "gh:61719:3377635853", "addressed": "yes", "note": "Renames the GET-only tuple to GET_DOWNGRADE_ACTIONS with a method-aware comment and restructures the permission gating around it."},
+  {"id": "gh:60699:3391829532", "addressed": "yes", "note": "Creates constants.tsx exporting MATCHING_ESTIMATE_TOOLTIP JSX and replaces both inline tooltip copies with it."},
+  {"id": "gh:58094:3210223707", "addressed": "no", "note": "Only removes UrlFetchFailedError/EmptyContentError except branches from two view actions; no validated_request decorator introduced."},
+  {"id": "gh:65601:3560933347", "addressed": "yes", "note": "Removes the runtime fetch of protected-resource metadata and derives MCP consent scopes locally from committed tool definitions and supported scopes."},
+  {"id": "gh:53643:3119288625", "addressed": "no", "note": "Changes Event::headers to return CapturedEventHeaders and removes build_context_headers; serialize_into still returns Result<(), String>."},
+  {"id": "gh:62592:3466100713", "addressed": "yes", "note": "Removes the standalone DebugSymbols command and exposes native ELF upload as an Upload subcommand of symbol-sets."},
+  {"id": "gh:62199:3382611991", "addressed": "no", "note": "Moves the cookieless Redis pool and manager into the shared services scope of the combined server; servers are not split per pipeline."},
+  {"id": "gh:54251:3073116113", "addressed": "partly", "note": "Extracts a shared _map_arrow_type helper used by both the constructor loop and add_field, removing the duplicated type mapping."},
+  {"id": "gh:58460:3238036143", "addressed": "no", "note": "Makes build_command optional/nullable with inferred defaults; the github_pat serializer field remains."},
+  {"id": "gh:67117:3581048862", "addressed": "yes", "note": "Replaces both table constants with a single WAREHOUSE_SOURCE_SETUP map keyed by signal source, including the CI tables."},
+  {"id": "gh:56018:3138907094", "addressed": "yes", "note": "Moves SDK_TYPES into backend constants so the API module no longer imports from the dags module."},
+  {"id": "gh:64506:3441663179", "addressed": "no", "note": "Renames lanes/ to pipelines/ with single-word names; logs and traces stay under src/ingestion/pipelines/logs."},
+  {"id": "gh:67539:3512086398", "addressed": "yes", "note": "Adds bypass_warehouse_access_control param to to_printed_hogql and uses it instead of building a HogQLContext manually."},
+  {"id": "gh:67940:3515427365", "addressed": "yes", "note": "Removes set_pending (and reconcile/paused tracking); callers re-absorb still-full holdovers via absorb."},
+  {"id": "gh:61760:3361802673", "addressed": "partly", "note": "Renames the helper to _maybe_create_provisioned_pat; the gate stays inside the function rather than moving to call sites."},
+  {"id": "gh:60447:3322712961", "addressed": "yes", "note": "Adds a kind label to the db write failure counter, classifying errors as transient or logical via a new isTransientPgError helper."}
+]

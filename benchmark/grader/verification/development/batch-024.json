@@ -1,0 +1,22 @@
+[
+  {"id": "gh:72799:3632461369", "addressed": "no", "note": "Removes scope-ceiling seeding and narrowing from core.py and adds login.py; both CODE_CHALLENGE_RE in core.py and the private _CODE_CHALLENGE_RE in views.py remain."},
+  {"id": "gh:51875:2998199827", "addressed": "yes", "note": "Deletes sync_next_run and all post_save signals on HogFlow/HogFlowSchedule so the scheduler alone owns next_run_at."},
+  {"id": "gh:60729:3362024650", "addressed": "yes", "note": "Adds an early return for hog evaluations in getProviderKeyIssue, so the wrapper now adds behaviour over getUnhealthyProviderKey."},
+  {"id": "gh:60565:3325983389", "addressed": "no", "note": "Only reformats an import of health constants into a multi-line list; nothing is moved into a separate file."},
+  {"id": "gh:59468:3362858915", "addressed": "yes", "note": "Drops the top-level dataWarehouseTable globals field and puts the source table on event.properties.$source_table, matched by a consumer eligibility filter."},
+  {"id": "gh:72353:3622649713", "addressed": "yes", "note": "Deletes the local heavy-property set and imports HEAVY_PROPERTY_NAMES from posthog/hogql_queries/ai/utils.py instead."},
+  {"id": "gh:67468:3509259587", "addressed": "yes", "note": "Adds SCOPES_IMPLYING_FEATURE_FLAG_WRITE in scopes.tsx, used by both the scope warnings and the auto-select listener; the preset path is not changed."},
+  {"id": "gh:60223:3364326665", "addressed": "no", "note": "Moves the flush out of shutdown into flushAndProduceMessages and makes shutdown throw on dirty entries; no cache class with per-batch tracking."},
+  {"id": "gh:54056:3074938060", "addressed": "partly", "note": "Removes the task-run artefact and links tasks through a new SignalReportTask model with a relationship type, not Task.signal_report plus origin_product."},
+  {"id": "gh:56729:3155010068", "addressed": "yes", "note": "Drops the postgres schema-propagation branch from the API serializer and replaces it with a config precedence change in the postgres source; CDC delete cleanup moves to the source too."},
+  {"id": "gh:72849:3644746526", "addressed": "yes", "note": "Adds a shared finish_node_run helper in sql_v2_runs.py and replaces the guarded update plus record logic in the view, direct run, and temporal activity."},
+  {"id": "gh:70603:3580234085", "addressed": "yes", "note": "Removes the evaluation-time check_ongoing_interval/condition guard from MetricsExtractor and relies on save-time validation."},
+  {"id": "gh:55058:3100641794", "addressed": "partly", "note": "Trims the README grouping docs to a pointer at bin/mprocs.yaml, not hogli, and disables the g binding when no group dimensions exist."},
+  {"id": "gh:68089:3521681794", "addressed": "yes", "note": "Extracts the setup status into a shared setupWizardStatusLogic that mounts installationProgressLogic for live progress; sampleDataStateLogic becomes a gate."},
+  {"id": "gh:53253:3045043278", "addressed": "yes", "note": "Moves the _WriteTracker dataclass and the inline helper functions to module level, sharing state through a new _CDCExtractContext dataclass."},
+  {"id": "gh:59468:3347822341", "addressed": "no", "note": "Shows validation errors and an empty-table state in the trigger UI and skips the person lookup; does not force exit_only_at_end or add serializer checks."},
+  {"id": "gh:71293:3594998887", "addressed": "yes", "note": "Groups the seven reschedule fields into a single reschedule config object and updates every use."},
+  {"id": "gh:53643:3119255558", "addressed": "yes", "note": "Removes the unused InFlight variant from Outcome and its match arms, so Outcome holds only resolved states."},
+  {"id": "gh:58013:3414738111", "addressed": "no", "note": "Adds paragraphs to the delete and update descriptions in the separate alerts yaml; the file is kept and the descriptions get longer."},
+  {"id": "gh:67978:3515834226", "addressed": "yes", "note": "Removes PreparedApply and EventSnapshot, inlines the key collection, multi_get, and zip in the loop, and keeps PriorState."}
+]

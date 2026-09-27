@@ -1,0 +1,22 @@
+[
+  {"id": "gh:53437:3052815258", "addressed": "yes", "note": "Replaces native Date comparison of dtstart with dayjs(dtstart).isBefore(dayjs()) in computePreviewOccurrences."},
+  {"id": "gh:58847:3283569401", "addressed": "yes", "note": "Types CustomAgentAssignee.relevant_commits as list[RelevantCommit] imported from posthog.schema instead of list[dict[str, Any]]."},
+  {"id": "gh:53274:3043784933", "addressed": "yes", "note": "Removes useState for deleteModalGroupId; reads value and setter from replayTriggersV2Logic, and moves legacy preview computation into a logic selector."},
+  {"id": "gh:59532:3290760954", "addressed": "yes", "note": "Story now uses ProductKey.AI_OBSERVABILITY for both setProduct and the onboarding URL instead of LLM_ANALYTICS."},
+  {"id": "gh:51241:2957037980", "addressed": "partly", "note": "Adds shared key-builder functions in growth constants used by both Dagster jobs and the health check; still reads Dagster-produced Redis keys rather than computing in Temporal."},
+  {"id": "gh:64565:3440669731", "addressed": "yes", "note": "Exports DEV_GATEWAY_PHS, test imports and asserts against it, and the const's comment cross-references the bash script's DEV_GATEWAY_PHS."},
+  {"id": "gh:60849:3351730429", "addressed": "yes", "note": "Adds _ensure_loaded helper that imports and returns the tools dict; get, get_scopes and get_names all read through it."},
+  {"id": "gh:64629:3441162635", "addressed": "yes", "note": "Workflow now lives under slack_app, activity moved to slack_app/activities/onboarding.py and inputs to slack_app/types.py."},
+  {"id": "gh:62354:3379945665", "addressed": "no", "note": "Adds min/max bounds to weight/confidence and turns severity into a ChoiceField; help_text stays on serializer fields, not moved to the model."},
+  {"id": "gh:51778:2967791421", "addressed": "no", "note": "Renames the bedrock flag to a generic gateway flag and passes provider='bedrock' hardcoded; no flag payload drives provider selection."},
+  {"id": "gh:72746:3626056477", "addressed": "no", "note": "Only adds SQL comments explaining default fillfactor is kept and a follow-up migration would ship a lower value; benchmark DDL remains separate."},
+  {"id": "gh:61443:3357061922", "addressed": "yes", "note": "Removes dispatch of release.yml and moves cargo-dist plan/build/host/publish jobs into release-cli.yml behind the Release environment job."},
+  {"id": "gh:52892:3032054272", "addressed": "no", "note": "Reverts pin icons from triangle icons back to IconPin/IconPinFilled; no logic moved to kea."},
+  {"id": "gh:67981:3516085510", "addressed": "yes", "note": "Deletes duplicate humanize_breakdown_label from alerts formatting and ee utils, consolidating one shared version in hogql insights breakdown utils."},
+  {"id": "gh:63097:3431741964", "addressed": "yes", "note": "Moves elapsedSecondsFrom into lib/utils/dateTimeUtils and imports it; also routes telemetry through eventUsageLogic."},
+  {"id": "gh:61317:3406692606", "addressed": "no", "note": "Only deletes a comment line near the merge-event gate; counter increment and duplicate enabled check remain in place."},
+  {"id": "gh:55534:3137128097", "addressed": "yes", "note": "Deletes detached.py wrapper module; start:wait/start:stop become manifest-declared command types delegating to phrocs."},
+  {"id": "gh:72353:3622658113", "addressed": "yes", "note": "Extracts _get_hog_output_choice_content and _normalize_hog_output_choice helpers from the inline output-choice parsing loop."},
+  {"id": "gh:70599:3582340506", "addressed": "yes", "note": "Backend exposes migrationRequired; components check record/sdk.migrationRequired instead of comparing type to posthog-java."},
+  {"id": "gh:66863:3499110932", "addressed": "yes", "note": "Removes opt-out column from User, adds WebAnalyticsUserConfig model in web_analytics product with its own API and migration."}
+]

@@ -1,0 +1,22 @@
+[
+  {"id": "gh:76416:3702515074", "addressed": "yes", "note": "Extracts all extension lifecycle state and methods out of PiSessionController into a new piExtensionController plus a piExtensionStore, with tests moved accordingly."},
+  {"id": "gh:79495:3789083937", "addressed": "yes", "note": "Exports CLICKHOUSE_MEMORY_LIMIT_ERROR_CODE once from lib/api-error.ts and imports it in both featureFlagReleaseConditionsLogic and EmptyStates, deleting the local copies."},
+  {"id": "gh:95189:3961283869", "addressed": "yes", "note": "Moves the jsonb id-matching docstring onto replay_linked_flag_ids_for_projects and reduces the wrapper's docstring to a one-line pointer."},
+  {"id": "gh:67501:3712551924", "addressed": "yes", "note": "Adds list_property_access_controls to the access_control facade, calls it via a function-level import, and gives _property_rules_response typed keyword args."},
+  {"id": "gh:81020:3761123902", "addressed": "no", "note": "Moves the override ceiling constant out of flag_limits into a DB constraint; root_team_id_for is left public with its original docstring."},
+  {"id": "gh:89643:3911807455", "addressed": "yes", "note": "Splits the long ISP breakdown method into _build_isp_queries, _collect_isp_series and _isp_rows_from_series helpers."},
+  {"id": "gh:96064:3963023878", "addressed": "no", "note": "Adds new scorer tests to the file; the local _session_update/_tool_log helpers stay in place and no shared fixture module is created."},
+  {"id": "gh:85987:3833446548", "addressed": "yes", "note": "Replaces hand-written singular/plural ternaries with pluralize from lib/utils/strings for member and change counts."},
+  {"id": "gh:75086:3681168304", "addressed": "yes", "note": "Renames the monthly_credit_limit field to credit_limit, updates the check constraint, migration, API and quota code."},
+  {"id": "gh:91764:3913231844", "addressed": "partly", "note": "Wraps the ledger in a LedgerShadow and drops the epoch argument from the ledger constructor, but the context still uses the Mutex<Option> setter and e2e epoch wiring."},
+  {"id": "gh:95610:3968554139", "addressed": "no", "note": "Only replaces a local RETURN opcode constant with Operation::Return; has_valid_stored_header stays in cohort-core, nothing moves into hogvm."},
+  {"id": "gh:90214:3882390419", "addressed": "yes", "note": "Deletes the local asSentence helper and imports endWithPunctation from lib/utils/strings at the call site; also reworks rollout sentences."},
+  {"id": "gh:103718:4073996995", "addressed": "yes", "note": "Removes the global composer/welcome override hooks from NotebookBtw and passes composerOverride and welcomeHeadlines as SidePanelRunner props."},
+  {"id": "gh:94532:3939885030", "addressed": "yes", "note": "Moves poll_for_psak_last_used_at into tests/common/mod.rs, keyed by key id, and calls it from both test files."},
+  {"id": "gh:76933:3722137441", "addressed": "yes", "note": "Checks for failed export status with an error toast, routes success through exportsLogic.trackExport with polling, and adds datasetsApi.getExport."},
+  {"id": "gh:82769:3788153959", "addressed": "yes", "note": "Defines TERMINAL_COHORT_BACKFILL_RUN_STATUSES in models/backfill.py derived as the complement of the active tuple and imports it in observe.py."},
+  {"id": "gh:87609:3846876837", "addressed": "yes", "note": "Moves the ClickHouse query and aggregation into backend/request_usage.py, re-exports via the facade, and the presentation viewset calls the facade."},
+  {"id": "gh:81516:3767796413", "addressed": "yes", "note": "Replaces the manual other-variant(s) wording with a pluralize call from lib/utils/strings."},
+  {"id": "gh:82584:3779399492", "addressed": "yes", "note": "Passes storage: electronStorage to the right panel persist config and removes the bespoke merge that re-clamped the width."},
+  {"id": "gh:81433:3794845950", "addressed": "yes", "note": "Deletes GuidedWizardLayout.tsx and splits it into GuidedWizardPanel, GuidedWizardSection and GuidedWizardStepLayout files, dropping the unused divider section."}
+]

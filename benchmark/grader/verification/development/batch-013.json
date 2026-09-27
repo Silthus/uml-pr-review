@@ -1,0 +1,22 @@
+[
+  {"id": "gh:66505:3500580128", "addressed": "yes", "note": "Replaces the safeStringify comparison of cached vs current flag filters with objectsEqual and drops the safeStringify import."},
+  {"id": "gh:54056:3075083214", "addressed": "partly", "note": "Remodels autonomy config into per-user self-scoped configs, removing the OrganizationMembership-based user validation entirely; no User.teams check is added."},
+  {"id": "gh:74972:3680853507", "addressed": "yes", "note": "Deletes the local key normalizers and imports normalizeProviderKey from provider-matching, wrapping it in a small endpointProviderKey helper."},
+  {"id": "gh:69314:3547199782", "addressed": "yes", "note": "Removes hand-rolled role/aria/keyboard handling on LemonTag and makes LemonSwitch the real control with onChange, label, disabledReason and aria-label."},
+  {"id": "gh:64430:3508908579", "addressed": "partly", "note": "Keeps the cohort-level persisted reducer but adds a pointer to columnConfiguratorLogic, an explicit team-scoped storageKey, and moves restore into a selector."},
+  {"id": "gh:75201:3684798788", "addressed": "no", "note": "Keeps the separate person chunk-scan metric and adds a doc comment justifying it; also adds a MetricTimer RAII helper. No kind label added."},
+  {"id": "gh:54435:3092021170", "addressed": "no", "note": "Only changes the raw button's color classes to warning CSS variables for light mode; still a raw button, not LemonButton."},
+  {"id": "gh:75593:3684470427", "addressed": "yes", "note": "Adds a generic CoercedStringListField with overridable error message and max_items to posthog/api/fields.py and subclasses it for the unset keys field."},
+  {"id": "gh:63307:3411967576", "addressed": "yes", "note": "Introduces ACTIVITY_EVENTS_DEFAULT_DATE_FROM constant and uses it in all three places that hardcoded the -24h fallback."},
+  {"id": "gh:57261:3172870073", "addressed": "yes", "note": "Renames the feedback-submit MCP tool to agent-feedback in the tool map, schemas, templates and tests."},
+  {"id": "gh:70136:3588054014", "addressed": "yes", "note": "Removes summary, hypotheses, recommendations and tool call count from the signal extra metadata; also drops verdict weights."},
+  {"id": "gh:64506:3441808437", "addressed": "yes", "note": "Moves the steps directory under ingestion/common/steps and updates all imports across pipelines."},
+  {"id": "gh:71031:3602294771", "addressed": "no", "note": "Adds bounded retry and notFound/retries state for fingerprint resolution; the raw-path decoding in paramsToProps is left in place."},
+  {"id": "gh:66218:3503398589", "addressed": "yes", "note": "Replaces the inline resolved-label guard with withResolvedFlagLabels and adds a test case."},
+  {"id": "gh:60145:3309787629", "addressed": "yes", "note": "Splits config into CookielessManagerConfig and a server config adding Redis keys, and uses the manager config type in the constructor."},
+  {"id": "gh:55079:3109660357", "addressed": "yes", "note": "Moves the real error tracking signal fixture into products/signals/eval/fixtures."},
+  {"id": "gh:51875:2997611446", "addressed": "no", "note": "Splits schedules into separate CRUD endpoints, drops scheduled runs and adds next_run_at; starts_at remains a separate field, not folded into rrule dtstart."},
+  {"id": "gh:73356:3641636084", "addressed": "yes", "note": "Extracts a shared unreadable closure for CaBundleUnreadable and uses it for both the iterator and per-certificate errors."},
+  {"id": "gh:63097:3431742663", "addressed": "yes", "note": "Replaces direct posthog.capture calls with eventUsageLogic report actions for wizard sync detected, finished and dismissed events."},
+  {"id": "gh:62860:3394877218", "addressed": "no", "note": "Only updates the module docstring about HTTP reads being side-effect free; the query still uses all_teams.filter(team_id=...), not for_team."}
+]

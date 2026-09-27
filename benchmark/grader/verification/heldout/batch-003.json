@@ -1,0 +1,22 @@
+[
+  {"id": "gh:85238:3861961208", "addressed": "yes", "note": "Renames gRPC lanes to worker streams across the consumer, including the ack timeout setting and env var to INGESTION_WORKER_STREAM_ACK_TIMEOUT_MS."},
+  {"id": "gh:82175:3775788284", "addressed": "yes", "note": "Adds a local sectionPanel helper taking key, dataAttr, title, count, content and rewrites all three collapse panels to use it."},
+  {"id": "gh:92753:3907958649", "addressed": "yes", "note": "Drops detector_evaluation_ids from the context activity output; the agent activity now loads them by team_id via _load_detector_evaluation_ids."},
+  {"id": "gh:82953:3892338995", "addressed": "no", "note": "Tracks the in-flight flush so stop() waits for it before closing the pool; does not split the service into a separate deployable."},
+  {"id": "gh:91989:3905510055", "addressed": "yes", "note": "Introduces an exported PROSE_LANGUAGE constant in steps.ts and uses it in the Go tab, other docs, and the onboarding renderer."},
+  {"id": "gh:90744:3880686686", "addressed": "yes", "note": "Replaces the inline finish_reason check in reconstructOutputChoice with a call to the shared usableStopReason helper."},
+  {"id": "gh:97846:3987437261", "addressed": "no", "note": "Derives work ownership from claim artefacts and drops the assignment claim FK; the SignalReportPullRequest model stays in place."},
+  {"id": "gh:100044:4016678532", "addressed": "yes", "note": "Moves the claim saved query and claims_enabled onto AccountRelationshipDefinition, removing them from the team config, with a per-definition unique view."},
+  {"id": "gh:100151:4020354066", "addressed": "yes", "note": "Deletes set_first_release_condition_rollout and its tests; the survey sampling task now calls set_release_condition_rollout with index 0."},
+  {"id": "gh:86773:3860149576", "addressed": "yes", "note": "Removes channel FK from SignalReport and adds a channel_assignment status artefact type with a channel FK on the artefact model."},
+  {"id": "gh:90214:3882390412", "addressed": "yes", "note": "Backend records the config route and serializes reason_states_rollout; banner passes it to rolloutSentence instead of reading last_called_at."},
+  {"id": "gh:68818:3575969965", "addressed": "yes", "note": "Adds a hasStaticCohort selector to the warning logic and the component uses it instead of substring-matching the warning text."},
+  {"id": "gh:84276:3804329954", "addressed": "yes", "note": "ready now requires is_materialization_fresh(materialized_at, data_freshness_seconds), a shared freshness predicate also used by execution."},
+  {"id": "gh:86227:3895775839", "addressed": "yes", "note": "Destination icon now comes from the targetTypeOptions lookup by target type instead of per-type conditional icon rendering."},
+  {"id": "gh:75086:3681167703", "addressed": "yes", "note": "Adds a ScannerBudget with a single blocked property (would_exceed of one observation cost) meant for both gates and the API."},
+  {"id": "gh:69041:3739728702", "addressed": "partly", "note": "Extracts the copy popover into a useCellCopyContextMenu hook module, but extractCellText stays exported from LemonTable.tsx."},
+  {"id": "gh:81819:3766611410", "addressed": "yes", "note": "Removes the component's URL/persisted date sync effect; shared and dashboard Kea logics now own dashboard date state, with logic tests."},
+  {"id": "gh:76416:3702674513", "addressed": "yes", "note": "Deletes the piExtensionEditorText.ts one-line wrapper file."},
+  {"id": "gh:77360:3723510648", "addressed": "yes", "note": "Registers the lifecycle sweeper with the lifecycle manager, holds a process scope guard in the task, and listens for shutdown."},
+  {"id": "gh:70803:3658156313", "addressed": "partly", "note": "Keeps the separate file but folds the live widget seed payload type into it and deletes types.ts, so the file holds more than one export."}
+]

@@ -1,0 +1,9 @@
+{
+  "detectors": ["facade", "layering", "complexity", "reuse", "duplication"],
+  "weights": { "cycles": 3, "facade": 5, "layering": 3, "complexity": 2, "vocabulary": 1, "reuse": 2, "duplication": 1 },
+  "cycles": { "maxCycleLength": 8 },
+  "complexity": { "ccnThresholds": [10, 20], "nlocThreshold": 60 },
+  "clones": { "windowTokens": 25, "winnow": 20, "maxFiles": 2, "minFingerprints": 4, "gapLines": 4 },
+  "reuse": { "minNameLength": 8, "maxDefinitions": 2 },
+  "vocabulary": { "termFiles": "docs/harvest" }
+}

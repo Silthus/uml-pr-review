@@ -1,0 +1,22 @@
+[
+  {"id": "gh:69884:3578077178", "addressed": "yes", "note": "Adds appliedCreditBalance and amountDueToday selectors to billingProductLogic; purchase/upgrade modals and addon card labels now read them, making card labels credit-aware."},
+  {"id": "gh:70883:3617301038", "addressed": "no", "note": "Renames workflow/env knobs from events to data, moves filter extraction to filter_storage, adds query SETTINGS; the nested closure logic is not extracted into a pure function."},
+  {"id": "gh:59513:3296439994", "addressed": "yes", "note": "Contract test now asserts the field list equals the keys actually emitted by _serialize_team_to_llm_gateway_policy, alongside reducing the policy fields."},
+  {"id": "gh:64506:3441687672", "addressed": "yes", "note": "Moves recording-api and recording-rasterizer out of the ingestion sessionreplay tree to top-level nodejs/src directories and updates imports."},
+  {"id": "gh:63485:3415623110", "addressed": "yes", "note": "Renames the assistant tool from create_parser_recipe to create_ai_trace_parser across schema, constants, backend tools and tests."},
+  {"id": "gh:54460:3079666773", "addressed": "yes", "note": "Replaces cursor-based initial-load inference with an is_initial_sync parameter passed from the source based on the schema's initial sync state."},
+  {"id": "gh:59390:3281226082", "addressed": "yes", "note": "Drops Chart.js mentions from the hog-charts dates test name and a comment in dates.ts."},
+  {"id": "gh:57321:3185843783", "addressed": "no", "note": "Merge-conflict fix moves early_exit from per-group to flag-level FlagFilters; the field keeps the early_exit name rather than being renamed."},
+  {"id": "gh:56842:3221294546", "addressed": "yes", "note": "Renames the skill to generic diagnosing-stacktrace-symbolication, moves JS guidance to references/javascript.md, and marks the script as JavaScript-only."},
+  {"id": "gh:55298:3165581674", "addressed": "no", "note": "Moves used/sorted properties and condition enrichment into kea selectors; the raw show-all-properties button remains unchanged."},
+  {"id": "gh:70797:3581593053", "addressed": "yes", "note": "Adds a determinator package-rule marking personhog-test-harness affected and gates the CI job on the affected crates output."},
+  {"id": "gh:51866:2977491363", "addressed": "partly", "note": "Drops bespoke scim_* backend log_activity calls in favor of model-signal logs plus a frontend describer and an OrganizationDomain ActivityScope enum entry."},
+  {"id": "gh:68573:3529315211", "addressed": "yes", "note": "Renames the task origin product choice from experiment to experiments across model, migration, service and generated clients."},
+  {"id": "gh:57195:3170174679", "addressed": "yes", "note": "Renames the LogsSamplingRule model and migration to LogsExclusionRule and updates the semgrep rule reference."},
+  {"id": "gh:65692:3467581867", "addressed": "yes", "note": "Removes per-platform account endpoints from integrations, adds an OAuthMixin account-listing method implemented by sources and a generic external data source endpoint."},
+  {"id": "gh:56621:3156699270", "addressed": "yes", "note": "Removes the opensearch profile entries from docker-compose.profiles.yml and adds the profiles directly in docker-compose.dev.yml."},
+  {"id": "gh:69087:3539992979", "addressed": "partly", "note": "Replaces lazy inline-SVG hoggies with PNG-rendered hoggies and bans inline-SVG imports; simplifies loading differently rather than lazy-loading the nav ad component."},
+  {"id": "gh:56763:3184003178", "addressed": "no", "note": "Switches generation lookups to ai_events via trace-id resolution and a new formatter; service and data logic remain mixed in the tools module."},
+  {"id": "gh:61317:3406692604", "addressed": "no", "note": "Adds an origin-marker dedup in the apply handler and a new merge_protocol test; no shared tests/common fixtures module is introduced."},
+  {"id": "gh:68659:3616694613", "addressed": "no", "note": "Moves destination archiving from a pre_delete signal to the facade delete and edits a comment; the team FK keeps its named related_name."}
+]

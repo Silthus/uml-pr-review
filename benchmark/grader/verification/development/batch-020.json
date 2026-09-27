@@ -1,0 +1,22 @@
+[
+  {"id": "gh:58728:3274802653", "addressed": "yes", "note": "Moves session_end_time off LensLlmInputs and adds it as end_time on SessionMetadata."},
+  {"id": "gh:75805:3691877991", "addressed": "yes", "note": "Adds a note distinguishing paged settings from oracle.py's bounded ones, renames to _PAGED_MEMBER_SETTINGS, and caps the paged read by raising the existing OracleSetTooLarge."},
+  {"id": "gh:63307:3411881287", "addressed": "no", "note": "Adds a lib column and a dedicated max limit constant; the query tagging feature at the commented line is unchanged."},
+  {"id": "gh:53504:3043668023", "addressed": "yes", "note": "Extracts CSV export helpers, action, selector and listener from membersLogic into a new membersExportLogic."},
+  {"id": "gh:69848:3558025643", "addressed": "yes", "note": "Drops the local ingestionLimits helper and uses billingLogic.isProductOverUsageLimit for events and recordings."},
+  {"id": "gh:58366:3299081834", "addressed": "yes", "note": "Replaces inline string/text-item checks with the shared extractTextContent util and a small helper predicate."},
+  {"id": "gh:51875:2997709731", "addressed": "yes", "note": "Removes schedule sync from HogFlow post_save and adds a post_save receiver on HogFlowSchedule that syncs next run."},
+  {"id": "gh:65273:3456191977", "addressed": "yes", "note": "Extracts _validate_batch_inputs and calls it from both prepare_capture_internal_batch and capture_batch_internal."},
+  {"id": "gh:64506:3441695571", "addressed": "no", "note": "Renames ingestion lanes/ to pipelines/; the rasterizer stays under ingestion/pipelines/sessionreplay rather than moving out."},
+  {"id": "gh:55620:3124095499", "addressed": "yes", "note": "Renames the private helper to public apply_provisioning_defaults and imports the public name in the EE auth layer."},
+  {"id": "gh:62561:3384826995", "addressed": "no", "note": "Handles oversized numeric flag ids without panicking; no per-team rate limiter is added."},
+  {"id": "gh:60618:3362698135", "addressed": "yes", "note": "Splits assign into MessageGroup, WorkerAssignments and group_messages_by_routing_key with new unit tests for the pieces."},
+  {"id": "gh:51875:2997691949", "addressed": "yes", "note": "Removes schedules from HogFlow serializers and create/update, adds separate schedules list/create and detail patch/delete actions."},
+  {"id": "gh:54056:3075089136", "addressed": "yes", "note": "Rewrites the autonomy viewset into SignalTeamConfigViewSet, dropping the redundant get_serializer_context team override."},
+  {"id": "gh:64887:3444391136", "addressed": "no", "note": "Only rewrites the explanatory comment on the separate exclude filter step; the step remains separate."},
+  {"id": "gh:68639:3531208797", "addressed": "yes", "note": "Adds DeltaTableHelper.run_maintenance returning one vacuum version; pre-write function calls it once and is the sole watermark writer."},
+  {"id": "gh:58376:3234392260", "addressed": "yes", "note": "Collapses both sanitize functions into a shared _sanitize core with partials per validator and a shared error-code extractor."},
+  {"id": "gh:53782:3056998259", "addressed": "yes", "note": "Removes the custom isFormValid selector and uses the kea-forms notificationFormHasErrors in the dialog."},
+  {"id": "gh:57380:3186929067", "addressed": "yes", "note": "Moves the MGET batch size constant into gemini_cleanup_sweep.constants as MGET_BATCH_SIZE and imports it."},
+  {"id": "gh:62561:3384826992", "addressed": "no", "note": "Handles oversized numeric flag ids; HEAD/OPTIONS handling via the sibling non-GET handler is not added."}
+]

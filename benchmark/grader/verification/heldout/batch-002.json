@@ -1,0 +1,22 @@
+[
+  {"id": "gh:103847:4064937762", "addressed": "no", "note": "Renames exact UUIDs to a hits map carrying matched fields and drops ORDER BY from the count; the OR group and ordering are still built inline in list, no helper extracted."},
+  {"id": "gh:103847:4064937805", "addressed": "no", "note": "Passes exact_hits into _person_list_response, which still recomputes the CSV check from accepted_renderer.format; is_csv_request is not passed through."},
+  {"id": "gh:85987:3833455649", "addressed": "yes", "note": "Moves member filtering, pagination and editable-id computation into a memberListFor selector in notificationGovernanceLogic; the component just reads it."},
+  {"id": "gh:91764:3913407696", "addressed": "yes", "note": "Replaces the shared assignment epoch Arc with per-partition generations in the ledger; forget bumps generation and replaces the ledger; staleness is stamp < generation."},
+  {"id": "gh:88758:3872496674", "addressed": "yes", "note": "Replaces manual regional client capture/shutdown with the ph_scoped_capture context manager in the sweep report activity."},
+  {"id": "gh:86227:3895729389", "addressed": "yes", "note": "Removes the two thin wrapper components; SubscriptionDestinationCell now takes a destination directly and callers compute it."},
+  {"id": "gh:102982:4085750191", "addressed": "no", "note": "Moves regex compilation onto the parsed config; the labeled rules loop with continue 'rules remains, no rule_targets helper extracted."},
+  {"id": "gh:101256:4021303026", "addressed": "yes", "note": "Adds feature_flags/backend/realtime_targeting.py with a public gate function; cohort.py imports it at top level and drops both function-body imports."},
+  {"id": "gh:83977:3812297355", "addressed": "partly", "note": "Extracts a shared ScoutCreateModalHost and disabled-reason hook used by both ScoutCreateButton and the template modal, instead of adding an open-state prop."},
+  {"id": "gh:87891:3846582581", "addressed": "yes", "note": "ShadowOutcome::Failed now wraps BuildFailure; adds BuildFailure::from_live_read for the live-read categories and an as_label mapping."},
+  {"id": "gh:85156:3811770267", "addressed": "yes", "note": "Adds an error_message_contains server-side filter to the invocation results API and uses it with limit 1 instead of client-side filtering of 500 rows."},
+  {"id": "gh:79121:3759115227", "addressed": "yes", "note": "Drops the separate chunk-stats event and folds total_chunks and chunks_skipped into the existing upload started event."},
+  {"id": "gh:74912:3693006660", "addressed": "no", "note": "Adds config validation, depth caps and input limits; the key-name based unit interval set remains, no per-field min/max range introduced."},
+  {"id": "gh:104948:4085841973", "addressed": "yes", "note": "Defines _MALFORMED_DEFINITION_ERRORS at module level and uses it in both the cohort and flag except clauses."},
+  {"id": "gh:104817:4082619389", "addressed": "no", "note": "Only rewords the catalog tool description about feature availability; the tool name stays billing-catalog-get."},
+  {"id": "gh:100813:4035050275", "addressed": "yes", "note": "Moves PI_RUNTIME from previewConfig.ts into the shared package's agent-runtime module and imports it from @posthog/shared."},
+  {"id": "gh:76750:3709754489", "addressed": "yes", "note": "Adds an exported waitlistSurveyId helper in the logic and uses it in the listener, the render and the sorter."},
+  {"id": "gh:76933:3722137342", "addressed": "yes", "note": "Exporter looks up a registered handler per export format via an exports facade registry; the product registers its JSONL handler in its app config."},
+  {"id": "gh:102005:4045706546", "addressed": "yes", "note": "Adds a key_list helper in clickhouse/sql.rs and uses it in key_presence_predicate instead of the inline literal join."},
+  {"id": "gh:77000:3708883446", "addressed": "yes", "note": "Sets the Redis TTL constant equal to the debounce constant instead of a separate literal."}
+]

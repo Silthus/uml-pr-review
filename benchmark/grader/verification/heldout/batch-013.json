@@ -1,0 +1,22 @@
+[
+  {"id": "gh:87758:3852523567", "addressed": "yes", "note": "Backend eval-run endpoint now raises DRF errors (NotFound, raise_exception); frontend drops the custom error-message parsing and relies on the global handler."},
+  {"id": "gh:93142:3925369190", "addressed": "yes", "note": "Adds env-configured connections, flush concurrency and max series per bucket via envconfig with validation, threaded through a CounterConfig struct."},
+  {"id": "gh:82176:3773893169", "addressed": "no", "note": "Commit creates the empty-state file with a per-card consent state in each ConsentGatedTemplateCard; no shared state at the TemplatesEmptyState level."},
+  {"id": "gh:86637:3832628837", "addressed": "no", "note": "Adds a heatmap:read scope for heatmap_url export contexts; no shared helper for scope widening with APIScopePermission."},
+  {"id": "gh:89643:3911752958", "addressed": "yes", "note": "Replaces the os.getenv-parsed SES_ISP_DIMENSIONS with a constant list and updates the comment."},
+  {"id": "gh:101908:4032867935", "addressed": "partly", "note": "Request path now queues training deletion only for distinct IDs with no resolved person, removing the duplicate queueing; unmatched IDs still queued on request."},
+  {"id": "gh:102189:4039464199", "addressed": "yes", "note": "Removes value_heap_bytes from properties.rs and uses estimate_json_heap_size from utils/json_size.rs instead."},
+  {"id": "gh:79462:3757326046", "addressed": "yes", "note": "Deletes the custom esbuild, dev, deps-allowlist and import-boundary scripts, replacing them with an oxlint import rule and a small build script."},
+  {"id": "gh:100151:4020354038", "addressed": "no", "note": "Copies scheduled-change context onto the locked instance in the serializer update; does not extract a shared body for the two rollout actions."},
+  {"id": "gh:83680:3798470922", "addressed": "no", "note": "Adds AI byte budget charging to the v1 pipeline via charge_ai_bytes; only a doc-comment change in setup.rs, threshold not derived from producer config."},
+  {"id": "gh:95610:3968554119", "addressed": "yes", "note": "Drops the OP_RETURN literal and pushes Value::from(Operation::Return), moving the explanatory comment inline."},
+  {"id": "gh:95964:3951556834", "addressed": "yes", "note": "Renames replaying/is_replaying to redelivering/is_redelivering and updates comments; adds a twice-failing resend test."},
+  {"id": "gh:90159:3880606644", "addressed": "yes", "note": "Removes the local tokenCountOf and uses a shared aiTokenCount helper in utils, also used by MetadataHeader."},
+  {"id": "gh:102418:4039515120", "addressed": "partly", "note": "Moves tag loading from dashboard/insight wrapper components into SceneTagsCombobox itself, loading tags from tagsModel on open."},
+  {"id": "gh:82910:3811721478", "addressed": "no", "note": "Adds a 5s idle-socket timeout for object storage and edits a comment in query_cache storage; no use of is_s3_pointer."},
+  {"id": "gh:78278:3730544770", "addressed": "no", "note": "Rewrites the serialization module doc comment about data_type resolution; logging in the encoding layer is untouched."},
+  {"id": "gh:92585:3911328729", "addressed": "no", "note": "Pairs each group message with its offset in a GroupMessage struct and renames the index map; keyless messages still get individual groups."},
+  {"id": "gh:96175:3981336827", "addressed": "yes", "note": "Removes ExperimentRuleIdentity and gives RuleV2 a plain experiment_id int or None; adds rule/return type validation."},
+  {"id": "gh:88758:3872503794", "addressed": "no", "note": "Keeps the telemetry activity but makes it sync and uses ph_scoped_capture; adds a comment justifying the activity."},
+  {"id": "gh:74913:3692996832", "addressed": "yes", "note": "Threads capture_ph_event through create/update, token resolution and rejection capture, adds dedup and refresh-path tests."}
+]

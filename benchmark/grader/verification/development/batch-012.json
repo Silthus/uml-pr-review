@@ -1,0 +1,22 @@
+[
+  {"id": "gh:50564:3021764734", "addressed": "yes", "note": "Drops the os.environ fallback for the Anthropic API key and relies solely on settings.anthropic_api_key; removes the os import."},
+  {"id": "gh:55645:3130248736", "addressed": "yes", "note": "Moves the team api_token lookup out of activity entry to just before the post-store emit; the existing-summary branch no longer emits or fetches the token."},
+  {"id": "gh:53838:3057319466", "addressed": "no", "note": "Only changes type annotations from TracerProvider to trace.TracerProvider; the per-instrumentor try/except logging boilerplate is untouched."},
+  {"id": "gh:56006:3132395683", "addressed": "yes", "note": "README renames tables to sourcebatch/sourcebatchstatus and the view to v_latest_source_batch_status, noting they live in a new dedicated DB."},
+  {"id": "gh:63097:3431739831", "addressed": "yes", "note": "Replaces direct posthog.capture in the FAB with a new reportWizardSyncProgressExpanded action on eventUsageLogic."},
+  {"id": "gh:75397:3683217817", "addressed": "yes", "note": "Replaces the inline node-type computation with a shared node_type_for helper imported from saved_query_dag_sync."},
+  {"id": "gh:46846:3159809489", "addressed": "yes", "note": "Adds _patch_organization_usage_jsonb helper using Organization.objects.filter().update(usage=RawSQL(...)); both raw-cursor call sites now use it."},
+  {"id": "gh:72353:3622708919", "addressed": "yes", "note": "Introduces a single HogGlobalDefinition array with per-target descriptions that drives both the Monaco globals and the rendered help dl."},
+  {"id": "gh:63443:3418732692", "addressed": "yes", "note": "Deletes the custom SlopeGraphLegend and enables the quill SlopeChart built-in legend gated on the Show legend toggle."},
+  {"id": "gh:56970:3163045966", "addressed": "no", "note": "Only switches the rollout bucket hash to Math.imul and adds a test; routing logic is not consolidated with the dual-write output."},
+  {"id": "gh:61342:3390503342", "addressed": "no", "note": "Passes dateFilter into ensureSessionTitleLoaded inside the existing useEffect; the useEffect remains."},
+  {"id": "gh:71130:3594141491", "addressed": "yes", "note": "Splits the common tool list into named overview and followup lists and composes them without index slicing."},
+  {"id": "gh:52874:3018598131", "addressed": "no", "note": "Widens ticket ownership checks to all distinct IDs of the verified person; the HMAC secret source is unchanged."},
+  {"id": "gh:58357:3282258713", "addressed": "yes", "note": "Replaces the manual api.create batch_check call with the generated llmAnalyticsSummarizationBatchCheckCreate client."},
+  {"id": "gh:75806:3688840588", "addressed": "yes", "note": "Removes abort-warning emission from the v0 endpoint and moves it into events/analytics.rs alongside v1 handling, extending ingestion_warnings."},
+  {"id": "gh:66771:3493281698", "addressed": "yes", "note": "Test now imports run_hog_eval from run_evaluation, matching the path used by the MCP tool."},
+  {"id": "gh:52752:3011017262", "addressed": "yes", "note": "Replaces schedule_hour/schedule_minute with a cron_expression CharField in the migration, with service and serializer updates."},
+  {"id": "gh:64512:3437517802", "addressed": "yes", "note": "Removes the saved-insight picker parameter from buildInsertCommands in favour of a generic extraCommands list; the app-specific command moves to the renderer."},
+  {"id": "gh:52752:3078908206", "addressed": "yes", "note": "Drops stored last_run_at/last_run_status fields; they become properties derived from last_task_run."},
+  {"id": "gh:71130:3594141497", "addressed": "yes", "note": "Sets evaluation_target on the content dataclass (new schema field) and serializes via to_dict instead of adding a raw dict key."}
+]

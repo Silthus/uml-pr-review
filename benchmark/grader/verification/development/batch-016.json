@@ -1,0 +1,22 @@
+[
+  {"id": "gh:70136:3588068085", "addressed": "yes", "note": "Drops summary, hypotheses, recommendations and tool_calls_used from the signal extra payload and removes the verdict weight map, using a flat weight."},
+  {"id": "gh:55149:3184244495", "addressed": "yes", "note": "Moves ErrorResponseSerializer into posthog/api/utils.py, imports it from there in feature_flag.py and deletes it from the tasks serializers."},
+  {"id": "gh:64306:3439293882", "addressed": "yes", "note": "Adds module constant FULL_PROPERTIES_KEY and uses it at both the select-field producer and the row consumer checks."},
+  {"id": "gh:54738:3127149751", "addressed": "yes", "note": "Deletes the hand-written cohortsUsedIn builder and getUsedIn API helper; cohort edit logic switches to the generated client."},
+  {"id": "gh:63485:3415639707", "addressed": "no", "note": "Renames the tool's name string to create_ai_trace_parser and adds a YAML length cap; the max_tools module and MaxTool naming stay."},
+  {"id": "gh:72442:3617957456", "addressed": "no", "note": "Adds a loadSignalsFailure listener and a connected setupStatus value to the onboarding logic, extending rather than removing the extra kea wiring."},
+  {"id": "gh:54437:3079022302", "addressed": "yes", "note": "Renames monitoringKafkaProducer to hogTransformerProducer with config prefix HOGTRANSFORMER_PRODUCER instead of WARPSTREAM_PRODUCER."},
+  {"id": "gh:53643:3119283544", "addressed": "yes", "note": "Event trait headers() now returns CapturedEventHeaders built with the Context; removes the custom key-value header builder and its tests."},
+  {"id": "gh:67252:3509784689", "addressed": "yes", "note": "Filters read-only scopes on an unprivilegedExcluded scope flag instead of comparing the llm_gateway key; scopes.tsx updated accordingly."},
+  {"id": "gh:52112:2995391241", "addressed": "yes", "note": "Replaces custom Turnstile script loading and window globals with the @marsidev/react-turnstile package component."},
+  {"id": "gh:59017:3268461302", "addressed": "partly", "note": "Generalizes the endpoint to personal_spend with an optional ai_product filter and by-product breakdown; no MCP tool exposure in this commit."},
+  {"id": "gh:53132:3031887765", "addressed": "yes", "note": "Replaces the hardcoded open-invoices code string with BillingAPIErrorCodes.OPEN_INVOICES_ERROR.value; webhook 409 path was already dropped."},
+  {"id": "gh:61317:3364938880", "addressed": "yes", "note": "Moves TeamAllowlist and its parser/tests into common_types::cohort and imports it from both the shuffler and stream processor configs."},
+  {"id": "gh:54667:3091467522", "addressed": "partly", "note": "Moves filterGroup normalization and query strategies into the MCP ApiClient query endpoint, not the backend API."},
+  {"id": "gh:59017:3268032790", "addressed": "partly", "note": "Generalizes the spend endpoint to personal_spend with an optional product filter; no MCP tool added in this commit."},
+  {"id": "gh:72746:3626056473", "addressed": "yes", "note": "Replaces the person and distinct-id batch workers with one generic run_batch_worker taking prepare and execute closures; dedupe functions stay separate."},
+  {"id": "gh:72726:3625389441", "addressed": "yes", "note": "Extracts the registering-cohorts reconstruction into a collect_registering_cohorts(filters, transferred_inventory) helper."},
+  {"id": "gh:54137:3067031158", "addressed": "yes", "note": "Splits the publish loop into separate steps for quill-tokens and quill, each capturing its version output."},
+  {"id": "gh:59468:3362905080", "addressed": "yes", "note": "Removes the top-level dataWarehouseTable global; the synthetic event carries the table as properties.$source_table and consumers match on it."},
+  {"id": "gh:75872:3689253468", "addressed": "yes", "note": "Passes a checked flag so teams from the limited-billable query skip the second over-limit check."}
+]

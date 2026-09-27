@@ -1,0 +1,22 @@
+[
+  {"id": "gh:71611:3618150559", "addressed": "yes", "note": "Adds revalidation_headers helper returning the etag/cache-control/vary trio; not_modified, empty_ok_no_content_type and json_ok_with_etag all use it."},
+  {"id": "gh:73935:3665619958", "addressed": "no", "note": "Adds a RegionProxyThrottle IP throttle class for cross-region forwarding; the module-level partner rate limit functions are left as functions."},
+  {"id": "gh:59254:3283618621", "addressed": "no", "note": "Renames is_from_decide, adds emit_short_circuit, CIDR width floor and a non-bot rate-limit header test; no classify-and-stamp helper or LogOnly field assertions."},
+  {"id": "gh:61545:3438258649", "addressed": "yes", "note": "Removes the LineReference schema and line_reference type; CodeReference documents single-line callouts as start_line == end_line."},
+  {"id": "gh:60351:3320389496", "addressed": "yes", "note": "Adds _set_enrollment_filters helper that sets feature_enrollment and pops super_groups; all early-access write paths now use it."},
+  {"id": "gh:61545:3424474649", "addressed": "no", "note": "Switches the commit diff endpoint to a branch-vs-default-branch diff and adds a comment on repo scope; permissions still gated by the task scope object."},
+  {"id": "gh:62561:3405626224", "addressed": "no", "note": "Uses the cached team project_id with a query fallback; the payload resolution block with inline early returns is untouched."},
+  {"id": "gh:51758:2965536579", "addressed": "yes", "note": "Removes the duplicated org_* count properties from the per-person usage report properties, leaving only has_non_zero_usage."},
+  {"id": "gh:59699:3302466537", "addressed": "no", "note": "Drops the unused _sanitize_identifier wrapper and its import; the commented get_rows_to_sync method is unchanged."},
+  {"id": "gh:68513:3530396944", "addressed": "partly", "note": "Raises when log_activity returns None so SQS retries, and acks no-change updates; no idempotency key for event_id dedupe."},
+  {"id": "gh:69884:3559591598", "addressed": "yes", "note": "Extracts a shared ConfirmAddonChargeModal component; ConfirmPurchaseModal and ConfirmUpgradeModal pass their own rows and actions into it."},
+  {"id": "gh:67477:3508411143", "addressed": "no", "note": "Adds an unstable-metrics delta test and a comment in the cohort tokio monitor; no shared crate or dedup with the feature-flags copy."},
+  {"id": "gh:61232:3343906721", "addressed": "yes", "note": "Adds hogql_cohort_subquery_sql helper doing generate-and-trim-SETTINGS; both recalc and static cohort filter query paths use it."},
+  {"id": "gh:53643:3119265671", "addressed": "no", "note": "Changes the sink Event trait headers() to return CapturedEventHeaders from context and removes build_context_headers; trait name unchanged."},
+  {"id": "gh:52724:3010217970", "addressed": "yes", "note": "Replaces the local am/pm formatHour and day names with shared formatHourString and dayOptions from utils, giving 24h output."},
+  {"id": "gh:70883:3617301016", "addressed": "yes", "note": "Moves person property filter extraction into filter_storage.extract_person_property_filters; the workflow and backfill command both import it."},
+  {"id": "gh:63009:3452871979", "addressed": "yes", "note": "Renames the bot PRs flag to slack-app-bot-prs in feature_flags.py and renames continue-as-bot log events to a slack_app_ prefix."},
+  {"id": "gh:52409:2994865109", "addressed": "yes", "note": "Extracts getGridItemContextMenu function for the starred/recent context menu items; non-null assertions remain inside callbacks."},
+  {"id": "gh:58993:3266865738", "addressed": "yes", "note": "Removes struct tupleElement handling from BasePrinter and moves it into ClickHousePrinter."},
+  {"id": "gh:64506:3441792276", "addressed": "yes", "note": "Renames ingestion lanes/ to pipelines/ with single-word names, including error tracking to pipelines/errortracking."}
+]

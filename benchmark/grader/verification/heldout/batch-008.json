@@ -1,0 +1,22 @@
+[
+  {"id": "gh:79462:3757349919", "addressed": "no", "note": "Keeps the boot-time idempotent DDL in the service and adds an applySchema retry for replica races; no Django migration is introduced."},
+  {"id": "gh:77848:3722038603", "addressed": "yes", "note": "Deletes the AccessControlledLemonMenu wrapper and cast; LemonButton now takes disabledReason from getAccessControlDisabledReason directly."},
+  {"id": "gh:103145:4099855148", "addressed": "yes", "note": "Renames _catalog_drop_reason to _catalog_refusal_reason at its definition and both call sites in runs.py."},
+  {"id": "gh:75191:3681065524", "addressed": "yes", "note": "Replaces the raw setTimeout plus beforeUnmount cleanup with a cache.disposables.add timer keyed replayVisionDwell, disposing it once fired."},
+  {"id": "gh:101169:4019810652", "addressed": "partly", "note": "Removes the copied warning-hog PNG and export; error fallback now loads a shared brand hoggie via hoggiePng. Other local hog assets remain."},
+  {"id": "gh:82584:3779399497", "addressed": "yes", "note": "Extracts a shared useCommentFocusRequest hook used by RightPanel, moves openSide to rightPanelSide, and uses useIsCloudTask in ChangesPanelContent."},
+  {"id": "gh:92150:3907876623", "addressed": "partly", "note": "Removes the fbc derivation from ingestion entirely (no more daily re-stamping) rather than moving the same-click decision to where person state is known."},
+  {"id": "gh:86637:3832628841", "addressed": "no", "note": "Adds heatmap:read scope and defaults missing source_authentication to session in csv_exporter; does not import the shared function to remove the copy."},
+  {"id": "gh:83585:3796829643", "addressed": "partly", "note": "Extracts a shared FrameWarningIcon used by NoContext, Unsymbolicated and Unresolved icons; the two components still exist separately."},
+  {"id": "gh:70803:3658417141", "addressed": "no", "note": "Makes seed watermarks only advance via Math.max; the local toEpochSeconds/bucket helpers are kept rather than replaced by an existing utility."},
+  {"id": "gh:80839:3769089868", "addressed": "yes", "note": "Adds an optional wrapTrigger prop to ActionButton and renders the File-to dropdown trigger through it, removing the hand-rolled Tooltip nest."},
+  {"id": "gh:91024:3904570576", "addressed": "no", "note": "Announces sandbox start from the run response's starts_sandbox and price in SQLV2 logic only; legacy Python/DuckSQL/HogQLSQL kernel paths untouched."},
+  {"id": "gh:74761:3770974061", "addressed": "no", "note": "Splits rejected metrics into enforced vs preexisting and records a not_evaluated cross-field stage; the write-source helper is not switched to get_event_source."},
+  {"id": "gh:96740:3961944736", "addressed": "yes", "note": "Switches is_email_verification_disabled from feature_enabled_or_false to get_feature_flag_or_none, treating only True as disabled."},
+  {"id": "gh:97846:3987423119", "addressed": "yes", "note": "Drops the claim foreign key from SignalReportAssignment, marks the model read-only legacy, and derives ownership from claim artefacts instead."},
+  {"id": "gh:67501:3715882466", "addressed": "no", "note": "Only adds an info tooltip explaining project access levels; no logic is moved into a kea logic."},
+  {"id": "gh:104223:4081501012", "addressed": "yes", "note": "Adds _scope_from_counts helper turning rows and rerun_existing into a BackfillScope, used by both the heavy and non-heavy branches."},
+  {"id": "gh:79056:3732063801", "addressed": "no", "note": "Moves reportFeatureFlagsBulkArchived into eventUsageLogic as a connected action; the bulk archive and copy summary functions are not merged."},
+  {"id": "gh:90211:3893213493", "addressed": "yes", "note": "Leaf child cost now read via extractTotalCost(child.event) with a null check instead of the raw property and typeof check."},
+  {"id": "gh:86962:3829729753", "addressed": "yes", "note": "Deletes ProcessLiveness, registers the Kafka producer in a HealthRegistry, and serves readiness from the registry status."}
+]

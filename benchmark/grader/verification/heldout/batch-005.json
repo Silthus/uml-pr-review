@@ -1,0 +1,22 @@
+[
+  {"id": "gh:103145:4065875874", "addressed": "yes", "note": "Replaces both dry-run bodies with one _dry_run_cohorts method taking the ineligibility predicate and a kind label."},
+  {"id": "gh:100143:4020256060", "addressed": "no", "note": "Wraps groups/variants in CASE jsonb_typeof guards so scalar values do not abort the stale query; time predicates stay in flag_status.py."},
+  {"id": "gh:81453:3794892023", "addressed": "yes", "note": "Moves stepper steps to a SCANNER_STEPPER_STEPS module constant and reads stepErrors as a logic selector instead of computing in JSX."},
+  {"id": "gh:87609:3846876925", "addressed": "yes", "note": "Filters dateMapping presets by a set of stable key labels instead of matching raw range value tokens."},
+  {"id": "gh:82372:3774032949", "addressed": "partly", "note": "Adds capture_exception calls in both except blocks but keeps the Prometheus error counter alongside."},
+  {"id": "gh:79495:3789083927", "addressed": "yes", "note": "Blast-radius message now uses shared extractValidationError, covering 512 as well as 400/513; hardcoded status check removed."},
+  {"id": "gh:105971:4095263302", "addressed": "yes", "note": "Drops the local raw-string status set and reads FAILED_BACKFILL_STATUSES from the batch exports facade api."},
+  {"id": "gh:69041:3739728689", "addressed": "yes", "note": "Extracts the copy popover and its state into a shared useCellCopyContextMenu hook used by LemonTable and OutputPane."},
+  {"id": "gh:103145:4065875914", "addressed": "yes", "note": "Removes pub(super) from uncovered_from, making it private to the impl."},
+  {"id": "gh:82311:3798566377", "addressed": "yes", "note": "Adds a doc comment line stating the plain iconless styling is the standard for in-app feedback buttons."},
+  {"id": "gh:103847:4064937718", "addressed": "yes", "note": "Adds a comment on PersonSearchMatchField pointing to filter_conditions and TAG_BY_FIELD to keep in step."},
+  {"id": "gh:91764:3913482407", "addressed": "yes", "note": "Collapses per-partition maps into one HashMap<TopicPartition, BatchPartition> with span, generation, charges, ts and lag fields."},
+  {"id": "gh:101362:4028813704", "addressed": "yes", "note": "pinned_connect_host now returns a target with host and tls_server_name; source reads them and drops unbracket_host import."},
+  {"id": "gh:74452:3680865306", "addressed": "yes", "note": "Setup logic connects and dispatches productToursLogic.createTour, removing the local create path and creatingFirstTour flag."},
+  {"id": "gh:93773:3939649968", "addressed": "yes", "note": "Caller passes previous rollout whenever a previous set exists and drops changedAspects import; the card decides display."},
+  {"id": "gh:82175:3775788289", "addressed": "yes", "note": "Adds a shared listAllPages helper and rewrites the alerts pager (and evaluation reports) to just the request."},
+  {"id": "gh:80167:3741816928", "addressed": "yes", "note": "Introduces DUPLICATE_KEY_SELF_HANDLED set with an ownership comment and checks membership instead of a bare string."},
+  {"id": "gh:84543:3806469395", "addressed": "yes", "note": "Deletes the dead variantRolloutSum and areVariantRolloutsValid selectors and their type declarations, and the redundant docstring."},
+  {"id": "gh:105467:4108448400", "addressed": "yes", "note": "Moves scopes_not_covered into scopes.py built on _with_read_halves; permissions.py imports it."},
+  {"id": "gh:95565:3947885942", "addressed": "yes", "note": "Adds deriveOverflowKey (message key, redirect header, token:distinct_id fallback) used by rate-limit and TTL refresh steps."}
+]

@@ -1,0 +1,6 @@
+[
+  {"id": "gh:62843:3394367241", "addressed": "no", "note": "Deletes recent_tag_usage and its all_teams query entirely, moving tag vocabulary into a prompt scratchpad convention; never switches to a team-scoped manager."},
+  {"id": "gh:62199:3382601918", "addressed": "yes", "note": "Moves disable-person-processing and skip-emit-event steps from event-processing into the heatmaps module and updates the pipeline imports."},
+  {"id": "gh:72855:3630566705", "addressed": "yes", "note": "Replaces strategy classes with labeled entries carrying a countTokens function; the redirect uses entry.label instead of constructor.name."},
+  {"id": "gh:55186:3166779264", "addressed": "yes", "note": "Deletes the orphaned AlertStateTable file holding the duplicated verdict config, so only one copy remains; tweaks a Failed tooltip."}
+]

@@ -1,0 +1,22 @@
+[
+  {"id": "gh:79288:3753472805", "addressed": "yes", "note": "urlToAction now computes one target range (default when both params absent) and does a single compare-then-setDates."},
+  {"id": "gh:84886:3845937966", "addressed": "partly", "note": "Removes both duplicated in-loop snapshot checks; unclassified cohorts are instead read once from the database after the run. Equivalent de-duplication, different approach."},
+  {"id": "gh:93773:3939649952", "addressed": "no", "note": "Feeds before+after groups into the per-row logic for name resolution and tweaks rollout display; name caches still live in per-row keyed logic."},
+  {"id": "gh:98040:4017899917", "addressed": "yes", "note": "Deletes the duplicate timeslots branch from the generic function type inference."},
+  {"id": "gh:83493:3807337994", "addressed": "partly", "note": "Makes the eval workflow manual-dispatch only, dropping PR label triggers; it still runs in GitHub Actions rather than a separate app."},
+  {"id": "gh:91639:3905528393", "addressed": "yes", "note": "DEFAULT_MODEL is now parsed from a new LLMA_SUMMARIZATION_MODEL setting, making rollback a config change."},
+  {"id": "gh:82769:3788153968", "addressed": "yes", "note": "Switches BackfillRunAttempt to @frozen from posthog.dataclasses and drops the dataclasses import."},
+  {"id": "gh:75780:3823557122", "addressed": "no", "note": "Simplifies _normalize_uuid and merges the email match query into the uuid lookup; no shared per-id-type normalization helper is introduced."},
+  {"id": "gh:79462:3765687781", "addressed": "yes", "note": "Renames Credential/MountedCredentials to Secret/MountedSecrets across the integration service and docs."},
+  {"id": "gh:79103:3735486017", "addressed": "yes", "note": "Candidate query now uses the hogql tag and api.queryHogQL with queryParams; row tuple casts replaced by column-indexed access."},
+  {"id": "gh:105889:4096863656", "addressed": "yes", "note": "Extracts _drop_echoed_v2_fields and moves the soft-delete active=False into validate, leaving _reject_unsupported_v2_operations as a pure check."},
+  {"id": "gh:104042:4074940395", "addressed": "yes", "note": "Imports from the access_control facade, uses split_restricted_property_names, drops PropertyDefinition import and the tach leak entry."},
+  {"id": "gh:96278:3960752996", "addressed": "yes", "note": "Extracts _populate_static_cohort holding the claim/retry/finalize protocol; both tasks delegate with an insert function and log prefix."},
+  {"id": "gh:74331:3688278686", "addressed": "yes", "note": "Hoists list filter params into EXPERIMENT_LIST_FILTER_PARAMETERS used by list and matching_ids; regenerates clients and updates Experiments.tsx."},
+  {"id": "gh:72290:3696073678", "addressed": "yes", "note": "Computes is_basic_list once at the top and merges the experiment_set prefetch and last_error_code annotation into one block."},
+  {"id": "gh:80839:3769089798", "addressed": "yes", "note": "Adds SidebarBulkActionFooter bundling the bar, confirm dialog and snapshot state; ChannelSidebar and SidebarMenu both render it."},
+  {"id": "gh:75736:3687687402", "addressed": "yes", "note": "Renames the reconcile metrics label from guard to kind in the stream processor, cohort-core loader and related emitters."},
+  {"id": "gh:91764:3922508970", "addressed": "no", "note": "Replaces depth gauge with held events/bytes gauges on revoke; ledger in the order sentinel is not made optional."},
+  {"id": "gh:78178:3727925951", "addressed": "yes", "note": "Replaces the div role=button draft card with a LemonBanner whose action button resumes, discard button beside it, and adds explicit void return types."},
+  {"id": "gh:73109:3676028940", "addressed": "yes", "note": "Adds a shared _sanitize_context helper with caps and coerce flag; validate_traits and validate_session_context delegate to it."}
+]

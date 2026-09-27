@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 import { astraDelivery, judgePrompt } from "./judge-prompt.ts";
 
 const judgements = join(import.meta.dir, "judgements");
@@ -24,7 +25,7 @@ async function judgeBatch(packets: string, batch: string): Promise<void> {
 if (import.meta.main) {
   const { values } = parseArgs({ options: { packets: { type: "string", default: "/tmp/coherence-validation-packets" }, concurrency: { type: "string", default: "4" } } });
   const packets = resolve(values.packets!);
-  const plan = JSON.parse(await readFile(join(judgements, "batches.json"), "utf8")) as { batch: string }[];
+  const plan = z.array(z.object({ batch: z.string() })).parse(JSON.parse(await readFile(join(judgements, "batches.json"), "utf8")));
   await mkdir(join(judgements, "astra"), { recursive: true });
   const pending = plan.map(({ batch }) => batch);
   const worker = async () => {

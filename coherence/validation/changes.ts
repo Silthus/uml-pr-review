@@ -1,25 +1,29 @@
+import { z } from "zod";
 import type { CoherenceIndex } from "../contract.ts";
 import { roundTo } from "../score.ts";
 
 export const dimensions = ["architecture", "complexity", "smells", "tests"] as const;
 export type Dimension = (typeof dimensions)[number];
-export type Scores = Record<"composite" | Dimension, number>;
 
-export type Changes = {
-  delta: Scores;
-  measures: Record<string, { before: number | null; after: number | null; scoreDelta: number }>;
-  complexity: { entered: string[]; left: string[]; functions: number; overTen: number; overTwenty: number };
-  cycles: { entered: string[]; left: string[] };
-  bypasses: { added: string[]; removed: string[] };
-  crossings: { inbound: number; outbound: number };
-  lint: Record<string, number>;
-  duplication: { percentage: number; clones: number; lines: number };
-  markers: number;
-  typeEscapes: number;
-  tests: { testLines: number; productionLines: number; facadeFunctions: number; facadeCovered: number };
-  files: { production: number; p90Lines: [number, number] };
-  outsideDriven: boolean;
-};
+export const ScoresSchema = z.object({ composite: z.number(), architecture: z.number(), complexity: z.number(), smells: z.number(), tests: z.number() });
+export type Scores = z.infer<typeof ScoresSchema>;
+
+export const ChangesSchema = z.object({
+  delta: ScoresSchema,
+  measures: z.record(z.string(), z.object({ before: z.number().nullable(), after: z.number().nullable(), scoreDelta: z.number() })),
+  complexity: z.object({ entered: z.array(z.string()), left: z.array(z.string()), functions: z.number(), overTen: z.number(), overTwenty: z.number() }),
+  cycles: z.object({ entered: z.array(z.string()), left: z.array(z.string()) }),
+  bypasses: z.object({ added: z.array(z.string()), removed: z.array(z.string()) }),
+  crossings: z.object({ inbound: z.number(), outbound: z.number() }),
+  lint: z.record(z.string(), z.number()),
+  duplication: z.object({ percentage: z.number(), clones: z.number(), lines: z.number() }),
+  markers: z.number(),
+  typeEscapes: z.number(),
+  tests: z.object({ testLines: z.number(), productionLines: z.number(), facadeFunctions: z.number(), facadeCovered: z.number() }),
+  files: z.object({ production: z.number(), p90Lines: z.tuple([z.number(), z.number()]) }),
+  outsideDriven: z.boolean(),
+});
+export type Changes = z.infer<typeof ChangesSchema>;
 
 export function scoresOf(index: CoherenceIndex): Scores {
   const score = (dimension: Dimension) => index.dimensions[dimension].score ?? 0;

@@ -5,38 +5,59 @@ import { parseArgs } from "node:util";
 import { z } from "zod";
 import { git } from "../../src/git.ts";
 import { storedIndex } from "./attribute.ts";
-import { changesBetween, scoresOf, type Changes, type Scores } from "./changes.ts";
-import { diffLocal, type DiffLocal } from "./diff-local.ts";
-import type { ReviewComment } from "./review-comments.ts";
+import { changesBetween, ChangesSchema, scoresOf, ScoresSchema } from "./changes.ts";
+import { diffLocal, DiffLocalSchema } from "./diff-local.ts";
+import { ReviewCommentSchema, type ReviewComment } from "./review-comments.ts";
 import { prThreshold } from "./selection.ts";
 
 const LabelSchema = z.object({ id: z.string(), architecture: z.boolean(), kind: z.string(), quote: z.string() });
+const VerificationSchema = z.object({ id: z.string(), addressed: z.enum(["yes", "partly", "no", "unverifiable"]), where: z.enum(["in-scope", "outside-scope", "both"]), note: z.string() });
 const PullCommitSchema = z.object({ sha: z.string(), parents: z.array(z.object({ sha: z.string() })), commit: z.object({ committer: z.object({ date: z.string() }) }) });
+const MomentSchema = z.enum(["improved", "worsened", "blind"]);
 
+export const CorrectionSchema = ReviewCommentSchema.omit({ body: true }).extend({
+  kind: z.string(),
+  quote: z.string(),
+  verification: VerificationSchema.omit({ id: true }).nullable(),
+  base: z.string(),
+  commentCommit: z.string().nullable(),
+  isolable: z.boolean(),
+  before: z.string().nullable(),
+  fix: z.string().nullable(),
+  missing: z.string().nullable(),
+  index: ChangesSchema.extend({ scoresBefore: ScoresSchema, scoresAfter: ScoresSchema, moved: MomentSchema }).nullable(),
+  local: DiffLocalSchema.extend({ moved: MomentSchema }).nullable(),
+});
+export type Correction = z.infer<typeof CorrectionSchema>;
+
+export type PullCommit = { sha: string; parent: string; merge: boolean; date: string };
+type Moment = z.infer<typeof MomentSchema>;
 type Label = z.infer<typeof LabelSchema>;
-type PullCommit = { sha: string; parent: string; merge: boolean; date: string };
-type Moment = "improved" | "worsened" | "blind";
-
-export type Correction = Omit<ReviewComment, "body"> & {
-  kind: string;
-  quote: string;
-  base: string;
-  commentCommit: string;
-  isolable: boolean;
-  before: string | null;
-  fix: string | null;
-  missing: string | null;
-  index: (Changes & { scoresBefore: Scores; scoresAfter: Scores; moved: Moment }) | null;
-  local: (DiffLocal & { moved: Moment }) | null;
-};
+type Verification = z.infer<typeof VerificationSchema>;
+type CorrectionRequest = { repository: string; scope: string; reports: string; comment: ReviewComment; label: Label; verification: Verification | undefined; commits: PullCommit[]; base: string };
+type FixLocation = { fix: PullCommit | undefined; commentCommit: string | undefined; isolable: boolean };
 
 const github = "https://github.com/PostHog/posthog.git";
-const labelsDirectory = join(import.meta.dir, "corrections", "labels");
+const correctionsDirectory = join(import.meta.dir, "corrections");
 
-async function readLabels(): Promise<Map<string, Label>> {
-  const files = (await readdir(labelsDirectory)).filter((file) => file.endsWith(".json")).sort();
-  const labels = await Promise.all(files.map(async (file) => z.array(LabelSchema).parse(JSON.parse(await readFile(join(labelsDirectory, file), "utf8")))));
-  return new Map(labels.flat().map((label) => [label.id, label]));
+export async function locateFix(commits: PullCommit[], at: string | null, touchesArea: (commit: PullCommit) => Promise<boolean>): Promise<FixLocation> {
+  if (at === null) return { fix: undefined, commentCommit: undefined, isolable: false };
+  const own = commits.filter(({ merge }) => !merge);
+  const earlier = own.filter(({ date }) => Date.parse(date) <= Date.parse(at));
+  const located = (fix: PullCommit | undefined): FixLocation => ({ fix, commentCommit: earlier.at(-1)?.sha, isolable: earlier.length > 0 });
+  for (const commit of own.filter(({ date }) => Date.parse(date) > Date.parse(at))) {
+    if (await touchesArea(commit)) return located(commit);
+  }
+  return located(undefined);
+}
+
+export function momentOf(value: number, threshold: number): Moment {
+  return value >= threshold ? "improved" : value <= -threshold ? "worsened" : "blind";
+}
+
+async function readJsonFiles<T>(directory: string, schema: z.ZodType<T>): Promise<T[]> {
+  const files = (await readdir(directory)).filter((file) => file.endsWith(".json")).sort();
+  return (await Promise.all(files.map(async (file) => z.array(schema).parse(JSON.parse(await readFile(join(directory, file), "utf8")))))).flat();
 }
 
 async function pullCommits(pr: number): Promise<PullCommit[]> {
@@ -58,40 +79,29 @@ async function fetchPullRequests(repository: string, prs: number[]): Promise<voi
 }
 
 async function exists(repository: string, sha: string): Promise<boolean> {
-  return git(repository, ["cat-file", "-e", `${sha}^{commit}`]).then(() => true, () => false);
+  return git(repository, ["cat-file", "-e", `${sha}^{commit}`]).then(
+    () => true,
+    () => false,
+  );
 }
 
-async function touches(repository: string, { parent, sha }: PullCommit, path: string): Promise<boolean> {
-  return (await git(repository, ["diff", "--name-only", parent, sha, "--", path])).trim() !== "";
+async function touches(repository: string, { parent, sha }: PullCommit, area: string): Promise<boolean> {
+  return (await git(repository, ["diff", "--name-only", parent, sha, "--", area])).trim() !== "";
 }
 
-function momentOf(value: number, threshold: number): Moment {
-  return value >= threshold ? "improved" : value <= -threshold ? "worsened" : "blind";
-}
-
-async function correctionOf(repository: string, scope: string, reports: string, comment: ReviewComment, label: Label, commits: PullCommit[], base: string): Promise<Correction> {
-  const at = comment.at ?? "";
-  const own = commits.filter(({ merge }) => !merge);
-  const earlier = own.filter(({ date }) => date <= at);
-  const area = comment.path ?? scope;
-  let fix: PullCommit | undefined;
-  for (const commit of own.filter(({ date }) => date > at)) {
-    if (await touches(repository, commit, area)) {
-      fix = commit;
-      break;
-    }
-  }
-  const { id, url, author, path, line, pr } = comment;
-  const shared = { id, url, author, path, line, at, pr, kind: label.kind, quote: label.quote, base, commentCommit: earlier.at(-1)?.sha ?? base, isolable: earlier.length > 0, before: fix?.parent ?? null, fix: fix?.sha ?? null };
-  const missing = (await Promise.all([fix?.parent, fix?.sha].filter((sha): sha is string => sha !== undefined).map(async (sha) => ((await exists(repository, sha)) ? null : sha)))).find((sha) => sha !== null) ?? null;
-  if (fix === undefined || missing !== null) return { ...shared, missing, index: null, local: null };
-  const before = fix.parent;
-  const [was, now] = [await storedIndex(repository, scope, before, reports), await storedIndex(repository, scope, fix.sha, reports)];
+async function correctionOf({ repository, scope, reports, comment, label, verification, commits, base }: CorrectionRequest): Promise<Correction> {
+  const { fix, commentCommit, isolable } = await locateFix(commits, comment.at, (commit) => touches(repository, commit, comment.path ?? scope));
+  const { id, url, author, path, line, at, pr } = comment;
+  const checked = verification === undefined ? null : { addressed: verification.addressed, where: verification.where, note: verification.note };
+  const shared = { id, url, author, path, line, at, pr, kind: label.kind, quote: label.quote, verification: checked, base, commentCommit: commentCommit ?? null, isolable, before: fix?.parent ?? null, fix: fix?.sha ?? null };
+  const unreachable = fix === undefined ? [] : (await Promise.all([fix.parent, fix.sha].map(async (sha) => ((await exists(repository, sha)) ? [] : [sha])))).flat();
+  if (fix === undefined || unreachable.length > 0) return { ...shared, missing: unreachable[0] ?? null, index: null, local: null };
+  const [was, now] = [await storedIndex(repository, scope, fix.parent, reports), await storedIndex(repository, scope, fix.sha, reports)];
   const changes = changesBetween(was, now);
-  const local = await diffLocal(repository, scope, before, fix.sha, reports);
+  const local = await diffLocal(repository, scope, fix.parent, fix.sha, reports);
   return {
     ...shared,
-    missing,
+    missing: null,
     index: { ...changes, scoresBefore: scoresOf(was), scoresAfter: scoresOf(now), moved: momentOf(changes.delta.composite, prThreshold) },
     local: { ...local, moved: momentOf(local.score, 1) },
   };
@@ -112,8 +122,9 @@ if (import.meta.main) {
     process.exit(2);
   }
   const repository = resolve(values.repo);
-  const labels = await readLabels();
-  const comments = (JSON.parse(await readFile(join(resolve(values.work!), "comments.json"), "utf8")) as ReviewComment[]).filter(({ id }) => labels.get(id)?.architecture);
+  const labels = new Map((await readJsonFiles(join(correctionsDirectory, "labels"), LabelSchema)).map((label) => [label.id, label]));
+  const verifications = new Map(z.array(VerificationSchema).parse(JSON.parse(await readFile(join(correctionsDirectory, "verification.json"), "utf8"))).map((entry) => [entry.id, entry]));
+  const comments = z.array(ReviewCommentSchema).parse(JSON.parse(await readFile(join(resolve(values.work!), "comments.json"), "utf8"))).filter(({ id }) => labels.get(id)?.architecture);
   const prs = [...new Set(comments.map(({ pr }) => pr))];
   console.error(`${comments.length} architecture comments on ${prs.length} PRs; fetching their heads`);
   await fetchPullRequests(repository, prs);
@@ -121,7 +132,7 @@ if (import.meta.main) {
   const corrections: Correction[] = [];
   for (const comment of comments) {
     const { commits, base } = history.get(comment.pr)!;
-    const correction = await correctionOf(repository, values.scope!, resolve(values.reports!), comment, labels.get(comment.id)!, commits, base);
+    const correction = await correctionOf({ repository, scope: values.scope!, reports: resolve(values.reports!), comment, label: labels.get(comment.id)!, verification: verifications.get(comment.id), commits, base });
     corrections.push(correction);
     console.error(`#${comment.pr} ${comment.id} fix ${correction.fix?.slice(0, 10) ?? "none"} index ${correction.index?.delta.composite ?? "-"} local ${correction.local?.score ?? "-"}`);
   }

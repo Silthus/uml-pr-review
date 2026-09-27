@@ -2,12 +2,14 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 import { pullRequestFeedback } from "../../harvest/lib/pull-requests.ts";
-import { DropLedger, type HarvestItem } from "../../harvest/lib/items.ts";
-import { reviewFeedback, type PullRequestFeedback } from "../../harvest/lib/review-feedback.ts";
+import { DropLedger } from "../../harvest/lib/items.ts";
+import { pullRequestFeedbackSchema, reviewFeedback, type PullRequestFeedback } from "../../harvest/lib/review-feedback.ts";
 import { git } from "../../src/git.ts";
 
-export type ReviewComment = Pick<HarvestItem, "id" | "url" | "author" | "path" | "line" | "body" | "at"> & { pr: number };
+export const ReviewCommentSchema = z.object({ id: z.string(), url: z.string(), author: z.string(), path: z.string().nullable(), line: z.number().nullable(), body: z.string(), at: z.string().nullable(), pr: z.number() });
+export type ReviewComment = z.infer<typeof ReviewCommentSchema>;
 
 const pullRequestNumber = /\(#(\d+)\)\s*$/;
 const automatedDisclaimer = /not written by a human/i;
@@ -16,12 +18,12 @@ const bodyLimit = 700;
 
 async function mergedPullRequests(repository: string, ref: string, since: string, scope: string): Promise<number[]> {
   const subjects = await git(repository, ["log", "--first-parent", `--since=${since}`, "--format=%s", ref, "--", scope]);
-  return [...new Set(subjects.split("\n").flatMap((subject) => (pullRequestNumber.exec(subject) ? [Number(pullRequestNumber.exec(subject)![1])] : [])))];
+  return [...new Set(subjects.split("\n").flatMap((subject) => pullRequestNumber.exec(subject)?.slice(1, 2).map(Number) ?? []))];
 }
 
 async function cachedFeedback(file: string, numbers: number[]): Promise<PullRequestFeedback[]> {
   const cached = await readFile(file, "utf8").catch(() => null);
-  if (cached !== null) return JSON.parse(cached) as PullRequestFeedback[];
+  if (cached !== null) return z.array(pullRequestFeedbackSchema).parse(JSON.parse(cached));
   const feedback = await pullRequestFeedback("PostHog/posthog", numbers, (done) => console.error(`review feedback: ${done}/${numbers.length}`));
   await writeFile(file, JSON.stringify(feedback));
   return feedback;

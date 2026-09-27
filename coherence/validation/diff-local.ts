@@ -2,6 +2,7 @@
 import { writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 import { createRepositoryIndexer } from "../../src/architecture/index/index.ts";
 import { git } from "../../src/git.ts";
 import { BlobCache } from "../blob-cache.ts";
@@ -12,8 +13,12 @@ import { withToolbox } from "../tools.ts";
 import { storedIndex } from "./attribute.ts";
 import { readAttribution } from "./selection.ts";
 
-export type Findings = { lines: number; functions: number; overTen: number; overTwenty: number; lint: number; typeEscapes: number; markers: number; bypasses: number; cycleFiles: number };
-export type DiffLocal = { before: Findings; after: Findings; files: number; score: number };
+const FindingsSchema = z.object({ lines: z.number(), functions: z.number(), overTen: z.number(), overTwenty: z.number(), lint: z.number(), typeEscapes: z.number(), markers: z.number(), bypasses: z.number(), cycleFiles: z.number() });
+export const DiffLocalSchema = z.object({ before: FindingsSchema, after: FindingsSchema, files: z.number(), score: z.number() });
+export const DiffLocalRunSchema = z.array(DiffLocalSchema.extend({ commit: z.string(), pr: z.number().nullable() }));
+
+export type Findings = z.infer<typeof FindingsSchema>;
+export type DiffLocal = z.infer<typeof DiffLocalSchema>;
 
 const indexer = createRepositoryIndexer();
 
@@ -81,7 +86,7 @@ if (import.meta.main) {
   }
   const repository = resolve(values.repo);
   const { commits, scope } = await readAttribution();
-  const results: (DiffLocal & { commit: string; pr: number | null })[] = new Array(commits.length);
+  const results: z.infer<typeof DiffLocalRunSchema> = new Array(commits.length);
   let next = 0;
   const worker = async () => {
     for (let position = next++; position < commits.length; position = next++) {

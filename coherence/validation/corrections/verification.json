@@ -1,0 +1,16 @@
+[
+  { "id": "gh:89643:3911783677", "addressed": "no", "where": "in-scope", "note": "The first commit touching ses.py splits a function; it imports no boto3 types and adds dict[str, Any]." },
+  { "id": "gh:89643:3911807455", "addressed": "yes", "where": "in-scope", "note": "Splits get_identity_isp_metrics into phase helpers." },
+  { "id": "gh:85156:3811770267", "addressed": "yes", "where": "both", "note": "Adds an error_message_contains filter to posthog/api/hog_invocation_results.py and uses it from the logic." },
+  { "id": "gh:72667:4807627642", "addressed": "yes", "where": "in-scope", "note": "Rebuilds WorkflowMetricCard on quill's composable Metric." },
+  { "id": "gh:72667:4810731966", "addressed": "yes", "where": "outside-scope", "note": "Changes quill's Metric in packages/quill; workflows changes 4 lines." },
+  { "id": "gh:72913:3637255791", "addressed": "unverifiable", "where": "in-scope", "note": "Rebased branch; the fix is inside the whole feature commit." },
+  { "id": "gh:59468:3347822341", "addressed": "partly", "where": "outside-scope", "note": "Enforces the behaviour in the Node consumer, not the serializer; the workflows change is UI copy and validation display." },
+  { "id": "gh:58152:3215463766", "addressed": "unverifiable", "where": "in-scope", "note": "Rebased branch; the fix is inside the whole feature commit." },
+  { "id": "gh:58152:3215464468", "addressed": "unverifiable", "where": "in-scope", "note": "Rebased branch; the fix is inside the whole feature commit." },
+  { "id": "gh:58152:3215474210", "addressed": "unverifiable", "where": "in-scope", "note": "Rebased branch; the fix is inside the whole feature commit." },
+  { "id": "gh:51875:2997760124", "addressed": "yes", "where": "in-scope", "note": "Deletes HogFlowScheduledRun and moves next_run_at onto the schedule, alongside new CRUD endpoints." },
+  { "id": "gh:51875:2998199827", "addressed": "yes", "where": "in-scope", "note": "Removes the post_save schedule signals; the scheduler owns next_run_at." },
+  { "id": "gh:47035:2877422332", "addressed": "unverifiable", "where": "in-scope", "note": "Squashed branch; the fix is the whole feature commit." },
+  { "id": "gh:49670:2879038689", "addressed": "yes", "where": "in-scope", "note": "Removes HogFlow wording from mcp/tools.yaml." }
+]

@@ -6,23 +6,26 @@ import { z } from "zod";
 import { git } from "../../src/git.ts";
 import { CoherenceReportSchema, type CoherenceIndex } from "../contract.ts";
 import { measureCoherence } from "../measure.ts";
-import { changesBetween, scoresOf, type Changes, type Scores } from "./changes.ts";
+import { changesBetween, ChangesSchema, scoresOf, ScoresSchema } from "./changes.ts";
 
-export type LineCount = { files: number; added: number; deleted: number };
+const LineCountSchema = z.object({ files: z.number(), added: z.number(), deleted: z.number() });
+type LineCount = z.infer<typeof LineCountSchema>;
 
-export type Attribution = {
-  commit: string;
-  parent: string;
-  date: string;
-  pr: number | null;
-  title: string;
-  type: string;
-  lines: { scope: LineCount; scopeTests: LineCount; scopeMeasured: LineCount; outside: LineCount };
-  before: Scores;
-  after: Scores;
-} & Changes;
+export const AttributionSchema = ChangesSchema.extend({
+  commit: z.string(),
+  parent: z.string(),
+  date: z.string(),
+  pr: z.number().nullable(),
+  title: z.string(),
+  type: z.string(),
+  lines: z.object({ scope: LineCountSchema, scopeTests: LineCountSchema, scopeMeasured: LineCountSchema, outside: LineCountSchema }),
+  before: ScoresSchema,
+  after: ScoresSchema,
+});
+export type Attribution = z.infer<typeof AttributionSchema>;
 
-export type AttributionRun = { repository: string; ref: string; head: string; since: string; scope: string; commits: Attribution[] };
+export const AttributionRunSchema = z.object({ repository: z.string(), ref: z.string(), head: z.string(), since: z.string(), scope: z.string(), commits: z.array(AttributionSchema) });
+export type AttributionRun = z.infer<typeof AttributionRunSchema>;
 
 type Commit = { commit: string; parent: string; date: string; subject: string };
 type FileChange = { path: string; added: number; deleted: number };

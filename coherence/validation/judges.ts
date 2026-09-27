@@ -23,7 +23,8 @@ async function verdictsOf(judge: Judge): Promise<Map<number, Verdict>> {
   return new Map(verdicts.flat().map((verdict) => [verdict.pr, verdict]));
 }
 
+const codeFence = /^\s*```(?:json)?\s*\n|\n\s*```\s*$/g;
+
 export function parseVerdicts(text: string): Verdict[] {
-  const array = text.slice(text.indexOf("["), text.lastIndexOf("]") + 1);
-  return z.array(VerdictSchema).parse(JSON.parse(array));
+  return z.array(VerdictSchema).parse(JSON.parse(text.replace(codeFence, "")));
 }

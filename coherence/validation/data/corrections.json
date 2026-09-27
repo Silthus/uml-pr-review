@@ -9,6 +9,11 @@
   "pr": 89643,
   "kind": "remove-duplication",
   "quote": "we should have the boto3 type somewhere to import",
+  "verification": {
+   "addressed": "no",
+   "where": "in-scope",
+   "note": "The first commit touching ses.py splits a function; it imports no boto3 types and adds dict[str, Any]."
+  },
   "base": "75a989f934475187e2ccdcae8f599e603717b6b4",
   "commentCommit": "d614950b4efb150d6a18199b3f304cc78e0474fd",
   "isolable": true,
@@ -199,6 +204,11 @@
   "pr": 89643,
   "kind": "split-or-merge",
   "quote": "this is a crazy long function to parse",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Splits get_identity_isp_metrics into phase helpers."
+  },
   "base": "75a989f934475187e2ccdcae8f599e603717b6b4",
   "commentCommit": "d614950b4efb150d6a18199b3f304cc78e0474fd",
   "isolable": true,
@@ -389,6 +399,11 @@
   "pr": 85156,
   "kind": "move",
   "quote": "Might be better to filter by the message on server side",
+  "verification": {
+   "addressed": "yes",
+   "where": "both",
+   "note": "Adds an error_message_contains filter to posthog/api/hog_invocation_results.py and uses it from the logic."
+  },
   "base": "58a04111103dbefa57b70dfaf14ece2ca14437f5",
   "commentCommit": "98f81894acd46d162004f394902b9cd8e0c96b2b",
   "isolable": true,
@@ -575,6 +590,11 @@
   "pr": 72667,
   "kind": "remove-duplication",
   "quote": "newer more customisable version of this component that would be better",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Rebuilds WorkflowMetricCard on quill's composable Metric."
+  },
   "base": "6f9bf4aafe2727bf285550cd9860bf5b7df4942c",
   "commentCommit": "1f236e7fc8c0612ab3ca89adc0ce3b58055bbd51",
   "isolable": true,
@@ -761,6 +781,11 @@
   "pr": 72667,
   "kind": "remove-duplication",
   "quote": "`WorkflowMetricCard` already computes these totals in `sumSeries`",
+  "verification": {
+   "addressed": "yes",
+   "where": "outside-scope",
+   "note": "Changes quill's Metric in packages/quill; workflows changes 4 lines."
+  },
   "base": "6f9bf4aafe2727bf285550cd9860bf5b7df4942c",
   "commentCommit": "94dd94a28387f487e272d1b9ac5c5b67fb9ecfae",
   "isolable": true,
@@ -947,8 +972,13 @@
   "pr": 72913,
   "kind": "remove-duplication",
   "quote": "Looks very similar to `_strip_secret_inputs`, might be worth adding a shared helper",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
   "base": "a9f6638fa7b3b457018815e50c559b6a0e0b477a",
-  "commentCommit": "a9f6638fa7b3b457018815e50c559b6a0e0b477a",
+  "commentCommit": null,
   "isolable": false,
   "before": "54181a21dc52f0077e74a15cb41f9f3584f9461c",
   "fix": "c91bf9b5be9aa613a7c7c05b5f53e97389639b80",
@@ -1137,6 +1167,11 @@
   "pr": 59468,
   "kind": "move",
   "quote": "i think we should handle all of this on the serializer level",
+  "verification": {
+   "addressed": "partly",
+   "where": "outside-scope",
+   "note": "Enforces the behaviour in the Node consumer, not the serializer; the workflows change is UI copy and validation display."
+  },
   "base": "3a5a753d4b0b76162c1f8c975c6166a04a67214e",
   "commentCommit": "ffcfd7f3c77ea24644b35e245526ea6223713e26",
   "isolable": true,
@@ -1327,8 +1362,13 @@
   "pr": 58152,
   "kind": "remove-duplication",
   "quote": "Couldn't we use `TZLabel` for this instead?",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
   "base": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
-  "commentCommit": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
+  "commentCommit": null,
   "isolable": false,
   "before": "67adf172c2a6a6c3fca4603af3736c9fec3da242",
   "fix": "8f8a21a45c1f1e4c512ba8f320907b00570dc286",
@@ -1517,8 +1557,13 @@
   "pr": 58152,
   "kind": "move",
   "quote": "add this into lib instead so it's available for others",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
   "base": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
-  "commentCommit": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
+  "commentCommit": null,
   "isolable": false,
   "before": "67adf172c2a6a6c3fca4603af3736c9fec3da242",
   "fix": "8f8a21a45c1f1e4c512ba8f320907b00570dc286",
@@ -1707,8 +1752,13 @@
   "pr": 58152,
   "kind": "remove-duplication",
   "quote": "extracting this into separate small component to not duplicate it",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
   "base": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
-  "commentCommit": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
+  "commentCommit": null,
   "isolable": false,
   "before": "67adf172c2a6a6c3fca4603af3736c9fec3da242",
   "fix": "8f8a21a45c1f1e4c512ba8f320907b00570dc286",
@@ -1897,6 +1947,11 @@
   "pr": 51875,
   "kind": "remove-duplication",
   "quote": "most of the fields in this model are just duplicated data",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Deletes HogFlowScheduledRun and moves next_run_at onto the schedule, alongside new CRUD endpoints."
+  },
   "base": "0e5e7730217173950839e911b1234d8a451821fd",
   "commentCommit": "a5c831858ccc87288c67f66a866954334b283826",
   "isolable": true,
@@ -2092,6 +2147,11 @@
   "pr": 51875,
   "kind": "move",
   "quote": "pretty clean to limit that responsibility to the poller",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Removes the post_save schedule signals; the scheduler owns next_run_at."
+  },
   "base": "0e5e7730217173950839e911b1234d8a451821fd",
   "commentCommit": "8d3254f2c4e0e2db5bbe312dc6a88bc041b5f0e1",
   "isolable": true,
@@ -2285,8 +2345,13 @@
   "pr": 47035,
   "kind": "move",
   "quote": "would be cool to move this into `registry/triggers/`",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Squashed branch; the fix is the whole feature commit."
+  },
   "base": "f41a5a5a98b862754374b1c8acaae43e99d18555",
-  "commentCommit": "f41a5a5a98b862754374b1c8acaae43e99d18555",
+  "commentCommit": null,
   "isolable": false,
   "before": "6453ddbf4821a9af04f339268c5be3f966a0d5ae",
   "fix": "3c6bdd040d512dbc29c05e9092ae82a66bdb05ff",
@@ -2475,6 +2540,11 @@
   "pr": 49670,
   "kind": "rename-concept",
   "quote": "Can we align it with the documentation?",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Removes HogFlow wording from mcp/tools.yaml."
+  },
   "base": "7a810eee45959c3625819485488d1d26a11db253",
   "commentCommit": "6c30268ac4f81dd755107830a916dd5ef6e7db45",
   "isolable": true,

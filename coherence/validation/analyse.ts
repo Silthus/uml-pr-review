@@ -5,14 +5,14 @@ import { parseArgs } from "node:util";
 import { dimensionWeights, percentile, roundTo } from "../score.ts";
 import type { Attribution } from "./attribute.ts";
 import { dimensions } from "./changes.ts";
-import { diffLocalDensity, type DiffLocal } from "./diff-local.ts";
+import { diffLocalDensity, DiffLocalRunSchema } from "./diff-local.ts";
 import { readVerdicts, type Verdict, type Verdicts } from "./judges.ts";
 import { asScored, compositeUnder, facadeCountsInsteadOfShares, facadeCoverageGated, facadeCoverageSmoothed, readIndex, without, type MeasureRule } from "./rescore.ts";
-import { classOf, judged, prThreshold, readAttribution, type IndexClass } from "./selection.ts";
+import { classOf, flatSampleSize, judged, prThreshold, readAttribution, sampleStratumOf, type IndexClass } from "./selection.ts";
 import { cohenKappa, spearman } from "./statistics.ts";
 
 type JudgeClass = "better" | "neutral" | "worse";
-type Row = Attribution & { indexClass: IndexClass; judged: boolean; opus: Verdict | null; astra: Verdict | null; mean: number | null; variants: Record<string, number>; local: { score: number; density: number } };
+type Row = Attribution & { exact: number; indexClass: IndexClass; sampleStratum: IndexClass; weight: number; judged: boolean; opus: Verdict | null; astra: Verdict | null; mean: number | null; variants: Record<string, number>; local: { score: number; density: number } };
 
 const repository = "https://github.com/PostHog/posthog";
 const measureNames = ["architecture.propagationCost", "architecture.cycleShare", "architecture.facadeShare", "complexity.p90Ccn", "complexity.shareOverTen", "complexity.shareOverTwenty", "complexity.p90FunctionNloc", "complexity.p90FileLines", "smells.ruffPerKloc", "smells.oxlintPerKloc", "smells.duplicationPercentage", "smells.markersPerKloc", "smells.typeEscapesPerKloc", "tests.testRatio", "tests.facadeCoverage"];
@@ -28,20 +28,25 @@ const variantRules: Record<string, MeasureRule> = {
 
 async function rowsOf(commits: Attribution[], verdicts: Verdicts, reports: string, local: Map<string, Row["local"]>): Promise<Row[]> {
   const judgedCommits = new Set(judged(commits).map(({ commit }) => commit));
+  const flatWeight = commits.filter((commit) => sampleStratumOf(commit) === "flat").length / flatSampleSize;
   return Promise.all(
     commits.map(async (commit) => {
       const [before, after] = await Promise.all([readIndex(reports, commit.parent), readIndex(reports, commit.commit)]);
       const opus = commit.pr === null ? null : (verdicts.opus.get(commit.pr) ?? null);
       const astra = commit.pr === null ? null : (verdicts.astra.get(commit.pr) ?? null);
+      const variants = Object.fromEntries(Object.entries(variantRules).map(([name, rule]) => [name, compositeUnder(after, rule) - compositeUnder(before, rule)]));
       return {
         ...commit,
-        indexClass: classOf(commit),
+        exact: variants.current!,
+        indexClass: classOf(variants.current!),
+        sampleStratum: sampleStratumOf(commit),
+        weight: sampleStratumOf(commit) === "flat" ? flatWeight : 1,
         judged: judgedCommits.has(commit.commit),
         opus,
         astra,
         mean: opus && astra ? (opus.score + astra.score) / 2 : null,
         local: local.get(commit.commit) ?? { score: 0, density: 0 },
-        variants: Object.fromEntries(Object.entries(variantRules).map(([name, rule]) => [name, compositeUnder(after, rule) - compositeUnder(before, rule)])),
+        variants,
       };
     }),
   );
@@ -124,14 +129,22 @@ function overview(rows: Row[]): string {
     return [type, ofType.length, countOf("improved"), countOf("flat"), countOf("worsened")];
   });
   const total = (indexClass: IndexClass) => rows.filter((row) => row.indexClass === indexClass).length;
+  const rounded = (indexClass: IndexClass) => rows.filter((row) => row.sampleStratum === indexClass).length;
+  const roundingOnly = rows.filter((row) => row.sampleStratum !== "flat" && row.indexClass === "flat");
+  const hiddenByRounding = rows.filter((row) => row.sampleStratum === "flat" && row.indexClass !== "flat").length;
   const distribution = [...Map.groupBy(rows, ({ delta }) => delta.composite)].sort(([a], [b]) => a - b).map(([value, members]) => `${signed(value)}: ${members.length}`);
   const magnitudes = rows.map(({ delta }) => Math.abs(delta.composite));
+  const exactMagnitudes = rows.map(({ exact }) => Math.abs(exact));
+  const bucket = (low: number, high: number) => exactMagnitudes.filter((magnitude) => magnitude >= low && magnitude < high).length;
+  const unroundedBuckets: [string, number][] = [["below 0.01", bucket(0, 0.01)], ["0.01 to 0.05", bucket(0.01, 0.05)], ["0.05 to 0.1", bucket(0.05, 0.1)], ["0.1 to 0.2", bucket(0.1, 0.2)], ["0.2 and above", bucket(0.2, Infinity)]];
   return [
     "## Overview",
-    `${rows.length} first-parent commits; ${rows.filter(({ pr }) => pr !== null).length} carry a PR number. The composite moved at all (|Δ| ≥ 0.1) for ${share(moved, rows.length)}; the PR threshold is ±${prThreshold}.`,
+    `${rows.length} first-parent commits; ${rows.filter(({ pr }) => pr !== null).length} carry a PR number. The printed (rounded) composite moved at all (|Δ| ≥ 0.1) for ${share(moved, rows.length)}. Classes use the unrounded composite delta with the PR threshold ±${prThreshold}.`,
     table(["type", "PRs", "improved", "flat", "worsened"], [...byType, ["**all**", rows.length, total("improved"), total("flat"), total("worsened")]]),
+    `On the printed, rounded composite the classes would be ${rounded("improved")} improved, ${rounded("flat")} flat, ${rounded("worsened")} worsened; that rounded split drew the judge sample. ${roundingOnly.length} rounded movers are below the threshold unrounded (unrounded |Δ| ${fixed(Math.min(...roundingOnly.map(({ exact }) => Math.abs(exact))), 3)} to ${fixed(Math.max(...roundingOnly.map(({ exact }) => Math.abs(exact))), 3)}), and ${hiddenByRounding} unrounded movers hide in the rounded flat class.`,
     `Composite Δ distribution: ${distribution.join(", ")}.`,
-    `|Δ| percentiles: p50 ${percentile(magnitudes, 0.5)}, p75 ${percentile(magnitudes, 0.75)}, p90 ${percentile(magnitudes, 0.9)}, p95 ${percentile(magnitudes, 0.95)}, max ${Math.max(...magnitudes)}.`,
+    `Rounded |Δ| percentiles: p50 ${percentile(magnitudes, 0.5)}, p75 ${percentile(magnitudes, 0.75)}, p90 ${percentile(magnitudes, 0.9)}, p95 ${percentile(magnitudes, 0.95)}, max ${Math.max(...magnitudes)}.`,
+    `Unrounded |Δ|: ${unroundedBuckets.map(([label, count]) => `${label}: ${count}`).join(", ")}; p90 ${fixed(percentile(exactMagnitudes, 0.9), 3)}, p95 ${fixed(percentile(exactMagnitudes, 0.95), 3)}, p97 ${fixed(percentile(exactMagnitudes, 0.97), 3)}.`,
     `Outside-driven (inbound facade crossings or bypasses changed): ${rows.filter(({ outsideDriven }) => outsideDriven).length}. Commits whose scope change touched no measured production file: ${rows.filter(({ lines }) => lines.scopeMeasured.files === 0).length}, of which ${rows.filter(({ lines, delta }) => lines.scopeMeasured.files === 0 && delta.composite !== 0).length} still moved the composite.`,
   ].join("\n\n");
 }
@@ -164,22 +177,22 @@ function indexVersusJudges(rows: Row[]): string {
     const members = scored.filter((row) => row.indexClass === indexClass);
     return [indexClass, members.length, ...(["better", "neutral", "worse"] as JudgeClass[]).map((judgement) => members.filter((row) => judgeClass(row.mean!) === judgement).length)];
   });
-  const flatTotal = rows.filter((row) => row.indexClass === "flat").length;
-  const flatNonNeutral = flat.filter((row) => judgeClass(row.mean!) !== "neutral").length;
-  const blindEstimate = flat.length === 0 ? 0 : (flatNonNeutral / flat.length) * flatTotal;
-  const movedNonNeutral = moved.filter((row) => judgeClass(row.mean!) !== "neutral").length;
+  const weighted = (members: Row[]) => members.reduce((sum, row) => sum + row.weight, 0);
+  const nonNeutral = (row: Row) => judgeClass(row.mean!) !== "neutral";
   const bothAgree = (row: Row) => row.opus!.score !== 0 && Math.sign(row.opus!.score) === Math.sign(row.astra!.score);
-  const strictFlat = flat.filter(bothAgree).length;
-  const strictMoved = moved.filter(bothAgree).length;
-  const strictBlind = flat.length === 0 ? 0 : (strictFlat / flat.length) * flatTotal;
+  const blindness = (changed: (row: Row) => boolean) => {
+    const blind = weighted(flat.filter(changed));
+    const seen = weighted(moved.filter(changed));
+    return `about ${Math.round(blind)} flat against ${Math.round(seen)} moved, so about ${Math.round((100 * blind) / Math.max(1, blind + seen))}% blind`;
+  };
   return [
     "## Index versus judges",
     `Sign agreement on the ${moved.length} non-flat PRs: ${share(moved.filter(agrees).length, moved.length)} counting a judge mean of 0 as disagreement; ${share(decided.filter(agrees).length, decided.length)} over the ${decided.length} where the judges lean one way.`,
-    `Spearman(composite Δ, mean judge): ${fixed(spearman(scored.map(({ delta }) => delta.composite), scored.map(({ mean }) => mean!)))} over all ${scored.length} judged PRs; ${fixed(spearman(moved.map(({ delta }) => delta.composite), moved.map(({ mean }) => mean!)))} over the non-flat ones.`,
+    `Spearman(unrounded composite Δ, mean judge): ${fixed(spearman(scored.map(({ exact }) => exact), scored.map(({ mean }) => mean!)))} over all ${scored.length} judged PRs; ${fixed(spearman(moved.map(({ exact }) => exact), moved.map(({ mean }) => mean!)))} over the non-flat ones. These are sample statistics: the sample holds every rounded mover and a random ${flatSampleSize} of the rounded-flat PRs.`,
     `Cohen's kappa, index class against each judge's sign: Opus ${fixed(kappaWith("opus"))}, Astra ${fixed(kappaWith("astra"))}.`,
     "Confusion matrix (judge class from the mean score: ≥ 0.5 better, ≤ −0.5 worse):",
     table(["index class", "judged", "judges: better", "judges: neutral", "judges: worse"], confusion),
-    `Blindness: ${share(flatNonNeutral, flat.length)} of the sampled flat PRs are better or worse to the judges. Scaled to all ${flatTotal} flat PRs that is about ${Math.round(blindEstimate)} PRs, against ${movedNonNeutral} non-neutral PRs the index does move: the index is flat on about ${Math.round((100 * blindEstimate) / Math.max(1, blindEstimate + movedNonNeutral))}% of the PRs that judges see as a quality change. With the stricter rule that both judges give the same non-zero sign: ${share(strictFlat, flat.length)} flat, about ${Math.round(strictBlind)} scaled, against ${strictMoved} moved, so about ${Math.round((100 * strictBlind) / Math.max(1, strictBlind + strictMoved))}% blind.`,
+    `Blindness, population-weighted (each sampled rounded-flat PR stands for ${fixed(flat.find(({ sampleStratum }) => sampleStratum === "flat")?.weight ?? 1)} PRs): of the PRs the judges see as a quality change (mean ≥ 0.5 or ≤ −0.5), ${blindness(nonNeutral)}. With the strict rule that both judges give the same non-zero sign, ${blindness(bothAgree)}.`,
   ].join("\n\n");
 }
 
@@ -234,7 +247,7 @@ function diffLocalSection(rows: Row[]): string {
     "## Diff-local variant against the judges",
     "The diff-local score counts findings in the files the PR changed, before minus after: functions over CCN 10 (×1) and 20 (×2), ruff and oxlint findings, type escapes, TODO-style markers, facade bypasses touching a changed file (×3), and changed files on an import cycle. Positive means fewer findings.",
     table(["signal", "PRs it moves", "judged PRs it moves", "Spearman vs judges", "sign agreement where it moves"], [
-      line("scope-level composite (|Δ| ≥ 0.2)", (row) => row.delta.composite, (row) => row.indexClass !== "flat"),
+      line("scope-level composite (unrounded |Δ| ≥ 0.2)", (row) => row.exact, (row) => row.indexClass !== "flat"),
       line("diff-local score (≠ 0)", (row) => row.local.score, (row) => row.local.score !== 0),
       line("diff-local density per KLOC of changed files (|Δ| ≥ 1)", (row) => row.local.density, (row) => Math.abs(row.local.density) >= 1),
     ]),
@@ -270,12 +283,12 @@ function checks(rows: Row[]): string {
 }
 
 function movers(rows: Row[], direction: "improvers" | "worseners", limit = 10): string {
-  const ordered = [...rows].sort((a, b) => (direction === "improvers" ? b.delta.composite - a.delta.composite : a.delta.composite - b.delta.composite)).slice(0, limit);
+  const ordered = [...rows].sort((a, b) => (direction === "improvers" ? b.exact - a.exact : a.exact - b.exact)).slice(0, limit);
   return [
     `## Top ${limit} ${direction}`,
     table(
-      ["PR", "title", "Δ", "moved most", "drivers", "Opus", "Astra"],
-      ordered.map((row) => [prLink(row), row.title, signed(row.delta.composite), topMeasures(row), driversOf(row), verdictCell(row.opus), verdictCell(row.astra)]),
+      ["PR", "title", "Δ (unrounded)", "moved most", "drivers", "Opus", "Astra"],
+      ordered.map((row) => [prLink(row), row.title, signed(row.exact, 2), topMeasures(row), driversOf(row), verdictCell(row.opus), verdictCell(row.astra)]),
     ),
   ].join("\n\n");
 }
@@ -285,8 +298,8 @@ function disagreements(rows: Row[]): string {
   const opposite = scored.filter((row) => (row.indexClass === "improved" && row.mean! <= -0.5) || (row.indexClass === "worsened" && row.mean! >= 0.5));
   const blind = scored.filter((row) => row.indexClass === "flat" && Math.abs(row.mean!) >= 1);
   const lines = [...opposite, ...blind]
-    .sort((a, b) => Math.abs(b.mean!) * (Math.abs(b.delta.composite) + 0.1) - Math.abs(a.mean!) * (Math.abs(a.delta.composite) + 0.1))
-    .map((row) => [prLink(row), row.title, `${row.indexClass} ${signed(row.delta.composite)}`, row.mean!.toFixed(1), topMeasures(row) || "—", verdictCell(row.opus), verdictCell(row.astra)]);
+    .sort((a, b) => Math.abs(b.mean!) * (Math.abs(b.exact) + 0.1) - Math.abs(a.mean!) * (Math.abs(a.exact) + 0.1))
+    .map((row) => [prLink(row), row.title, `${row.indexClass} ${signed(row.exact, 2)}`, row.mean!.toFixed(1), topMeasures(row) || "—", verdictCell(row.opus), verdictCell(row.astra)]);
   return [
     "## Biggest disagreements",
     `${opposite.length} PRs where the index and the judges point opposite ways, and ${blind.length} flat PRs the judges score at |mean| ≥ 1.`,
@@ -299,14 +312,14 @@ function verdictCell(verdict: Verdict | null): string {
 }
 
 function csvOf(rows: Row[]): string {
-  const header = ["pr", "commit", "date", "type", "title", "class", "judged", "delta_composite", ...dimensions.map((dimension) => `delta_${dimension}`), ...measureNames.map((name) => `score_delta_${name}`), "scope_added", "scope_deleted", "scope_test_added", "scope_test_deleted", "outside_added", "outside_deleted", "outside_driven", "drivers", "opus_score", "astra_score", "judge_mean", "opus_reason", "astra_reason"];
+  const header = ["pr", "commit", "date", "type", "title", "class", "rounded_class", "sample_weight", "judged", "delta_composite", "delta_composite_unrounded", ...dimensions.map((dimension) => `delta_${dimension}`), ...measureNames.map((name) => `score_delta_${name}`), "scope_added", "scope_deleted", "scope_test_added", "scope_test_deleted", "outside_added", "outside_deleted", "outside_driven", "drivers", "opus_score", "astra_score", "judge_mean", "opus_reason", "astra_reason"];
   const cell = (value: unknown) => {
     const text = value === null || value === undefined ? "" : String(value);
     return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
   };
   const lines = rows.map((row) =>
     [
-      row.pr, row.commit.slice(0, 12), row.date.slice(0, 10), row.type, row.title, row.indexClass, row.judged, row.delta.composite,
+      row.pr, row.commit.slice(0, 12), row.date.slice(0, 10), row.type, row.title, row.indexClass, row.sampleStratum, roundTo(row.weight, 3), row.judged, row.delta.composite, roundTo(row.exact, 3),
       ...dimensions.map((dimension) => row.delta[dimension]),
       ...measureNames.map((name) => row.measures[name]!.scoreDelta),
       row.lines.scope.added, row.lines.scope.deleted, row.lines.scopeTests.added, row.lines.scopeTests.deleted, row.lines.outside.added, row.lines.outside.deleted,
@@ -325,7 +338,7 @@ if (import.meta.main) {
     },
   });
   const { commits } = await readAttribution();
-  const local = new Map(((await Bun.file(join(import.meta.dir, "data", "diff-local.json")).json()) as (DiffLocal & { commit: string })[]).map(({ commit, score, before, after }) => [commit, { score, density: diffLocalDensity(before, after) }]));
+  const local = new Map(DiffLocalRunSchema.parse(await Bun.file(join(import.meta.dir, "data", "diff-local.json")).json()).map(({ commit, score, before, after }) => [commit, { score, density: diffLocalDensity(before, after) }]));
   const rows = await rowsOf(commits, await readVerdicts(), resolve(values.reports!), local);
   const tables = [overview(rows), interJudge(rows), indexVersusJudges(rows), perMeasure(rows), variants(rows), diffLocalSection(rows), checks(rows), movers(rows, "improvers"), movers(rows, "worseners"), disagreements(rows)].join("\n\n");
   await writeFile(resolve(values.csv!), csvOf(rows));

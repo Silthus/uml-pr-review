@@ -2,7 +2,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import type { Correction } from "./corrections.ts";
+import { z } from "zod";
+import { CorrectionSchema, type Correction } from "./corrections.ts";
 
 type Scored = Correction & { index: NonNullable<Correction["index"]>; local: NonNullable<Correction["local"]> };
 
@@ -38,6 +39,11 @@ function table(header: string[], rows: string[][]): string {
   return [line(header), `| ${header.map(() => "---").join(" | ")} |`, ...rows.map(line)].join("\n");
 }
 
+function verified(corrections: Scored[]): Scored[] {
+  const addressed = corrections.filter(({ isolable, verification }) => isolable && (verification?.addressed === "yes" || verification?.addressed === "partly"));
+  return [...new Map(addressed.map((correction) => [correction.fix, correction])).values()];
+}
+
 function markdown(corrections: Correction[]): string {
   const scored = corrections.filter((correction): correction is Scored => correction.index !== null && correction.local !== null);
   const isolable = scored.filter(({ isolable }) => isolable);
@@ -52,6 +58,7 @@ function markdown(corrections: Correction[]): string {
     correction.kind,
     `“${correction.quote}”`,
     correction.isolable ? "yes" : "no",
+    correction.verification ? `${correction.verification.addressed} (${correction.verification.where})` : "—",
     `${commitLink(correction.before!)} → ${commitLink(correction.fix!)}`,
     `${correction.index.delta.composite > 0 ? "+" : ""}${correction.index.delta.composite} (${correction.index.moved})`,
     movedMeasures(correction) || "—",
@@ -59,21 +66,21 @@ function markdown(corrections: Correction[]): string {
     localChanges(correction) || "—",
   ]);
   return [
-    `${corrections.length} architecture corrections; ${scored.length} with a fix commit that still exists; ${isolable.length} isolable (a PR commit before the comment survives, so the fix is a separate commit rather than a squashed or rebased whole).`,
-    table(["signal", "corrections", "moved as asked", "blind", "moved the other way"], [...rates("isolable", isolable), ...rates("all", scored)]),
-    table(["PR", "kind", "request", "isolable", "fix parent → fix", "index Δ", "index measures", "diff-local", "diff-local findings"], cases),
+    `${corrections.length} architecture corrections; ${scored.length} with a fix commit that still exists; ${isolable.length} isolable (a PR commit before the comment survives, so the fix is a separate commit rather than a squashed or rebased whole); ${verified(scored).length} distinct fix commits that are isolable and were checked by hand to address the comment, fully or partly.`,
+    table(["signal", "corrections", "moved as asked", "blind", "moved the other way"], [...rates("verified fixes (isolable, addressed, one row per fix commit)", verified(scored)), ...rates("isolable comments", isolable), ...rates("all comments", scored)]),
+    table(["PR", "kind", "request", "isolable", "addressed", "fix parent → fix", "index Δ", "index measures", "diff-local", "diff-local findings"], cases),
   ].join("\n\n");
 }
 
 function csvOf(corrections: Correction[]): string {
-  const header = ["pr", "comment_url", "reviewer", "kind", "quote", "path", "commented_at", "isolable", "comment_commit", "fix_parent", "fix", "base", "delta_composite", "delta_architecture", "delta_complexity", "delta_smells", "delta_tests", "index_outcome", "diff_local_score", "diff_local_outcome", "diff_local_files"];
+  const header = ["pr", "comment_url", "reviewer", "kind", "quote", "path", "commented_at", "isolable", "addressed", "addressed_where", "comment_commit", "fix_parent", "fix", "base", "delta_composite", "delta_architecture", "delta_complexity", "delta_smells", "delta_tests", "index_outcome", "diff_local_score", "diff_local_outcome", "diff_local_files"];
   const cell = (value: unknown) => {
     const text = value === null || value === undefined ? "" : String(value);
     return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
   };
   const lines = corrections.map((correction) =>
     [
-      correction.pr, correction.url, correction.author, correction.kind, correction.quote, correction.path, correction.at, correction.isolable, correction.commentCommit.slice(0, 12), correction.before?.slice(0, 12), correction.fix?.slice(0, 12), correction.base.slice(0, 12),
+      correction.pr, correction.url, correction.author, correction.kind, correction.quote, correction.path, correction.at, correction.isolable, correction.verification?.addressed, correction.verification?.where, correction.commentCommit?.slice(0, 12), correction.before?.slice(0, 12), correction.fix?.slice(0, 12), correction.base.slice(0, 12),
       correction.index?.delta.composite, correction.index?.delta.architecture, correction.index?.delta.complexity, correction.index?.delta.smells, correction.index?.delta.tests, correction.index?.moved,
       correction.local?.score, correction.local?.moved, correction.local?.files,
     ].map(cell).join(","),
@@ -89,7 +96,7 @@ if (import.meta.main) {
       tables: { type: "string", default: join(import.meta.dir, "..", "..", "docs", "coherence", "validation", "corrections-tables.md") },
     },
   });
-  const corrections = JSON.parse(await readFile(resolve(values.data!), "utf8")) as Correction[];
+  const corrections = z.array(CorrectionSchema).parse(JSON.parse(await readFile(resolve(values.data!), "utf8")));
   const tables = markdown(corrections);
   await writeFile(resolve(values.csv!), csvOf(corrections));
   await writeFile(resolve(values.tables!), `# Human architecture corrections: generated tables\n\n${tables}\n`);

@@ -1,0 +1,40 @@
+locateFix with the original ISO-string comparison (date <= at), before the review fix:
+
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/validation-corrections.test.ts:
+21 |   });
+22 | 
+23 |   test("compares instants, not strings, when the commit carries a time zone offset", async () => {
+24 |     const offset = [commit("before", "2026-03-26T23:00:00+02:00"), commit("after", "2026-03-26T22:00:00Z")];
+25 | 
+26 |     expect(await locateFix(offset, "2026-03-26T21:28:38Z", touchingOnly("before", "after"))).toEqual({ fix: offset[1], commentCommit: "before", isolable: true });
+                                                                                                  ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "commentCommit": "before",
++   "commentCommit": undefined,
+    "fix": {
+-     "date": "2026-03-26T22:00:00Z",
++     "date": "2026-03-26T23:00:00+02:00",
+      "merge": false,
+-     "parent": "after^",
+-     "sha": "after",
++     "parent": "before^",
++     "sha": "before",
+    },
+-   "isolable": true,
++   "isolable": false,
+  }
+
+- Expected  - 5
++ Received  + 5
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ac1df8f132c305f72/test/coherence/validation-corrections.test.ts:26:94)
+(fail) locating the commit that answers a review comment > compares instants, not strings, when the commit carries a time zone offset [0.14ms]
+
+ 5 pass
+ 1 fail
+ 6 expect() calls
+Ran 6 tests across 1 file. [23.00ms]

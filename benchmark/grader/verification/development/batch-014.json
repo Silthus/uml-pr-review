@@ -1,0 +1,22 @@
+[
+  {"id": "gh:73254:3639052019", "addressed": "yes", "note": "Moves StorageError, its Clone/From impls and StorageResult out of persons.rs into a new storage_error.rs module and updates the replica import."},
+  {"id": "gh:72266:3623177777", "addressed": "partly", "note": "Keeps the handwritten LLMPrompt interfaces but types the new label fields via indexed access on generated LLMPromptListApi/VersionSummaryApi/ResolveResponseApi types."},
+  {"id": "gh:63062:3470001546", "addressed": "yes", "note": "Replaces the \"FeatureFlag\" string literals in the permission check, queryset exclude and edit guard with ScheduledChange.AllowedModels.FEATURE_FLAG."},
+  {"id": "gh:72385:3620888148", "addressed": "yes", "note": "Breadcrumbs selector now depends on isNewEvaluation (props-based) and a new evaluationBackTarget selector instead of checking evaluation?.id."},
+  {"id": "gh:64271:3428403998", "addressed": "yes", "note": "Removes the badge prop and inline organizationBadge from TemplateItem; TemplateItemTitleDescription renders a new OrganizationScopeBadge from template.scope."},
+  {"id": "gh:60063:3340135291", "addressed": "yes", "note": "Drops the staticDropEventTokens scope component; drop tokens are derived from DROP_EVENTS_BY_TOKEN_DISTINCT_ID config in the consumer."},
+  {"id": "gh:54540:3116092073", "addressed": "yes", "note": "prepare_for_cloud_handoff sets a dedicated handoff_resumed state flag instead of overloading resume_from_run_id; workflow and provisioning read it."},
+  {"id": "gh:72923:3642117929", "addressed": "yes", "note": "Makes _effective_filters_after_update null-safe with an optional team arg and calls it from the save gate instead of the duplicated precedence logic."},
+  {"id": "gh:64629:3441169282", "addressed": "yes", "note": "Moves inbox interactivity helpers and handlers from api.py into a new services/inbox_interactivity.py module and calls them from there."},
+  {"id": "gh:64506:3441732186", "addressed": "yes", "note": "Renames lanes/ to pipelines/ with single-word names, moving ingestionwarnings to clientwarnings including the e2e test path."},
+  {"id": "gh:52588:3002098364", "addressed": "yes", "note": "Moves the DEFAULT producer config map into ingestion/common/producers.ts; analytics and error-tracking modules re-export from it."},
+  {"id": "gh:59563:3337909524", "addressed": "yes", "note": "Adds a rust-compute-affected composite action taking event name and base SHAs; rust-docker-build.yml and ci-rust.yml both use it instead of inline scripts."},
+  {"id": "gh:62672:3501126617", "addressed": "no", "note": "Only adds nosemgrep suppression comments to hogbox-preview files; no hogli command is introduced."},
+  {"id": "gh:61254:3348952781", "addressed": "yes", "note": "Replaces the spread-able storage object with buildAiObservabilityStorageConfig(storageKey) and updates call sites to use it."},
+  {"id": "gh:53253:3045051177", "addressed": "no", "note": "Hoists inline tracker classes and helpers to module level, but ExternalDataJob creation is still done inline rather than shared with the job-model activity."},
+  {"id": "gh:70603:3579458026", "addressed": "yes", "note": "Replaces the inline alert-kind union and ternary in EditAlertModal with insightAlertKindForQuery exported from alertFormLogic."},
+  {"id": "gh:59488:3288213847", "addressed": "yes", "note": "Renames the chart accessor helpers from xAxisTitle/yAxisTitle to xAxisLabel/yAxisLabel in docs, accessor and tests."},
+  {"id": "gh:72699:3630642366", "addressed": "yes", "note": "Deletes the standalone fan-out skill and folds its guidance into the pipeline doctor skill and its composition/result/step doctor agents."},
+  {"id": "gh:59127:3270503358", "addressed": "no", "note": "Only drops first_name from the dev-login user query and adjusts whitespace; still gated on settings.DEBUG with no new setting."},
+  {"id": "gh:55185:3166626125", "addressed": "yes", "note": "Removes the Celery investigation trigger and safety-net task from checks.py and ports them to Temporal alerts activities, workflows and schedule."}
+]

@@ -1,0 +1,22 @@
+[
+  {"id": "gh:55246:3111618599", "addressed": "yes", "note": "Moves safeStringify out of the playground prompts logic into the shared llm_analytics utils module and imports it from there."},
+  {"id": "gh:68937:3577215357", "addressed": "no", "note": "Adds Discord destination support and replaces template-id maps with an AlertDestinationTemplate enum; code stays split between common/alerting and posthog/alerting."},
+  {"id": "gh:68659:3616659731", "addressed": "yes", "note": "Removes the CUSTOMER_ANALYTICS_EVENT_STREAM flag and gates the event stream behind the existing customer-analytics-csp flag."},
+  {"id": "gh:55298:3165581665", "addressed": "partly", "note": "Moves used/sorted property and condition derivations into kea selectors and drops the IIFE, but keeps the custom table and key formatting instead of PropertiesTable."},
+  {"id": "gh:57847:3332056832", "addressed": "no", "note": "Matches events by distinct_id when person_id is missing and only edits a metric help string; metrics stay in the shared metrics file."},
+  {"id": "gh:52752:3011020206", "addressed": "yes", "note": "Drops the last_task foreign key from the automation migration, keeping last_task_run; also switches to cron_expression and adds a one-to-one task link."},
+  {"id": "gh:60700:3347071512", "addressed": "yes", "note": "Removes hardcoded per-product route imports from posthog/api and auto-discovers each product's routes.register_routes via INSTALLED_APPS."},
+  {"id": "gh:72726:3625389434", "addressed": "yes", "note": "Renames the config field and env var to cohort_register_transfer_enabled / COHORT_REGISTER_TRANSFER_ENABLED and updates tests and docs."},
+  {"id": "gh:62583:3423935960", "addressed": "partly", "note": "Deletes both optional-scopes migrations while reworking CIMD scope handling, but adds no single merged replacement migration in this commit."},
+  {"id": "gh:52112:2997195958", "addressed": "yes", "note": "Replaces the hand-rolled Turnstile script loader with the @marsidev/react-turnstile library component and removes the global typings."},
+  {"id": "gh:69521:3552515575", "addressed": "yes", "note": "Model's rebalance action now calls the production protocol::plan_rebalance extracted from the coordinator instead of inline diff logic."},
+  {"id": "gh:68988:3540629531", "addressed": "yes", "note": "parse_and_authenticate now returns the body library in its tuple and the handler uses it instead of calling stamp_body_sdk_info again."},
+  {"id": "gh:53101:3045029262", "addressed": "yes", "note": "Deletes the duplicated analytics and error-tracking producer files and moves producer registration into a shared ingestion/common module."},
+  {"id": "gh:68617:3536821845", "addressed": "no", "note": "Only trims comments from the trace search feature; the searchTerm field keeps its generic name."},
+  {"id": "gh:52495:2997762603", "addressed": "no", "note": "Forces the top random bit for consistent token length and rewrites the length test; does not move the test character set into prod code."},
+  {"id": "gh:75201:3684798800", "addressed": "yes", "note": "Replaces the local ScanTimer and sibling timers with a shared MetricTimer from observability metrics taking the histogram name."},
+  {"id": "gh:54802:3089707814", "addressed": "no", "note": "Adds api_token to cached token auth data and changes the generic validator's return tuple; the team-scoped validator keeps its own cache-loading prelude."},
+  {"id": "gh:52752:3078928239", "addressed": "yes", "note": "Removes duplicated team/name/prompt/repository/integration/run fields from TaskAutomation and exposes them as properties read from the linked Task."},
+  {"id": "gh:67198:3514340991", "addressed": "no", "note": "Adds a keep-in-sync comment in both feature flag group definitions; the duplicated group definitions are not collapsed."},
+  {"id": "gh:60618:3362662078", "addressed": "yes", "note": "Introduces WorkerAssignments/WorkerSubBatchBuilder helper structs so both pinned and bin-packed paths share add_group instead of repeating the map logic."}
+]

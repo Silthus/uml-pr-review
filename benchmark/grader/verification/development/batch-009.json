@@ -1,0 +1,22 @@
+[
+  {"id": "gh:70122:3577633891", "addressed": "no", "note": "Only rewrites the ship_variant docstring about base_filters validation; roll_out_variant stays public."},
+  {"id": "gh:59023:3282149499", "addressed": "yes", "note": "Drops the local hmac/hashlib signing and imports compute_signature from the agentic_provisioning signature module."},
+  {"id": "gh:57338:3192441901", "addressed": "yes", "note": "Removes the setBucketingIdentifier branch; the handler always calls setFeatureFlag with bucketing_identifier and continuity flag."},
+  {"id": "gh:67981:3516083598", "addressed": "yes", "note": "Deletes the alerts-local humanize_breakdown_label and reuses a shared breakdown-label helper in hogql_queries breakdowns utils."},
+  {"id": "gh:64072:3426457378", "addressed": "yes", "note": "Exports mustAddReasoningCost from output-costs.ts and imports it in the vercel-ai middleware, removing the duplicated Gemini regex list."},
+  {"id": "gh:54793:3127238964", "addressed": "yes", "note": "Replaces xxhash content fingerprint with an etag-keyed cache (team_id, etag) and lazy payload loading only on miss."},
+  {"id": "gh:53044:3023804339", "addressed": "no", "note": "Only relaxes row/column length checks from >=2 to >=1 for selection; no button component change."},
+  {"id": "gh:71539:3596373456", "addressed": "no", "note": "Changes now-header parsing to last-valid-wins and rewrites doc comment; the dedicated lag reporter remains."},
+  {"id": "gh:66482:3486207836", "addressed": "yes", "note": "Adds _invalid_request_error helper building the 400 OpenAI envelope and uses it for both Cloudflare Responses guards."},
+  {"id": "gh:56877:3167097374", "addressed": "yes", "note": "Adds LLM_ANALYTICS_CLUSTER_URL_PATTERN in clusters/constants and uses it in the url map and route registration."},
+  {"id": "gh:68682:3531011147", "addressed": "yes", "note": "Adds a MaterializationFixStatus enum in constants and derives serializer choices from it."},
+  {"id": "gh:68020:3516289680", "addressed": "yes", "note": "Renames the formatting helpers and constants to drop leading underscores and updates importers."},
+  {"id": "gh:75872:3689314465", "addressed": "no", "note": "Adds a checked flag to skip re-checking billing limits for pre-filtered teams; no utility extracted."},
+  {"id": "gh:75575:3683924090", "addressed": "no", "note": "Adds a guard skipping post-import context when the job is not completed, plus tests; no consolidation of pipelines."},
+  {"id": "gh:52752:3014862990", "addressed": "yes", "note": "Replaces HH:MM schedule_time with a cron_expression field validated by croniter, plus timezone validation."},
+  {"id": "gh:60223:3311292568", "addressed": "yes", "note": "Introduces a per-batch PersonsStore wrapper threaded through the pipeline, removing batchId arguments from store calls."},
+  {"id": "gh:59075:3282280118", "addressed": "yes", "note": "Moves the sharded preaggregated table creation to NodeRole.AUX with sharded=True; distributed table stays on DATA."},
+  {"id": "gh:61603:3356166525", "addressed": "no", "note": "Only deletes a two-line comment above the error markers; error handling location unchanged."},
+  {"id": "gh:73294:3647572427", "addressed": "partly", "note": "Removes the unreachable TeamViewSet handlers and its action constant, leaving only the project.py inline tuple; no shared constant."},
+  {"id": "gh:49264:3341508978", "addressed": "no", "note": "Switches guard field from primary key to access_control_id; still injects an ast.Constant rather than bound values."}
+]

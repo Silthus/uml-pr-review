@@ -1,0 +1,22 @@
+[
+  {"id": "gh:82953:3892332641", "addressed": "yes", "note": "Moves pinConversionGoal, buildConversionWatcher and window helpers out of the executor service into a new conversion-watcher.ts module."},
+  {"id": "gh:92585:3911288428", "addressed": "yes", "note": "Replaces parallel offsets/messages vectors in Group with a single Vec<GroupMessage> pairing each offset with its message."},
+  {"id": "gh:82568:3782264256", "addressed": "yes", "note": "Uses has_engine_seq(table) in the shadow buffer guard, reads restart_seq by CDC_SEQ_COLUMN name, and drops the stale last-column comment."},
+  {"id": "gh:96064:3963023864", "addressed": "yes", "note": "Replaces the hand-copied write tool list with flag_write_tools(), deriving names from generated-tool-definitions.json by category and readOnlyHint false."},
+  {"id": "gh:102958:4065464245", "addressed": "yes", "note": "v2 version race now raises Conflict(flag_version_conflict_message(token, locked_version)), plus other unrelated v2 review fixes."},
+  {"id": "gh:91764:3913370405", "addressed": "yes", "note": "Extracts per-partition stamping into BatchPartition::record, which restarts the ledger slice on generation change, with unit tests for the mid-batch regain case."},
+  {"id": "gh:105871:4096764984", "addressed": "partly", "note": "Deletes the repair command entirely, removing the divergent direct detect_config_format call, but adds no shared is_v1_config predicate."},
+  {"id": "gh:90142:3872913903", "addressed": "yes", "note": "Drops actionsModel connection from insightVizDataLogic, reads it via findMounted, and mounts actionsModel in TaxonomicBreakdownPopover."},
+  {"id": "gh:82913:3822013198", "addressed": "yes", "note": "Removes the inline MAX_TXN_OPS const; put_freeze_acks takes max_txn_ops as a parameter wired through leader and router config."},
+  {"id": "gh:99102:3989953027", "addressed": "yes", "note": "Moves websiteMetricsMetricCardTemplate.ts from frontend/src into products/dashboards/frontend and updates the import in newDashboardLogic."},
+  {"id": "gh:76109:3707937873", "addressed": "yes", "note": "_lookup_location now returns a frozen kw_only CachedLocation dataclass instead of a tuple; caller reads named fields."},
+  {"id": "gh:99939:4005504908", "addressed": "yes", "note": "Uses EmailLookupHandler.users_matching_email for the email holder check and for the pending email promotion check in verify_email."},
+  {"id": "gh:96175:3981336839", "addressed": "yes", "note": "Renames arm to branch in config.py docstrings, ConfigFormatError, rules.py, and the test_facade test name."},
+  {"id": "gh:83403:3810330332", "addressed": "yes", "note": "_is_feature_flag_config_input now derives config keys from ExperimentFeatureFlagInputSerializer().fields instead of a hardcoded tuple."},
+  {"id": "gh:80689:3753447911", "addressed": "yes", "note": "Adds get_members_to_notify_of_matview_failure that intersects two get_members_to_notify calls; digest and immediate senders use it."},
+  {"id": "gh:75760:3690889772", "addressed": "yes", "note": "Adds showStartupCap (and showStartupCapLine) selectors to visionQuotaLogic and switches the three components to them."},
+  {"id": "gh:102982:4085750198", "addressed": "yes", "note": "Moves REGEX_BACKTRACK_LIMIT from property_matching into property_models next to CompiledRegex::new."},
+  {"id": "gh:76933:3722137420", "addressed": "yes", "note": "Adds toAccessControlLevel helper replacing all five casts, and renders AccessDenied on 403 instead of a retry banner."},
+  {"id": "gh:102670:4048548358", "addressed": "yes", "note": "Deletes the hand-built observationThumbnailUrl and uses getVisionObservationsThumbnailRetrieveUrl from the Replay Vision generated client."},
+  {"id": "gh:87282:3876175360", "addressed": "yes", "note": "Removes the ExposedCHQueryError to ValidationError conversion from the runner and wraps runner.run() in person.py instead."}
+]

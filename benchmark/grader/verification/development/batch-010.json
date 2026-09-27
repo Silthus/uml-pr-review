@@ -1,0 +1,22 @@
+[
+  {"id": "gh:61317:3406692594", "addressed": "yes", "note": "Adds a shared count_is_member helper holding the count>=1 floor and calls it from both daily_predicate and compressed_predicate."},
+  {"id": "gh:58011:3208069764", "addressed": "yes", "note": "Replaces manual request.data list checks with a BulkNotificationIdsRequestSerializer applied via @validated_request on both bulk endpoints."},
+  {"id": "gh:62749:3390583774", "addressed": "yes", "note": "Drops active_filter from list_entities, makes list_feature_flags public, and the tool now calls list_feature_flags directly with the filter."},
+  {"id": "gh:70150:3579667672", "addressed": "yes", "note": "Renames WizardCloudRunHandleDTO to WizardCloudRunDTO and updates serializers, views, generated clients and tests."},
+  {"id": "gh:59907:3312979254", "addressed": "partly", "note": "Moves OIDC public-key derivation out of the auth class into a shared get_oidc_public_key in posthog/jwt.py; rest of token handling stays local."},
+  {"id": "gh:52571:3002666244", "addressed": "partly", "note": "Renames the server class to IngestionSessionReplayServer and the mprocs process to ingestion-sessionreplay, but the plugin server mode name stays recordings-blob-ingestion-v2."},
+  {"id": "gh:74259:3666997623", "addressed": "yes", "note": "Inputs now raise generic ValueError; the activity catches it around client construction and raises the non-retryable missing-inputs error."},
+  {"id": "gh:56090:3156914179", "addressed": "yes", "note": "Removes the useMemo option merge from the component and reads a mergedOptions selector from the kea logic instead."},
+  {"id": "gh:62081:3392130880", "addressed": "no", "note": "Keeps defaults in the Max tool, adds a feature-flag gate mirroring the web UI and reports contexts; nothing moves into the serializer."},
+  {"id": "gh:55298:3262499728", "addressed": "yes", "note": "Enriched conditions gain a display {tone,label} in the kea selector plus an errorDisplay selector; the component uses a style lookup table instead of ternaries."},
+  {"id": "gh:51778:2967800396", "addressed": "partly", "note": "Renames the flag to phai-llm-gateway and its helper, but the provider is hardcoded to bedrock rather than read from a flag payload."},
+  {"id": "gh:58616:3288440150", "addressed": "yes", "note": "Adds create_skill to skill_services and routes the tool through it, removing the local duplicate-name error, open-coded create and IntegrityError fallback."},
+  {"id": "gh:74012:3659935266", "addressed": "yes", "note": "Extracts the field-stringify function into a shared common row_transforms module and uses it from the Intercom source."},
+  {"id": "gh:72021:3605197120", "addressed": "yes", "note": "compose_stage2 now takes (LeafStateKey, Uuid) pairs; the seed path pushes plain pairs instead of synthesized Entered transitions."},
+  {"id": "gh:59479:3283629263", "addressed": "no", "note": "Renames the settings slug to ai-observability and adds hash-param redirects; the llmAnalyticsDashboard url helpers keep their names."},
+  {"id": "gh:59532:3290742324", "addressed": "yes", "note": "Renames the AgentMode key LLM_ANALYTICS to AI_OBSERVABILITY across mode registries, schema and frontend usages."},
+  {"id": "gh:64997:3456036120", "addressed": "no", "note": "Adds a shared isReachable Postgres probe to test-reset; no generation or CI equivalence check of the table fixture against migrations."},
+  {"id": "gh:51875:2997760124", "addressed": "yes", "note": "Deletes the HogFlowScheduledRun model and migration, adds next_run_at on HogFlowSchedule, and reworks schedule_sync and endpoints accordingly."},
+  {"id": "gh:61545:3438176295", "addressed": "no", "note": "Replaces the RepoSelection mirror with the tasks RepoSelectionResult and drops LineReference; the duplicated enums are left as they were."},
+  {"id": "gh:70603:3579447710", "addressed": "yes", "note": "Replaces the nested ternary for alert kind with an insightAlertKindForQuery function in alertFormLogic."}
+]

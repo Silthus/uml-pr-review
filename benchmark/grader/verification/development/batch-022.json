@@ -1,0 +1,22 @@
+[
+  {"id": "gh:64506:3441675359", "addressed": "yes", "note": "Renames ingestion lanes/ to pipelines/ with single-word folder names (session-replay -> sessionreplay, errortracking, clientwarnings) and updates imports."},
+  {"id": "gh:58616:3288440187", "addressed": "yes", "note": "Replaces inline skill creation with skill_services.create_skill and maps typed duplicate-name, file-path and file-limit errors; drops the generic IntegrityError fallback."},
+  {"id": "gh:53494:3041548654", "addressed": "yes", "note": "Replaces the git diff grep step with a dataModeling filter in the existing paths-filter step and gates the deployment on its output."},
+  {"id": "gh:53852:3059238358", "addressed": "yes", "note": "Adds @memlab/lens to package.json and dynamically imports it, removing the CDN script loader, SRI hash and window global."},
+  {"id": "gh:64629:3441171289", "addressed": "yes", "note": "Starts the inbox onboarding workflow on TASKS_TASK_QUEUE instead of MAX_AI_TASK_QUEUE and moves workflow into slack_app package."},
+  {"id": "gh:75799:3689433581", "addressed": "yes", "note": "Moves chart drill-down navigation into a scannerOverviewLogic drillIntoObservations action with tests; component only dispatches it."},
+  {"id": "gh:74014:3666394476", "addressed": "yes", "note": "Renames the metric outcome label to dropped_billing_limited and centralizes the billing-limit check on the capture error."},
+  {"id": "gh:62860:3394878366", "addressed": "no", "note": "Only rewrites the module docstring and keeps the list endpoint read-only; the get_or_create call still uses all_teams, not for_team."},
+  {"id": "gh:72385:3621074173", "addressed": "yes", "note": "Drops the type-order sort in the picker, renders defaultEvaluationTemplates directly and reorders templates.ts."},
+  {"id": "gh:67185:3551538221", "addressed": "yes", "note": "Coerces request count and web search count operands through numeric helpers in request-costs and web-search-costs, with tests."},
+  {"id": "gh:53253:3045066224", "addressed": "partly", "note": "Hoists nested tracker dataclass and helper functions out of cdc_extract_activity to module level with a shared context dataclass, not a class."},
+  {"id": "gh:52085:3020539737", "addressed": "yes", "note": "Changes cyclotron retry API to take scheduledAt instead of delayMs and removes computeDelayMs."},
+  {"id": "gh:52409:2994865099", "addressed": "no", "note": "Extracts a context-menu helper, hardcodes placeholder and keys loading by kind; the document.querySelector focus coupling remains."},
+  {"id": "gh:65356:3457158260", "addressed": "yes", "note": "Uses an exported fetchDefaultReleaseConditions helper from defaultReleaseConditionsLogic instead of the hardcoded URL."},
+  {"id": "gh:62561:3405626229", "addressed": "no", "note": "Uses cached team project_id in remote config; the duplicated PAK last-used recording block is untouched."},
+  {"id": "gh:57322:3174643146", "addressed": "yes", "note": "Moves the discard-prompt handling into a dashboardLogic cancelEditMode action; component just calls it."},
+  {"id": "gh:65356:3470610724", "addressed": "yes", "note": "Adds resolveDefaultReleaseConditions and uses it at both call sites, collapsing the duplicated fetch-else-warn blocks."},
+  {"id": "gh:67240:3547788133", "addressed": "yes", "note": "Adds dependency_edges to DependencyCopyGraph recorded during the DFS and reads them instead of rebuilding adjacency."},
+  {"id": "gh:65340:3456147144", "addressed": "yes", "note": "Teaches update_cache to accept pre-built data and calls it with the config, removing the hand-rolled metric emission."},
+  {"id": "gh:52410:3008946524", "addressed": "yes", "note": "Adds a shared clone_experiment helper used by both duplicate_experiment and copy_experiment_to_project."}
+]

@@ -1,0 +1,22 @@
+[
+  {"id": "gh:61998:3380511963", "addressed": "yes", "note": "Drops the hand-maintained topic Literal and types the model's topic field directly as Conversation.Topic."},
+  {"id": "gh:56185:3145907561", "addressed": "yes", "note": "Moves the HogQL validation-error enrichment into posthog/hogql/metadata.py and removes the schema helpers and route from the API view."},
+  {"id": "gh:67240:3529582341", "addressed": "yes", "note": "Replaces the loader with a single manual reducer holding all success/failure/reset handlers plus a listener, so the reducer is defined in one place."},
+  {"id": "gh:67734:3519716719", "addressed": "partly", "note": "Removes the BillingManager private-method call entirely, deriving eligibility from the org's synced plan tier instead of exposing a public method."},
+  {"id": "gh:64506:3441771076", "addressed": "yes", "note": "Switches the import from the CDP service to a HogTransformer interface in ~/common/hog-transformations."},
+  {"id": "gh:54607:3084832250", "addressed": "yes", "note": "Renames _wait_for_signal to _wait_for_task_external_event and updates its caller."},
+  {"id": "gh:72386:3624196908", "addressed": "yes", "note": "Splits blob offload into a sequential extract step and a fan-out/fan-in stage uploading blobs concurrently with a max-concurrency cap."},
+  {"id": "gh:56842:3234318500", "addressed": "no", "note": "Updates the reference doc and SKILL.md to extract symbol sets via posthog-cli; the duplicated reference file is kept."},
+  {"id": "gh:56729:3155028920", "addressed": "partly", "note": "Deletes the propagation function that read sync_type_config directly, replacing it with a precedence flip elsewhere, rather than using schema_metadata."},
+  {"id": "gh:52571:3002671705", "addressed": "yes", "note": "Deletes ingestion-recordings-server.ts and adds ingestion-session-replay-server.ts plus a separate recording API server."},
+  {"id": "gh:64723:3443005078", "addressed": "no", "note": "Keeps the Postgres source-type check and adds a team feature-flag gate to xmin_available."},
+  {"id": "gh:58688:3310867211", "addressed": "yes", "note": "Renames MarketingAnalyticsMaxToolWrapper to MarketingAnalyticsAIToolWrapper and its usage."},
+  {"id": "gh:56842:3221311499", "addressed": "no", "note": "Pure directory rename of the skill; the CLI-based extraction in the script was introduced in an earlier commit, not this one."},
+  {"id": "gh:54056:3075006399", "addressed": "yes", "note": "Replaces signal_autonomy route with signals/config backed by a SignalTeamConfigViewSet and regroups routes under signals/."},
+  {"id": "gh:56100:3167034458", "addressed": "yes", "note": "Adds a LimitKey StrEnum and uses its members as registry keys and at call sites."},
+  {"id": "gh:50564:2958148918", "addressed": "yes", "note": "Removes dedicated /bedrock routes; existing Anthropic endpoints route to Bedrock via a provider field and optional fallback."},
+  {"id": "gh:62103:3372782641", "addressed": "yes", "note": "Deletes the local ownerName helper and uses fullName from lib/utils with email fallback."},
+  {"id": "gh:55408:3122317663", "addressed": "no", "note": "Only strips explanatory comments from the materialized-column tests; no printer routing change."},
+  {"id": "gh:65447:3492305071", "addressed": "no", "note": "Moves DashboardsContent and related experiment files into products/dashboards/frontend; the file stays separate."},
+  {"id": "gh:62578:3426816976", "addressed": "partly", "note": "Removes the section header comments from the validation file but does not split it into two files."}
+]

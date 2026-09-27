@@ -1,0 +1,22 @@
+[
+  {"id": "gh:54435:3092020105", "addressed": "no", "note": "Only swaps the summarize button colors to warning CSS variables; the summary-state subscription stays in the memoized card, no child component extracted."},
+  {"id": "gh:55298:3268718646", "addressed": "no", "note": "Replaces a CSS highlight workaround with a PropertiesTable highlightVariant prop; the local time-toggle state is not moved into the kea logic."},
+  {"id": "gh:52752:3011026794", "addressed": "yes", "note": "Automation now owns a single OneToOne task; each run reuses that task via _get_or_create_automation_task and creates a new task run instead of a new task."},
+  {"id": "gh:71526:3595711377", "addressed": "partly", "note": "Replaces Utc::now with a detected_at derived from the notification UUIDv7 timestamp for both the spike row and exception_timestamp; not taken from event properties."},
+  {"id": "gh:68659:3617124130", "addressed": "yes", "note": "Moves integration lookup, selected integration, channel value, member count, disabled reason and change handlers from the component into eventStreamLogic."},
+  {"id": "gh:60084:3310362965", "addressed": "yes", "note": "Deletes the bundled model.ubj, makes an S3 URI mandatory for the scorer, and adds an upload_surfacing_model management command plus S3 docs."},
+  {"id": "gh:69542:3645221996", "addressed": "yes", "note": "Removes the consumption flow from the setup skill, renumbers setup/maintenance flows, and moves consumption guidance into querying-posthog-data."},
+  {"id": "gh:72746:3626056489", "addressed": "yes", "note": "Deletes close_and_drain, close_dispatchers_and_drain and drain_after_senders_closed; exposes one public drain that callers invoke after dropping their handles."},
+  {"id": "gh:75593:3684470392", "addressed": "yes", "note": "Switches delete_property to @validated_request with the serializer, reads validated_data, and removes the inline duplicate validation."},
+  {"id": "gh:57261:3172929627", "addressed": "yes", "note": "Feedback handler now calls context.trackEvent with an AnalyticsEvent constant instead of capturing directly via the PostHog client."},
+  {"id": "gh:67329:3545560091", "addressed": "yes", "note": "Adds an _expire_change_request helper (expire, save, log, notify on commit) and uses it in both the pending and stale-approved branches."},
+  {"id": "gh:54443:3190603834", "addressed": "yes", "note": "Renames all tracing MCP tools from tracing-spans-* to an apm-* namespace (apm-trace-get, query-apm-spans, etc.) and updates generated definitions."},
+  {"id": "gh:53253:3045101689", "addressed": "no", "note": "Hoists inline classes/helpers to module level and adds SSH tunnel parsing in the stream reader; the commented sweeper still reads raw job_inputs dict keys."},
+  {"id": "gh:54056:3067938740", "addressed": "partly", "note": "Replaces split level/users actions with a team config viewset whose list returns the whole config and create does a partial serializer update; not via Retrieve/Update mixins."},
+  {"id": "gh:57997:3274952216", "addressed": "yes", "note": "Drops the interestingness_score column from sessions v3 and adds a surfacing_score column and migration on session_replay_events."},
+  {"id": "gh:72746:3625714001", "addressed": "yes", "note": "Replaces the person and distinct-id batch workers with a generic run_batch_worker parameterized by a prepare fn and an async execute closure."},
+  {"id": "gh:66771:3493281688", "addressed": "yes", "note": "Adds a shared compile_ai_observability_hog helper in hog.py with null-safe comparisons and uses it from evaluations, taggers, and run_hog_eval."},
+  {"id": "gh:72594:3635339653", "addressed": "yes", "note": "Renames the module semaphore to messaging_clickhouse_query_semaphore and adds a get_messaging_client context manager that acquires it."},
+  {"id": "gh:64271:3428440303", "addressed": "yes", "note": "Moves the promote/demote org-scope logic out of the table component into a toggleTemplateOrganizationScope action in dashboardTemplateEditorLogic."},
+  {"id": "gh:68243:3530951754", "addressed": "yes", "note": "Gives section an optional permits argument and routes stats_snapshot through it with no permit, removing the open-coded Off check and direct offload."}
+]

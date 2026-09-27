@@ -1,0 +1,22 @@
+[
+  {"id": "gh:59479:3283601024", "addressed": "yes", "note": "Renames settings section/setting to project-ai-observability/ai-observability-byok, redirects legacy llm-analytics sections and rewrites legacy hash params, updates links."},
+  {"id": "gh:54607:3084807572", "addressed": "no", "note": "Renames the flag key and collapses the if/else into a boolean plus one log line; groups and group_properties are still built by hand, no shared helper used."},
+  {"id": "gh:68307:3521474129", "addressed": "yes", "note": "Adds _enabled_ssh_tunnel helper used by the connection log, open_ssh_tunnel and make_ssh_tunnel_factory so all share one predicate; also logs db_port on errors."},
+  {"id": "gh:61259:3353199717", "addressed": "yes", "note": "Adds should_join_event_property helper and uses it both for the SELECT is_seen expression and the early return in the event-property join."},
+  {"id": "gh:70136:3588062617", "addressed": "no", "note": "Drops summary, hypotheses, recommendations and tool-call fields from signal metadata and fixes weight to 1; no token-size helper is used."},
+  {"id": "gh:60463:3319749436", "addressed": "yes", "note": "Builds the skill file link via urls.aiObservabilitySkill with params and copies urls.absolute(urls.currentProject(path)) instead of window.location.origin."},
+  {"id": "gh:63035:3401316783", "addressed": "yes", "note": "Adds notificationDescribers registry; NotificationRow looks up a describer by notification and renders its component, else falls back to body."},
+  {"id": "gh:61223:3350406950", "addressed": "yes", "note": "Consolidates ceiling resolution into scopes.py (effective_ceiling, scopes_within_ceiling with wildcard flag) and has OAuth views call it, removing duplicated logic."},
+  {"id": "gh:52496:3002989077", "addressed": "yes", "note": "Replaces hand-rolled skeleton, empty state and list with CompactList using loading, emptyMessage, items and renderRow."},
+  {"id": "gh:61317:3406692599", "addressed": "partly", "note": "Makes generic Capture<T> and its methods pub(crate) for reuse by a new cascade sink, but CaptureSink in producer/mod.rs keeps its own duplicate recorder logic."},
+  {"id": "gh:71614:3623817663", "addressed": "yes", "note": "Replaces _group_type_name_aliases with _guarded_events_aliases that returns the union with EVENTS_LAZY_JOIN_ALIASES internally; caller uses it directly."},
+  {"id": "gh:72746:3625714006", "addressed": "yes", "note": "Removes DEFAULT_SAMPLE_INTERVAL, the interval field, and the interval, phase_id and reset_phase methods from PgSampler."},
+  {"id": "gh:63251:3421518226", "addressed": "yes", "note": "Moves REQUIRED_SLACK_SCOPES and bot_is_ready into new posthog/helpers/slack_scopes.py and imports them from there."},
+  {"id": "gh:68639:3531132416", "addressed": "yes", "note": "Drops the default for the days parameter of recent_count so callers must pass the window setting."},
+  {"id": "gh:58033:3208754164", "addressed": "yes", "note": "Moves queueInvocations back into the background task and adds a fatalError latch in KafkaConsumerV2 that blocks offset stores and stops the loop on task failure."},
+  {"id": "gh:53800:3059669586", "addressed": "yes", "note": "Adds a TODO in the trigger_cohort_backfill_task docstring about extracting backfill logic into a standalone function for all callers."},
+  {"id": "gh:53643:3119294960", "addressed": "yes", "note": "Changes SinkName FromStr error type from String to anyhow::Error, plus similar anyhow conversions in sink types."},
+  {"id": "gh:54280:3320279455", "addressed": "yes", "note": "Removes the inline Python outlier merge from the workflow and calls optimize_test_durations.py with a new --merge-files mode, with tests for the shared function."},
+  {"id": "gh:52408:3184772781", "addressed": "yes", "note": "Extracts resolve_effective_team_id in manager.py as the single resolver and uses it from both TeamScopedQuerySet and product_mixin."},
+  {"id": "gh:66584:3497746712", "addressed": "partly", "note": "Removes banned-construct AST checks from tool compile and rewrites docs to treat custom tools as trusted code with a planned ctx.native/ctx.mcp bridge; the bridge is not implemented."}
+]

@@ -1,0 +1,22 @@
+[
+  {"id": "gh:66684:3496473761", "addressed": "yes", "note": "Replaces the inline lowercase membership test for the Cloudflare allowlist with a call to the existing _model_matches_allowlist helper."},
+  {"id": "gh:68988:3540629533", "addressed": "yes", "note": "Adds private extract_string_with_fallback helper; extract_lib, extract_lib_version and extract_device_id all delegate to it (plus lib length truncation and tests)."},
+  {"id": "gh:64506:3441654961", "addressed": "yes", "note": "Renames the ingestion lanes/ directory to pipelines/ (heatmaps, logs, ai, etc.) and updates imports and boundary checks accordingly."},
+  {"id": "gh:64725:3442965382", "addressed": "yes", "note": "Wraps the orphan-slot sweep loop in a HeartbeaterSync context manager instead of calling activity.heartbeat once per iteration."},
+  {"id": "gh:63224:3412928432", "addressed": "yes", "note": "Renames the signals source constants to VISION_SIGNALS_SOURCE_PRODUCT and VISION_SIGNALS_SOURCE_TYPE and updates their users."},
+  {"id": "gh:66817:3501478274", "addressed": "yes", "note": "Removes the standalone check-deleted-migrations job and moves the fetch and check steps into the repo-checks job, backed by a new helper script."},
+  {"id": "gh:52752:3078892518", "addressed": "yes", "note": "Drops the repetitive per-field if blocks; task field sync now lives in serializer update() iterating a field mapping and collecting changed fields."},
+  {"id": "gh:61719:3406029487", "addressed": "yes", "note": "Uses the cached self.user_permissions for the membership level check instead of building a fresh UserPermissions; also returns hidden flag."},
+  {"id": "gh:72746:3626056480", "addressed": "yes", "note": "Introduces StoreHandles, WorkloadContext and PhaseMetrics structs, passes them to phase/load functions and removes the too_many_arguments allows."},
+  {"id": "gh:55153:3112564387", "addressed": "partly", "note": "Replaces the duplicated flag-shaped interface with a distinct test-evaluation result type; duplication gone but FeatureFlagData is not reused."},
+  {"id": "gh:65727:3468515680", "addressed": "yes", "note": "Adds _require_int_param and _optional_int_param raising ValueError handled by _bad_request, used in pr_lifecycle, pr_runs, workflow_run, workflow_jobs."},
+  {"id": "gh:63448:3435330855", "addressed": "partly", "note": "Test raw SQL now picks the events table via a helper reading the HogQL context's new-schema flag, but query strings are still edited per test."},
+  {"id": "gh:61179:3343912162", "addressed": "yes", "note": "Adds capture_exception_throttled in posthog/utils and uses it from the flag-cache skip helper and the group type mapping failure path."},
+  {"id": "gh:60229:3378263104", "addressed": "no", "note": "Only trims whitespace around comma-separated signing keys; module-level functions and config coupling remain, no signer class."},
+  {"id": "gh:64091:3451900426", "addressed": "yes", "note": "Adds an abstract sharded_tophog_base in the prod layer; prod-us and prod-eu tables extend it and only set their engine zoo_path."},
+  {"id": "gh:68708:3545169775", "addressed": "yes", "note": "Removes the frontend HogQL queries; adds a backend activity overview endpoint and the kea logic loads it and derives stats via selectors."},
+  {"id": "gh:69448:3547135596", "addressed": "yes", "note": "Extracts _resolve_start_offsets from drain_topic so the loop only polls; also adds kafka_io tests and a SASL host-override guard."},
+  {"id": "gh:64565:3440678306", "addressed": "yes", "note": "Replaces the inline manage.py shell heredoc with a new setup_local_gateway_credential management command plus tests, called from the script."},
+  {"id": "gh:63009:3452896304", "addressed": "yes", "note": "Moves the bot PRs flag check out of api.py into backend/feature_flags.py as is_slack_app_bot_prs_enabled and imports it."},
+  {"id": "gh:58460:3238048354", "addressed": "yes", "note": "Drops the hardcoded build_command default; field becomes nullable so the build worker infers the command from framework at runtime."}
+]

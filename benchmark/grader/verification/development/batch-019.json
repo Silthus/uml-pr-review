@@ -1,0 +1,22 @@
+[
+  {"id": "gh:57313:3191242611", "addressed": "yes", "note": "API entry now calls check_only; consume_summary_quota moved into the workflow launcher after a new run starts, skipping the already-started and cached paths."},
+  {"id": "gh:66505:3500580145", "addressed": "yes", "note": "Renames the exported helper to stringifyWithBigInts and documents that only bigints are handled; call sites updated."},
+  {"id": "gh:56763:3155716880", "addressed": "partly", "note": "Adds a shared trace_id_resolver module in hogql_queries/ai and uses it to scope single-generation lookups by trace id; no dedicated query runner."},
+  {"id": "gh:55097:3118080703", "addressed": "yes", "note": "Adds buildMCPContextProperties helper with optional prefix and uses it for both context and previous-context properties instead of inline snake_case copies."},
+  {"id": "gh:59513:3296435823", "addressed": "yes", "note": "Moves the Team signal receivers out of the tasks module into a storage signal-handlers module registered from apps.py ready()."},
+  {"id": "gh:54607:3085146712", "addressed": "no", "note": "Renames a signal-wait method and removes an unused timestamp field; no CI message extraction or guidance changes."},
+  {"id": "gh:58094:3210323783", "addressed": "no", "note": "Caps the discovery loop by config.max_pages and reworks ingest logic; crawl remains synchronous, no async or worker offload."},
+  {"id": "gh:63315:3407296094", "addressed": "yes", "note": "Extracts a hasConditions constant and uses it for both the conditions column gate and the properties column span."},
+  {"id": "gh:53782:3056920162", "addressed": "yes", "note": "Drops the useState remount key; onCreated now calls hogFunctionsListLogic.loadHogFunctions to refresh the list."},
+  {"id": "gh:70800:3594074707", "addressed": "yes", "note": "Replaces the duplicate pre-team and team chain interfaces and factories with a generic Chain plus pendingChain/committedChain and type aliases."},
+  {"id": "gh:54137:3067031715", "addressed": "yes", "note": "Removes the separate version-fetching loop step; each publish step now captures its version output, and the summary uses those outputs."},
+  {"id": "gh:68756:3537159755", "addressed": "yes", "note": "Switches the audit log call to is_impersonated from posthog.helpers.impersonation and scopes the dedup check by team."},
+  {"id": "gh:70136:3588066013", "addressed": "yes", "note": "Removes summary, hypotheses, recommendations and tool call count from the signal extra metadata; drops verdict weights."},
+  {"id": "gh:71567:3604325439", "addressed": "yes", "note": "Deletes the custom HeatmapTooltip component and reuses DefaultTooltip for the single hovered cell in Heatmap.tsx."},
+  {"id": "gh:59254:3283618547", "addressed": "yes", "note": "Adds emit_short_circuit on the canonical log line and both short-circuit branches call it instead of the four emitters."},
+  {"id": "gh:55298:3150493769", "addressed": "partly", "note": "Moves used properties, sorted properties and winning-condition flags into kea selectors; card color ternary and error-banner copy remain in the component."},
+  {"id": "gh:64136:3436157209", "addressed": "yes", "note": "Splits run_evaluation.py into llm judge, hog, sentiment, event io, types and workflow activity modules, leaving the workflow router."},
+  {"id": "gh:64212:3426767160", "addressed": "no", "note": "Adds an internal flag to a draft call and changes a confidence comparison; LLM client stack unchanged."},
+  {"id": "gh:67240:3529582349", "addressed": "no", "note": "Resolves dependency ids from flag filters by id or key instead of DB queries; no shared error message constant."},
+  {"id": "gh:60161:3319551203", "addressed": "yes", "note": "Renames the ClassifiedMessage interface to SessionEntry throughout the file."}
+]

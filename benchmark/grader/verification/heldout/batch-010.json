@@ -1,0 +1,22 @@
+[
+  {"id": "gh:86772:3825268022", "addressed": "no", "note": "Deletes the dags owners re-export module and imports JobOwners directly in the package facade; only removes a blank line in job_owners.py, no rename of the enum."},
+  {"id": "gh:83680:3805545838", "addressed": "no", "note": "Adds an AiEventTooBig error variant and stops double-counting AI-lane oversize drops; no consolidation of the Node allowlist shipped to Rust."},
+  {"id": "gh:95610:3968554148", "addressed": "yes", "note": "Removes BehavioralKeyInputs and for_behavioral_inputs; pinned.rs derive_lookback now builds a BehavioralLeafConfig and uses with_state_key; golden inputs test removed."},
+  {"id": "gh:101256:4021303038", "addressed": "yes", "note": "Extracts a rowContent helper returning { label, tooltip } per realtime state; component keeps flag gate, percent and row chrome."},
+  {"id": "gh:103087:4061318464", "addressed": "yes", "note": "Adds mcp_scopes_for_run_source in process_task utils and uses it in run_task, _trigger_task_processing_workflow and _resolve_mcp_scopes."},
+  {"id": "gh:100650:4020756875", "addressed": "no", "note": "Narrows the pnpm patch to drop the dist build hunk and updates the lockfile; still patches the dependency rather than vendoring or inlining it."},
+  {"id": "gh:101654:4028885890", "addressed": "yes", "note": "Adds push_refresh_metrics(config, counts, ttl_threshold_hours) next to the sweep and calls it from both refresh_expiring_caches and the remote_config_cache fork."},
+  {"id": "gh:82910:3811721442", "addressed": "no", "note": "Adds a 5s idle-socket timeout to object storage and updates a comment; keeps the Prometheus counters and histograms."},
+  {"id": "gh:102106:4048682490", "addressed": "yes", "note": "Moves accessControlsApply from reducers to a selector reading the app context, with a test."},
+  {"id": "gh:101470:4028886647", "addressed": "yes", "note": "Flag matcher now rejects via flag.filters.require_v1() and uses its error, dropping the hand-written message and the duplicate is_v1 check."},
+  {"id": "gh:76933:3722137434", "addressed": "no", "note": "Only hides the modal's retry action for 403/404 load errors; no DatasetItemVersions component, prop reduction, or pagination/table reuse."},
+  {"id": "gh:86227:3895771471", "addressed": "yes", "note": "Adds subscriptionListDestination deriving icon, label and title from subscriptionDestination; inline label pluralisation and per-type icon branches removed."},
+  {"id": "gh:74452:3680865299", "addressed": "yes", "note": "Moves the forward into a loadReposSuccess listener in the logic, adds a reposLoadFailed reducer, and the scene shows an error banner with retry."},
+  {"id": "gh:75748:3704143098", "addressed": "partly", "note": "Wraps the undo restore in try/catch with a generic error toast; does not branch on the stale-version code or reuse the modal logic's reload handling."},
+  {"id": "gh:86637:3832249026", "addressed": "no", "note": "Changes the activity log export context shape and early returns in delegated auth classes; source auth check not moved to a DRF permission."},
+  {"id": "gh:87758:3844934670", "addressed": "no", "note": "Reorders the frontend catch to toast backend messages only for 4xx and a generic text for faults; no backend ValidationError code or central exemption."},
+  {"id": "gh:97771:3981772242", "addressed": "yes", "note": "Replaces the hand-built stacked bar with the quill-charts BarChart in percent layout, with ValueLabels and chart tooltips."},
+  {"id": "gh:92892:3908718664", "addressed": "yes", "note": "prime_zero_series now iterates RunKind::ALL; runs.rs gains the ALL constant."},
+  {"id": "gh:105871:4096765020", "addressed": "no", "note": "Deletes the repair management command, its test and baseline entries entirely rather than refactoring handle into a helper."},
+  {"id": "gh:100112:4016321628", "addressed": "yes", "note": "Run button now builds its data logic through notebookCodeCellLogic with runId and result, removing its own hasResult rule."}
+]

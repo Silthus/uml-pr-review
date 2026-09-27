@@ -1,0 +1,22 @@
+[
+  {"id": "gh:58616:3288440197", "addressed": "yes", "note": "Extracts a skillStatusFormatter helper taking completed/pending labels and an optional name arg key; all skill tool displayFormatters now call it."},
+  {"id": "gh:55158:3108496502", "addressed": "yes", "note": "Removes the inline rdkafka ClientConfig block from main.rs; main now calls PersonConsumer::from_config defined in the kafka module."},
+  {"id": "gh:66953:3497714401", "addressed": "partly", "note": "Drops the custom dummy-constant placeholder substitution and keeps only the existing replace_variables call; does not pass variables through HogQLQuery."},
+  {"id": "gh:67968:3521972403", "addressed": "yes", "note": "Moves visibility, flag gating, display lookup and click/dismiss/shown tracking into a new navPanelProductPushAdLogic kea logic; component just reads values/actions."},
+  {"id": "gh:65692:3481364877", "addressed": "no", "note": "File is already a kea loader in the parent (conversion arrived via a merge); this commit only drops the unused breakpoint argument from loadAccounts."},
+  {"id": "gh:67966:3529225600", "addressed": "no", "note": "Removes a date range subclass and relaxes the fallback to need only date_from; the duplicated trace fields mapping is untouched."},
+  {"id": "gh:56814:3160623896", "addressed": "yes", "note": "Imports PartitionFormat from pipeline typings and derives the allowed format choices via get_args, replacing the hardcoded tuple; also adds reset resync and pause views."},
+  {"id": "gh:69626:3550955473", "addressed": "yes", "note": "Moves the separate fixing-* skills into references/*.md under one resolving-ingestion-warnings skill; SKILL.md tables now link to the reference files."},
+  {"id": "gh:61317:3406692597", "addressed": "no", "note": "Only adds a pinned cross-language murmur2/partition test in partitioner.rs; murmur2 is not moved into common/kafka nor shared with personhog-router."},
+  {"id": "gh:56842:3265642072", "addressed": "yes", "note": "Renames the skill directory to diagnosing-stacktrace-symbolication and rewrites SKILL.md; the JS-specific script stays as sourcemap-scoped."},
+  {"id": "gh:70118:3566554080", "addressed": "yes", "note": "Uses email.utils.parseaddr to extract the address before splitting off the domain, with an added test."},
+  {"id": "gh:71874:3626008578", "addressed": "yes", "note": "Imports OBJECT_STORAGE_REGION and uses it as the fallback for the managed migrations trial S3 region instead of a hardcoded us-east-1."},
+  {"id": "gh:72386:3623873430", "addressed": "no", "note": "Only hoists the extractBlobs options object out of the loop; the custom concurrency code is not replaced with p-limit."},
+  {"id": "gh:53427:3073078773", "addressed": "yes", "note": "Removes the separate get_primary_keys_for_schemas lookup and reuses get_primary_key_columns results for both tables_with_pks and detected primary keys."},
+  {"id": "gh:70543:3577489306", "addressed": "yes", "note": "Extracts persist_primary_keys into common/extract.py and has both pipeline and pipeline_v3 call it, deleting the duplicated methods."},
+  {"id": "gh:67395:3543315186", "addressed": "partly", "note": "Renames floor/ceiling to source_floor/consumer_ceiling, adds is_finer_than/is_coarser_than helpers and vocabulary docs; keeps the floor/ceiling terms."},
+  {"id": "gh:72905:3644224116", "addressed": "yes", "note": "Adds EVALUATION_TEST_LOOKBACK_DAYS beside the window constants and uses it for the default, the query intervals, and all 'last N days' messages."},
+  {"id": "gh:70121:3573419661", "addressed": "yes", "note": "Adds a shared ServiceRequest to posthog/api/utils.py and removes the private copies in the flags facade and experiment_service, importing the shared one."},
+  {"id": "gh:62149:3388916481", "addressed": "yes", "note": "Deletes the local formatPercent formatter and switches dashboard components to the shared formatPercentage util."},
+  {"id": "gh:53898:3072460047", "addressed": "yes", "note": "Removes the SourceFields component that conditionally showed ssl_enabled from live form values; TLS toggle moves into the SSH tunnel config."}
+]

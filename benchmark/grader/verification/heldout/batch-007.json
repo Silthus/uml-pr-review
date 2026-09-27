@@ -1,0 +1,22 @@
+[
+  {"id": "gh:101256:4029335188", "addressed": "yes", "note": "Adds a _has_phase TypeGuard helper and uses it in both _cohort_progress and the unresolved comprehension, removing the inline negated double lookup."},
+  {"id": "gh:89879:3947713010", "addressed": "yes", "note": "Moves the private _single_line helper out of tasks/email.py into posthog/email.py as single_line and imports it from there."},
+  {"id": "gh:104042:4074940372", "addressed": "yes", "note": "Extracts _mirrored_source_property(field_type, context) and calls it from both _substitute_value_read and _masked_mirrored_column."},
+  {"id": "gh:93773:3962790596", "addressed": "yes", "note": "Adds description to DESCRIBED_ASPECTS, introduces an ASPECT_WORDING record driving head/tail clauses and a single loop, and drops the descriptionOnly block."},
+  {"id": "gh:72990:3707564788", "addressed": "yes", "note": "Declares an abstract _flag_evaluations_columns table in tables.hcl that both flag_evaluations and sharded_flag_evaluations extend; golden regenerated."},
+  {"id": "gh:90694:3932925894", "addressed": "yes", "note": "Replaces env-config gate with a team-level property_matching_version; request carries expected_property_matching_version and a mismatched page returns 409."},
+  {"id": "gh:77881:3715726456", "addressed": "yes", "note": "Splits the filter closure into .inspect() for divergence telemetry followed by .filter() for the realtime routing predicate."},
+  {"id": "gh:93773:3939649967", "addressed": "yes", "note": "Makes verbs.count optional with fallback to verbs.detail and removes the duplicated count strings from the three listOrCount callers."},
+  {"id": "gh:77216:3712218429", "addressed": "no", "note": "Swaps the governor's asyncio.Lock for a threading.Lock; no change to the default concurrency source or warning logging."},
+  {"id": "gh:83342:3801958851", "addressed": "yes", "note": "Replaces the hand-rolled UUID regex and body checks on the cancel route with a zod schema using z.string().uuid() and a refine."},
+  {"id": "gh:79495:3789083931", "addressed": "yes", "note": "Hoists renderDetailWithLinks into lib/utils, used by both BlastRadiusErrorMessage and EmptyStates; trims the duplicated component tests."},
+  {"id": "gh:81106:3773281453", "addressed": "no", "note": "Only expands doc comments explaining why valueBounds stays separate from valueDomain; no code change folding it into valueDomain."},
+  {"id": "gh:105467:4088068028", "addressed": "yes", "note": "Adds scopes_not_covered helper in permissions.py next to get_authenticator_scopes, used by APIScopePermission and secret key issuance."},
+  {"id": "gh:89874:3870107836", "addressed": "no", "note": "Makes usageBatch a required dependency and drops optional chaining; the source label still uses apm, not renamed."},
+  {"id": "gh:75736:3685997025", "addressed": "yes", "note": "Renames the _ReadinessSpec field and log key from kind to readiness so it is not confused with the CohortBackfillKind metric label."},
+  {"id": "gh:95189:3961283845", "addressed": "yes", "note": "Adds run_check_for_team in processing.py forwarding dry_run from the registry; both the celery task and web-analytics doctor tool use it."},
+  {"id": "gh:70803:3658159323", "addressed": "yes", "note": "Deletes live/types.ts and moves LiveWidgetSeedPayload into liveWidgetTypes.ts."},
+  {"id": "gh:91021:3895317464", "addressed": "no", "note": "Adds a ComputeShape frozen class for cpu/memory; rates remain duplicated and are not derived from the tasks pricing facade."},
+  {"id": "gh:76111:3714167485", "addressed": "yes", "note": "Turns CaptureSink into a newtype over Capture<CohortMembershipChange>, delegating produce/recorded and dropping the std::sync imports."},
+  {"id": "gh:67501:3715619187", "addressed": "no", "note": "Adds a short_id field to AccessObjectRule for insight links; the resource set is not tied to the side panel availability logic."}
+]

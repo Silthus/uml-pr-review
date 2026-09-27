@@ -1,0 +1,22 @@
+[
+  {"id": "gh:68659:3616952448", "addressed": "yes", "note": "Deletes the pre_delete signal receiver module and moves destination archiving into the facade's event stream delete path."},
+  {"id": "gh:72726:3625389451", "addressed": "yes", "note": "Adds a stage_register_writes helper in stage2 and replaces the duplicated put_stage2 loops in event_path, worker and seed_path with one call."},
+  {"id": "gh:56842:3221298541", "addressed": "yes", "note": "Renames the skill to a cross-platform stacktrace-symbolication name, generalizes SKILL.md wording, keeps the JS reference and script language-specific."},
+  {"id": "gh:61274:3409253445", "addressed": "yes", "note": "Adds dayjsNowInTimezone to lib/dayjs with tests and replaces the inline convert-format-reparse expression at the call site."},
+  {"id": "gh:61112:3343927579", "addressed": "yes", "note": "Adds _is_basic_list_request helper on CohortViewSet and uses it in both serializer context and queryset defer paths."},
+  {"id": "gh:54056:3067941222", "addressed": "yes", "note": "Removes run_source and signal_report_id from the task run extra_state; large commit also remodels signals/task relations."},
+  {"id": "gh:61643:3387466421", "addressed": "yes", "note": "Renames the Slack user resolver helpers in api.py to public names and updates all importers."},
+  {"id": "gh:55149:3127654992", "addressed": "yes", "note": "Extracts is_internal_request_inner taking token and headers, makes the public fn a wrapper, deletes the test copy; tests call the real inner fn."},
+  {"id": "gh:65727:3468515673", "addressed": "yes", "note": "Adds _run_detail module with shared RUN_DETAIL_COLUMNS and to_run_detail, used by workflow_run_list, pr_runs and workflow_run."},
+  {"id": "gh:72021:3605401072", "addressed": "yes", "note": "Makes Backpressure a generic PartitionHoldover<T>; SeedHoldover becomes a type alias and seeds.rs flattens take_held via drain_held."},
+  {"id": "gh:64136:3435913382", "addressed": "yes", "note": "Replaces EvaluationDisplay's inline result parsing with a shared normalizeEvaluationResultProperties helper in utils.ts."},
+  {"id": "gh:69314:3547199798", "addressed": "yes", "note": "Adds handleFlagApprovalRequired in updateFlagActiveInProject and uses it there and in featureFlagsLogic, removing the duplicated 409 handling."},
+  {"id": "gh:61178:3402554721", "addressed": "yes", "note": "inject_credentials now takes the InvocationContext and reads api_key, env_id and host from its config instead of get_token."},
+  {"id": "gh:62156:3382481940", "addressed": "yes", "note": "Single-flag delete guard now filters non-deleted experiments and checks exp.is_running instead of inline start/end date filters."},
+  {"id": "gh:62578:3426643721", "addressed": "yes", "note": "Removes the widget's own status derivation and uses a new Experiment.status_label model property shared with the serializer."},
+  {"id": "gh:62508:3390380043", "addressed": "yes", "note": "Renames normalizeConversation to normalizeMessages returning recognized/messages and updates call sites across the product."},
+  {"id": "gh:58847:3260528606", "addressed": "yes", "note": "Deletes the custom-agent repo_selection module and generalizes the shared select_repo prompt into select_repository_for_team for reuse."},
+  {"id": "gh:61332:3358020870", "addressed": "yes", "note": "Extracts _trim_trailing_settings and _prefix_cohort_hogql_params helpers and uses them in all three cohort SQL call sites."},
+  {"id": "gh:61317:3406692591", "addressed": "yes", "note": "Adds produce_membership helper that produces and books metrics, returning error count; all four sites use it and keep their own recovery."},
+  {"id": "gh:52506:3000856569", "addressed": "no", "note": "Only switches CronExpressionParser.parseExpression to parse; cronstrue dependency is untouched."}
+]

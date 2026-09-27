@@ -1,0 +1,22 @@
+[
+  {"id": "gh:56018:3138923775", "addressed": "yes", "note": "Moves the diagnosing-sdk-health SKILL.md into products/growth/skills alongside the growth team's SDK doctor code."},
+  {"id": "gh:55149:3113327347", "addressed": "yes", "note": "Computes is_internal once in process_request_inner, reuses the bool at all call sites and threads it into billing::record_usage."},
+  {"id": "gh:60223:3311205336", "addressed": "partly", "note": "Moves batchId out of EventFiltersBatchContext into a new IngestionBatchContext that extends it; the step still returns the concrete context type rather than a generic one."},
+  {"id": "gh:58011:3208126846", "addressed": "yes", "note": "Replaces hand-built api.get/api.create URLs with the generated notifications client functions and typed NotificationsListParams."},
+  {"id": "gh:56185:3145922412", "addressed": "yes", "note": "Drops the /query/schema action and its payload builders; hogql schema lookup routes through DatabaseSchemaQuery instead."},
+  {"id": "gh:53253:3045324174", "addressed": "no", "note": "Adds an SSH tunnel to the CDC stream reader by passing the source; the adapter still pulls connection values with untyped inputs.get calls."},
+  {"id": "gh:67131:3501763646", "addressed": "partly", "note": "Moves product enablement out of the signals product into core posthog/api with core generated clients; not colocated with onboarding code."},
+  {"id": "gh:61317:3406692566", "addressed": "no", "note": "Coerces numeric leaf identity fields and replaces a local leaf iterator with a shared walker; the old loop-check function is untouched."},
+  {"id": "gh:64416:3473075465", "addressed": "yes", "note": "Extracts getLocalTimeZone into lib/utils/timezones and uses it in LogsWidget."},
+  {"id": "gh:64091:3451908634", "addressed": "no", "note": "Regenerates OPS HCL from dumps, tweaking queries and dropping column_aliases; SQL stays inline as long strings, no file loading."},
+  {"id": "gh:57885:3199045739", "addressed": "yes", "note": "Derives the bulk_delete filter allow-list from BulkDeleteFiltersSerializer field keys and tightens fields to ChoiceFields."},
+  {"id": "gh:64128:3424653963", "addressed": "no", "note": "Evaluates the enforcement rollout flag against the target team's organization; no shared scope-derivation helper is extracted."},
+  {"id": "gh:75667:3690271928", "addressed": "yes", "note": "Removes the loadIntegrationsSuccess listener and loads GitHub installations from a mount effect in the GithubIntegration component."},
+  {"id": "gh:70121:3573419665", "addressed": "yes", "note": "Empties the feature_flags facade __init__.py by removing the re-export block."},
+  {"id": "gh:52752:3078913593", "addressed": "yes", "note": "Removes duplicated automation fields, adds properties deriving them from the task and last task run, and a default manager that select_related them."},
+  {"id": "gh:65591:3473284664", "addressed": "yes", "note": "Replaces the manual batch timer and beforeUnmount clearTimeout with a keyed cache.disposables entry."},
+  {"id": "gh:57460:3180920029", "addressed": "yes", "note": "Removes the target_sharded_events context flag and its events-table special case, reusing an existing mechanism for deletion predicates."},
+  {"id": "gh:61545:3435485144", "addressed": "yes", "note": "Deletes the signals-owned RepoSelection mirror schema and uses the tasks RepoSelectionResult type directly for repo_selection artefacts."},
+  {"id": "gh:54443:3190596171", "addressed": "yes", "note": "Renames tracing MCP tools to an apm namespace, with the span query tool named query-apm-spans."},
+  {"id": "gh:56729:3155018157", "addressed": "yes", "note": "Drops the schema_metadata propagation on update; pipeline now prefers config.schema from job inputs over stored source_schema."}
+]

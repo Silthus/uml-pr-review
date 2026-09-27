@@ -1,0 +1,22 @@
+[
+  {"id": "gh:76755:3720895988", "addressed": "yes", "note": "Renames the ROLE_NOTIFICATIONS onboarding step and all related files, logic and events to AI_REPORTS / aiReports."},
+  {"id": "gh:104948:4085841961", "addressed": "yes", "note": "Deletes sanitize_legacy_definitions and the envelope validator; keeps only drop_legacy_dependents driven by the builder's excluded ID-to-key map, cohort tracking moves into the builder."},
+  {"id": "gh:87609:3846876844", "addressed": "no", "note": "Changes date range resolution and stable series ids; the hand-rolled csvCell helper and manual CSV join remain, no PapaParse adoption."},
+  {"id": "gh:76416:3712215704", "addressed": "yes", "note": "Replaces hand-written extension notification, widget and editor-text interfaces with types derived from the vendor RpcExtensionUIRequest and WidgetPlacement across the PR."},
+  {"id": "gh:90081:3903860464", "addressed": "yes", "note": "Adds check_mcp_url_policy(url, team_id) in url_policy that calls is_url_allowed internally and switches all call sites to it."},
+  {"id": "gh:94532:3939885034", "addressed": "yes", "note": "Adds State::record_project_secret_key_usage(Option<String>) wrapping the if-let stamp and uses it at the flag_definitions and remote_config sites."},
+  {"id": "gh:74228:3716137279", "addressed": "partly", "note": "Renames the Outputs enum to Output throughout; the &str lifetime on Custom, route shadowing and unrealizable PerSession decision are not changed here."},
+  {"id": "gh:95610:3968554078", "addressed": "yes", "note": "Drops the malformed_leaves map, adds malformed_leaf_count to CohortParseFlags, increments it in record_dropped and iterates flags in freeze_with."},
+  {"id": "gh:104042:4074060069", "addressed": "yes", "note": "Adds products.event_definitions to the ai_observability depends_on list in tach.toml, alongside an unrelated summary date-range fix."},
+  {"id": "gh:82372:3774032958", "addressed": "yes", "note": "Replaces the manual December/month+1 branch in next_counter_reset with first-of-month plus dateutil relativedelta(months=1)."},
+  {"id": "gh:89874:3870138924", "addressed": "yes", "note": "Changes the traces server usage ingestion client name from 'apm' to 'apm_traces'."},
+  {"id": "gh:94235:3927112254", "addressed": "partly", "note": "Rust handlers rename the client list to mobile-and-desktop and add Unity; the Python file drops posthog-unity from the list but keeps the mobile naming."},
+  {"id": "gh:77848:3722038609", "addressed": "yes", "note": "Adds an evaluationsApi facade (listAllEvaluations, patchEvaluation) and removes the create/update actions and as-unknown-as casts from the logic."},
+  {"id": "gh:87609:3855721876", "addressed": "no", "note": "Replaces the hash series id with an index into sorted labels and extracts seriesLabel; the setDates listener's duplicated hourly range check is not touched in this diff."},
+  {"id": "gh:78980:3730737912", "addressed": "no", "note": "Introduces team_distinct_id and swaps distinct ids at each site; the repeated observability block and pass-through params stay duplicated across three graphs."},
+  {"id": "gh:70803:3657864230", "addressed": "yes", "note": "Deletes LiveWidgetIndicator.tsx and renames LiveWidgetEmptyState.tsx to a shared components.tsx holding multiple exports."},
+  {"id": "gh:95189:3961283875", "addressed": "yes", "note": "Moves rollout_state_and_variant into FeatureFlagStatusChecker as a method, dropping the checker parameter and forward-reference string."},
+  {"id": "gh:101654:4028885881", "addressed": "no", "note": "Rewrites docstrings about produce failure semantics and renames _route_refresh_to_kafka; no shared InvalidationSource alias is introduced."},
+  {"id": "gh:86772:3825271113", "addressed": "yes", "note": "Deletes posthog/dags/common/owners.py re-export and imports JobOwners directly from posthog.job_owners."},
+  {"id": "gh:91024:3895317614", "addressed": "partly", "note": "Captures the timeout handle and clears it after the race settles; the status request is still not aborted and no mounted loader is used."}
+]

@@ -1,0 +1,22 @@
+[
+  {"id": "gh:88064:3861715130", "addressed": "partly", "note": "Deletes the duplicate managed-reverse-proxy doc page outright; removes the duplication but does not move the root-redirect section into or link to the existing article."},
+  {"id": "gh:102324:4039426495", "addressed": "yes", "note": "Keeps _dependency_ids and adds a comment explaining why it differs from flag_dependency_properties (skips malformed groups), the offered alternative."},
+  {"id": "gh:87609:3846876851", "addressed": "yes", "note": "Splits resolveDateRange into parsedDateTo and inclusiveDateTo steps with comments stating date_to is exclusive and the millisecond step."},
+  {"id": "gh:78278:3730544765", "addressed": "no", "note": "Only rewrites doc comments in serialization/mod.rs and kafka.rs about data_type-based encoding; the seam still returns the sink error type, no local error added."},
+  {"id": "gh:88758:3872508663", "addressed": "yes", "note": "Replaces manual regional client capture/shutdown with a ph_scoped_capture context manager and calls capture inside it."},
+  {"id": "gh:97846:3987372298", "addressed": "yes", "note": "Removes task_run association guidance from MCP tools and prompts, makes claims auto-record the task association, task-run artefacts read-only, ownership derived from claims."},
+  {"id": "gh:87276:3847423097", "addressed": "yes", "note": "Adds website_domain to account properties, populates it on the model, drops the custom-property queries, resolves logo from website_domain falling back to email domains."},
+  {"id": "gh:103269:4073452200", "addressed": "no", "note": "Changes RequestFailure event_count to count the pending batch; the lane field name is untouched."},
+  {"id": "gh:104420:4073547162", "addressed": "yes", "note": "Moves the inline CLI install and release-resolve script into a composite action with its own CLI version pin, used by both workflows."},
+  {"id": "gh:101256:4029335113", "addressed": "yes", "note": "_team_for_warehouse_access_check now delegates to _team_from_serializer_context instead of duplicating the context lookup."},
+  {"id": "gh:95132:3935659290", "addressed": "yes", "note": "Extracts ScoutWriteAccessTag component and renders it in both ScoutNameCell and ScoutRosterCard."},
+  {"id": "gh:100803:4034896630", "addressed": "yes", "note": "Deletes the facade wrapper pi_cloud_runtime_enabled and imports a single pi_cloud_runtime_enabled gate from feature_flags."},
+  {"id": "gh:87363:3856847175", "addressed": "yes", "note": "Renames resolve_object_access and resolve_resource_access to resolve_most_specific_object_access and resolve_most_specific_resource_access, plus callers and tests."},
+  {"id": "gh:84543:3806469355", "addressed": "yes", "note": "Scheduled-change error message now formats the rollout sum via format_variant_rollout_sum, with the import added."},
+  {"id": "gh:74761:3687595778", "addressed": "yes", "note": "experimentLogic variant key validation now calls shared validateFeatureFlagVariantKey instead of the inline regex."},
+  {"id": "gh:80167:3741816937", "addressed": "yes", "note": "Duplicate-key lookup moved to failure listener and uses generated featureFlagsList with typed key param, picking exact key match."},
+  {"id": "gh:80689:3753449173", "addressed": "yes", "note": "Adds MATERIALIZED_VIEW_SYNC_FAILED_DAILY and _IMMEDIATE to NotificationSetting enum and Literal, handled in should_send_notification and a helper."},
+  {"id": "gh:79056:3732063799", "addressed": "yes", "note": "Moves reportFeatureFlagsBulkArchived to an eventUsageLogic action connected into flagSelectionLogic, removing the plain function."},
+  {"id": "gh:85191:3842574437", "addressed": "no", "note": "Moves gRPC stream id and seq into a feed-time batch context type; the stream ingest driver stays an inline object in the server, no class extracted."},
+  {"id": "gh:104042:4074940440", "addressed": "yes", "note": "Extracts restriction_fingerprint into the access-control property_access facade and uses it here and in the other sort-key call sites."}
+]

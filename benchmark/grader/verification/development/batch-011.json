@@ -1,0 +1,22 @@
+[
+  {"id": "gh:59076:3277130481", "addressed": "yes", "note": "Replaces the long concatenated ternary constant with a buildFlagChangeVerbPhrase function composing named sub-expressions joined per branch."},
+  {"id": "gh:70125:3580986281", "addressed": "yes", "note": "Adds static _assert_web_experiment_has_control and calls it from create, launch validation, and update (update keeps its variants guard)."},
+  {"id": "gh:65497:3461491237", "addressed": "yes", "note": "Replaces tag_queries calls with tags_context with-blocks wrapping each sync_execute in the viewset methods."},
+  {"id": "gh:62144:3389324730", "addressed": "yes", "note": "EventKindSpec now holds neutral (label, value) details; separate Slack and Teams renderers format them; slack-to-teams markdown converter removed."},
+  {"id": "gh:63224:3412952879", "addressed": "yes", "note": "Removes ensure_source_enabled and makes scanner findings self-authorizing signals, bypassing SignalSourceConfig for scanner sources."},
+  {"id": "gh:55788:3130260646", "addressed": "no", "note": "Renames producer env config to Warpstream/MSK-prefixed vars; consumer still receives a separate kafkaProducer alongside outputs."},
+  {"id": "gh:52797:3012197286", "addressed": "yes", "note": "Imports and uses get_token(data, request) instead of reading api_key directly from the payload."},
+  {"id": "gh:61545:3438395606", "addressed": "partly", "note": "Drops the actionability_is_new/priority_is_new/new_finding_ids fields in favor of old/new artefact lists; previous_assessment_correct stays in update schemas."},
+  {"id": "gh:62103:3372825862", "addressed": "yes", "note": "Replaces the manual offset pagination loop with api.loadPaginatedResults on the generated list URL."},
+  {"id": "gh:69394:3546091051", "addressed": "yes", "note": "Adds a productPrefix helper used by both checkProductStaleness and getProductDuration; double traversal remains."},
+  {"id": "gh:60388:3318391214", "addressed": "partly", "note": "Removes the documented activation exception and adds status-only enable/disable/archive MCP tools plus view guards; no serializer validation added."},
+  {"id": "gh:67240:3529582363", "addressed": "no", "note": "Changes dependency-id resolution to parse flag filters by id or key; does not extract the per-target dependency-copy block into a helper."},
+  {"id": "gh:64506:3441643322", "addressed": "no", "note": "Directory rename lanes to pipelines; the test file still imports deleteKeysWithPrefix from the cdp test helpers."},
+  {"id": "gh:53504:3043673217", "addressed": "yes", "note": "Moves CSV export into membersExportLogic and uses the shared slugify util from lib/utils instead of inline regex slugging."},
+  {"id": "gh:68937:3577215371", "addressed": "no", "note": "Adds Discord destination with another type if-branch and a template enum; no registry or strategy dispatch introduced."},
+  {"id": "gh:53003:3022108005", "addressed": "yes", "note": "Renames viewset to SignalProcessingViewSet with a top-level list GET returning paused_until; pause is PUT/DELETE on one route."},
+  {"id": "gh:73431:3644387665", "addressed": "yes", "note": "Replaces the custom suppressed event with the existing issue status update event, adding status and source properties."},
+  {"id": "gh:55298:3268718651", "addressed": "yes", "note": "Removes the arbitrary Tailwind selector and passes a new highlightVariant subtle prop added to PropertiesTable."},
+  {"id": "gh:66864:3501140351", "addressed": "yes", "note": "Extracts ongoing-interval show/checked/disabledReason/tooltip logic into an ongoingIntervalField util in alertFormLogic with tests."},
+  {"id": "gh:58186:3214513436", "addressed": "yes", "note": "extract_hogql_features now returns a HogQLFeatures dataclass instead of a (tables, events) tuple; callers updated."}
+]

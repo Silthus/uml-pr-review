@@ -1,0 +1,5 @@
+[
+  {"id": "gh:52899:3016721446", "architecture": true, "subtype": "reuse", "quote": "why do these various logics not simply reexport the value owned by `recentItemsModel`"},
+  {"id": "gh:59226:3277337920", "architecture": false, "subtype": "none", "quote": ""},
+  {"id": "gh:72468:3619056027", "architecture": false, "subtype": "none", "quote": ""}
+]

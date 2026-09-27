@@ -31,3 +31,7 @@ You are an independent verifier. Work alone. Read <work>/packets/verify-<batch>.
 
 For every entry, decide whether the located commit addresses the comment's structural request: "yes" when it does what was asked, "partly" when it does some of it or an equivalent, "no" when it does something unrelated, and "unverifiable" when the diff cannot tell (for example a squashed or rebased whole feature). Write a JSON array to <repo>/docs/corrections/labels/verification/batch-<batch>.json with the Write tool: one object per entry, exactly {"id": "<id>", "addressed": "yes"|"partly"|"no"|"unverifiable", "note": "<at most 200 characters on what the commit does>"}. The note describes code, never quotes the comment. Reply with only the counts per answer.
 ```
+
+## Skipped items
+
+A labeller sometimes leaves out a comment or two from a batch. `bun benchmark/corrections/run.ts gaps --stage first-pass` (or `--stage confirm`) collects every item without a label into gap packets (`first-pass-gap1-001.md`, and so on), which go out with the same prompt, writing to `batch-gap1-001.json`. Labels merge by comment id, so a gap label fills the hole and nothing else moves.

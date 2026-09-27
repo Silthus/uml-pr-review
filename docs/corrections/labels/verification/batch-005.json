@@ -1,0 +1,12 @@
+[
+  {"id": "gh:87609:3855721915", "addressed": "no", "note": "Only removes the legendInteractive prop from a chart in the file; the summary cards are not unified into one component."},
+  {"id": "gh:95189:3961283875", "addressed": "yes", "note": "Moves rollout_state_and_variant into FeatureFlagStatusChecker as a method using self, dropping the checker parameter and forward-reference string."},
+  {"id": "gh:53003:3022108005", "addressed": "yes", "note": "Renames the viewset to SignalProcessingViewSet and adds a top-level list GET returning paused_until, replacing the state action; pause/unpause become PUT/DELETE."},
+  {"id": "gh:94553:3962143975", "addressed": "partly", "note": "Removes the duplicate TextChoices classes and derives choice lists from the Literal types via get_args; keeps the Literal rather than removing it."},
+  {"id": "gh:62592:3466100713", "addressed": "yes", "note": "Removes the separate debug-symbols command and exposes native ELF upload as an Upload subcommand of symbol-sets."},
+  {"id": "gh:63062:3470001546", "addressed": "yes", "note": "Replaces the FeatureFlag string literals with ScheduledChange.AllowedModels.FEATURE_FLAG in the exclude and model-name checks."},
+  {"id": "gh:64506:3441732186", "addressed": "yes", "note": "Renames lanes to pipelines and moves the ingestionwarnings pipeline directory and its tests to clientwarnings."},
+  {"id": "gh:78977:3738244192", "addressed": "no", "note": "Adds a wait_for_restrictions_loaded helper and stores the restriction service on ServerHandle; the duplicated message helpers are untouched."},
+  {"id": "gh:59488:3283579388", "addressed": "partly", "note": "Drops the length*2.5 heuristic, now using the measured width when positive and the length*7 fallback otherwise; no named constants added."},
+  {"id": "gh:79495:3789083927", "addressed": "yes", "note": "Replaces the hardcoded 400/memory-code check with the shared extractValidationError helper, so 512 details surface; also tweaks retry rules."}
+]

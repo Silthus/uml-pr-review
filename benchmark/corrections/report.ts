@@ -14,6 +14,8 @@ export type ReportInput = {
   recall: Estimate & { sampled: number; missed: number };
   precision: Estimate & { sampled: number; answers: Record<"yes" | "partly" | "no" | "unverifiable", number> };
   api: { queries: number; points: number };
+  truncated: { threads: number; comments: number; commits: number };
+  batches: Record<string, number>;
   rows: CorpusRow[];
   heldOutDigest: string;
 };
@@ -84,12 +86,12 @@ function method(input: ReportInput): string {
   return [
     `1. **Collect.** \`gh api graphql\` search, one UTC day per window, lists every merged PR with its files, base, head, and counts (${input.pullRequests.development + input.pullRequests.heldout} PRs). A second pass fetches review threads (up to 100 per PR, 10 comments each), review bodies, and commits with timestamps for the ${input.reviewedPullRequests} PRs that have review threads, sizing each connection to its count so a query costs what it returns. Every raw response is cached on disk by the hash of its query, and the client waits for the rate-limit reset when fewer than 400 points remain. The run took ${input.api.queries} queries and ${input.api.points} GraphQL points.`,
     `2. **Filter.** Of ${input.inlineComments} inline comments, ${input.codeComments.development + input.codeComments.heldout} are from a human who is not the PR's author, are not a bot or a "not written by a human" QA-swarm comment, and carry at least 20 characters that are not an acknowledgement. Review bodies are dropped: they are not comments on code. The filter is \`humanReviewComments\` from \`coherence/validation/review-comments.ts\`, run over the whole repository.`,
-    "3. **Classify.** A Haiku first pass labels every comment in batches of 60 against `benchmark/corrections/rubric.md`, tuned for recall. Opus confirms every candidate in batches of 50 and assigns the sub-type and the quote (at most 20 words, 200 characters). The exact prompts are in `benchmark/corrections/prompts.md`; the raw labels are in `labels/`.",
+    `3. **Classify.** A Haiku first pass labels every comment in batches of 60 against \`benchmark/corrections/rubric.md\`, tuned for recall (${input.batches["first-pass"]} batches, one fresh sub-agent each, including re-runs for comments a batch skipped). Opus confirms every candidate in batches of 50 and assigns the sub-type and the quote, at most 20 words and 200 characters (${input.batches.confirm} batches). The exact prompts are in \`benchmark/corrections/prompts.md\`; the raw labels are in \`labels/\`.`,
     "4. **Locate the fix.** PR heads are fetched over HTTPS into `refs/uml-pr-review/corpus/<n>` of a read-only PostHog clone. The fix is #95's rule (`locateFix`): the first non-merge PR commit after the comment that touches the commented file. A correction is isolable when a PR commit from before the comment still exists, so the fix is a separate commit and not a squashed or rebased whole. `before` is the fix's parent; `commentCommit` is the last PR commit before the comment.",
-    `5. **Verify.** A seeded sample of ${input.precision.sampled} isolable fixes is judged by Opus from the diffs, with read-only access to the clone.`,
+    `5. **Verify.** A seeded sample of ${input.precision.sampled} isolable fixes is judged by Opus from the packet: the commit stat and the diff of the commented file (${input.batches.verification} batches of 10).`,
     `6. **Split.** Rows from PRs merged before ${input.heldOutFrom.slice(0, 10)} are the development set; the rest are held out. \`heldout.sha256\` is the sha256 of the held-out rows exactly as they appear in \`corpus.jsonl\`, in order: \`grep '"split":"heldout"' corpus.jsonl | shasum -a 256\`.`,
     "",
-    "Limits: review threads beyond 100 per PR and comments beyond 10 per thread are not read; PRs with more than 100 commits are read to their first 100; a fix that lands only in another file, or after a force-push that rewrote the earlier commits, is not isolable or not found. The repository is public, so comment bodies and diffs stay in the uncommitted working directory; only links, quotes of at most 200 characters, and labels are committed.",
+    `Limits: review threads beyond 100 per PR (${input.truncated.threads} PRs) and comments beyond 10 per thread (at most ${input.truncated.comments} threads) are not read; PRs with more than 100 commits (${input.truncated.commits}) are read to their first 100; a fix that lands only in another file, or after a force-push that rewrote the earlier commits, is not isolable or not found. The repository is public, so comment bodies and diffs stay in the uncommitted working directory; only links, quotes of at most 200 characters, and labels are committed.`,
   ].join("\n");
 }
 

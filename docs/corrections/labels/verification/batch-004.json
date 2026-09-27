@@ -1,0 +1,12 @@
+[
+  {"id": "gh:102106:4041977854", "addressed": "yes", "note": "Removes the setAccessControlsApply action and its afterMount call; accessControlsApply becomes a reducer whose default reads the flag from getAppContext."},
+  {"id": "gh:101362:4028813704", "addressed": "yes", "note": "pinned_connect_host now returns a target with host and tls_server_name; the source uses both directly and drops the unbracket_host import and string comparison."},
+  {"id": "gh:53643:3119283544", "addressed": "yes", "note": "Event::headers now takes the Context and returns CapturedEventHeaders; the custom Vec<(String,String)> header builder and its tests are deleted."},
+  {"id": "gh:67329:3545560091", "addressed": "yes", "note": "Adds an _expire_change_request helper (set EXPIRED, save, log, notify on commit) and both PENDING and stale-APPROVED branches call it with their message."},
+  {"id": "gh:64506:3441687672", "addressed": "yes", "note": "Moves recording-api and recording-rasterizer out of the ingestion sessionreplay tree to top-level nodejs/src directories and updates imports; shared helpers still imported from ingestion."},
+  {"id": "gh:56621:3156699270", "addressed": "yes", "note": "Deletes the opensearch profile entries from docker-compose.profiles.yml and adds the profiles to docker-compose.dev.yml."},
+  {"id": "gh:103145:4065875888", "addressed": "yes", "note": "Deletes the pinner's private _is_action and imports a shared is_action_key from parity/eligibility.py, which the commit adds there."},
+  {"id": "gh:67117:3581048862", "addressed": "partly", "note": "Removes the local SIGNAL_SOURCE_REQUIRED_TABLES and the intent-based CI table branch from the panel, moving setup into a DataSourceSetup keyed by signal source; merged map not shown."},
+  {"id": "gh:64091:3451908634", "addressed": "no", "note": "Regenerates OPS HCL from dumps: drops column_aliases and adds an error filter; queries stay inline strings with no file-reading mechanism."},
+  {"id": "gh:58357:3282258713", "addressed": "yes", "note": "Replaces the raw api.create batch_check call with the generated llmAnalyticsSummarizationBatchCheckCreate client and drops the semgrep suppression."}
+]

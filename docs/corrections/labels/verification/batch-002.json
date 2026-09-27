@@ -1,0 +1,12 @@
+[
+  {"id": "gh:81819:3766611410", "addressed": "yes", "note": "Removes the component's date-sync effect and URL precedence helper; shared Kea logic gains a dashboardExternalDateFilters selector and dashboard-date reducers/actionToUrl, with logic tests."},
+  {"id": "gh:53504:3043673217", "addressed": "yes", "note": "Moves CSV export into a new membersExportLogic and replaces the inline regex slug with the existing slugify helper from lib/utils."},
+  {"id": "gh:77848:3722038609", "addressed": "yes", "note": "Adds a cast-free evaluationsApi facade (evaluationFromApi narrowing, listAllEvaluations, patchEvaluation) and removes the as-unknown-as casts and create/update actions from the logic."},
+  {"id": "gh:69848:3558025643", "addressed": "yes", "note": "Drops the local ingestionLimits helper and uses billingLogic.isProductOverUsageLimit for product analytics and session replay, mounting visionQuotaLogic to load billing."},
+  {"id": "gh:59023:3282149499", "addressed": "yes", "note": "Removes the inline hmac/sha256 computation and imports compute_signature from ee.api.agentic_provisioning.signature."},
+  {"id": "gh:64173:3426775655", "addressed": "yes", "note": "Replaces the icontains run search with the shared apply_trigram_search helper over branch and run_type, keeping exact SHA-prefix and PR-number matches; adds a trigram migration."},
+  {"id": "gh:63009:3452871979", "addressed": "yes", "note": "Moves the bot-PRs flag check to feature_flags.py with flag key slack-app-bot-prs and renames continue-as-bot log events from posthog_code_ to slack_app_."},
+  {"id": "gh:61317:3406692604", "addressed": "no", "note": "Adds an origin-uuid marker dedup in apply_handler and a new raced-chain test in merge_protocol.rs; no fixtures are lifted into a shared tests/common module."},
+  {"id": "gh:60223:3311205336", "addressed": "partly", "note": "Moves batchId out of EventFiltersBatchContext into a new IngestionBatchContext that extends it and spreads the incoming batch context; the step is still typed to the concrete context, not generic."},
+  {"id": "gh:70125:3580986281", "addressed": "yes", "note": "Adds a static _assert_web_experiment_has_control helper and calls it from create, launch validation, and update (keeping the update_variants guard)."}
+]

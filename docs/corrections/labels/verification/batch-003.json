@@ -1,0 +1,12 @@
+[
+  {"id": "gh:54251:3073116113", "addressed": "partly", "note": "Extracts a shared _map_arrow_type helper used by both add_pyarrow_schema and add_field, removing the duplicated type mapping rather than calling add_field directly."},
+  {"id": "gh:104042:4074060069", "addressed": "yes", "note": "Adds products.event_definitions to the products.ai_observability depends_on list in tach.toml, declaring the dependency."},
+  {"id": "gh:58847:3260528606", "addressed": "yes", "note": "Deletes the purpose-specific repo_selection module; the custom agent base now calls the shared select_repository_for_team, supplying only a request section."},
+  {"id": "gh:90159:3880606644", "addressed": "yes", "note": "Moves the lenient token parser to a shared aiTokenCount in utils.ts and uses it in both ConversationMessagesDisplay and MetadataHeader."},
+  {"id": "gh:87276:3847423097", "addressed": "yes", "note": "Adds validated website_domain to AccountProperties, drops the custom-property queries, resolves logo from website_domain then email_domains; no backfill seen."},
+  {"id": "gh:84587:3811751733", "addressed": "yes", "note": "Replaces the private ModelCost interface with the canonical type import and documents why cache_write_1h_token has no sync pair."},
+  {"id": "gh:52410:3014073886", "addressed": "yes", "note": "Removes the local _has_legacy_metrics staticmethod and uses experiment_has_legacy_metrics imported from the experiment models module."},
+  {"id": "gh:69314:3547199782", "addressed": "yes", "note": "Drops the hand-built switch role, aria and key handling on LemonTag; LemonSwitch is now the real control with onChange, label, and disabledReason."},
+  {"id": "gh:52409:2994865109", "addressed": "partly", "note": "Extracts getGridItemContextMenu to flatten the inline JSX, but the callbacks still use non-null assertions without an inner guard."},
+  {"id": "gh:61545:3438176295", "addressed": "no", "note": "Replaces the RepoSelection mirror model with the tasks RepoSelectionResult and drops LineReference; the duplicated choice enums are left unconsolidated."}
+]

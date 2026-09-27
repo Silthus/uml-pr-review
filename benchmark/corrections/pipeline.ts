@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
 import { seededRandom, shuffled } from "../../coherence/validation/statistics.ts";
@@ -114,6 +114,8 @@ export async function writeCorpus(workspace: Workspace, window: Window): Promise
       recall: await recall(workspace, comments, firstPass, confirmations),
       precision: precision([...verifications.values()].map(({ addressed }) => addressed)),
       api: await apiCost(workspace),
+      truncated: truncation(pullRequests),
+      batches: await labelBatches(workspace),
       rows,
       heldOutDigest: digest,
     }),
@@ -136,6 +138,20 @@ export function precision(answers: ("yes" | "partly" | "no" | "unverifiable")[])
   const addressed = count("yes") + count("partly");
   const interval = wilson(addressed, answers.length);
   return { value: addressed / answers.length, ...interval, sampled: answers.length, answers: { yes: count("yes"), partly: count("partly"), no: count("no"), unverifiable: count("unverifiable") } };
+}
+
+function truncation(pullRequests: CollectedPullRequest[]) {
+  return {
+    threads: pullRequests.filter(({ counts }) => counts.reviewThreads > 100).length,
+    comments: pullRequests.flatMap(({ reviewThreads }) => reviewThreads.nodes).filter(({ comments }) => comments.nodes.length >= 10).length,
+    commits: pullRequests.filter(({ counts }) => counts.commits > 100).length,
+  };
+}
+
+async function labelBatches(workspace: Workspace): Promise<Record<string, number>> {
+  const stages = Object.values(labelStages);
+  const counts = await Promise.all(stages.map(async (stage) => (await readdir(join(workspace.labels, stage)).catch(() => [])).filter((file) => file.endsWith(".json")).length));
+  return Object.fromEntries(stages.map((stage, index) => [stage, counts[index]!]));
 }
 
 async function apiCost(workspace: Workspace): Promise<{ queries: number; points: number }> {

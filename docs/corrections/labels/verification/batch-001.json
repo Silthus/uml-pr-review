@@ -1,0 +1,12 @@
+[
+  {"id": "gh:91764:3913370405", "addressed": "yes", "note": "Adds BatchPartition::record, which restarts the ledger charge slice when the generation moves mid-batch, with unit tests for the mid-batch regain case."},
+  {"id": "gh:63251:3421518226", "addressed": "yes", "note": "Moves REQUIRED_SLACK_SCOPES and bot_is_ready into a new posthog/helpers/slack_scopes.py module and imports them from there."},
+  {"id": "gh:76933:3722137342", "addressed": "yes", "note": "Replaces the direct ai_observability import in the export task with a format-to-handler lookup in the exports facade, registered from the product's apps.py."},
+  {"id": "gh:95610:3968554078", "addressed": "yes", "note": "Drops the malformed_leaves map, adds malformed_leaf_count to CohortParseFlags, and freeze_with iterates flags filtering on a non-zero count."},
+  {"id": "gh:75397:3683217817", "addressed": "yes", "note": "Replaces the inline node-type branching with a shared node_type_for helper from saved_query_dag_sync, used by both code paths."},
+  {"id": "gh:95964:3951556834", "addressed": "yes", "note": "Renames the replaying field and is_replaying method to redelivering/is_redelivering and updates related comments; adds a double-failure test."},
+  {"id": "gh:59468:3347822341", "addressed": "no", "note": "Adds table validation errors and a disabled state to the trigger UI, skips person lookup for warehouse rows; no forced exit condition or serializer change."},
+  {"id": "gh:76416:3702595351", "addressed": "yes", "note": "Removes the handrolled session_reset, dialog_expired and state_snapshot event types, leaving only UI requests and SDK-typed extension errors; moves extension handling to its own controller."},
+  {"id": "gh:68988:3540629531", "addressed": "yes", "note": "Returns the body library from parse_and_authenticate as a fourth tuple element and uses it instead of calling stamp_body_sdk_info again."},
+  {"id": "gh:49264:3341508978", "addressed": "no", "note": "Switches the guard field from the primary key to a table access_control_id; still inlines blocked IDs as an AST constant rather than bound parameters."}
+]

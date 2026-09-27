@@ -24,7 +24,7 @@ async function entryOf(repository: string, { comment, fix }: Located): Promise<s
   const [stat, diff] = await Promise.all([git(repository, ["show", "--stat", "--format=%s", fix.fix]), git(repository, ["show", "--format=", fix.fix, "--", comment.path])]);
   const diffLines = diff.split("\n");
   return [
-    `### ${comment.id}`,
+    `<entry id="${comment.id}">`,
     `PR #${comment.pr}, file ${comment.path}${comment.line === null ? "" : `, line ${comment.line}`}, commented ${comment.at}`,
     `Comment: ${comment.url}`,
     "",
@@ -39,5 +39,6 @@ async function entryOf(repository: string, { comment, fix }: Located): Promise<s
     "```diff",
     diffLines.slice(0, diffLineLimit).join("\n") + (diffLines.length > diffLineLimit ? `\n[... ${diffLines.length - diffLineLimit} more lines]` : ""),
     "```",
+    "</entry>",
   ].join("\n");
 }

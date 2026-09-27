@@ -1,0 +1,12 @@
+[
+  { "pr": 101488, "score": 2, "reason": "Deletes workflows' own 181-line SNS signature verifier and bespoke webhook view, moving verification into shared ingress and entering workflows through a facade function." },
+  { "pr": 70823, "score": -1, "reason": "Adds draft routing, publish and discard endpoints into the already huge hog_flow.py viewset and perform_update; good tests, but the diff is truncated and complexity grows." },
+  { "pr": 71078, "score": -1, "reason": "Push metrics copy-paste the email pattern (summary component, totals loader, mapper, type guard) and deepen nested ternaries, with no tests." },
+  { "pr": 78272, "score": -1, "reason": "Adds a 90-line template materializer to huge hog_flow.py, imports messaging's MessageTemplate model directly, and memoizes through underscore keys in serializer context; tests are good (diff truncated)." },
+  { "pr": 94113, "score": 1, "reason": "Splits the template picker into small card, badge, steps and meta components plus a tested display-logic module; minor any and as-unknown casts; much of the diff truncated." },
+  { "pr": 96739, "score": 0, "reason": "Flagged v2 audience count lives in its own tested module, but it adds parallel v1/v2 branching in the hog_flow viewset until the flag is removed." },
+  { "pr": 65974, "score": 0, "reason": "Email assets feature is placed in a separate tested message_assets module in the style of its surroundings, though it adds two more actions to the large viewset." },
+  { "pr": 92983, "score": 0, "reason": "Removes replay-vision legacy actions; the only workflows change swaps one event name in a parameterized test." },
+  { "pr": 89924, "score": 0, "reason": "Well-tested tier-decision service and command, offset by core admin importing workflows service internals and a decide_tier with many behaviour-toggling flags (diff truncated)." },
+  { "pr": 78402, "score": 0, "reason": "Only rewrites one tool description string in workflows max_tools.py; the rest is prompt copy in other products." }
+]

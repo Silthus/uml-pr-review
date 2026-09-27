@@ -1,0 +1,12 @@
+[
+  { "pr": 89731, "score": 0, "reason": "Mostly taxonomy copy outside workflows; one metric description reworded, with descriptions duplicated across two surfaces kept in sync only by a comment." },
+  { "pr": 78182, "score": 0, "reason": "New SES tenant-state feature split cleanly into webhook, service, and task modules with tests; hand-rolled SNS verification mirrors Node code. Diff truncated." },
+  { "pr": 71460, "score": -1, "reason": "Inlines large generated Kea type blocks into workflows logic files and adds deep relative imports like '../../../../../frontend/src/types', bloating already-large files. Diff heavily truncated." },
+  { "pr": 82920, "score": 0, "reason": "Delay-until-date feature with tests and stories; extracts _validate_delay but further grows the huge hog_flow.py serializer and StepDelay component. Diff truncated." },
+  { "pr": 71038, "score": -1, "reason": "Suppression UI depends on messaging's generated API, a messaging viewset test is placed in workflows as a tach workaround, and loaders repeat try/catch blocks. Truncated." },
+  { "pr": 84345, "score": 0, "reason": "New workflow_tasks endpoint calls the tasks product only through its new facade and a small service_jwt module; clean feature, though its tests live in tasks." },
+  { "pr": 92281, "score": 0, "reason": "Skills validation follows the existing connector pattern through the tasks facade, but grows hog_flow.py's serializer and the workflows test imports products.skills models directly." },
+  { "pr": 90938, "score": -1, "reason": "WorkflowScoutRunViewSet copy-pastes the task viewset's JWT auth and rejection helpers, grows hog_flow.py, and tests import signals scout_harness internals. Diff truncated." },
+  { "pr": 88244, "score": 0, "reason": "Save-time create-task checks are well tested and reuse validate_connectors via the tasks facade, but add a long method to the already huge hog_flow.py serializer." },
+  { "pr": 103523, "score": 0, "reason": "Adds search_workflows and a testing helper to the workflows facade, which is the right boundary, but the function returns untyped hogai-shaped dicts." }
+]

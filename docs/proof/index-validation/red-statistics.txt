@@ -1,0 +1,14 @@
+bun test v1.4.2 (50a8a8387)
+
+test/coherence/validation-statistics.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../coherence/validation/statistics.ts' from '/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ac1df8f132c305f72/test/coherence/validation-statistics.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

@@ -1,0 +1,52 @@
+[
+  {
+    "pr": 104165,
+    "score": 1,
+    "reason": "The visible truncated diff adds meaningful coverage for sample-global merging, including anonymous events and trigger-specific placeholders, while reusing existing sample data."
+  },
+  {
+    "pr": 70296,
+    "score": 1,
+    "reason": "An explicit summary serializer separates MCP listing metadata from action configuration, with an API test verifying omission and preservation of ordinary listing behavior."
+  },
+  {
+    "pr": 105744,
+    "score": 2,
+    "reason": "The visible truncated diff extracts shared messaging actions and tab content from WorkflowsScene, isolates action-specific dependencies, and tests broadcast route precedence."
+  },
+  {
+    "pr": 91458,
+    "score": 2,
+    "reason": "The visible truncated diff removes the incident-specific banner, recovery state machinery, and feature flag, substantially reducing temporary maintenance burden while deleting their associated tests."
+  },
+  {
+    "pr": 66346,
+    "score": -1,
+    "reason": "Despite a tested generic scanner, the visible truncated diff couples customer analytics directly to workflows backend service internals instead of a public facade."
+  },
+  {
+    "pr": 74507,
+    "score": 1,
+    "reason": "The visible truncated diff moves AGENT_EVENT_SOURCES into shared event infrastructure and updates workflows to consume it, removing ownership of a cross-product policy constant."
+  },
+  {
+    "pr": 76874,
+    "score": 0,
+    "reason": "The visible truncated diff adds CSV functionality through existing UI and loader patterns, balancing additional state and orchestration with isolated, meaningfully tested parsing helpers."
+  },
+  {
+    "pr": 71537,
+    "score": 0,
+    "reason": "The visible truncated diff updates push-action documentation and generated tool descriptions without changing workflows implementation or architecture."
+  },
+  {
+    "pr": 74703,
+    "score": 0,
+    "reason": "Removes reputation navigation and adds a direct-navigation fallback; this visibility change leaves the underlying workflows structure essentially unchanged."
+  },
+  {
+    "pr": 69698,
+    "score": 1,
+    "reason": "Strengthens shared reconciliation to preserve unchanged array identity and adds focused tests covering workflow graph stability and repeated integration auto-selection."
+  }
+]

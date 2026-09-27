@@ -1,0 +1,12 @@
+[
+  { "pr": 97753, "score": 1, "reason": "Adds a small workflows backend facade (get_workflow_owner_id) for other products and moves feature-flag filtering into getRegisteredActionNodeCategories; new input is tested. Diff truncated." },
+  { "pr": 76808, "score": 0, "reason": "Clean, tested account_audience service with provider inversion, offset by more inline access-check branching in the huge hog_flow.py and a type: ignore. Truncated." },
+  { "pr": 76015, "score": -1, "reason": "Adds about 250 lines to the already huge hog_flow.py, imports private _deep_merge, and couples to messaging api internals; tests are solid. Diff truncated." },
+  { "pr": 102689, "score": 0, "reason": "Targeted test-panel reload fix with thorough logic tests; adds stale-tracking actions and subscriptions in line with the existing logic. Diff truncated." },
+  { "pr": 82615, "score": 0, "reason": "Workflows is only touched by mechanical import moves to access_control, plus removal of try/except ImportError in tests; no structural change to workflows. Heavily truncated." },
+  { "pr": 99007, "score": 0, "reason": "Workflows gains one serializer field passed through to the tasks service; minimal, in keeping with the surrounding code." },
+  { "pr": 97290, "score": 0, "reason": "Workflows serializer adds output_fields, validated through the tasks facade's build_output_schema; clean delegation, with the logic and tests living in tasks." },
+  { "pr": 104309, "score": 0, "reason": "Only a banner copy change in the workflows data warehouse view trigger; the real change lives in warehouse_sources." },
+  { "pr": 69510, "score": 0, "reason": "Splits the Update account registry node into two nodes, updates the registry tests, and extends the input type union; follows the existing pattern." },
+  { "pr": 93383, "score": 0, "reason": "Adds a named _trigger_has_audience helper and schedule-pause method with focused tests, but grows the already very large hog_flow.py viewset further. Diff truncated." }
+]

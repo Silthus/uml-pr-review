@@ -1,0 +1,293 @@
+[
+ {
+  "batch": "01",
+  "prs": [
+   {
+    "pr": 101488,
+    "title": "chore(workflows): verify SES events through ingress"
+   },
+   {
+    "pr": 70823,
+    "title": "feat(workflows): draft, test, publish cycle behind the workflows-revisions flag + MCP"
+   },
+   {
+    "pr": 71078,
+    "title": "feat(workflows): show push metrics in the workflow Metrics tab"
+   },
+   {
+    "pr": 78272,
+    "title": "feat(workflows): materialize referenced email templates at save"
+   },
+   {
+    "pr": 94113,
+    "title": "feat(workflows): redesign the workflow template picker"
+   },
+   {
+    "pr": 96739,
+    "title": "feat(workflows): memory-bounded audience blast radius behind a flag"
+   },
+   {
+    "pr": 65974,
+    "title": "feat(workflows): capture sent emails as browsable assets"
+   },
+   {
+    "pr": 92983,
+    "title": "feat(replay-vision): remove the legacy vision actions system"
+   },
+   {
+    "pr": 89924,
+    "title": "feat(workflows): move teams between email sending tiers on their own record"
+   },
+   {
+    "pr": 78402,
+    "title": "chore(mcp): fix stale/broken agent-facing strings and rewrite weak tool descriptions"
+   }
+  ]
+ },
+ {
+  "batch": "02",
+  "prs": [
+   {
+    "pr": 104165,
+    "title": "fix(workflows): restore template autocomplete while editing"
+   },
+   {
+    "pr": 70296,
+    "title": "fix(workflows): return metadata-only workflow list over MCP"
+   },
+   {
+    "pr": 105744,
+    "title": "fix(workflows): keep the shared messaging tabs inside the broadcasts page"
+   },
+   {
+    "pr": 91458,
+    "title": "chore(workflows): remove the incident replay banner"
+   },
+   {
+    "pr": 66346,
+    "title": "feat(customer-analytics): add \"update account property\" workflow action"
+   },
+   {
+    "pr": 74507,
+    "title": "feat(cdp): stage agent destination edits as reviewable drafts"
+   },
+   {
+    "pr": 76874,
+    "title": "feat(workflows): opt-out list import/export via CSV, API and MCP"
+   },
+   {
+    "pr": 71537,
+    "title": "chore(workflows): document push actions in MCP tools and skill"
+   },
+   {
+    "pr": 74703,
+    "title": "fix(workflows): hide reputation tab for everyone"
+   },
+   {
+    "pr": 69698,
+    "title": "fix(workflows): stop editor infinite update loop on graph rebuilds"
+   }
+  ]
+ },
+ {
+  "batch": "03",
+  "prs": [
+   {
+    "pr": 97753,
+    "title": "feat(workflows): create customer analytics tasks"
+   },
+   {
+    "pr": 76808,
+    "title": "feat(workflows): account audience for the batch trigger"
+   },
+   {
+    "pr": 76015,
+    "title": "feat(workflows): surgical email patching for workflow email steps"
+   },
+   {
+    "pr": 102689,
+    "title": "fix(workflows): reload the test panel sample event when trigger filters change"
+   },
+   {
+    "pr": 82615,
+    "title": "chore(access-control): consolidate code under product dir"
+   },
+   {
+    "pr": 99007,
+    "title": "feat(tasks): file a workflow-created task in a space"
+   },
+   {
+    "pr": 97290,
+    "title": "feat(workflows): pass an AI task's structured output back to the step"
+   },
+   {
+    "pr": 104309,
+    "title": "fix(data-warehouse): stop a view row triggering a workflow every sync"
+   },
+   {
+    "pr": 69510,
+    "title": "feat(workflows): split update account into tag and relationships actions"
+   },
+   {
+    "pr": 93383,
+    "title": "fix(workflows): let agents schedule a schedule-trigger workflow without an audience preview"
+   }
+  ]
+ },
+ {
+  "batch": "04",
+  "prs": [
+   {
+    "pr": 68541,
+    "title": "fix(workflows): reconcile ReactFlow nodes and edges instead of rebuilding wholesale"
+   },
+   {
+    "pr": 106341,
+    "title": "perf(frontend): cache product setup detection so scenes open without a probe"
+   },
+   {
+    "pr": 106686,
+    "title": "feat(workflows): set up and verify a broadcast's email sender without leaving the wizard"
+   },
+   {
+    "pr": 69305,
+    "title": "feat(workflows): dedupe batch email sends by address"
+   },
+   {
+    "pr": 92860,
+    "title": "fix(customer-analytics): allow workflow property overrides"
+   },
+   {
+    "pr": 102302,
+    "title": "feat(workflows): document the conversion window bounds and default in the api schema"
+   },
+   {
+    "pr": 76606,
+    "title": "feat(signup): add student role and randomize role order"
+   },
+   {
+    "pr": 73506,
+    "title": "feat(workflows): email tracking consent and per-send tracking gate for CNIL compliance"
+   },
+   {
+    "pr": 95047,
+    "title": "feat(workflows): add feature-flagged tree workflow builder"
+   },
+   {
+    "pr": 73166,
+    "title": "feat(workflows): papercut - scope MCP workflows-update to non-graph fields"
+   }
+  ]
+ },
+ {
+  "batch": "05",
+  "prs": [
+   {
+    "pr": 89731,
+    "title": "feat(workflows): add taxonomy entries for $workflows_email_* events"
+   },
+   {
+    "pr": 78182,
+    "title": "feat(workflows): email admins on AWS SES tenant reputation changes"
+   },
+   {
+    "pr": 71460,
+    "title": "chore(frontend): inline Kea types batch 6"
+   },
+   {
+    "pr": 82920,
+    "title": "feat(workflows): let a delay wait until a date carried by the person or event"
+   },
+   {
+    "pr": 71038,
+    "title": "feat(workflows): suppress repeatedly-bouncing email addresses"
+   },
+   {
+    "pr": 84345,
+    "title": "feat(workflows): let a workflow action create and start an AI task"
+   },
+   {
+    "pr": 92281,
+    "title": "feat(workflows): attach skills to the create AI task node"
+   },
+   {
+    "pr": 90938,
+    "title": "feat(workflows): add a \"Run scout\" workflow action"
+   },
+   {
+    "pr": 88244,
+    "title": "feat(workflows): validate the create AI task action at save time"
+   },
+   {
+    "pr": 103523,
+    "title": "feat(ai): let the agent search and list workflows"
+   }
+  ]
+ },
+ {
+  "batch": "06",
+  "prs": [
+   {
+    "pr": 64001,
+    "title": "feat(workflows): make the builder aware of edits from MCP/API"
+   },
+   {
+    "pr": 97307,
+    "title": "feat(workflows): show how often an event trigger fired"
+   },
+   {
+    "pr": 69943,
+    "title": "fix(workflows): expose event global in batch step editor"
+   },
+   {
+    "pr": 103711,
+    "title": "feat(tasks): start a goal or feature setup task for a space"
+   },
+   {
+    "pr": 67022,
+    "title": "fix(workflows): use real moments when comparing recurrence occurrences to now"
+   },
+   {
+    "pr": 87696,
+    "title": "chore(workflows): remove fully rolled out workflows-email-reputation flag"
+   },
+   {
+    "pr": 74143,
+    "title": "feat(messaging): configure push identity verification in channel setup"
+   },
+   {
+    "pr": 82343,
+    "title": "feat(workflows): add broadcasts prototype on top of workflows"
+   },
+   {
+    "pr": 73437,
+    "title": "feat(workflows): add search to the email reputation endpoint and tab"
+   },
+   {
+    "pr": 91486,
+    "title": "fix(workflows): stop auto-save fighting the person editing the workflow"
+   }
+  ]
+ },
+ {
+  "batch": "07",
+  "prs": [
+   {
+    "pr": 72584,
+    "title": "feat(conversations): filter support ticket triggers by assigned team"
+   },
+   {
+    "pr": 85239,
+    "title": "fix(workflows): strip the legacy placeholder sender from stored email steps"
+   },
+   {
+    "pr": 75237,
+    "title": "feat(workflows): show AWS SES tenant health and findings on the reputation tab"
+   },
+   {
+    "pr": 92406,
+    "title": "feat(workflows): notify teams when their email sending tier changes"
+   }
+  ]
+ }
+]

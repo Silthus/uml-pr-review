@@ -1,0 +1,12 @@
+[
+  { "pr": 104165, "score": 0, "reason": "buildSampleGlobals gains a real-sample overlay with solid tests, but the config component now implicitly depends on the test panel logic being mounted; most changes are outside workflows (truncated)." },
+  { "pr": 70296, "score": 0, "reason": "Adds a small metadata-only summary serializer and an MCP branch in get_serializer_class with a focused test; in keeping with surrounding code." },
+  { "pr": 105744, "score": 1, "reason": "Extracts tab actions from WorkflowsScene into a shared MessagingTabActions and parametrizes messagingTabs, slimming the scene; path-segment parsing with a type cast is slightly ad hoc." },
+  { "pr": 91458, "score": 1, "reason": "Deletes the one-off incident replay banner, its ~270-line logic, its test and feature flag, removing temporary code from WorkflowsScene." },
+  { "pr": 66346, "score": -1, "reason": "customer_analytics facade imports workflows' internal services.template_input_usage directly, coupling another product to workflows internals, though the new scanner is tested (diff truncated)." },
+  { "pr": 74507, "score": 1, "reason": "Moves AGENT_EVENT_SOURCES out of hog_flow.py into shared posthog/event_usage so workflows and CDP share one definition; the rest is CDP-side (truncated)." },
+  { "pr": 76874, "score": 0, "reason": "CSV import/export built cleanly with a pure, tested parsing module, but optOutListLogic and OptOutList grow notably; the diff is truncated." },
+  { "pr": 71537, "score": 0, "reason": "Documentation-only updates to MCP tool descriptions, the skill and generated schema JSON to mention push actions." },
+  { "pr": 74703, "score": -1, "reason": "Hides the reputation tab via a special-case redirect in urlToAction while keeping 'reputation' as a valid tab key, leaving WorkflowsReputation unreferenced." },
+  { "pr": 69698, "score": 0, "reason": "The fix lives in shared utils and IntegrationChoice; workflows only gets a tighter identity assertion in an existing test." }
+]

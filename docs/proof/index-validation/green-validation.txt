@@ -1,0 +1,6 @@
+bun test v1.4.2 (50a8a8387)
+
+ 10 pass
+ 0 fail
+ 20 expect() calls
+Ran 10 tests across 2 files. [600.00ms]

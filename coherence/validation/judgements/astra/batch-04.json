@@ -1,0 +1,52 @@
+[
+  {
+    "pr": 68541,
+    "score": 1,
+    "reason": "Shared reconciliation, immutable action updates, and isolation of layout internals improve graph state handling, with meaningful reference-stability tests."
+  },
+  {
+    "pr": 106341,
+    "score": 0,
+    "reason": "The truncated diff shows workflows enabling two shared caching options, leaving its structure and detection implementation unchanged."
+  },
+  {
+    "pr": 106686,
+    "score": 0,
+    "reason": "Reuses the email setup modal and tests sender validation, but couples retry rendering to error text and adds sender lookup duplication."
+  },
+  {
+    "pr": 69305,
+    "score": 1,
+    "reason": "The truncated diff introduces a workflows-owned audience service with shared email normalization and meaningful pagination tests, though feature-flags internals remain dependencies."
+  },
+  {
+    "pr": 92860,
+    "score": 1,
+    "reason": "The truncated diff centralizes reference access filtering in a typed helper, with tests verifying visibility and avoiding workflow action reloads."
+  },
+  {
+    "pr": 102302,
+    "score": 0,
+    "reason": "Only serializer help text clarifies conversion bounds and defaults; omitted generated changes do not alter workflows architecture or implementation."
+  },
+  {
+    "pr": 76606,
+    "score": 0,
+    "reason": "Signup changes have no visible structural effect on workflows; its only listed changes are omitted generated schemas."
+  },
+  {
+    "pr": 73506,
+    "score": 0,
+    "reason": "The truncated diff adds conventional typed tracking configuration, UI controls, and configuration tests, with minor metrics rendering duplication but no substantial architectural change."
+  },
+  {
+    "pr": 95047,
+    "score": 0,
+    "reason": "The truncated diff separates graph and tree rendering and shares workflow props, while adding conventional layout controls and selection state without a clear net quality shift."
+  },
+  {
+    "pr": 73166,
+    "score": 2,
+    "reason": "Enforces a single MCP graph-editing boundary, adds concurrency protection, and migrates existing tests onto that interface; omitted files are generated."
+  }
+]

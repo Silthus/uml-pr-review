@@ -1,0 +1,12 @@
+[
+  {"pr":64001,"score":0,"reason":"The visible truncated diff adds tested concurrency checks and notification handling, but also expands workflowLogic with reconciliation state, leaving maintainability broadly unchanged."},
+  {"pr":97307,"score":1,"reason":"The visible truncated diff separates trigger-volume calculations, loading, and rendering, with meaningful tests covering trigger eligibility, task counts, and query construction."},
+  {"pr":69943,"score":1,"reason":"Extracts sample-global construction from the component into a testable function and adds coverage for trigger-specific globals and variable placeholders."},
+  {"pr":103711,"score":1,"reason":"The visible truncated diff gives Canvas a workflows facade for status changes, with access checks and tests covering invalid activation and transactional rollback."},
+  {"pr":67022,"score":1,"reason":"Consistently converts recurrence timestamps through fakeUtcToReal before comparison and adds a focused test for a still-pending occurrence across timezone offsets."},
+  {"pr":87696,"score":1,"reason":"Removes obsolete reputation flag wiring, navigation guards, and conditional tab construction, simplifying the scene."},
+  {"pr":74143,"score":1,"reason":"The visible truncated diff shares typed verification controls and payload construction between APNs and Firebase, avoiding duplicated policy handling."},
+  {"pr":82343,"score":0,"reason":"The visible truncated diff adds reasonably separated broadcast components and tested workflow filtering; most wizard logic is omitted, and the shown feature additions are structurally neutral."},
+  {"pr":73437,"score":0,"reason":"Server-side search, debouncing, and a cap-boundary test form a conventional feature addition without substantial restructuring; omitted files are generated."},
+  {"pr":91486,"score":-1,"reason":"Despite meaningful overlap tests, the visible truncated diff expands the large save loader with a cache-backed context queue and mutable status flags, increasing coordination complexity."}
+]

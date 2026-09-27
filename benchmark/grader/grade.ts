@@ -64,7 +64,7 @@ export async function createGrader(repository: string, config: GraderConfig, cac
   };
 }
 
-export function gradeOf(results: Partial<Record<DetectorName, DetectorResult>>, config: GraderConfig): number {
+function gradeOf(results: Partial<Record<DetectorName, DetectorResult>>, config: GraderConfig): number {
   return (Object.entries(results) as [DetectorName, DetectorResult][]).reduce((sum, [name, { introduced, removed }]) => sum + weightOf(config, name) * (introduced.length - removed.length), 0);
 }
 

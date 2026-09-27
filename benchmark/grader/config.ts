@@ -3,9 +3,9 @@ import { join } from "node:path";
 import { z } from "zod";
 import { detectorNames } from "./violations.ts";
 
-export const defaultConfigFile = join(import.meta.dir, "config.json");
+const defaultConfigFile = join(import.meta.dir, "config.json");
 
-export const GraderConfigSchema = z.object({
+const GraderConfigSchema = z.object({
   detectors: z.array(z.enum(detectorNames)),
   weights: z.partialRecord(z.enum(detectorNames), z.number()),
   cycles: z.object({ maxCycleLength: z.number().int().min(2) }),

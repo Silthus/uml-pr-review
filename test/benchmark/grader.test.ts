@@ -133,6 +133,14 @@ describe("reuse", () => {
     expect(rules(report, "reuse", "introduced")).toEqual([]);
   });
 
+  test("a port to another language is not a twin", async () => {
+    const report = await grade(
+      { "rust/cohorts/src/classifier.rs": "pub fn classify_leaf_node(x: u32) -> u32 {\n    x\n}\n", "products/cohorts/backend/parity.py": "VALUE = 1\n" },
+      { "products/cohorts/backend/parity.py": "VALUE = 1\n\n\ndef classify_leaf_node(x):\n    return x\n" },
+    );
+    expect(rules(report, "reuse", "introduced")).toEqual([]);
+  });
+
   test("a name declared in many places is a convention, not a twin", async () => {
     const report = await grade(
       { "a/one.py": "def get_queryset_for(x):\n    return x\n", "b/two.py": "def get_queryset_for(x):\n    return x\n", "c/three.py": "def get_queryset_for(x):\n    return x\n", "d/four.py": "VALUE = 1\n" },

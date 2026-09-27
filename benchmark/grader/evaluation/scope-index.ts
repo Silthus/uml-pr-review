@@ -8,7 +8,7 @@ export const scopeMoveThreshold = 0.2;
 const ScopeResultSchema = z.object({ id: z.string(), scope: z.string(), before: z.number().nullable(), after: z.number().nullable() });
 export type ScopeResult = z.infer<typeof ScopeResultSchema>;
 
-export function scopeOf(path: string): string {
+function scopeOf(path: string): string {
   const segments = path.split("/");
   if (segments[0] === "products" && segments.length > 2) return segments.slice(0, 2).join("/");
   if (segments[0] === "frontend" && segments[1] === "src" && segments.length > 4) return segments.slice(0, 4).join("/");

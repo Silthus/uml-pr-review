@@ -21,7 +21,7 @@ export const complexity: Detector = async (context) => {
   return { ...finding, touched: touchedFunctions(before, after, renames) };
 };
 
-export function parseLizardRows(csv: string, root: string): (FunctionMetric & { file: string })[] {
+function parseLizardRows(csv: string, root: string): (FunctionMetric & { file: string })[] {
   return csv.split("\n").flatMap((line) => {
     const fields = [...line.matchAll(/"([^"]*)"|([^,]+)/g)].map((match) => match[1] ?? match[2]!);
     if (fields.length < 10 || !/^\d+$/.test(fields[0]!)) return [];

@@ -29,7 +29,7 @@ export const layeringImportRules: ImportRule[] = [
   sameProductRule("contracts-import-models", /^facade\/contracts\.py$/, (target) => /^models(\.py$|\/)/.test(target), "contracts must not depend on models"),
 ];
 
-export function importViolations(graph: ImportGraph, files: string[], rules: ImportRule[], context: GradeContext): Violation[] {
+function importViolations(graph: ImportGraph, files: string[], rules: ImportRule[], context: GradeContext): Violation[] {
   return files.flatMap((file) =>
     graph.importsFrom(file).flatMap((entry) =>
       rules.filter((rule) => rule.applies(entry, graph, context)).map((rule): Violation => ({ detector: rule.detector, rule: rule.rule, file: entry.from, line: entry.line, subject: entry.to, message: rule.message(entry, graph) })),
@@ -43,7 +43,7 @@ export async function importFindings(context: GradeContext, rules: ImportRule[])
   return difference(violationsOn("before"), violationsOn("after"), renamesOf(context.change));
 }
 
-export function changedPaths(change: Change, side: Side): string[] {
+function changedPaths(change: Change, side: Side): string[] {
   return change.files.flatMap(({ status, path, previousPath }) => {
     if (side === "before") return status === "added" ? [] : [previousPath];
     return status === "deleted" ? [] : [path];

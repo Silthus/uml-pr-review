@@ -8,7 +8,7 @@ import { readLabels, verificationLabelSchema, type VerificationLabel } from "../
 import { writeVerificationPackets } from "../corrections/verify.ts";
 import { isolatedFixes, readCorpus, stableOrder, type IsolatedFix } from "./corpus.ts";
 
-export const verificationLabels = join(import.meta.dir, "verification");
+const verificationLabels = join(import.meta.dir, "verification");
 const batchSize = 20;
 
 export async function readVerifications(split: Split): Promise<Map<string, VerificationLabel>> {

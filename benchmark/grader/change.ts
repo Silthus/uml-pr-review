@@ -43,8 +43,10 @@ export function renamesOf(change: Change): Map<string, string> {
   return new Map(change.files.filter(({ status }) => status === "renamed").map(({ path, previousPath }) => [previousPath, path]));
 }
 
+const notHandWritten = /(^|\/)(migrations|generated|__generated__|fixtures)\/|\.(generated|stories)\.|(^|\/)(tests?|test_[^/]*|[^/]*_tests?)\.rs$/;
+
 export function isProductionSource(path: string): boolean {
-  return languageOfSource(path) !== null && !isTestPath(path) && !/(^|\/)migrations\//.test(path);
+  return languageOfSource(path) !== null && !isTestPath(path) && !notHandWritten.test(path);
 }
 
 function isReadable(path: string): boolean {

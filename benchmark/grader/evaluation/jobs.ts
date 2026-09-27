@@ -12,7 +12,7 @@ export type CleanPullRequest = { pr: number; mergedAt: string; range: Range };
 const SlimPullRequestSchema = z.object({ number: z.number(), mergedAt: z.string(), mergeCommit: z.string().nullable() });
 export type SlimPullRequest = z.infer<typeof SlimPullRequestSchema>;
 
-export const mainline = "upstream/master";
+const mainline = "upstream/master";
 
 export async function correctionCases(repository: string, rows: CorpusRow[], split: Split): Promise<CorrectionCase[]> {
   const cases: CorrectionCase[] = [];

@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+import { createHash } from "node:crypto";
+import { Glob } from "bun";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
@@ -24,6 +26,7 @@ const scopeSampleSize = 40;
 const falseAlarmLabels = join(import.meta.dir, "false-alarms");
 const validationFile = join(import.meta.dir, "..", "..", "docs", "corrections", "grader-validation.md");
 const cleanSampleSize = 200;
+const evaluationSources = new Set(["evaluate.ts", "verification.ts", "corpus.ts"]);
 const frozenFile = join(import.meta.dir, "frozen.json");
 const FrozenSchema = z.object({ configSha256: z.string(), frozenAt: z.string() });
 
@@ -48,7 +51,7 @@ const repository = resolve(values.posthog);
 const config = await readConfig(values.config);
 const digest = await configDigest(values.config);
 if (split.data === "heldout") await refuseUnfrozen(digest);
-const store = new GradeStore(join(resolve(values.cache!), "reports", digest.slice(0, 12)));
+const store = new GradeStore(join(resolve(values.cache!), "reports", (await graderDigest(digest)).slice(0, 12)));
 const rows = await readCorpus();
 const cases = await correctionCases(repository, rows, split.data);
 const clean = cleanPullRequests(await readSlimPullRequests(resolve(values.work!)), rows, split.data, cleanSampleSize, `100:${split.data}:clean`);
@@ -152,4 +155,11 @@ async function refuseUnfrozen(digest: string): Promise<void> {
     console.error(`The held-out set runs only with the frozen config: config.json hashes to ${digest}, frozen.json records ${frozen.configSha256 || "nothing"}.`);
     process.exit(1);
   }
+}
+
+async function graderDigest(configSha256: string): Promise<string> {
+  const hash = createHash("sha256").update(configSha256);
+  const sources = await Array.fromAsync(new Glob("{*.ts,detectors/*.ts}").scan({ cwd: import.meta.dir }));
+  for (const source of sources.filter((source) => !evaluationSources.has(source)).sort()) hash.update(source).update(await Bun.file(join(import.meta.dir, source)).text());
+  return hash.digest("hex");
 }

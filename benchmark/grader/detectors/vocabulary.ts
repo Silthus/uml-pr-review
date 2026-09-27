@@ -21,7 +21,7 @@ export const vocabulary: Detector = async (context) => {
   return difference(violationsOn("before"), violationsOn("after"), renamesOf(context.change));
 };
 
-export async function readTermFiles(directory: string): Promise<TermFile[]> {
+async function readTermFiles(directory: string): Promise<TermFile[]> {
   const files: TermFile[] = [];
   for await (const path of new Glob("*/rules.json").scan({ cwd: directory })) {
     const rules = HarvestedRulesSchema.parse(await Bun.file(join(directory, path)).json());
@@ -30,7 +30,7 @@ export async function readTermFiles(directory: string): Promise<TermFile[]> {
   return files;
 }
 
-export function termViolations(version: FileVersion, termFiles: TermFile[]): Violation[] {
+function termViolations(version: FileVersion, termFiles: TermFile[]): Violation[] {
   if (!vocabularyFiles.test(version.path)) return [];
   const terms = termFiles.filter(({ scopes }) => scopes.some((scope) => version.path.startsWith(scope))).flatMap(({ avoid }) => avoid);
   if (terms.length === 0) return [];

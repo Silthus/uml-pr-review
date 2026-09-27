@@ -3,8 +3,8 @@ import { join } from "node:path";
 import type { Split } from "../corrections/comments.ts";
 import { corpusRowSchema, type CorpusRow } from "../corrections/corpus.ts";
 
-export const corpusFile = join(import.meta.dir, "..", "..", "docs", "corrections", "corpus.jsonl");
-export const heldOutDigestFile = join(import.meta.dir, "..", "..", "docs", "corrections", "heldout.sha256");
+const corpusFile = join(import.meta.dir, "..", "..", "docs", "corrections", "corpus.jsonl");
+const heldOutDigestFile = join(import.meta.dir, "..", "..", "docs", "corrections", "heldout.sha256");
 
 export type IsolatedFix = CorpusRow & { commentCommit: string; before: string; fix: string };
 

@@ -1,6 +1,6 @@
 import { subtypes } from "../../corrections/labels.ts";
 import type { DetectorName } from "../violations.ts";
-import type { FalseAlarmLabel, Flag } from "./false-alarms.ts";
+import { judgedFlagsPerPullRequest, type FalseAlarmLabel, type Flag } from "./false-alarms.ts";
 import { bySubtype, matchedLineThreshold, outcomeOf, percent, productionFileFlags, rate, type Rate, type ScoredCase } from "./metrics.ts";
 import { movedAsAsked, scopeMoveThreshold, type ScopeResult } from "./scope-index.ts";
 import type { StoredGrade } from "./store.ts";
@@ -82,10 +82,11 @@ export function validationReport(input: ValidationInput): string {
     "",
     "### False alarms",
     "",
-    `A seeded sample of ${heldOut.clean.length} held-out pull requests without any correction. The grader flagged ${pullRequestsFlagged} of them. Up to ${5} flags per pull request (${input.flags.length} in all) went to fresh Opus judges, who saw the flag and the code but not the grade, the weights, or any catch numbers.`,
+    `A seeded sample of ${heldOut.clean.length} held-out pull requests without any correction. The grader flagged ${pullRequestsFlagged} of them. Up to ${judgedFlagsPerPullRequest} flags per pull request (${input.flags.length} in all) went to fresh Opus judges, who saw the flag and the code but not the grade, the weights, or any catch numbers.`,
     "",
     `- Judged: ${verdicts.length}. A real problem: ${problem}. Not a problem: ${notProblem}. Unsure: ${verdicts.length - problem - notProblem}.`,
     `- **False-alarm rate: ${percent({ hits: notProblem, total: problem + notProblem })}** of decided flags (${percent({ hits: notProblem, total: verdicts.length })} counting unsure as not a false alarm).`,
+    `- Pull requests with at least one flag judged not a problem: ${new Set(verdicts.filter(({ verdict }) => verdict === "not-a-problem").map(({ id }) => id.split(":")[0])).size} of ${heldOut.clean.length}.`,
     ...falseAlarmsByDetector(input.flags, verdicts),
     "",
     "### Old scope index",

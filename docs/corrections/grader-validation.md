@@ -14,15 +14,15 @@ VERDICT_PLACEHOLDER
 
 ## Detectors
 
-Kept, in the frozen [`config.json`](../../benchmark/grader/config.json):
+Kept, in the frozen [`config.json`](../../benchmark/grader/config.json). "Production" means Python, TypeScript, JavaScript, or Rust outside tests, migrations, fixtures, generated code, and stories.
 
 | Detector | What counts as one violation | Weight |
 | --- | --- | --- |
-| cycles | An import from a changed file that closes a cycle of at most 4 files. It counts static, re-export, require, and function-local imports, and skips type-only, dynamic, and test imports. It uses the indexer graph of both trees. | 3 |
-| facade | An import into another product's `backend/` that is not its `facade/` or `routes.py` (the #65 and #77 rule, `isFacadeBypass`). Test files are exempt. | 5 |
-| layering | A rule from `products/architecture.md` that a machine can check (list below), or the kea rule from the development corrections. | 3 |
+| facade | An import into another product's `backend/` that is not its `facade/` or `routes.py` (the #65 and #77 rule, `isFacadeBypass`), from the indexer graph. Test files are exempt. | 5 |
+| layering | A rule from `products/architecture.md` that a machine can check, or the kea rule from the development corrections (list below). | 3 |
 | complexity | A function in a changed file over CCN 10, over CCN 20, or over 60 lines of code (lizard), matched by name before and after. The report also lists every touched function with its CCN and NLOC before and after. | 2 |
-| duplication | A block of at least 3 winnowed fingerprints (25-token windows, window 20, blocks joined across gaps of up to 4 lines) that also occurs in another production file anywhere in the repository, or twice in the same file. Fingerprints found in more than 3 files are boilerplate and are skipped. | 1 |
+| reuse | A new top-level declaration whose name, ignoring case and `_`, `$`, and `-`, is already declared in one or two other production files of the same language anywhere in the repository (at least 8 characters; a name declared in three or more places is a convention). It also flags a raw `<button>`, `<input>`, `<select>`, or `<textarea>` in a frontend component outside `lemon-ui/`. | 2 |
+| duplication | A block of at least 4 winnowed fingerprints (25-token windows, winnowing window 20, joined across gaps of up to 4 lines) that also occurs in one or two other production files anywhere in the repository, or twice in the same file. A fingerprint found in more places is boilerplate. | 1 |
 
 Layering rules that are checked:
 - `presentation/` imports only its own `facade/` and `presentation/`.
@@ -30,7 +30,7 @@ Layering rules that are checked:
 - A facade imports neither its `presentation/` nor DRF.
 - `management/commands/` and `tasks/` do not import `models` or `logic`.
 - `facade/contracts.py` imports neither models, Django, nor DRF.
-- No `apps.get_model(...)` in production Python outside migrations.
+- No `apps.get_model(...)` in production Python.
 - A React component under `frontend/src` or `products/*/frontend` does not add `useState`, `useEffect`, `useMemo`, `useCallback`, or `useReducer`. This rule comes from the development layer corrections: 14 of the 98 isolable ones ask to move component state, effects, or derivation into kea logic.
 
 Layering rules that are not implemented, because a machine cannot decide them from the code:
@@ -43,9 +43,15 @@ Layering rules that are not implemented, because a machine cannot decide them fr
 - the watched-models allowance and its instance-free shapes;
 - the direction rule between products.
 
-Dropped, because they catch nothing on the development set:
-- **reuse** (a new exported or top-level symbol that shares its name with exactly one symbol in a shared location, plus clones of shared-location code). It caught 1 of the 101 verified development reuse corrections. Reuse fixes import from all over the repository, not from `frontend/src/lib`, `common/`, or `packages/`: in the development reuse fixes, no shared root stands out among the added imports. The code stays, off by default.
-- **vocabulary** (terms to avoid, from a per-product term file; today only `docs/harvest/workflows/rules.json` exists). It caught 0 of the 45 naming corrections and flagged 1.8% of clean files, mostly `hogflow`, which is the sanctioned internal code name. The generic mechanism stays, off by default.
+Dropped. The code stays, off by default:
+- **cycles** (an import from a changed file that closes an import cycle). It caught none of the development dependency or facade-boundary corrections in any form I tried, so it is dropped under the ticket's rule.
+  - As strongly connected components, PostHog has components of about 1,000 and 1,900 files, so "on a cycle" means "inside the tangle".
+  - As cycles of at most 4 files, counting function-local imports, it flags 2.8% of clean files for 2.4% catches. Django code uses function-local imports on purpose to break cycles.
+  - Without them, cycles of at most 4 files catch nothing at all.
+  - Cycles of at most 8 files catch 11 of 420 verified fixes at a 1.1% flag rate. The size baseline at that rate catches 18.
+  - The fixture test and #95's cycle (`df69d9b`, reported as removed) show the detector works.
+- **vocabulary** (terms to avoid, from a per-product term file; today only `docs/harvest/workflows/rules.json` exists). It caught none of the 45 isolable development naming corrections and flagged 1.8% of clean files, mostly `hogflow`, which is the sanctioned internal code name. The generic mechanism stays.
+- **Shared-location reuse only**, the ticket's first reading of reuse: names and clones matched against `frontend/src/lib`, `common/`, and `packages/` only. It caught 1 of 101 verified development reuse corrections. Reuse fixes import from all over the repository, not from those roots, so the kept reuse detector matches names repository-wide, and the duplication detector covers clones from anywhere.
 
 ## Method
 
@@ -77,7 +83,20 @@ Verified development fixes against 200 clean development pull requests, frozen c
 <!-- development:start -->
 <!-- development:end -->
 
-TUNING_PLACEHOLDER
+Every configuration tried, on the 420 verified development fixes and the same 200 clean development pull requests. A flag counts from any enabled detector.
+
+| Configuration | Flags clean files | Catches | Size baseline at that rate |
+| --- | --- | --- | --- |
+| First draft: all 7 detectors, clones of 2+ fingerprints in up to 10 files, cycles as components of up to 50 files, reuse against shared roots only | 26.8% | 170 (40.5%) | 208 (49.5%) |
+| Clones 3+ in up to 3 files, cycles as unbounded components, functions over 60 lines, vocabulary off | 19.2% | 170 (40.5%) | 151 (36.0%) |
+| Clones 6+ in up to 3 files, components up to 500 files, functions over 100 lines | 11.8% | 121 (28.8%) | 98 (23.3%) |
+| Cycles of up to 4 files with function-local imports, clones 3+ in up to 3 files | 19.8% | 159 (37.9%) | 151 (36.0%) |
+| Cycles of up to 8 files without them, clones 4+ in up to 2 files, repository-wide name twins by language, generated code and stories excluded | 17.7% | 163 (38.8%) | 142 (33.8%) |
+| **Frozen:** the same, without cycles | **16.9%** | **156 (37.1%)** | **131 (31.2%)** |
+
+Two more variants (twins of 8+ characters in up to 2 files against 12+ in 1 file, clones 3+/3 against 4+/2) were stopped at about 80% when the cross-language twins showed up. Their partial numbers chose the clone and cycle-length settings of the fifth row.
+
+The per-detector table above compares each detector alone with the size baseline at that detector's own flag rate. Facade, complexity, and duplication beat it. Reuse ties it. Layering is slightly below it (14 against 16 fixes), but it catches its own sub-type (5 of 79 layer corrections), so it stays under the ticket's rule.
 
 <!-- held-out:start -->
 <!-- held-out:end -->

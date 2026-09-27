@@ -30,7 +30,8 @@ const product: Files = {
 
 const busyFunction = `def busy(value):\n${Array.from({ length: 24 }, (_, index) => `    if value == ${index}:\n        return ${index}\n`).join("")}    return -1\n`;
 const duplicatedBlock = `def first(rows):\n${Array.from({ length: 12 }, (_, index) => `    rows.append({"name": "row", "index": ${index}, "enabled": True})\n`).join("")}    return rows\n`;
-const helpersImporting = (line: string) => `${line}\n\n\ndef double(value):\n    return value * 2\n`;
+const facadeFunctions = (names: string[]) => names.map((name) => `def ${name}(value):\n    return value\n`).join("\n\n");
+const helpersImporting =(line: string) => `${line}\n\n\ndef double(value):\n    return value * 2\n`;
 
 let repository: TemporaryRepository;
 let base: string;
@@ -99,7 +100,7 @@ describe("architecture", () => {
   );
 
   test(
-    "routing an inbound cross-product import through the facade raises the facade share",
+    "routing an inbound cross-product import through the facade removes its bypass and raises the architecture score",
     async () => {
       const before = await indexAt(base);
       const after = await indexAt(await variant({ "products/b/backend/consumer.py": "from products.a.backend.facade.api import run\n\n\ndef consume():\n    return run(2)\n" }));
@@ -117,7 +118,7 @@ describe("architecture", () => {
   );
 
   test(
-    "an outbound import counts against the facade share unless it goes through the other product's facade",
+    "an outbound import is a bypass unless it goes through the other product's facade",
     async () => {
       const bypassing = await indexAt(await variant({ "products/a/backend/helpers.py": helpersImporting("from products.b.backend.consumer import consume") }));
       const throughFacade = await indexAt(await variant({ "products/a/backend/helpers.py": helpersImporting("from products.b.backend.facade.api import lookup") }));
@@ -125,6 +126,25 @@ describe("architecture", () => {
       expect(bypassing.dimensions.architecture.facade).toMatchObject({ crossings: 2, share: 0, outbound: { crossings: 1, bypasses: 1 } });
       expect(throughFacade.dimensions.architecture.facade).toMatchObject({ crossings: 2, share: 0.5, outbound: { crossings: 1, bypasses: 0 } });
       expect(throughFacade.dimensions.architecture.score).toBeGreaterThan(bypassing.dimensions.architecture.score!);
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "every facade bypass costs the same, however many bypasses and compliant crossings the scope already has",
+    async () => {
+      const bypass = (file: string) => ({ [`products/b/backend/${file}.py`]: "from products.a.backend.helpers import double\n\n\ndef use():\n    return double(2)\n" });
+      const compliant = (file: string) => ({ [`products/b/backend/${file}.py`]: "from products.a.backend.facade.api import run\n\n\ndef use():\n    return run(2)\n" });
+      const none = await indexAt(await variant({ "products/b/backend/consumer.py": null }));
+      const one = await indexAt(base);
+      const two = await indexAt(await variant(bypass("second")));
+      const twoAmongCompliant = await indexAt(await variant({ ...bypass("second"), ...compliant("third"), ...compliant("fourth") }));
+      const architectureScores = [none, one, two].map(({ dimensions }) => dimensions.architecture.score!);
+
+      expect([none, one, two].map(({ dimensions }) => dimensions.architecture.measures.facadeBypasses!.value)).toEqual([0, 1, 2]);
+      expect(architectureScores[0]! - architectureScores[1]!).toBeGreaterThan(0);
+      expect(architectureScores[1]! - architectureScores[2]!).toBeCloseTo(architectureScores[0]! - architectureScores[1]!, 10);
+      expect(twoAmongCompliant.dimensions.architecture.score).toBe(two.dimensions.architecture.score);
     },
     toolTimeoutMs,
   );
@@ -224,7 +244,54 @@ describe("tests", () => {
       expect(before.dimensions.tests.facadeCoverage).toEqual({ functions: 2, covered: 1, share: 0.5, uncovered: ["products/a/backend/facade/api.py:stop"] });
       expect(mentionOnly.dimensions.tests.facadeCoverage.covered).toBe(1);
       expect(imported.dimensions.tests.facadeCoverage).toMatchObject({ functions: 2, covered: 2, uncovered: [] });
-      expect(imported.dimensions.tests.score).toBeGreaterThan(before.dimensions.tests.score!);
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "facade coverage is reported but unscored below ten facade functions, so growing a small facade never lowers the score",
+    async () => {
+      const small = await indexAt(base);
+      const grown = await indexAt(await variant({ "products/a/backend/facade/more.py": facadeFunctions(["pause", "resume", "retry"]) }));
+      const withoutFacade = await indexAt(base, "products/a/frontend");
+
+      expect(small.dimensions.tests.measures.facadeCoverage).toEqual({ value: 0.5, score: null, best: 1, worst: 0 });
+      expect(grown.dimensions.tests.facadeCoverage).toMatchObject({ functions: 5, covered: 1 });
+      for (const index of [small, grown]) expect(index.dimensions.tests.score).toBe(index.dimensions.tests.measures.testRatio!.score);
+      expect(withoutFacade.dimensions.tests.measures.facadeCoverage).toEqual({ value: null, score: null, best: 1, worst: 0 });
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "the test ratio moves the composite at a ninth of the weight, since the tests dimension counts 10 of 90",
+    async () => {
+      const before = await indexAt(base);
+      const moreTests = await indexAt(await variant({ "products/a/backend/test/test_more.py": "def test_more():\n    assert True\n" }));
+      const change = (read: (index: CoherenceIndex) => number) => read(moreTests) - read(before);
+
+      expect(change(({ dimensions }) => dimensions.tests.score!)).toBeGreaterThan(0);
+      expect(change(({ composite }) => composite.score)).toBeCloseTo(change(({ dimensions }) => dimensions.tests.score!) / 9, 10);
+    },
+    toolTimeoutMs,
+  );
+
+  test(
+    "from ten facade functions on, facade coverage is scored, and adding a tested facade function raises it",
+    async () => {
+      const tenFunctions = { "products/a/backend/facade/more.py": facadeFunctions(Array.from({ length: 8 }, (_, index) => `step_${index}`)) };
+      const ten = await indexAt(await variant(tenFunctions));
+      const elevenTested = await indexAt(
+        await variant({
+          ...tenFunctions,
+          "products/a/backend/facade/extra.py": facadeFunctions(["extra"]),
+          "products/a/backend/test/test_extra.py": "from products.a.backend.facade.extra import extra\n\n\ndef test_extra():\n    assert extra(1) == 1\n",
+        }),
+      );
+
+      expect(ten.dimensions.tests.measures.facadeCoverage).toMatchObject({ value: 0.1, score: 10 });
+      expect(elevenTested.dimensions.tests.facadeCoverage).toMatchObject({ functions: 11, covered: 2 });
+      expect(elevenTested.dimensions.tests.measures.facadeCoverage!.score).toBeGreaterThan(ten.dimensions.tests.measures.facadeCoverage!.score!);
     },
     toolTimeoutMs,
   );

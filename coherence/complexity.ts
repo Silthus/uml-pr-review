@@ -1,6 +1,6 @@
 import { parseLizardCsv } from "../benchmark/lib/static-quality.ts";
 import type { BlobCache } from "./blob-cache.ts";
-import type { Complexity } from "./contract.ts";
+import type { Complexity, Measure } from "./contract.ts";
 import { compare, driverLimit } from "./drivers.ts";
 import type { ScopeFile } from "./scope.ts";
 import { anchors, dimensionScore, measure, percentile, ratio } from "./score.ts";
@@ -26,23 +26,28 @@ export async function measureComplexity(files: ScopeFile[], toolbox: Toolbox, ca
     overTwenty,
     p90Nloc: percentile(functions.map(({ nloc }) => nloc), 0.9),
   };
-  const p90Lines = percentile(files.map(({ lines }) => lines), 0.9);
-  const measures = {
-    p90Ccn: measure(functions.length === 0 ? null : summary.p90Ccn, anchors.p90Ccn),
-    shareOverTen: measure(ratio(overTen, functions.length), anchors.shareOverTen),
-    shareOverTwenty: measure(ratio(overTwenty, functions.length), anchors.shareOverTwenty),
-    p90FunctionNloc: measure(functions.length === 0 ? null : summary.p90Nloc, anchors.p90FunctionNloc),
-    p90FileLines: measure(p90Lines, anchors.p90FileLines),
-  };
+  const fileSummary = { count: files.length, p90Lines: percentile(files.map(({ lines }) => lines), 0.9) };
+  const measures = complexityMeasures({ functions: summary, files: fileSummary });
   return {
     score: dimensionScore(measures),
     measures,
     functions: summary,
-    files: { count: files.length, p90Lines },
+    files: fileSummary,
     drivers: functions
       .sort((a, b) => b.ccn - a.ccn || b.nloc - a.nloc || compare(a.file, b.file) || compare(a.function, b.function))
       .slice(0, driverLimit)
       .map(({ file, function: name, ccn, nloc }) => ({ file, function: name, ccn, nloc })),
+  };
+}
+
+export function complexityMeasures({ functions, files }: Pick<Complexity, "functions" | "files">): Record<string, Measure> {
+  const measured = functions.count > 0;
+  return {
+    p90Ccn: measure(measured ? functions.p90Ccn : null, anchors.p90Ccn),
+    shareOverTen: measure(ratio(functions.overTen, functions.count), anchors.shareOverTen),
+    shareOverTwenty: measure(ratio(functions.overTwenty, functions.count), anchors.shareOverTwenty),
+    p90FunctionNloc: measure(measured ? functions.p90Nloc : null, anchors.p90FunctionNloc),
+    p90FileLines: measure(files.p90Lines, anchors.p90FileLines),
   };
 }
 

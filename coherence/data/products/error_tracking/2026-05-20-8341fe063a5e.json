@@ -19,35 +19,35 @@
       "generatedLines": 0
     },
     "composite": {
-      "score": 65.9,
+      "score": 76.72477213403879,
       "weights": {
         "architecture": 35,
         "complexity": 25,
         "smells": 20,
-        "tests": 20
+        "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 68.7,
+        "score": 86.37222222222222,
         "measures": {
           "propagationCost": {
             "value": 0.0286,
-            "score": 92.9,
+            "score": 92.85,
             "best": 0,
             "worst": 0.4
           },
           "cycleShare": {
             "value": 0.0262,
-            "score": 91.3,
+            "score": 91.26666666666667,
             "best": 0,
             "worst": 0.3
           },
-          "facadeShare": {
-            "value": 0.2188,
-            "score": 21.9,
-            "best": 1,
-            "worst": 0
+          "facadeBypasses": {
+            "value": 25,
+            "score": 75,
+            "best": 0,
+            "worst": 100
           }
         },
         "propagationCost": {
@@ -588,7 +588,7 @@
         ]
       },
       "complexity": {
-        "score": 81.6,
+        "score": 81.55142857142857,
         "measures": {
           "p90Ccn": {
             "value": 5,
@@ -616,7 +616,7 @@
           },
           "p90FileLines": {
             "value": 262,
-            "score": 76.9,
+            "score": 76.85714285714286,
             "best": 100,
             "worst": 800
           }
@@ -697,17 +697,17 @@
         ]
       },
       "smells": {
-        "score": 77.2,
+        "score": 77.19829999999999,
         "measures": {
           "ruffPerKloc": {
             "value": 2.0465,
-            "score": 79.5,
+            "score": 79.535,
             "best": 0,
             "worst": 10
           },
           "oxlintPerKloc": {
             "value": 0.1741,
-            "score": 96.5,
+            "score": 96.51799999999999,
             "best": 0,
             "worst": 5
           },
@@ -719,13 +719,13 @@
           },
           "markersPerKloc": {
             "value": 0.2592,
-            "score": 87,
+            "score": 87.04,
             "best": 0,
             "worst": 2
           },
           "typeEscapesPerKloc": {
             "value": 2.7403,
-            "score": 86.3,
+            "score": 86.29849999999999,
             "best": 0,
             "worst": 20
           }
@@ -931,11 +931,11 @@
         }
       },
       "tests": {
-        "score": 30,
+        "score": 29.945,
         "measures": {
           "testRatio": {
             "value": 0.2239,
-            "score": 22.4,
+            "score": 22.39,
             "best": 1,
             "worst": 0
           },

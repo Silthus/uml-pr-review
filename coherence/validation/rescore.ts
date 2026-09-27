@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { CoherenceReportSchema, type CoherenceIndex, type Measure } from "../contract.ts";
-import { anchoredScore, dimensionWeights } from "../score.ts";
+import { anchoredScore } from "../score.ts";
 import { dimensions, type Dimension } from "./changes.ts";
 
 export type MeasureRule = (dimension: Dimension, name: string, measure: Measure, index: CoherenceIndex) => number | null;
@@ -36,7 +36,7 @@ export function compositeUnder(index: CoherenceIndex, rule: MeasureRule): number
       const score = rule(dimension, name, measure, index);
       return score === null ? [] : [score];
     });
-    return scores.length === 0 ? [] : [{ weight: dimensionWeights[dimension], score: scores.reduce((sum, score) => sum + score, 0) / scores.length }];
+    return scores.length === 0 ? [] : [{ weight: index.composite.weights[dimension], score: scores.reduce((sum, score) => sum + score, 0) / scores.length }];
   });
   const weight = scored.reduce((sum, { weight: each }) => sum + each, 0);
   return scored.reduce((sum, { weight: each, score }) => sum + each * score, 0) / weight;

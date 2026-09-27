@@ -36,7 +36,7 @@ export function changesBetween(before: CoherenceIndex, after: CoherenceIndex): C
   const inbound = now.architecture.facade.inbound.crossings - was.architecture.facade.inbound.crossings;
   const inboundBypasses = now.architecture.facade.inbound.bypasses - was.architecture.facade.inbound.bypasses;
   return {
-    delta: Object.fromEntries(Object.keys(scoresAfter).map((key) => [key, difference(scoresBefore[key as keyof Scores], scoresAfter[key as keyof Scores])])) as Scores,
+    delta: Object.fromEntries(Object.keys(scoresAfter).map((key) => [key, scoresAfter[key as keyof Scores] - scoresBefore[key as keyof Scores]])) as Scores,
     measures: measureChanges(before, after),
     complexity: {
       ...setChange(was.complexity.drivers.map(complexFunction), now.complexity.drivers.map(complexFunction), "entered", "left"),
@@ -71,7 +71,7 @@ function measureChanges(before: CoherenceIndex, after: CoherenceIndex): Changes[
     dimensions.flatMap((dimension) =>
       Object.entries(after.dimensions[dimension].measures).map(([name, measure]) => {
         const previous = before.dimensions[dimension].measures[name]!;
-        return [`${dimension}.${name}`, { before: previous.value, after: measure.value, scoreDelta: difference(previous.score ?? 0, measure.score ?? 0) }];
+        return [`${dimension}.${name}`, { before: previous.value, after: measure.value, scoreDelta: (measure.score ?? 0) - (previous.score ?? 0) }];
       }),
     ),
   );
@@ -99,6 +99,6 @@ function bypass({ from, to, direction }: { from: string; to: string; direction: 
   return `${direction} ${from} -> ${to}`;
 }
 
-function difference(before: number, after: number, digits = 1): number {
+function difference(before: number, after: number, digits: number): number {
   return roundTo(after - before, digits);
 }

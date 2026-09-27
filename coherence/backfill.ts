@@ -6,6 +6,7 @@ import { z } from "zod";
 import { git } from "../src/git.ts";
 import { CoherenceReportSchema, type CoherenceIndex, type CoherenceReport } from "./contract.ts";
 import { measureCoherence } from "./measure.ts";
+import { rescoreReport } from "./rescore.ts";
 import { percentile, roundTo } from "./score.ts";
 
 const ScoresSchema = z.object({ composite: z.number(), architecture: z.number(), complexity: z.number(), smells: z.number(), tests: z.number() });
@@ -91,7 +92,7 @@ function scoresOf(index: CoherenceIndex): Scores {
 }
 
 function delta(before: Scores, after: Scores): Scores {
-  return mapScores((key) => roundTo(after[key] - before[key], 1));
+  return mapScores((key) => after[key] - before[key]);
 }
 
 function weekBoundaries(until: Date, weeks: number): Date[] {
@@ -213,7 +214,11 @@ class ScoreStore {
 
   private async readStored(file: string): Promise<CoherenceReport | null> {
     const text = await readFile(join(this.dataDir, file), "utf8").catch(() => null);
-    return text === null ? null : CoherenceReportSchema.parse(JSON.parse(text));
+    if (text === null) return null;
+    const report = rescoreReport(CoherenceReportSchema.parse(JSON.parse(text)));
+    const rescored = JSON.stringify(report, null, 2);
+    if (rescored !== text) await writeFile(join(this.dataDir, file), rescored);
+    return report;
   }
 
   private async measure(scope: string, commit: Commit, file: string): Promise<CoherenceReport> {
@@ -221,7 +226,7 @@ class ScoreStore {
     await mkdir(join(this.dataDir, scope), { recursive: true });
     await writeFile(join(this.dataDir, file), JSON.stringify(report, null, 2));
     this.measuredFiles.add(file);
-    this.log(`${scope} ${commit.date.slice(0, 10)} ${commit.commit.slice(0, 12)} composite ${report.index.composite.score} in ${(report.timing.milliseconds / 1000).toFixed(1)} s`);
+    this.log(`${scope} ${commit.date.slice(0, 10)} ${commit.commit.slice(0, 12)} composite ${report.index.composite.score.toFixed(1)} in ${(report.timing.milliseconds / 1000).toFixed(1)} s`);
     return report;
   }
 }

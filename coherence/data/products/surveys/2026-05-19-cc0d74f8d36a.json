@@ -19,35 +19,35 @@
       "generatedLines": 0
     },
     "composite": {
-      "score": 40.1,
+      "score": 52.945901234567906,
       "weights": {
         "architecture": 35,
         "complexity": 25,
         "smells": 20,
-        "tests": 20
+        "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 43.9,
+        "score": 65.53888888888889,
         "measures": {
           "propagationCost": {
             "value": 0.1402,
-            "score": 65,
+            "score": 64.95,
             "best": 0,
             "worst": 0.4
           },
           "cycleShare": {
             "value": 0.1,
-            "score": 66.7,
+            "score": 66.66666666666666,
             "best": 0,
             "worst": 0.3
           },
-          "facadeShare": {
-            "value": 0,
-            "score": 0,
-            "best": 1,
-            "worst": 0
+          "facadeBypasses": {
+            "value": 35,
+            "score": 65,
+            "best": 0,
+            "worst": 100
           }
         },
         "propagationCost": {
@@ -347,7 +347,7 @@
         ]
       },
       "complexity": {
-        "score": 31.8,
+        "score": 31.810000000000002,
         "measures": {
           "p90Ccn": {
             "value": 10,
@@ -357,7 +357,7 @@
           },
           "shareOverTen": {
             "value": 0.0879,
-            "score": 56.1,
+            "score": 56.05,
             "best": 0,
             "worst": 0.2
           },
@@ -456,11 +456,11 @@
         ]
       },
       "smells": {
-        "score": 47.2,
+        "score": 47.15599999999999,
         "measures": {
           "ruffPerKloc": {
             "value": 3.6936,
-            "score": 63.1,
+            "score": 63.064,
             "best": 0,
             "worst": 10
           },
@@ -484,7 +484,7 @@
           },
           "typeEscapesPerKloc": {
             "value": 5.4568,
-            "score": 72.7,
+            "score": 72.716,
             "best": 0,
             "worst": 20
           }
@@ -611,17 +611,17 @@
         }
       },
       "tests": {
-        "score": 36.7,
+        "score": 73.29,
         "measures": {
           "testRatio": {
             "value": 0.7329,
-            "score": 73.3,
+            "score": 73.29,
             "best": 1,
             "worst": 0
           },
           "facadeCoverage": {
-            "value": 0,
-            "score": 0,
+            "value": null,
+            "score": null,
             "best": 1,
             "worst": 0
           }

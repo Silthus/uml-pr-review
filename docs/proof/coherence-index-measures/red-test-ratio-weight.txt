@@ -1,0 +1,8 @@
+Expected: 1.586666666666666
+Received: 2.8559999999999803
+Expected precision: 10
+Expected difference: < 0.00000000005
+Received difference: 1.2693333333333143
+(fail) tests > the test ratio moves the composite at a ninth of the weight, since the tests dimension counts 10 of 90 [342.85ms]
+ 0 pass
+ 1 fail

@@ -8,7 +8,7 @@ import { compositeScore } from "../score.ts";
 const RawSchema = z.object({
   propagationCost: z.number(),
   cycleFiles: z.number().int(),
-  facadeShare: z.number().nullable(),
+  facadeBypasses: z.number().int(),
   p90Ccn: z.number(),
   shareOverTen: z.number().nullable(),
   p90Nloc: z.number(),
@@ -49,7 +49,7 @@ export async function scoreModules(
     const { index } = await measureCoherence({ repository, scope: path, commit });
     if (index.files.production < minimumFiles) continue;
     rows.push(moduleRow(index));
-    log(`${path} code ${rows.at(-1)!.code} (${index.files.production} files)`);
+    log(`${path} code ${rows.at(-1)!.code.toFixed(1)} (${index.files.production} files)`);
   }
   const breakdown = ModuleBreakdownSchema.parse({ scope, commit, rows: rows.sort((a, b) => a.code - b.code || a.path.localeCompare(b.path)) });
   await writeFile(file, JSON.stringify(breakdown, null, 2));
@@ -78,7 +78,7 @@ function moduleRow(index: CoherenceIndex): ModuleRow {
     raw: {
       propagationCost: architecture.propagationCost.value,
       cycleFiles: architecture.cycles.files.length,
-      facadeShare: architecture.facade.share,
+      facadeBypasses: architecture.facade.bypasses.length,
       p90Ccn: complexity.functions.p90Ccn,
       shareOverTen: complexity.measures.shareOverTen?.value ?? null,
       p90Nloc: complexity.functions.p90Nloc,

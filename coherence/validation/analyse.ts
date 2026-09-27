@@ -2,7 +2,8 @@
 import { writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { dimensionWeights, percentile, roundTo } from "../score.ts";
+import type { DimensionWeights } from "../contract.ts";
+import { percentile, roundTo } from "../score.ts";
 import type { Attribution } from "./attribute.ts";
 import { dimensions } from "./changes.ts";
 import { diffLocalDensity, DiffLocalRunSchema } from "./diff-local.ts";
@@ -15,6 +16,7 @@ type JudgeClass = "better" | "neutral" | "worse";
 type Row = Attribution & { exact: number; indexClass: IndexClass; sampleStratum: IndexClass; weight: number; judged: boolean; opus: Verdict | null; astra: Verdict | null; mean: number | null; variants: Record<string, number>; local: { score: number; density: number } };
 
 const repository = "https://github.com/PostHog/posthog";
+const studyWeights: DimensionWeights = { architecture: 35, complexity: 25, smells: 20, tests: 20 };
 const measureNames = ["architecture.propagationCost", "architecture.cycleShare", "architecture.facadeShare", "complexity.p90Ccn", "complexity.shareOverTen", "complexity.shareOverTwenty", "complexity.p90FunctionNloc", "complexity.p90FileLines", "smells.ruffPerKloc", "smells.oxlintPerKloc", "smells.duplicationPercentage", "smells.markersPerKloc", "smells.typeEscapesPerKloc", "tests.testRatio", "tests.facadeCoverage"];
 const measuresPerDimension = Object.fromEntries(dimensions.map((dimension) => [dimension, measureNames.filter((name) => name.startsWith(`${dimension}.`)).length]));
 
@@ -61,8 +63,8 @@ function sign(value: number): string {
 }
 
 function contribution(row: Attribution, measure: string): number {
-  const dimension = measure.split(".")[0] as keyof typeof dimensionWeights;
-  return (row.measures[measure]!.scoreDelta * dimensionWeights[dimension]) / 100 / measuresPerDimension[dimension]!;
+  const dimension = measure.split(".")[0] as keyof DimensionWeights;
+  return (row.measures[measure]!.scoreDelta * studyWeights[dimension]) / 100 / measuresPerDimension[dimension]!;
 }
 
 function driversOf(row: Attribution): string {

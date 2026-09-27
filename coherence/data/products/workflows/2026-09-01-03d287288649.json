@@ -19,21 +19,21 @@
       "generatedLines": 9894
     },
     "composite": {
-      "score": 58.6,
+      "score": 70.23122222222223,
       "weights": {
         "architecture": 35,
         "complexity": 25,
         "smells": 20,
-        "tests": 20
+        "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 56.9,
+        "score": 70,
         "measures": {
           "propagationCost": {
             "value": 0.0644,
-            "score": 83.9,
+            "score": 83.89999999999999,
             "best": 0,
             "worst": 0.4
           },
@@ -43,11 +43,11 @@
             "best": 0,
             "worst": 0.3
           },
-          "facadeShare": {
-            "value": 0.1071,
-            "score": 10.7,
-            "best": 1,
-            "worst": 0
+          "facadeBypasses": {
+            "value": 50,
+            "score": 50,
+            "best": 0,
+            "worst": 100
           }
         },
         "propagationCost": {
@@ -645,7 +645,7 @@
         ]
       },
       "complexity": {
-        "score": 70.9,
+        "score": 70.85999999999999,
         "measures": {
           "p90Ccn": {
             "value": 6,
@@ -754,17 +754,17 @@
         ]
       },
       "smells": {
-        "score": 77.4,
+        "score": 77.4055,
         "measures": {
           "ruffPerKloc": {
             "value": 3.4699,
-            "score": 65.3,
+            "score": 65.301,
             "best": 0,
             "worst": 10
           },
           "oxlintPerKloc": {
             "value": 0.2134,
-            "score": 95.7,
+            "score": 95.732,
             "best": 0,
             "worst": 5
           },
@@ -776,13 +776,13 @@
           },
           "markersPerKloc": {
             "value": 0.1805,
-            "score": 91,
+            "score": 90.97500000000001,
             "best": 0,
             "worst": 2
           },
           "typeEscapesPerKloc": {
             "value": 5.5961,
-            "score": 72,
+            "score": 72.01950000000001,
             "best": 0,
             "worst": 20
           }
@@ -996,17 +996,17 @@
         }
       },
       "tests": {
-        "score": 27.6,
+        "score": 55.120000000000005,
         "measures": {
           "testRatio": {
             "value": 0.5512,
-            "score": 55.1,
+            "score": 55.120000000000005,
             "best": 1,
             "worst": 0
           },
           "facadeCoverage": {
-            "value": 0,
-            "score": 0,
+            "value": null,
+            "score": null,
             "best": 1,
             "worst": 0
           }

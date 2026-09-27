@@ -5,8 +5,8 @@ import { BlobCache } from "./blob-cache.ts";
 import { measureComplexity } from "./complexity.ts";
 import { CoherenceReportSchema, type CoherenceReport } from "./contract.ts";
 import { readLadder } from "./ladder.ts";
+import { compositeOf } from "./rescore.ts";
 import { readScope, totalLines } from "./scope.ts";
-import { compositeScore, dimensionWeights } from "./score.ts";
 import { measureSmells } from "./smells.ts";
 import { measureTests } from "./tests.ts";
 import { toolVersions, withToolbox } from "./tools.ts";
@@ -39,10 +39,7 @@ export async function measureCoherence({ repository, scope: scopePath, commit, r
           testLines: totalLines(scope.tests),
           generatedLines: scope.production.reduce((total, { generatedLines }) => total + generatedLines, 0),
         },
-        composite: {
-          score: compositeScore({ architecture: architecture.score, complexity: complexity.score, smells: smells.score, tests: tests.score }),
-          weights: dimensionWeights,
-        },
+        composite: compositeOf({ architecture, complexity, smells, tests }),
         dimensions: { architecture, complexity, smells, tests, ladder: await readLadder(rules) },
       },
       timing: { milliseconds: Math.round(performance.now() - started), cache: cache.counts },

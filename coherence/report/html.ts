@@ -1,4 +1,5 @@
 import { scoreKeys, type Scores } from "../backfill.ts";
+import { dimensionWeights } from "../score.ts";
 import { escape, lineChart, sparkline, type ChartSeries } from "./charts.ts";
 import { score, signed } from "./format.ts";
 import { dimensions, labelOf, type MoverView, type ReportModel, type ScopeView } from "./model.ts";
@@ -82,10 +83,15 @@ function compositeSection(model: ReportModel): string {
 </section>`;
 }
 
+function compositeWeights(): string {
+  const weights = Object.entries(dimensionWeights).map(([dimension, weight]) => `${dimension} ${weight}`);
+  return `${weights.slice(0, -1).join(", ")}, and ${weights.at(-1)}`;
+}
+
 function dimensionSection(model: ReportModel): string {
   return `<section>
   <h2>Each dimension</h2>
-  <p class="note">The composite weights architecture 35, complexity 25, smells 20, and tests 20. Each chart keeps the full 0 to 100 axis so the products compare honestly.</p>
+  <p class="note">The composite weights ${compositeWeights()}. Each chart keeps the full 0 to 100 axis so the products compare honestly.</p>
   <div class="charts">${dimensions.map((dimension) => figure(model, `${capitalise(dimension)} score, 0 to 100`, dimension, 540, 240)).join("")}</div>
 </section>`;
 }
@@ -149,7 +155,7 @@ function modulesSection(model: ReportModel): string {
   <table class="modules">
     <thead><tr>
       <th>Module</th><th>Files</th><th>Code</th>
-      <th>Architecture<small>propagation cost · files on cycles · facade share</small></th>
+      <th>Architecture<small>propagation cost · files on cycles · facade bypasses</small></th>
       <th>Complexity<small>p90 CCN · functions over CCN 10 · p90 NLOC · p90 file lines</small></th>
       <th>Smells<small>ruff / KLOC · oxlint / KLOC · duplicated lines · markers / KLOC · type escapes / KLOC</small></th>
     </tr></thead>
@@ -162,13 +168,12 @@ function modulesSection(model: ReportModel): string {
 
 function moduleRow(module: ModuleRow, scope: string): string {
   const { raw, scores } = module;
-  const share = (value: number | null) => (value === null ? "no crossings" : `${(value * 100).toFixed(0)}%`);
   const perKloc = (value: number | null) => (value === null ? "—" : value.toFixed(1));
   return `<tr>
     <td class="module"><b>${escape(module.path.slice(scope.length + 1))}</b><small>${module.lines.toLocaleString("en-US")} lines</small></td>
     <td>${module.files}</td>
     <td><b>${module.code.toFixed(1)}</b></td>
-    <td><b>${score(scores.architecture)}</b><small>${raw.propagationCost.toFixed(3)} · ${raw.cycleFiles} · ${share(raw.facadeShare)}</small></td>
+    <td><b>${score(scores.architecture)}</b><small>${raw.propagationCost.toFixed(3)} · ${raw.cycleFiles} · ${raw.facadeBypasses}</small></td>
     <td><b>${score(scores.complexity)}</b><small>${raw.p90Ccn} · ${raw.shareOverTen === null ? "—" : `${(raw.shareOverTen * 100).toFixed(1)}%`} · ${raw.p90Nloc} · ${raw.p90FileLines}</small></td>
     <td><b>${score(scores.smells)}</b><small>${perKloc(raw.ruffPerKloc)} · ${perKloc(raw.oxlintPerKloc)} · ${raw.duplication.toFixed(1)}% · ${perKloc(raw.markersPerKloc)} · ${perKloc(raw.typeEscapesPerKloc)}</small></td>
   </tr>`;

@@ -24,6 +24,10 @@ export function codeComments(pullRequests: CollectedPullRequest[]): CorpusCommen
   );
 }
 
+export function collectedCommentIds(pullRequests: CollectedPullRequest[]): Set<string> {
+  return new Set(pullRequests.flatMap(({ number, reviewThreads }) => reviewThreads.nodes.flatMap(({ comments }) => comments.nodes.map(({ url }) => `gh:${number}:${url.match(/discussion_r(\d+)$/)?.[1] ?? url}`))));
+}
+
 export function tally(pullRequests: CollectedPullRequest[], comments: CorpusComment[]): CommentTally {
   return {
     pullRequests: pullRequests.length,

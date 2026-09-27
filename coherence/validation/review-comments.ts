@@ -12,7 +12,7 @@ export const ReviewCommentSchema = z.object({ id: z.string(), url: z.string(), a
 export type ReviewComment = z.infer<typeof ReviewCommentSchema>;
 
 const pullRequestNumber = /\(#(\d+)\)\s*$/;
-const automatedDisclaimer = /not written by a human/i;
+const automatedMarkers = [/not written by a human/i, /^\s*🤖/u, /^\s*AI reply:/i, /\b(?:posted|generated|written|drafted) (?:by|with) \[?claude\b/i, /\bagent-drafted\b/i, /\bAI-suggested\b/i];
 const classificationBatch = 100;
 const bodyLimit = 700;
 
@@ -32,9 +32,13 @@ async function cachedFeedback(file: string, numbers: number[]): Promise<PullRequ
 export function humanReviewComments(feedback: PullRequestFeedback[], scope: string, since: string): ReviewComment[] {
   return feedback.flatMap((pullRequest) =>
     reviewFeedback(pullRequest, { scopes: [scope], since }, new DropLedger())
-      .filter(({ isBot, byPullRequestAuthor, body }) => !isBot && !byPullRequestAuthor && !automatedDisclaimer.test(body))
+      .filter(({ isBot, byPullRequestAuthor, body }) => !isBot && !byPullRequestAuthor && !isSelfDeclaredAutomated(body))
       .map(({ id, url, author, path, line, body, at }) => ({ id, url, author, path, line, body, at, pr: pullRequest.number })),
   );
+}
+
+function isSelfDeclaredAutomated(body: string): boolean {
+  return automatedMarkers.some((marker) => marker.test(body));
 }
 
 export function classificationPacket(comments: ReviewComment[]): string {

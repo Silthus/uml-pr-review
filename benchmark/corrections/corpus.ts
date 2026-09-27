@@ -67,7 +67,7 @@ function rowOf(comment: CorpusComment, label: Confirmed, fix: Fix | undefined, v
     before: fix?.before ?? null,
     fix: fix?.fix ?? null,
     fixUrl: fix?.fix ? `${repositoryUrl}/pull/${comment.pr}/commits/${fix.fix}` : null,
-    isolable: fix?.isolable ?? false,
+    isolable: fix !== undefined && fix.fix !== null && fix.isolable,
     verified: verification?.addressed ?? null,
     split: comment.split,
   };

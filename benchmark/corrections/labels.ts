@@ -11,22 +11,42 @@ export const confirmationLabelSchema = z.union([
   z.object({ id: z.string(), architecture: z.literal(true), subtype: z.enum(subtypes), quote: z.string().min(1).max(200) }),
   z.object({ id: z.string(), architecture: z.literal(false), subtype: z.literal("none"), quote: z.literal("") }),
 ]);
-export const verificationLabelSchema = z.object({ id: z.string(), addressed: z.enum(["yes", "partly", "no", "unverifiable"]), note: z.string().max(200) });
+export const answers = ["yes", "partly", "no", "unverifiable"] as const;
+export const verificationLabelSchema = z.object({ id: z.string(), addressed: z.enum(answers), note: z.string().max(200) });
 
 export type FirstPassLabel = z.infer<typeof firstPassLabelSchema>;
 export type ConfirmationLabel = z.infer<typeof confirmationLabelSchema>;
 export type VerificationLabel = z.infer<typeof verificationLabelSchema>;
+export type Answer = (typeof answers)[number];
 
 export const labelStages = { firstPass: "first-pass", confirm: "confirm", recall: "recall", verification: "verification" } as const;
 
-export async function readLabels<T extends { id: string }>(labelsRoot: string, stage: string, schema: z.ZodType<T>): Promise<Map<string, T>> {
+type Resolve<T> = (kept: T, repeated: T) => T;
+
+export const keepAnyCandidate: Resolve<FirstPassLabel> = (kept, repeated) => (kept.candidate ? kept : repeated);
+
+export async function readLabels<T extends { id: string }>(labelsRoot: string, stage: string, schema: z.ZodType<T>, resolve: Resolve<T> = refuseConflicts): Promise<Map<string, T>> {
   const directory = join(labelsRoot, stage);
   await mkdir(directory, { recursive: true });
-  return new Map((await readJsonFiles(directory, schema)).map((label) => [label.id, label]));
+  const labels = new Map<string, T>();
+  for (const label of await readJsonFiles(directory, schema)) {
+    const kept = labels.get(label.id);
+    labels.set(label.id, kept === undefined ? label : resolve(kept, label));
+  }
+  return labels;
 }
 
-export function unlabelled<T extends { id: string }>(ids: readonly string[], labels: Map<string, unknown>): string[] {
+function refuseConflicts<T extends { id: string }>(kept: T, repeated: T): T {
+  if (JSON.stringify(kept) !== JSON.stringify(repeated)) throw new Error(`conflicting labels for ${kept.id}: ${JSON.stringify(kept)} and ${JSON.stringify(repeated)}`);
+  return kept;
+}
+
+export function unlabelled(ids: readonly string[], labels: Map<string, unknown>): string[] {
   return ids.filter((id) => !labels.has(id));
+}
+
+export function strays(labels: Map<string, unknown>, ids: ReadonlySet<string>): string[] {
+  return [...labels.keys()].filter((id) => !ids.has(id));
 }
 
 export type Estimate = { value: number; low: number; high: number };
@@ -35,6 +55,19 @@ export function recallEstimate({ confirmed, negatives, sampled, missed }: { conf
   const recallAt = (missRate: number) => confirmed / (confirmed + missRate * negatives);
   const interval = wilson(missed, sampled);
   return { value: recallAt(missed / sampled), low: recallAt(interval.high), high: recallAt(interval.low) };
+}
+
+export type Precision = { sampled: number; answers: Record<Answer, number>; strict: Estimate; lenient: Estimate };
+
+export function precision(given: readonly Answer[]): Precision {
+  const count = (answer: Answer) => given.filter((each) => each === answer).length;
+  const share = (successes: number): Estimate => ({ value: successes / given.length, ...wilson(successes, given.length) });
+  return {
+    sampled: given.length,
+    answers: { yes: count("yes"), partly: count("partly"), no: count("no"), unverifiable: count("unverifiable") },
+    strict: share(count("yes")),
+    lenient: share(count("yes") + count("partly")),
+  };
 }
 
 export function wilson(successes: number, trials: number, z = 1.96): { low: number; high: number } {

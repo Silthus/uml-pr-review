@@ -1,6 +1,6 @@
 import type { Split } from "./comments.ts";
 import type { CorpusRow } from "./corpus.ts";
-import { type Estimate, subtypes } from "./labels.ts";
+import { type Estimate, type Precision, subtypes } from "./labels.ts";
 
 export type ReportInput = {
   since: string;
@@ -12,7 +12,8 @@ export type ReportInput = {
   codeComments: Record<Split, number>;
   candidates: Record<Split, number>;
   recall: Estimate & { sampled: number; missed: number };
-  precision: Estimate & { sampled: number; answers: Record<"yes" | "partly" | "no" | "unverifiable", number> };
+  precision: Precision;
+  strayLabels: number;
   api: { queries: number; points: number };
   truncated: { threads: number; comments: number; commits: number };
   batches: Record<string, number>;
@@ -49,7 +50,7 @@ export function readme(input: ReportInput): string {
     "",
     "## Fix precision",
     "",
-    `Opus read the diffs of a seeded random sample of ${input.precision.sampled} isolable located fixes: ${input.precision.answers.yes} address the comment, ${input.precision.answers.partly} partly, ${input.precision.answers.no} do not, and ${input.precision.answers.unverifiable} cannot be told. Counting "yes" and "partly", the fix locator's precision is **${percent(input.precision.value)}** (95% Wilson interval ${percent(input.precision.low)} to ${percent(input.precision.high)}). The \`verified\` column carries the answer for the sampled rows and is empty for the rest.`,
+    `Opus read the diffs of a seeded random sample of ${input.precision.sampled} isolable located fixes from the development set: ${input.precision.answers.yes} address the comment, ${input.precision.answers.partly} partly, ${input.precision.answers.no} do not, and ${input.precision.answers.unverifiable} cannot be told. The fix locator's precision is **${percent(input.precision.strict.value)}** for full fixes (95% Wilson interval ${percent(input.precision.strict.low)} to ${percent(input.precision.strict.high)}) and **${percent(input.precision.lenient.value)}** counting partial fixes (${percent(input.precision.lenient.low)} to ${percent(input.precision.lenient.high)}). The \`verified\` column carries the answer for the sampled rows and is empty for the rest, including every held-out row.`,
     "",
     "## Method",
     "",
@@ -62,10 +63,10 @@ function countsTable(input: ReportInput): string {
   const column = (split: Split) => {
     const members = rows(split);
     const sampled = members.filter(({ verified }) => verified !== null);
-    return [input.pullRequests[split], input.codeComments[split], input.candidates[split], members.length, members.filter(({ fix }) => fix !== null).length, members.filter(({ isolable, fix }) => isolable && fix !== null).length, sampled.length, sampled.filter(({ verified }) => verified === "yes" || verified === "partly").length].map(String);
+    return [input.pullRequests[split], input.codeComments[split], input.candidates[split], members.length, members.filter(({ fix }) => fix !== null).length, members.filter(({ isolable, fix }) => isolable && fix !== null).length, sampled.length, sampled.filter(({ verified }) => verified === "yes").length, sampled.filter(({ verified }) => verified === "yes" || verified === "partly").length].map(String);
   };
   const [development, heldout] = [column("development"), column("heldout")];
-  const labels = ["merged PRs", "human comments on code (non-author, non-bot)", "first-pass candidates", "confirmed architecture corrections", "with a located fix commit", "isolable, with a fix", "fixes verified by reading the diff", "verified fixes that address the comment"];
+  const labels = ["merged PRs", "human comments on code (non-author, non-bot)", "first-pass candidates", "confirmed architecture corrections", "with a located fix commit", "isolable, with a fix", "fixes verified by reading the diff", "verified fixes that address the comment fully", "verified fixes that address it fully or partly"];
   return table(["", "development", "held-out", "total"], labels.map((label, index) => [label, development[index]!, heldout[index]!, String(Number(development[index]) + Number(heldout[index]))]));
 }
 
@@ -85,11 +86,11 @@ function rankedProducts(rows: CorpusRow[]): string[] {
 function method(input: ReportInput): string {
   return [
     `1. **Collect.** \`gh api graphql\` search, one UTC day per window, lists every merged PR with its files, base, head, and counts (${input.pullRequests.development + input.pullRequests.heldout} PRs). A second pass fetches review threads (up to 100 per PR, 10 comments each), review bodies, and commits with timestamps for the ${input.reviewedPullRequests} PRs that have review threads, sizing each connection to its count so a query costs what it returns. Every raw response is cached on disk by the hash of its query, and the client waits for the rate-limit reset when fewer than 400 points remain. The run took ${input.api.queries} queries and ${input.api.points} GraphQL points.`,
-    `2. **Filter.** Of ${input.inlineComments} inline comments, ${input.codeComments.development + input.codeComments.heldout} are from a human who is not the PR's author, are not a bot or a "not written by a human" QA-swarm comment, and carry at least 20 characters that are not an acknowledgement. Review bodies are dropped: they are not comments on code. The filter is \`humanReviewComments\` from \`coherence/validation/review-comments.ts\`, run over the whole repository.`,
-    `3. **Classify.** A Haiku first pass labels every comment in batches of 60 against \`benchmark/corrections/rubric.md\`, tuned for recall (${input.batches["first-pass"]} batches, one fresh sub-agent each, including re-runs for comments a batch skipped). Opus confirms every candidate in batches of 50 and assigns the sub-type and the quote, at most 20 words and 200 characters (${input.batches.confirm} batches). The exact prompts are in \`benchmark/corrections/prompts.md\`; the raw labels are in \`labels/\`.`,
+    `2. **Filter.** Of ${input.inlineComments} inline comments, ${input.codeComments.development + input.codeComments.heldout} are from a human who is not the PR's author, are not a bot, do not declare themselves AI-written (a leading 🤖, "AI reply:", "Agent-drafted", "AI-suggested", "posted by Claude", or the QA swarm's "not written by a human"), and carry at least 20 characters that are not an acknowledgement. Review bodies are dropped: they are not comments on code. The filter is \`humanReviewComments\` from \`coherence/validation/review-comments.ts\`, run over the whole repository.`,
+    `3. **Classify.** A Haiku first pass labels every comment in batches of 60 against \`benchmark/corrections/rubric.md\`, tuned for recall (${input.batches["first-pass"]} batches, one fresh sub-agent each, including re-runs for comments a batch skipped). Opus confirms every candidate in batches of 50 and assigns the sub-type and a verbatim quote of at most 200 characters, asked to stay within 20 words (${input.batches.confirm} batches). The exact prompts are in \`benchmark/corrections/prompts.md\`; the raw labels are in \`labels/\`, as written, including ${input.strayLabels} labels whose id a labeller mistyped and which match no collected comment, so they are ignored. A comment labelled twice by the first pass stays a candidate if either label says so; conflicting confirmations stop the run.`,
     "4. **Locate the fix.** PR heads are fetched over HTTPS into `refs/uml-pr-review/corpus/<n>` of a read-only PostHog clone. The fix is #95's rule (`locateFix`): the first non-merge PR commit after the comment that touches the commented file. A correction is isolable when a PR commit from before the comment still exists, so the fix is a separate commit and not a squashed or rebased whole. `before` is the fix's parent; `commentCommit` is the last PR commit before the comment.",
-    `5. **Verify.** A seeded sample of ${input.precision.sampled} isolable fixes is judged by Opus from the packet: the commit stat and the diff of the commented file (${input.batches.verification} batches of 10).`,
-    `6. **Split.** Rows from PRs merged before ${input.heldOutFrom.slice(0, 10)} are the development set; the rest are held out. \`heldout.sha256\` is the sha256 of the held-out rows exactly as they appear in \`corpus.jsonl\`, in order: \`grep '"split":"heldout"' corpus.jsonl | shasum -a 256\`.`,
+    `5. **Verify.** A seeded sample of ${input.precision.sampled} isolable development fixes is judged by Opus from the packet: the commit stat and the diff of the commented file (${input.batches.verification} batches of 10).`,
+    `6. **Split.** Rows from PRs merged before ${input.heldOutFrom.slice(0, 10)} are the development set; the rest are held out. The recall and verification samples come from the development set only, and both are drawn by ranking items on the sha256 of \`98:<comment id>\`, so a sample is stable when other items come or go. \`heldout.sha256\` is the sha256 of the held-out rows exactly as they appear in \`corpus.jsonl\`, in order: \`grep '"split":"heldout"' corpus.jsonl | shasum -a 256\`.`,
     "",
     `Limits: review threads beyond 100 per PR (${input.truncated.threads} PRs) and comments beyond 10 per thread (at most ${input.truncated.comments} threads) are not read; PRs with more than 100 commits (${input.truncated.commits}) are read to their first 100; a fix that lands only in another file, or after a force-push that rewrote the earlier commits, is not isolable or not found. The repository is public, so comment bodies and diffs stay in the uncommitted working directory; only links, quotes of at most 200 characters, and labels are committed.`,
   ].join("\n");

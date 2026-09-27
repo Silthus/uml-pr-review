@@ -1,12 +1,12 @@
 [
-  {"id": "gh:102106:4041977854", "addressed": "yes", "note": "Removes the setAccessControlsApply action and its afterMount call; accessControlsApply becomes a reducer whose default reads the flag from getAppContext."},
-  {"id": "gh:101362:4028813704", "addressed": "yes", "note": "pinned_connect_host now returns a target with host and tls_server_name; the source uses both directly and drops the unbracket_host import and string comparison."},
-  {"id": "gh:53643:3119283544", "addressed": "yes", "note": "Event::headers now takes the Context and returns CapturedEventHeaders; the custom Vec<(String,String)> header builder and its tests are deleted."},
-  {"id": "gh:67329:3545560091", "addressed": "yes", "note": "Adds an _expire_change_request helper (set EXPIRED, save, log, notify on commit) and both PENDING and stale-APPROVED branches call it with their message."},
-  {"id": "gh:64506:3441687672", "addressed": "yes", "note": "Moves recording-api and recording-rasterizer out of the ingestion sessionreplay tree to top-level nodejs/src directories and updates imports; shared helpers still imported from ingestion."},
-  {"id": "gh:56621:3156699270", "addressed": "yes", "note": "Deletes the opensearch profile entries from docker-compose.profiles.yml and adds the profiles to docker-compose.dev.yml."},
-  {"id": "gh:103145:4065875888", "addressed": "yes", "note": "Deletes the pinner's private _is_action and imports a shared is_action_key from parity/eligibility.py, which the commit adds there."},
-  {"id": "gh:67117:3581048862", "addressed": "partly", "note": "Removes the local SIGNAL_SOURCE_REQUIRED_TABLES and the intent-based CI table branch from the panel, moving setup into a DataSourceSetup keyed by signal source; merged map not shown."},
-  {"id": "gh:64091:3451908634", "addressed": "no", "note": "Regenerates OPS HCL from dumps: drops column_aliases and adds an error filter; queries stay inline strings with no file-reading mechanism."},
-  {"id": "gh:58357:3282258713", "addressed": "yes", "note": "Replaces the raw api.create batch_check call with the generated llmAnalyticsSummarizationBatchCheckCreate client and drops the semgrep suppression."}
+  {"id": "gh:52029:3020910874", "addressed": "no", "note": "Switches event map keys to parsed Uuid, moves uuid validation earlier, uses HashSet for limited ids; the scattered context field logging in the malformed-events warn stays as is."},
+  {"id": "gh:59907:3312984723", "addressed": "yes", "note": "Removes the auth class's own OIDC public key derivation and calls a new get_oidc_public_key helper added to posthog/jwt.py; moves API-key prefix check into _is_id_jag_token."},
+  {"id": "gh:58087:3208326748", "addressed": "yes", "note": "Deletes the local escapeHogqlString helper from utils.ts and switches llmTaggerLogic and the lazy loader to the shared escapeHogQLString."},
+  {"id": "gh:53462:3040508284", "addressed": "yes", "note": "Replaces the HTTP call to the MCP installations API with a direct MCPServerInstallation ORM query filtered by team, user and enabled flag."},
+  {"id": "gh:55645:3133228312", "addressed": "yes", "note": "Removes summary-ready event capture and its helper/key prefix from the old event-based summarize_session activity, restoring the store function to return None; drops related tests."},
+  {"id": "gh:52948:3018936143", "addressed": "yes", "note": "Replaces the property with manual cache attribute by functools.cached_property returning the feature check directly."},
+  {"id": "gh:55755:3124673686", "addressed": "yes", "note": "Passes region into _build_authorize_url, which now uses _region_to_host(region) as the base URL when a region is given; also tightens trusted auth methods."},
+  {"id": "gh:61481:3355065118", "addressed": "yes", "note": "Adds a WebhookSyncResult dataclass with only success and error, and makes the webhook event sync method return it instead of WebhookCreationResult."},
+  {"id": "gh:54584:3083209437", "addressed": "yes", "note": "Extracts spawn_merge_writers helper and uses it in both phase_merges and phase_concurrent_reads_writes, removing the duplicated writer loop."},
+  {"id": "gh:69087:3539994809", "addressed": "no", "note": "Replaces lazy SVG hoggies with eagerly imported PNG hoggies via pngHoggie across many files; does not make NavPanelAdvertisement a lazy import."}
 ]

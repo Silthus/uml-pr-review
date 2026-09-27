@@ -1,14 +1,14 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { type CollectedPullRequest, collectPullRequests } from "../../benchmark/corrections/collect.ts";
 import { codeComments, type CorpusComment } from "../../benchmark/corrections/comments.ts";
 import { corpusRows, heldOutDigest, jsonLines } from "../../benchmark/corrections/corpus.ts";
 import { locateFixes } from "../../benchmark/corrections/fixes.ts";
-import { budgetFile, cachedGraphql, type Graphql } from "../../benchmark/corrections/github.ts";
-import { type ConfirmationLabel, recallEstimate } from "../../benchmark/corrections/labels.ts";
+import { cachedGraphql, type Graphql, type Transport } from "../../benchmark/corrections/github.ts";
+import { type ConfirmationLabel, confirmationLabelSchema, firstPassLabelSchema, keepAnyCandidate, precision, readLabels, recallEstimate } from "../../benchmark/corrections/labels.ts";
 import { repositoryWithoutCommits, type TemporaryRepository } from "../architecture/index/repository.ts";
 
 const reviewer = { login: "reviewer", __typename: "User" };
@@ -46,15 +46,19 @@ function details(number: number, threads: ReturnType<typeof comment>[][]) {
   };
 }
 
-const searchPages: Record<string, { nodes: ReturnType<typeof indexed>[]; next?: string }[]> = {
+type SearchPage = { nodes: ReturnType<typeof indexed>[]; next?: string; issueCount?: number };
+
+const searchPages: Record<string, SearchPage[]> = {
   "2026-07-31": [{ nodes: [indexed(10, "2026-07-31T23:59:00Z", 2), indexed(11, "2026-07-31T08:00:00Z", 0)] }],
   "2026-08-01": [{ nodes: [indexed(12, "2026-08-01T00:00:00Z", 1)], next: "cursor-1" }, { nodes: [indexed(13, "2026-08-01T09:00:00Z", 0)] }],
+  "2026-08-02": [{ nodes: [], issueCount: 1001 }],
 };
 
 const pullRequestDetails: Record<number, ReturnType<typeof details>> = {
   10: details(10, [
     [comment(10, 1, reviewer, "We already have a helper for this in posthog/utils, please reuse it."), comment(10, 2, author, "Good call, switching to the shared helper now.")],
     [comment(10, 3, greptile, "Consider extracting this block into a separate function."), comment(10, 4, reviewer, "QA swarm finding. This comment was not written by a human."), comment(10, 5, reviewer, "lgtm")],
+    [comment(10, 7, reviewer, "🤖 *Agent-drafted, reviewed by a teammate.*\n\nMove this into the shared serializer module."), comment(10, 8, reviewer, "AI reply: fixed in abc123, the helper now lives in utils.")],
   ]),
   12: details(12, [[comment(12, 6, reviewer, "This belongs in the service layer, not in the viewset.", "products/surveys/backend/views.py")]]),
 };
@@ -66,7 +70,7 @@ function fakeGitHub(): { graphql: Graphql; queries: string[] } {
     if (query.includes("search(")) {
       const day = String(variables.q).split("merged:")[1]!;
       const page = searchPages[day]![variables.after === undefined ? 0 : 1]!;
-      return { data: { search: { issueCount: 2, pageInfo: { hasNextPage: page.next !== undefined, endCursor: page.next ?? null }, nodes: page.nodes } } };
+      return { data: { search: { issueCount: page.issueCount ?? 2, pageInfo: { hasNextPage: page.next !== undefined, endCursor: page.next ?? null }, nodes: page.nodes } } };
     }
     const numbers = [...query.matchAll(/pullRequest\(number: (\d+)\)/g)].map((match) => Number(match[1]));
     return { data: { repository: Object.fromEntries(numbers.map((number) => [`pr${number}`, pullRequestDetails[number]])) } };
@@ -113,6 +117,12 @@ describe("collecting every merged PR", () => {
       { id: "gh:12:6", author: "reviewer", path: "products/surveys/backend/views.py", split: "heldout" },
     ]);
   });
+
+  test("refuses a day with more merged PRs than one search can return", async () => {
+    const window = { repo: "PostHog/posthog", since: "2026-08-02", until: "2026-08-02" };
+
+    expect(collectPullRequests(fakeGitHub().graphql, window, () => {})).rejects.toThrow("2026-08-02 has 1001 merged PRs");
+  });
 });
 
 describe("the corpus", () => {
@@ -135,10 +145,13 @@ describe("the corpus", () => {
     ["gh:10:2", { id: "gh:10:2", architecture: false, subtype: "none", quote: "" }],
     ["gh:12:6", { id: "gh:12:6", architecture: true, subtype: "layer", quote: "belongs in the service layer" }],
   ]);
-  const fixes = new Map([["gh:10:1", { id: "gh:10:1", fix: "c10b", before: "c10a", commentCommit: "c10a", isolable: true, commitsMissing: 0 }]]);
+  const fixes = new Map([
+    ["gh:10:1", { id: "gh:10:1", fix: "c10b", before: "c10a", commentCommit: "c10a", isolable: true, commitsMissing: 0 }],
+    ["gh:12:6", { id: "gh:12:6", fix: null, before: null, commentCommit: "c12a", isolable: true, commitsMissing: 0 }],
+  ]);
   const verifications = new Map([["gh:10:1", { id: "gh:10:1", addressed: "yes" as const, note: "Imports the shared helper." }]]);
 
-  test("has one row per confirmed correction, with its product, fix, verification, and split", () => {
+  test("has one row per confirmed correction, isolable only when it has a fix", () => {
     const rows = corpusRows(comments, confirmations, fixes, verifications);
 
     expect(rows.map(({ id, product, subtype, fix, fixUrl, isolable, verified, split }) => ({ id, product, subtype, fix, fixUrl, isolable, verified, split }))).toEqual([
@@ -159,53 +172,119 @@ describe("the corpus", () => {
 
 describe("locating fixes in fetched PR heads", () => {
   let repository: TemporaryRepository;
-  let shas: string[];
+  let shas: { first: string; merge: string; other: string; fix: string };
 
   beforeAll(async () => {
     repository = await repositoryWithoutCommits();
-    shas = [await repository.commit({ "a.ts": "one" }), await repository.commit({ "b.ts": "two" }), await repository.commit({ "a.ts": "three" })];
-    await repository.git("update-ref", "refs/uml-pr-review/corpus/10", shas[2]!);
+    const first = await repository.commit({ "a.ts": "one" });
+    await repository.git("checkout", "--quiet", "-b", "base-update");
+    await repository.commit({ "a.ts": "from the base branch" });
+    await repository.git("checkout", "--quiet", "main");
+    await repository.git("-c", "user.name=Test", "-c", "user.email=test@example.com", "-c", "commit.gpgsign=false", "merge", "--quiet", "--no-ff", "--no-edit", "base-update");
+    const merge = (await repository.git("rev-parse", "HEAD")).trim();
+    shas = { first, merge, other: await repository.commit({ "b.ts": "two" }), fix: await repository.commit({ "a.ts": "three" }) };
+    await repository.git("update-ref", "refs/uml-pr-review/corpus/10", shas.fix);
   });
   afterAll(() => repository.cleanup());
 
-  test("takes the first commit after the comment that touches the commented file, and marks it isolable", async () => {
-    const pullRequest = { number: 10, commits: [{ oid: shas[0]!, committedDate: "2026-07-30T09:00:00Z" }, { oid: shas[1]!, committedDate: "2026-07-30T11:00:00Z" }, { oid: shas[2]!, committedDate: "2026-07-30T12:00:00+01:00" }, { oid: "f".repeat(40), committedDate: "2026-07-30T13:00:00Z" }] } as CollectedPullRequest;
+  test("takes the first non-merge commit after the comment that touches the commented file, and marks it isolable", async () => {
+    const commits = [
+      { oid: shas.first, committedDate: "2026-07-30T09:00:00Z" },
+      { oid: shas.merge, committedDate: "2026-07-30T10:30:00Z" },
+      { oid: shas.other, committedDate: "2026-07-30T11:00:00Z" },
+      { oid: shas.fix, committedDate: "2026-07-30T12:00:00+01:00" },
+      { oid: "f".repeat(40), committedDate: "2026-07-30T13:00:00Z" },
+    ];
     const onFile: CorpusComment = { id: "gh:10:1", url: "", author: "reviewer", path: "a.ts", line: 1, body: "", at: "2026-07-30T10:00:00Z", pr: 10, mergedAt: "2026-07-31T00:00:00Z", split: "development" };
     const cache = join(await mkdtemp(join(tmpdir(), "corrections-fixes-")), "fixes.json");
 
-    const [fix] = await locateFixes(repository.dir, [onFile], new Map([[10, pullRequest]]), cache, () => {});
+    const [fix] = await locateFixes(repository.dir, [onFile], new Map([[10, { number: 10, commits } as CollectedPullRequest]]), cache, () => {});
 
-    expect(fix).toEqual({ id: "gh:10:1", fix: shas[2]!, before: shas[1]!, commentCommit: shas[0]!, isolable: true, commitsMissing: 1 });
+    expect(fix).toEqual({ id: "gh:10:1", fix: shas.fix, before: shas.other, commentCommit: shas.first, isolable: true, commitsMissing: 1 });
     expect(JSON.parse(await readFile(cache, "utf8"))).toEqual([fix]);
   });
 });
 
 describe("resumable GitHub access", () => {
-  test("answers a repeated query from the on-disk cache and records the points it spent", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "corrections-cache-"));
-    let sent = 0;
-    const send = async () => {
-      sent++;
-      return JSON.stringify({ data: { rateLimit: { cost: 2, remaining: 4000, resetAt: "2026-09-27T07:00:00Z" }, value: 42 } });
+  const response = (remaining: number) => JSON.stringify({ data: { rateLimit: { cost: 2, remaining, resetAt: "2026-09-27T07:00:00Z" }, value: 42 } });
+  const transport = (text: string) => {
+    const calls = { sent: 0, pauses: [] as number[] };
+    const fake: Transport = {
+      send: async () => {
+        calls.sent++;
+        return text;
+      },
+      pause: async (milliseconds) => {
+        calls.pauses.push(milliseconds);
+      },
+      now: () => Date.parse("2026-09-27T06:59:00Z"),
+      log: () => {},
     };
+    return { calls, fake };
+  };
 
-    const first = await cachedGraphql(directory, send, () => {})("query { value }", { day: "2026-08-01" });
-    const second = await cachedGraphql(directory, send, () => {})("query { value }", { day: "2026-08-01" });
+  test("answers a repeated query from the on-disk cache", async () => {
+    const work = await mkdtemp(join(tmpdir(), "corrections-cache-"));
+    const { calls, fake } = transport(response(4000));
+
+    const first = await cachedGraphql(work, fake)("query { value }", { day: "2026-08-01" });
+    const second = await cachedGraphql(work, fake)("query { value }", { day: "2026-08-01" });
 
     expect(second).toEqual(first);
-    expect(sent).toBe(1);
-    expect((await readFile(join(directory, budgetFile), "utf8")).trim().split("\n").map((line) => JSON.parse(line).cost)).toEqual([2]);
-    await rm(directory, { recursive: true, force: true });
+    expect(calls).toEqual({ sent: 1, pauses: [] });
+    await rm(work, { recursive: true, force: true });
+  });
+
+  test("waits for the rate-limit reset when the shared budget runs low", async () => {
+    const work = await mkdtemp(join(tmpdir(), "corrections-cache-"));
+    const { calls, fake } = transport(response(120));
+
+    await cachedGraphql(work, fake)("query { value }", {});
+
+    expect(calls.pauses).toEqual([65_000]);
+    await rm(work, { recursive: true, force: true });
   });
 });
 
-describe("first-pass recall", () => {
-  test("scales the misses found in the negative sample to all negatives", () => {
-    const estimate = recallEstimate({ confirmed: 90, negatives: 1000, sampled: 200, missed: 2 });
+describe("labels", () => {
+  const labelsIn = async (files: Record<string, unknown[]>) => {
+    const root = await mkdtemp(join(tmpdir(), "corrections-labels-"));
+    await mkdir(join(root, "stage"));
+    for (const [name, labels] of Object.entries(files)) await writeFile(join(root, "stage", name), JSON.stringify(labels));
+    return root;
+  };
 
-    expect(estimate.value).toBeCloseTo(0.9, 10);
-    expect(estimate.low).toBeLessThan(0.9);
-    expect(estimate.high).toBeGreaterThan(0.9);
+  test("a first-pass comment labelled twice stays a candidate if either label says so", async () => {
+    const root = await labelsIn({ "batch-001.json": [{ id: "gh:1:1", candidate: true }], "batch-gap1-001.json": [{ id: "gh:1:1", candidate: false }] });
+
+    expect((await readLabels(root, "stage", firstPassLabelSchema, keepAnyCandidate)).get("gh:1:1")).toEqual({ id: "gh:1:1", candidate: true });
+  });
+
+  test("conflicting confirmations are refused rather than silently overwritten", async () => {
+    const root = await labelsIn({
+      "batch-001.json": [{ id: "gh:1:1", architecture: true, subtype: "reuse", quote: "reuse the helper" }],
+      "batch-002.json": [{ id: "gh:1:1", architecture: false, subtype: "none", quote: "" }],
+    });
+
+    expect(readLabels(root, "stage", confirmationLabelSchema)).rejects.toThrow("conflicting labels for gh:1:1");
+  });
+});
+
+describe("measured rates", () => {
+  test("first-pass recall scales the misses in the negative sample to all negatives", () => {
+    const estimate = recallEstimate({ confirmed: 950, negatives: 4515, sampled: 200, missed: 3 });
+
+    expect(estimate.value).toBeCloseTo(950 / (950 + (3 / 200) * 4515), 10);
+    expect(estimate.low).toBeLessThan(estimate.value);
+    expect(estimate.high).toBeGreaterThan(estimate.value);
     expect(recallEstimate({ confirmed: 90, negatives: 1000, sampled: 200, missed: 0 }).value).toBe(1);
+  });
+
+  test("fix precision counts full fixes strictly and full or partial fixes leniently", () => {
+    const measured = precision([...Array<"yes">(37).fill("yes"), ...Array<"partly">(6).fill("partly"), ...Array<"no">(7).fill("no")]);
+
+    expect(measured.answers).toEqual({ yes: 37, partly: 6, no: 7, unverifiable: 0 });
+    expect(measured.strict.value).toBeCloseTo(0.74, 10);
+    expect(measured.lenient.value).toBeCloseTo(0.86, 10);
   });
 });

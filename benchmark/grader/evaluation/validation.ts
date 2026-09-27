@@ -98,7 +98,7 @@ export function validationReport(input: ValidationInput): string {
     "",
     "### Speed",
     "",
-    `${seconds.length} gradings: median ${quantile(seconds, 0.5).toFixed(2)} s, p90 ${quantile(seconds, 0.9).toFixed(2)} s, mean ${(seconds.reduce((sum, value) => sum + value, 0) / Math.max(1, seconds.length)).toFixed(2)} s per commit range, warm caches, one process per shard.`,
+    `${seconds.length} gradings: median ${quantile(seconds, 0.5).toFixed(2)} s, p90 ${quantile(seconds, 0.9).toFixed(2)} s, mean ${(seconds.reduce((sum, value) => sum + value, 0) / Math.max(1, seconds.length)).toFixed(2)} s per commit range, graded in parallel shards on one machine alongside the scope-index run.`,
   ].join("\n");
 }
 

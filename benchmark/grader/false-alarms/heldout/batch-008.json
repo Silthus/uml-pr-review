@@ -1,0 +1,6 @@
+[
+  {"id": "81382:1", "verdict": "problem", "note": "PR adds two identical target re-resolution blocks (same key, call, error string); a small resolve_target helper returning Option would remove the copy. Minor but real."},
+  {"id": "81382:0", "verdict": "problem", "note": "Same duplicated re-resolution block introduced twice in this PR; only None handling differs, so a shared Option-returning helper is a reasonable review ask."},
+  {"id": "78519:1", "verdict": "not-a-problem", "note": "File-level 'global' size metric; PR changed only ~9 lines in this file (select/clear all wiring). File is already split into small components."},
+  {"id": "78519:0", "verdict": "not-a-problem", "note": "Global-scope complexity aggregate of an existing, well-decomposed file; PR only added an onToggleAll callback. Not introduced here."}
+]

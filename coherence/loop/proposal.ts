@@ -49,8 +49,13 @@ export function renderPullRequest({ iteration, verification, title, summary, mod
 
 function indexRow(name: string, { before, after }: { before: number | null; after: number | null }, targeted = false): string {
   const label = targeted ? `**${name}**` : name;
-  const change = before === null || after === null ? "n/a" : `${after - before >= 0 ? "+" : ""}${(after - before).toFixed(2)}`;
+  const change = before === null || after === null ? "n/a" : signedChange(after - before);
   return `| ${label} | ${before?.toFixed(2) ?? "n/a"} | ${after?.toFixed(2) ?? "n/a"} | ${change} |`;
+}
+
+function signedChange(change: number): string {
+  const shown = change.toFixed(2);
+  return Number(shown) >= 0 ? `+${Math.abs(Number(shown)).toFixed(2)}` : shown;
 }
 
 function lintLine(lint: LintPass): string {

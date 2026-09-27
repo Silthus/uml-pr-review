@@ -1,6 +1,7 @@
 {
   "index": {
     "version": 1,
+    "scoringVersion": 2,
     "scope": "products/error_tracking",
     "commit": "916fdd93387d39f24f8c5cbe9f7534a9b7e57922",
     "tree": "882e3b6ba29f3a614b8d62e68c9a5e4965b7eebd",
@@ -19,17 +20,17 @@
       "generatedLines": 0
     },
     "composite": {
-      "score": 74.87253139329806,
+      "score": 77.94610426279782,
       "weights": {
-        "architecture": 35,
-        "complexity": 25,
+        "architecture": 40,
+        "complexity": 30,
         "smells": 20,
         "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 86.81388888888888,
+        "score": 91.8577892284231,
         "measures": {
           "propagationCost": {
             "value": 0.0285,
@@ -43,11 +44,11 @@
             "best": 0,
             "worst": 0.3
           },
-          "facadeBypasses": {
-            "value": 29,
-            "score": 71,
+          "facadeBypassesPerKloc": {
+            "value": 1.3868298981397351,
+            "score": 86.13170101860264,
             "best": 0,
-            "worst": 100
+            "worst": 10
           }
         },
         "propagationCost": {
@@ -106,7 +107,6 @@
         },
         "facade": {
           "crossings": 29,
-          "share": 0,
           "inbound": {
             "crossings": 29,
             "bypasses": 29
@@ -911,12 +911,6 @@
           "testRatio": {
             "value": 0.1898,
             "score": 18.98,
-            "best": 1,
-            "worst": 0
-          },
-          "facadeCoverage": {
-            "value": null,
-            "score": null,
             "best": 1,
             "worst": 0
           }

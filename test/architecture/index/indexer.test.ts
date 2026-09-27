@@ -182,10 +182,13 @@ describe("extraction cache", () => {
     const repository = await repositoryOf(threeFiles);
     await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
     await repository.commit({ "app/d.py": "from app import a\n" });
-    const writer = await holdWriteLock(join(repository.dir, ".git/uml-pr-review/index-cache.sqlite"), 1500);
+    const lockMs = 1500;
+    const writer = await holdWriteLock(join(repository.dir, ".git/uml-pr-review/index-cache.sqlite"), lockMs);
+    const started = performance.now();
 
     const indexers = await Promise.all([indexInBackgroundProcess(repository.dir), indexInBackgroundProcess(repository.dir)]);
 
+    expect(performance.now() - started).toBeGreaterThanOrEqual(lockMs - 100);
     expect(await writer.released).toBe(0);
     for (const { exitCode, stdout, stderr } of indexers) {
       expect(stderr).toBe("");

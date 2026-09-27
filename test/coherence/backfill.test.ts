@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { backfill, type BackfillManifest } from "../../coherence/backfill.ts";
+import { backfill, readManifest, type BackfillManifest } from "../../coherence/backfill.ts";
 import { CoherenceReportSchema } from "../../coherence/contract.ts";
 import { backfillFixture, mergeSubject, type BackfillFixture } from "./backfill-fixture.ts";
 
@@ -86,6 +86,30 @@ describe("the weekly backfill", () => {
     expect(again.runtime.measured).toBe(0);
     expect(again.scopes).toEqual(manifest.scopes);
     expect(CoherenceReportSchema.parse(JSON.parse(await readFile(file, "utf8"))).index).toEqual(stored.index);
+  });
+});
+
+describe("stored results", () => {
+  test("deletes stored reports that no point, noise pair, or mover reaches", async () => {
+    const orphan = join(dataDir, "products/a", "2026-01-01-000000000000.json");
+    await writeFile(orphan, await readFile(join(dataDir, manifest.scopes["products/a"]!.points[0]!.file), "utf8"));
+
+    const again = await backfill(fixture.request);
+
+    expect(again.runtime.pruned).toBe(1);
+    expect(await Bun.file(orphan).exists()).toBe(false);
+  });
+
+  test("refuses a manifest scored under another scoring version", async () => {
+    const manifestFile = join(dataDir, "backfill.json");
+    const current = await readFile(manifestFile, "utf8");
+    await writeFile(manifestFile, JSON.stringify({ ...JSON.parse(current), scoringVersion: 1 }));
+
+    try {
+      expect(readManifest(dataDir)).rejects.toThrow("scoring version 1");
+    } finally {
+      await writeFile(manifestFile, current);
+    }
   });
 });
 

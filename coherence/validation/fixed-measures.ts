@@ -1,64 +1,136 @@
 #!/usr/bin/env bun
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import type { CoherenceIndex, DimensionWeights } from "../contract.ts";
-import { rescore } from "../rescore.ts";
-import { compositeScore, dimensionScore, dimensionWeights } from "../score.ts";
+import { z } from "zod";
+import type { DimensionWeights } from "../contract.ts";
+import { compositeScore, dimensionWeights, scoringVersion } from "../score.ts";
 import type { Attribution } from "./attribute.ts";
 import { readVerdicts, type Verdicts } from "./judges.ts";
-import { asScored, compositeUnder, readIndex } from "./rescore.ts";
+import { readIndex } from "./rescore.ts";
 import { classOf, readAttribution, type IndexClass } from "./selection.ts";
 import { spearman } from "./statistics.ts";
 
-type Scoring = { name: string; composite: (index: CoherenceIndex) => number };
-type Pair = { attribution: Attribution; before: CoherenceIndex; after: CoherenceIndex };
-type Summary = { scoring: string; movers: number; improved: number; worsened: number; rho: number | null; agreement: string };
+const RescoredSchema = z.object({
+  scoringVersion: z.number().int(),
+  commits: z.record(
+    z.string(),
+    z.object({
+      scores: z.object({ architecture: z.number().nullable(), complexity: z.number().nullable(), smells: z.number().nullable(), tests: z.number().nullable() }),
+      facade: z.object({ functions: z.number().int(), covered: z.number().int(), bypasses: z.number().int(), crossings: z.number().int(), productionLines: z.number().int() }),
+    }),
+  ),
+});
+type Rescored = z.infer<typeof RescoredSchema>;
+type Scored = Rescored["commits"][string];
+type Scoring = { name: string; delta: (attribution: Attribution) => number };
 
 const repository = "https://github.com/PostHog/posthog";
+const dataDirectory = join(import.meta.dir, "data");
+const rescoredFile = join(dataDirectory, "rescored.json");
+const studyCsv = join(import.meta.dir, "..", "..", "docs", "coherence", "validation", "prs.csv");
 const namedPullRequests = [101488, 103523, 103711, 64001, 97753, 66346, 76015, 78272];
 
-const scorings: Scoring[] = [
-  { name: "before (#95)", composite: (index) => compositeUnder(index, asScored) },
-  { name: "after (this change)", composite: (index) => rescore(index).composite.score },
-  { name: "after, test ratio at the old weight 20", composite: (index) => weighted(rescore(index), { ...dimensionWeights, tests: 20 }) },
-  { name: "after, test ratio dropped from the tests dimension", composite: (index) => withoutTestRatio(rescore(index)) },
-];
-
-function weighted({ dimensions }: CoherenceIndex, weights: DimensionWeights, tests = dimensions.tests.score): number {
-  return compositeScore({ architecture: dimensions.architecture.score, complexity: dimensions.complexity.score, smells: dimensions.smells.score, tests }, weights);
+async function rescoredFrom(reports: string, attributions: Attribution[]): Promise<Rescored> {
+  const commits = [...new Set(attributions.flatMap(({ parent, commit }) => [parent, commit]))].sort();
+  const entries = await Promise.all(
+    commits.map(async (commit): Promise<[string, Scored]> => {
+      const { dimensions, files } = await readIndex(reports, commit);
+      const { facade } = dimensions.architecture;
+      return [
+        commit,
+        {
+          scores: { architecture: dimensions.architecture.score, complexity: dimensions.complexity.score, smells: dimensions.smells.score, tests: dimensions.tests.score },
+          facade: { functions: dimensions.tests.facadeCoverage.functions, covered: dimensions.tests.facadeCoverage.covered, bypasses: facade.bypasses.length, crossings: facade.crossings, productionLines: files.productionLines },
+        },
+      ];
+    }),
+  );
+  return { scoringVersion, commits: Object.fromEntries(entries) };
 }
 
-function withoutTestRatio(index: CoherenceIndex): number {
-  const { testRatio: _, ...rest } = index.dimensions.tests.measures;
-  return weighted(index, dimensionWeights, dimensionScore(rest));
+async function readRescored(): Promise<Rescored> {
+  const rescored = RescoredSchema.parse(JSON.parse(await readFile(rescoredFile, "utf8")));
+  if (rescored.scoringVersion !== scoringVersion) throw new Error(`${rescoredFile} holds scoring version ${rescored.scoringVersion}, not ${scoringVersion}. Pass --reports to refresh it.`);
+  return rescored;
+}
+
+async function studyDeltas(): Promise<Map<string, number>> {
+  const [header, ...lines] = (await readFile(studyCsv, "utf8")).trim().split("\n").map(csvCells);
+  const [commit, delta] = [header!.indexOf("commit"), header!.indexOf("delta_composite_unrounded")];
+  return new Map(lines.map((cells) => [cells[commit]!, Number(cells[delta])]));
+}
+
+function csvCells(line: string): string[] {
+  return [...line.matchAll(/(?:^|,)("(?:[^"]|"")*"|[^,]*)/g)].map(([, cell]) => cell!.replace(/^"|"$/g, "").replaceAll('""', '"'));
+}
+
+function scorings(rescored: Rescored, study: Map<string, number>): Scoring[] {
+  const composite = (commit: string, weights: DimensionWeights) => compositeScore(rescored.commits[commit]!.scores, weights);
+  const under = (weights: DimensionWeights) => ({ commit, parent }: Attribution) => composite(commit, weights) - composite(parent, weights);
+  return [
+    { name: "scoring v1 (#95)", delta: ({ commit }) => study.get(commit.slice(0, 12))! },
+    { name: `scoring v${scoringVersion}, tests weight ${dimensionWeights.tests}`, delta: under(dimensionWeights) },
+    { name: `scoring v${scoringVersion}, tests weight 0`, delta: under({ ...dimensionWeights, tests: 0 }) },
+    { name: `scoring v${scoringVersion}, tests weight 20`, delta: under({ ...dimensionWeights, tests: 20 }) },
+  ];
 }
 
 function judgeMean(verdicts: Verdicts, pr: number | null): number | null {
-  if (pr === null) return null;
-  const opus = verdicts.opus.get(pr);
-  const astra = verdicts.astra.get(pr);
+  const [opus, astra] = pr === null ? [] : [verdicts.opus.get(pr), verdicts.astra.get(pr)];
   return opus && astra ? (opus.score + astra.score) / 2 : null;
 }
 
-function summarise(scoring: Scoring, pairs: Pair[], verdicts: Verdicts): Summary {
-  const rows = pairs.map(({ attribution, before, after }) => ({ attribution, delta: scoring.composite(after) - scoring.composite(before), mean: judgeMean(verdicts, attribution.pr) }));
-  const judged = rows.filter((row): row is typeof row & { mean: number } => row.mean !== null);
+function summaryRow(scoring: Scoring, attributions: Attribution[], verdicts: Verdicts): (string | number)[] {
+  const rows = attributions.map((attribution) => ({ delta: scoring.delta(attribution), mean: judgeMean(verdicts, attribution.pr) }));
+  const judged = rows.filter((row): row is { delta: number; mean: number } => row.mean !== null);
   const leaning = judged.filter(({ delta, mean }) => classOf(delta) !== "flat" && mean !== 0);
   const agreeing = leaning.filter(({ delta, mean }) => Math.sign(delta) === Math.sign(mean));
   const countOf = (indexClass: IndexClass) => rows.filter(({ delta }) => classOf(delta) === indexClass).length;
-  return {
-    scoring: scoring.name,
-    movers: countOf("improved") + countOf("worsened"),
-    improved: countOf("improved"),
-    worsened: countOf("worsened"),
-    rho: spearman(judged.map(({ delta }) => delta), judged.map(({ mean }) => mean)),
-    agreement: `${agreeing.length}/${leaning.length}`,
-  };
+  const rho = spearman(judged.map(({ delta }) => delta), judged.map(({ mean }) => mean));
+  return [scoring.name, countOf("improved") + countOf("worsened"), `${countOf("improved")} / ${countOf("worsened")}`, rho === null ? "n/a" : rho.toFixed(3), `${agreeing.length}/${leaning.length}`];
+}
+
+function namedRows(attributions: Attribution[], [before, after]: Scoring[], rescored: Rescored, verdicts: Verdicts): (string | number)[][] {
+  return namedPullRequests.flatMap((pr) => {
+    const attribution = attributions.find((candidate) => candidate.pr === pr);
+    if (!attribution) return [];
+    const judges = `${verdicts.opus.get(pr)?.score ?? "—"}, ${verdicts.astra.get(pr)?.score ?? "—"}`;
+    return [[prLink(attribution), attribution.title.replaceAll("|", "\\|"), signed(before!.delta(attribution)), signed(after!.delta(attribution)), judges, facadeFacts(rescored.commits[attribution.parent]!, rescored.commits[attribution.commit]!)]];
+  });
+}
+
+function facadeFacts(before: Scored, after: Scored): string {
+  const coverage = ({ facade }: Scored) => `${facade.covered}/${facade.functions}`;
+  const perKloc = ({ facade }: Scored) => ((1000 * facade.bypasses) / facade.productionLines).toFixed(2);
+  return `coverage ${coverage(before)} → ${coverage(after)} (unscored); bypasses ${before.facade.bypasses} → ${after.facade.bypasses}, ${perKloc(before)} → ${perKloc(after)} per KLOC`;
+}
+
+function moverRows(attributions: Attribution[], after: Scoring, verdicts: Verdicts): (string | number)[][] {
+  return attributions
+    .map((attribution) => ({ attribution, delta: after.delta(attribution) }))
+    .filter(({ delta }) => classOf(delta) !== "flat")
+    .sort((a, b) => a.delta - b.delta)
+    .map(({ attribution, delta }) => {
+      const judges = attribution.pr === null ? "not judged" : `${verdicts.opus.get(attribution.pr)?.score ?? "—"}, ${verdicts.astra.get(attribution.pr)?.score ?? "—"}`;
+      const { cycles, bypasses } = attribution;
+      return [prLink(attribution), signed(delta), judges, `bypasses +${bypasses.added.length}/−${bypasses.removed.length}; cycle files +${cycles.entered.length}/−${cycles.left.length}`];
+    });
+}
+
+function testOnlyLine(attributions: Attribution[], [before, after]: Scoring[]): string {
+  const testOnly = attributions.filter(({ lines }) => lines.scopeMeasured.files === 0 && lines.scopeTests.files > 0);
+  const largest = (scoring: Scoring) => Math.max(...testOnly.map((attribution) => Math.abs(scoring.delta(attribution)))).toFixed(3);
+  return `${testOnly.length} test-only PRs: the largest composite move is ${largest(before!)} under scoring v1 and ${largest(after!)} under v${scoringVersion}.`;
+}
+
+function prLink({ pr, commit }: Attribution): string {
+  return pr === null ? commit.slice(0, 12) : `[#${pr}](${repository}/pull/${pr})`;
 }
 
 function signed(value: number): string {
-  return `${value > 0 ? "+" : value < 0 ? "−" : ""}${Math.abs(value).toFixed(2)}`;
+  const shown = Number(value.toFixed(2));
+  return `${shown > 0 ? "+" : shown < 0 ? "−" : ""}${Math.abs(shown).toFixed(2)}`;
 }
 
 function table(header: string[], rows: (string | number)[][]): string {
@@ -66,79 +138,36 @@ function table(header: string[], rows: (string | number)[][]): string {
   return [line(header), line(header.map(() => "---")), ...rows.map(line)].join("\n");
 }
 
-function namedRows(pairs: Pair[], verdicts: Verdicts): (string | number)[][] {
-  return namedPullRequests.flatMap((pr) => {
-    const pair = pairs.find(({ attribution }) => attribution.pr === pr);
-    if (!pair) return [];
-    const [before, after] = scorings.slice(0, 2).map((scoring) => scoring.composite(pair.after) - scoring.composite(pair.before));
-    const { opus, astra } = { opus: verdicts.opus.get(pr)?.score ?? "—", astra: verdicts.astra.get(pr)?.score ?? "—" };
-    return [[`[#${pr}](${repository}/pull/${pr})`, pair.attribution.title.replaceAll("|", "\\|"), signed(before!), signed(after!), `${opus}, ${astra}`, facadeFacts(pair)]];
-  });
-}
-
-function facadeFacts({ before, after }: Pair): string {
-  const coverage = (index: CoherenceIndex) => `${index.dimensions.tests.facadeCoverage.covered}/${index.dimensions.tests.facadeCoverage.functions}`;
-  const bypasses = (index: CoherenceIndex) => index.dimensions.architecture.facade.bypasses.length;
-  const crossings = (index: CoherenceIndex) => index.dimensions.architecture.facade.crossings;
-  return `coverage ${coverage(before)} → ${coverage(after)}; bypasses ${bypasses(before)} → ${bypasses(after)} of ${crossings(before)} → ${crossings(after)} crossings`;
-}
-
-function moverRows(pairs: Pair[], verdicts: Verdicts): (string | number)[][] {
-  const after = scorings[1]!;
-  return pairs
-    .map((pair) => ({ pair, delta: after.composite(pair.after) - after.composite(pair.before) }))
-    .filter(({ delta }) => classOf(delta) !== "flat")
-    .sort((a, b) => a.delta - b.delta)
-    .map(({ pair, delta }) => {
-      const pr = pair.attribution.pr;
-      const link = pr === null ? pair.attribution.commit.slice(0, 12) : `[#${pr}](${repository}/pull/${pr})`;
-      const judges = pr === null ? "not judged" : `${verdicts.opus.get(pr)?.score ?? "—"}, ${verdicts.astra.get(pr)?.score ?? "—"}`;
-      const { cycles, bypasses } = pair.attribution;
-      return [link, signed(delta), judges, `bypasses +${bypasses.added.length}/−${bypasses.removed.length}; cycle files +${cycles.entered.length}/−${cycles.left.length}`];
-    });
-}
-
-function testOnlyMovement(pairs: Pair[]): string {
-  const testOnly = pairs.filter(({ attribution }) => attribution.lines.scopeMeasured.files === 0 && attribution.lines.scopeTests.files > 0);
-  const largest = (scoring: Scoring) => Math.max(...testOnly.map(({ before, after }) => Math.abs(scoring.composite(after) - scoring.composite(before))));
-  return `${testOnly.length} test-only PRs; the largest composite move is ${largest(scorings[0]!).toFixed(3)} before and ${largest(scorings[1]!).toFixed(3)} after.`;
-}
-
-function render(pairs: Pair[], verdicts: Verdicts): string {
-  const summaries = scorings.map((scoring) => summarise(scoring, pairs, verdicts));
+function render(attributions: Attribution[], rescored: Rescored, study: Map<string, number>, verdicts: Verdicts): string {
+  const all = scorings(rescored, study);
   return [
-    "# The fixed facade measures on #95's workflows PRs",
+    `# The Coherence Index under scoring v${scoringVersion}, on #95's workflows PRs`,
     "",
-    "Generated by `bun coherence/validation/fixed-measures.ts` from the #95 attribution, its judges, and the stored index reports of each PR's parent and commit. Deltas are unrounded composite points.",
+    "Scoring v1 is #95's, read from the committed `prs.csv`. The current scoring is read from `coherence/validation/data/rescored.json`, the #95 index reports rescored from their stored facts. Deltas are unrounded composite points.",
+    "",
+    "Regenerate: `bun coherence/validation/attribute.ts --repo ~/dev/posthog --ref 57ca357730843205c2d659098ac8e4c5e07a6698` rebuilds the reports in `/tmp/coherence-validation-reports`; `bun coherence/validation/fixed-measures.ts --reports /tmp/coherence-validation-reports` refreshes `rescored.json` and this file. Without `--reports`, it renders from the committed data alone.",
     "",
     "## The PRs #95 called perverse or telling",
     "",
-    table(["PR", "Title", "Before", "After", "Judges (Opus, Astra)", "Facade facts"], namedRows(pairs, verdicts)),
+    table(["PR", "Title", "v1", `v${scoringVersion}`, "Judges (Opus, Astra)", "Facade facts"], namedRows(attributions, all, rescored, verdicts)),
     "",
     "## All 321 PRs against the blind judges",
     "",
-    table(
-      ["Scoring", "Movers (Δ beyond ±0.2)", "Improved / worsened", "Spearman vs judges (64 judged)", "Sign agreement on leaning movers"],
-      summaries.map(({ scoring, movers, improved, worsened, rho, agreement }) => [scoring, movers, `${improved} / ${worsened}`, rho === null ? "n/a" : rho.toFixed(3), agreement]),
-    ),
+    table(["Scoring", "Movers (Δ beyond ±0.2)", "Improved / worsened", "Spearman vs judges (64 judged)", "Sign agreement on leaning movers"], all.map((scoring) => summaryRow(scoring, attributions, verdicts))),
     "",
-    "The movers under the new scoring, and what moved them:",
+    `The #95 judge data cannot tell tests weights of 0, 10, and 20 apart: with 64 judged PRs the standard error of a Spearman coefficient is about 0.13. The weight ${dimensionWeights.tests} is a judgement call. ${testOnlyLine(attributions, all)}`,
     "",
-    table(["PR", "Δ", "Judges (Opus, Astra)", "Bypasses and cycles"], moverRows(pairs, verdicts)),
+    `## Movers under scoring v${scoringVersion}`,
     "",
-    "Each bypass now costs the same fixed amount, so PRs that add bypasses read as worse. The judges, reading the diff, mostly score those features 0 or +1; #95 found the same leniency toward new coupling (#66346, #78272).",
-    "",
-    "With 64 judged PRs the standard error of a Spearman coefficient is about 0.13, so the three \"after\" rows agree with the judges equally well. The test-ratio weight is chosen on mechanism instead: test-only PRs barely move the ratio, as the next line shows.",
-    "",
-    testOnlyMovement(pairs),
+    table(["PR", "Δ", "Judges (Opus, Astra)", "Bypasses and cycles"], moverRows(attributions, all[1]!, verdicts)),
     "",
   ].join("\n");
 }
 
 if (import.meta.main) {
-  const { values } = parseArgs({ options: { reports: { type: "string", default: "/tmp/coherence-validation-reports" }, out: { type: "string", default: join(import.meta.dir, "..", "..", "docs", "coherence", "validation", "fixed-measures.md") } } });
-  const [run, verdicts] = await Promise.all([readAttribution(), readVerdicts()]);
-  const pairs = await Promise.all(run.commits.map(async (attribution) => ({ attribution, before: await readIndex(values.reports, attribution.parent), after: await readIndex(values.reports, attribution.commit) })));
-  await writeFile(values.out, render(pairs, verdicts));
+  const { values } = parseArgs({ options: { reports: { type: "string" }, out: { type: "string", default: join(import.meta.dir, "..", "..", "docs", "coherence", "validation", "fixed-measures.md") } } });
+  const [{ commits }, verdicts, study] = await Promise.all([readAttribution(), readVerdicts(), studyDeltas()]);
+  if (values.reports) await writeFile(rescoredFile, JSON.stringify(await rescoredFrom(values.reports, commits), null, 1));
+  await writeFile(values.out, render(commits, await readRescored(), study, verdicts));
   console.log(`Wrote ${values.out}`);
 }

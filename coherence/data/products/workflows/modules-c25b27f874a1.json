@@ -1,39 +1,15 @@
 {
   "scope": "products/workflows",
   "commit": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
+  "scoringVersion": 2,
   "rows": [
-    {
-      "path": "products/workflows/backend",
-      "files": 70,
-      "lines": 13165,
-      "code": 60.11408978174602,
-      "scores": {
-        "architecture": 72.18888888888888,
-        "complexity": 30.57714285714286,
-        "smells": 75.90437499999999
-      },
-      "raw": {
-        "propagationCost": 0.0876,
-        "cycleFiles": 2,
-        "facadeBypasses": 52,
-        "p90Ccn": 12,
-        "shareOverTen": 0.1272,
-        "p90Nloc": 45,
-        "p90FileLines": 231,
-        "ruffPerKloc": 3.1903,
-        "oxlintPerKloc": null,
-        "duplication": 2.27,
-        "markersPerKloc": 0.076,
-        "typeEscapesPerKloc": 7.5959
-      }
-    },
     {
       "path": "products/workflows/backend/providers",
       "files": 4,
       "lines": 922,
-      "code": 60.28766666666667,
+      "code": 54.83396874748936,
       "scores": {
-        "architecture": 78.16666666666667,
+        "architecture": 68.32067968185105,
         "complexity": 23.009999999999998,
         "smells": 75.59649999999999
       },
@@ -56,9 +32,9 @@
       "path": "products/workflows/backend/api",
       "files": 10,
       "lines": 7246,
-      "code": 60.702669642857146,
+      "code": 58.82963677168357,
       "scores": {
-        "architecture": 81.7,
+        "architecture": 79.67295059343087,
         "complexity": 22.207142857142856,
         "smells": 72.07675
       },
@@ -78,10 +54,85 @@
       }
     },
     {
+      "path": "products/workflows/backend",
+      "files": 70,
+      "lines": 13165,
+      "code": 60.99601924110009,
+      "scores": {
+        "architecture": 76.35599864961809,
+        "complexity": 30.57714285714286,
+        "smells": 75.90437499999999
+      },
+      "raw": {
+        "propagationCost": 0.0876,
+        "cycleFiles": 2,
+        "facadeBypasses": 52,
+        "p90Ccn": 12,
+        "shareOverTen": 0.1272,
+        "p90Nloc": 45,
+        "p90FileLines": 231,
+        "ruffPerKloc": 3.1903,
+        "oxlintPerKloc": null,
+        "duplication": 2.27,
+        "markersPerKloc": 0.076,
+        "typeEscapesPerKloc": 7.5959
+      }
+    },
+    {
+      "path": "products/workflows/backend/services",
+      "files": 13,
+      "lines": 2089,
+      "code": 64.17039292869427,
+      "scores": {
+        "architecture": 82.44340194670497,
+        "complexity": 24.517142857142854,
+        "smells": 87.10425
+      },
+      "raw": {
+        "propagationCost": 0.0192,
+        "cycleFiles": 0,
+        "facadeBypasses": 10,
+        "p90Ccn": 12,
+        "shareOverTen": 0.131,
+        "p90Nloc": 45,
+        "p90FileLines": 427,
+        "ruffPerKloc": 1.9148,
+        "oxlintPerKloc": null,
+        "duplication": 0.85,
+        "markersPerKloc": 0,
+        "typeEscapesPerKloc": 4.787
+      }
+    },
+    {
+      "path": "products/workflows/backend/models/hog_flow",
+      "files": 3,
+      "lines": 254,
+      "code": 66.94074074074075,
+      "scores": {
+        "architecture": 38.89166666666667,
+        "complexity": 95,
+        "smells": 80.95
+      },
+      "raw": {
+        "propagationCost": 0.3333,
+        "cycleFiles": 0,
+        "facadeBypasses": 9,
+        "p90Ccn": 3,
+        "shareOverTen": 0,
+        "p90Nloc": 4,
+        "p90FileLines": 205,
+        "ruffPerKloc": 0,
+        "oxlintPerKloc": null,
+        "duplication": 7.62,
+        "markersPerKloc": 0,
+        "typeEscapesPerKloc": 0
+      }
+    },
+    {
       "path": "products/workflows/frontend/Workflows/hogflows/react_flow_utils",
       "files": 3,
       "lines": 394,
-      "code": 66.22879464285715,
+      "code": 67.20793650793651,
       "scores": {
         "architecture": 72.22500000000001,
         "complexity": 77.85714285714286,
@@ -103,37 +154,12 @@
       }
     },
     {
-      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing",
-      "files": 4,
-      "lines": 1766,
-      "code": 68.41491071428572,
-      "scores": {
-        "architecture": 72.22500000000001,
-        "complexity": 68.00571428571429,
-        "smells": 62.25875
-      },
-      "raw": {
-        "propagationCost": 0.3333,
-        "cycleFiles": 0,
-        "facadeBypasses": 0,
-        "p90Ccn": 5,
-        "shareOverTen": 0.0308,
-        "p90Nloc": 26,
-        "p90FileLines": 678,
-        "ruffPerKloc": null,
-        "oxlintPerKloc": 0,
-        "duplication": 16.26,
-        "markersPerKloc": 0.5663,
-        "typeEscapesPerKloc": 4.53
-      }
-    },
-    {
       "path": "products/workflows/backend/management",
       "files": 7,
       "lines": 942,
-      "code": 70.81369047619047,
+      "code": 67.26698502566867,
       "scores": {
-        "architecture": 99.33333333333333,
+        "architecture": 92.92285916489739,
         "complexity": 29.737142857142857,
         "smells": 72.25
       },
@@ -156,9 +182,9 @@
       "path": "products/workflows/backend/management/commands",
       "files": 7,
       "lines": 942,
-      "code": 70.81369047619047,
+      "code": 67.26698502566867,
       "scores": {
-        "architecture": 99.33333333333333,
+        "architecture": 92.92285916489739,
         "complexity": 29.737142857142857,
         "smells": 72.25
       },
@@ -178,35 +204,35 @@
       }
     },
     {
-      "path": "products/workflows/backend/services",
-      "files": 13,
-      "lines": 2089,
-      "code": 71.02933630952381,
+      "path": "products/workflows/frontend/Workflows/hogflows/panel/testing",
+      "files": 4,
+      "lines": 1766,
+      "code": 68.60384920634922,
       "scores": {
-        "architecture": 95.06666666666666,
-        "complexity": 24.517142857142854,
-        "smells": 87.10425
+        "architecture": 72.22500000000001,
+        "complexity": 68.00571428571429,
+        "smells": 62.25875
       },
       "raw": {
-        "propagationCost": 0.0192,
+        "propagationCost": 0.3333,
         "cycleFiles": 0,
-        "facadeBypasses": 10,
-        "p90Ccn": 12,
-        "shareOverTen": 0.131,
-        "p90Nloc": 45,
-        "p90FileLines": 427,
-        "ruffPerKloc": 1.9148,
-        "oxlintPerKloc": null,
-        "duplication": 0.85,
-        "markersPerKloc": 0,
-        "typeEscapesPerKloc": 4.787
+        "facadeBypasses": 0,
+        "p90Ccn": 5,
+        "shareOverTen": 0.0308,
+        "p90Nloc": 26,
+        "p90FileLines": 678,
+        "ruffPerKloc": null,
+        "oxlintPerKloc": 0,
+        "duplication": 16.26,
+        "markersPerKloc": 0.5663,
+        "typeEscapesPerKloc": 4.53
       }
     },
     {
       "path": "products/workflows/frontend/Workflows/hogflows",
       "files": 105,
       "lines": 18824,
-      "code": 71.11234027777778,
+      "code": 70.94556790123457,
       "scores": {
         "architecture": 59.05277777777778,
         "complexity": 80.17,
@@ -228,10 +254,60 @@
       }
     },
     {
+      "path": "products/workflows/backend/tasks",
+      "files": 6,
+      "lines": 250,
+      "code": 71.34814814814816,
+      "scores": {
+        "architecture": 58.333333333333336,
+        "complexity": 69.6,
+        "smells": 100
+      },
+      "raw": {
+        "propagationCost": 0.1,
+        "cycleFiles": 0,
+        "facadeBypasses": 5,
+        "p90Ccn": 7,
+        "shareOverTen": 0,
+        "p90Nloc": 61,
+        "p90FileLines": 114,
+        "ruffPerKloc": 0,
+        "oxlintPerKloc": null,
+        "duplication": 0,
+        "markersPerKloc": 0,
+        "typeEscapesPerKloc": 0
+      }
+    },
+    {
+      "path": "products/workflows/backend/models",
+      "files": 11,
+      "lines": 548,
+      "code": 76.46130555555555,
+      "scores": {
+        "architecture": 57.57500000000001,
+        "complexity": 98,
+        "smells": 81.92587499999999
+      },
+      "raw": {
+        "propagationCost": 0.1091,
+        "cycleFiles": 0,
+        "facadeBypasses": 13,
+        "p90Ccn": 3,
+        "shareOverTen": 0,
+        "p90Nloc": 4,
+        "p90FileLines": 96,
+        "ruffPerKloc": 0,
+        "oxlintPerKloc": null,
+        "duplication": 3.58,
+        "markersPerKloc": 0,
+        "typeEscapesPerKloc": 7.2993
+      }
+    },
+    {
       "path": "products/workflows/frontend/Workflows",
       "files": 158,
       "lines": 28592,
-      "code": 76.7034310515873,
+      "code": 76.5951221340388,
       "scores": {
         "architecture": 72.14444444444445,
         "complexity": 79.31285714285715,
@@ -256,7 +332,7 @@
       "path": "products/workflows/mcp/apps",
       "files": 7,
       "lines": 389,
-      "code": 78.18854166666668,
+      "code": 77.4751851851852,
       "scores": {
         "architecture": 66.66666666666667,
         "complexity": 76.87,
@@ -278,85 +354,35 @@
       }
     },
     {
-      "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers",
-      "files": 14,
-      "lines": 2569,
-      "code": 78.2625,
+      "path": "products/workflows/backend/utils",
+      "files": 4,
+      "lines": 262,
+      "code": 77.92857142857143,
       "scores": {
-        "architecture": 88.55,
-        "complexity": 82.09,
-        "smells": 55.475
+        "architecture": 59.725,
+        "complexity": 87.4857142857143,
+        "smells": 100
       },
       "raw": {
-        "propagationCost": 0.1374,
+        "propagationCost": 0.0833,
         "cycleFiles": 0,
-        "facadeBypasses": 0,
+        "facadeBypasses": 3,
         "p90Ccn": 5,
-        "shareOverTen": 0.0111,
-        "p90Nloc": 18,
-        "p90FileLines": 366,
-        "ruffPerKloc": null,
-        "oxlintPerKloc": 0,
-        "duplication": 7.81,
+        "shareOverTen": 0,
+        "p90Nloc": 25,
+        "p90FileLines": 118,
+        "ruffPerKloc": 0,
+        "oxlintPerKloc": null,
+        "duplication": 0,
         "markersPerKloc": 0,
-        "typeEscapesPerKloc": 20.2413
-      }
-    },
-    {
-      "path": "products/workflows/frontend/Workflows/hogflows/registry",
-      "files": 19,
-      "lines": 2779,
-      "code": 78.9244375,
-      "scores": {
-        "architecture": 88.30000000000001,
-        "complexity": 82.17,
-        "smells": 58.46025
-      },
-      "raw": {
-        "propagationCost": 0.1404,
-        "cycleFiles": 0,
-        "facadeBypasses": 0,
-        "p90Ccn": 5,
-        "shareOverTen": 0.0103,
-        "p90Nloc": 18,
-        "p90FileLines": 366,
-        "ruffPerKloc": null,
-        "oxlintPerKloc": 0,
-        "duplication": 7.26,
-        "markersPerKloc": 0,
-        "typeEscapesPerKloc": 18.7118
-      }
-    },
-    {
-      "path": "products/workflows/frontend/Workflows/hogflows/panel",
-      "files": 15,
-      "lines": 4083,
-      "code": 79.3131130952381,
-      "scores": {
-        "architecture": 85.31666666666666,
-        "complexity": 78.46142857142857,
-        "smells": 69.8715
-      },
-      "raw": {
-        "propagationCost": 0.1762,
-        "cycleFiles": 0,
-        "facadeBypasses": 0,
-        "p90Ccn": 5,
-        "shareOverTen": 0.0251,
-        "p90Nloc": 17,
-        "p90FileLines": 458,
-        "ruffPerKloc": null,
-        "oxlintPerKloc": 0,
-        "duplication": 8.99,
-        "markersPerKloc": 0.2449,
-        "typeEscapesPerKloc": 3.6738
+        "typeEscapesPerKloc": 0
       }
     },
     {
       "path": "products/workflows/frontend/Workflows/Reputation",
       "files": 3,
       "lines": 804,
-      "code": 79.54166666666667,
+      "code": 78.91851851851852,
       "scores": {
         "architecture": 66.66666666666667,
         "complexity": 81.2,
@@ -378,10 +404,85 @@
       }
     },
     {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers",
+      "files": 14,
+      "lines": 2569,
+      "code": 79.04666666666668,
+      "scores": {
+        "architecture": 88.55,
+        "complexity": 82.09,
+        "smells": 55.475
+      },
+      "raw": {
+        "propagationCost": 0.1374,
+        "cycleFiles": 0,
+        "facadeBypasses": 0,
+        "p90Ccn": 5,
+        "shareOverTen": 0.0111,
+        "p90Nloc": 18,
+        "p90FileLines": 366,
+        "ruffPerKloc": null,
+        "oxlintPerKloc": 0,
+        "duplication": 7.81,
+        "markersPerKloc": 0,
+        "typeEscapesPerKloc": 20.2413
+      }
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/panel",
+      "files": 15,
+      "lines": 4083,
+      "code": 79.59932804232804,
+      "scores": {
+        "architecture": 85.31666666666666,
+        "complexity": 78.46142857142857,
+        "smells": 69.8715
+      },
+      "raw": {
+        "propagationCost": 0.1762,
+        "cycleFiles": 0,
+        "facadeBypasses": 0,
+        "p90Ccn": 5,
+        "shareOverTen": 0.0251,
+        "p90Nloc": 17,
+        "p90FileLines": 458,
+        "ruffPerKloc": null,
+        "oxlintPerKloc": 0,
+        "duplication": 8.99,
+        "markersPerKloc": 0.2449,
+        "typeEscapesPerKloc": 3.6738
+      }
+    },
+    {
+      "path": "products/workflows/frontend/Workflows/hogflows/registry",
+      "files": 19,
+      "lines": 2779,
+      "code": 79.62561111111111,
+      "scores": {
+        "architecture": 88.30000000000001,
+        "complexity": 82.17,
+        "smells": 58.46025
+      },
+      "raw": {
+        "propagationCost": 0.1404,
+        "cycleFiles": 0,
+        "facadeBypasses": 0,
+        "p90Ccn": 5,
+        "shareOverTen": 0.0103,
+        "p90Nloc": 18,
+        "p90FileLines": 366,
+        "ruffPerKloc": null,
+        "oxlintPerKloc": 0,
+        "duplication": 7.26,
+        "markersPerKloc": 0,
+        "typeEscapesPerKloc": 18.7118
+      }
+    },
+    {
       "path": "products/workflows/frontend/Workflows/hogflows/filters",
       "files": 3,
       "lines": 267,
-      "code": 79.82265476190477,
+      "code": 80.31345767195768,
       "scores": {
         "architecture": 86.10833333333333,
         "complexity": 82.37142857142858,
@@ -403,35 +504,10 @@
       }
     },
     {
-      "path": "products/workflows/backend/models/hog_flow",
-      "files": 3,
-      "lines": 254,
-      "code": 80.2109375,
-      "scores": {
-        "architecture": 69.22500000000001,
-        "complexity": 95,
-        "smells": 80.95
-      },
-      "raw": {
-        "propagationCost": 0.3333,
-        "cycleFiles": 0,
-        "facadeBypasses": 9,
-        "p90Ccn": 3,
-        "shareOverTen": 0,
-        "p90Nloc": 4,
-        "p90FileLines": 205,
-        "ruffPerKloc": 0,
-        "oxlintPerKloc": null,
-        "duplication": 7.62,
-        "markersPerKloc": 0,
-        "typeEscapesPerKloc": 0
-      }
-    },
-    {
       "path": "products/workflows/frontend/Channels",
       "files": 14,
       "lines": 1202,
-      "code": 80.67613888888889,
+      "code": 80.76845061728396,
       "scores": {
         "architecture": 69.01388888888889,
         "complexity": 94,
@@ -453,35 +529,10 @@
       }
     },
     {
-      "path": "products/workflows/frontend",
-      "files": 226,
-      "lines": 37039,
-      "code": 81.61540972222221,
-      "scores": {
-        "architecture": 81.59722222222221,
-        "complexity": 80.7,
-        "smells": 82.7915
-      },
-      "raw": {
-        "propagationCost": 0.1087,
-        "cycleFiles": 19,
-        "facadeBypasses": 0,
-        "p90Ccn": 5,
-        "shareOverTen": 0.0178,
-        "p90Nloc": 17,
-        "p90FileLines": 366,
-        "ruffPerKloc": null,
-        "oxlintPerKloc": 0.243,
-        "duplication": 3.63,
-        "markersPerKloc": 0.162,
-        "typeEscapesPerKloc": 3.9148
-      }
-    },
-    {
       "path": "products/workflows/frontend/Workflows/hogflows/registry/actions",
       "files": 4,
       "lines": 208,
-      "code": 81.9702380952381,
+      "code": 81.50899470899472,
       "scores": {
         "architecture": 66.66666666666667,
         "complexity": 88.97142857142858,
@@ -503,10 +554,35 @@
       }
     },
     {
+      "path": "products/workflows/frontend",
+      "files": 226,
+      "lines": 37039,
+      "code": 81.56354320987654,
+      "scores": {
+        "architecture": 81.59722222222221,
+        "complexity": 80.7,
+        "smells": 82.7915
+      },
+      "raw": {
+        "propagationCost": 0.1087,
+        "cycleFiles": 19,
+        "facadeBypasses": 0,
+        "p90Ccn": 5,
+        "shareOverTen": 0.0178,
+        "p90Nloc": 17,
+        "p90FileLines": 366,
+        "ruffPerKloc": null,
+        "oxlintPerKloc": 0.243,
+        "duplication": 3.63,
+        "markersPerKloc": 0.162,
+        "typeEscapesPerKloc": 3.9148
+      }
+    },
+    {
       "path": "products/workflows/frontend/Suppression",
       "files": 3,
       "lines": 359,
-      "code": 82.67559523809524,
+      "code": 82.26137566137565,
       "scores": {
         "architecture": 66.66666666666667,
         "complexity": 91.22857142857143,
@@ -531,7 +607,7 @@
       "path": "products/workflows/frontend/OptOuts",
       "files": 14,
       "lines": 2579,
-      "code": 84.40904017857143,
+      "code": 84.0767261904762,
       "scores": {
         "architecture": 83.97500000000001,
         "complexity": 78.86142857142856,
@@ -556,7 +632,7 @@
       "path": "products/workflows/frontend/Workflows/hogflows/tree",
       "files": 12,
       "lines": 2748,
-      "code": 84.71411607142858,
+      "code": 84.26524603174605,
       "scores": {
         "architecture": 79.8,
         "complexity": 81.54857142857144,
@@ -581,7 +657,7 @@
       "path": "products/workflows/frontend/Workflows/templates",
       "files": 12,
       "lines": 1121,
-      "code": 85.54163988095237,
+      "code": 85.36797883597883,
       "scores": {
         "architecture": 86.74166666666667,
         "complexity": 81.21571428571428,
@@ -603,35 +679,10 @@
       }
     },
     {
-      "path": "products/workflows/backend/tasks",
-      "files": 6,
-      "lines": 250,
-      "code": 86.125,
-      "scores": {
-        "architecture": 90,
-        "complexity": 69.6,
-        "smells": 100
-      },
-      "raw": {
-        "propagationCost": 0.1,
-        "cycleFiles": 0,
-        "facadeBypasses": 5,
-        "p90Ccn": 7,
-        "shareOverTen": 0,
-        "p90Nloc": 61,
-        "p90FileLines": 114,
-        "ruffPerKloc": 0,
-        "oxlintPerKloc": null,
-        "duplication": 0,
-        "markersPerKloc": 0,
-        "typeEscapesPerKloc": 0
-      }
-    },
-    {
       "path": "products/workflows/frontend/emptyState",
       "files": 3,
       "lines": 145,
-      "code": 87.2234375,
+      "code": 86.9888888888889,
       "scores": {
         "architecture": 72.22500000000001,
         "complexity": 98,
@@ -656,7 +707,7 @@
       "path": "products/workflows/frontend/Workflows/hogflows/steps",
       "files": 43,
       "lines": 6405,
-      "code": 88.05280208333333,
+      "code": 87.86406481481482,
       "scores": {
         "architecture": 91.55833333333334,
         "complexity": 81.15,
@@ -681,7 +732,7 @@
       "path": "products/workflows/frontend/Broadcasts",
       "files": 17,
       "lines": 2223,
-      "code": 88.14470833333334,
+      "code": 87.9402037037037,
       "scores": {
         "architecture": 83.75833333333334,
         "complexity": 88.85,
@@ -706,7 +757,7 @@
       "path": "products/workflows/frontend/TemplateLibrary",
       "files": 10,
       "lines": 1186,
-      "code": 88.33748511904761,
+      "code": 88.22624338624338,
       "scores": {
         "architecture": 80.55833333333334,
         "complexity": 94.11428571428571,
@@ -731,7 +782,7 @@
       "path": "products/workflows/backend/admin",
       "files": 5,
       "lines": 269,
-      "code": 88.73511904761905,
+      "code": 88.35449735449735,
       "scores": {
         "architecture": 83.33333333333333,
         "complexity": 87.28571428571429,
@@ -753,35 +804,10 @@
       }
     },
     {
-      "path": "products/workflows/backend/models",
-      "files": 11,
-      "lines": 548,
-      "code": 88.98303125,
-      "scores": {
-        "architecture": 86.575,
-        "complexity": 98,
-        "smells": 81.92587499999999
-      },
-      "raw": {
-        "propagationCost": 0.1091,
-        "cycleFiles": 0,
-        "facadeBypasses": 13,
-        "p90Ccn": 3,
-        "shareOverTen": 0,
-        "p90Nloc": 4,
-        "p90FileLines": 96,
-        "ruffPerKloc": 0,
-        "oxlintPerKloc": null,
-        "duplication": 3.58,
-        "markersPerKloc": 0,
-        "typeEscapesPerKloc": 7.2993
-      }
-    },
-    {
       "path": "products/workflows/frontend/Workflows/hogflows/steps/components",
       "files": 19,
       "lines": 2593,
-      "code": 89.23495238095236,
+      "code": 88.83425661375661,
       "scores": {
         "architecture": 96.34166666666665,
         "complexity": 74.91571428571429,
@@ -806,7 +832,7 @@
       "path": "products/workflows/frontend/Broadcasts/steps",
       "files": 5,
       "lines": 385,
-      "code": 90.45535714285714,
+      "code": 89.81904761904762,
       "scores": {
         "architecture": 100,
         "complexity": 69.45714285714286,
@@ -828,35 +854,10 @@
       }
     },
     {
-      "path": "products/workflows/backend/utils",
-      "files": 4,
-      "lines": 262,
-      "code": 92.61480654761905,
-      "scores": {
-        "architecture": 92.05833333333334,
-        "complexity": 87.4857142857143,
-        "smells": 100
-      },
-      "raw": {
-        "propagationCost": 0.0833,
-        "cycleFiles": 0,
-        "facadeBypasses": 3,
-        "p90Ccn": 5,
-        "shareOverTen": 0,
-        "p90Nloc": 25,
-        "p90FileLines": 118,
-        "ruffPerKloc": 0,
-        "oxlintPerKloc": null,
-        "duplication": 0,
-        "markersPerKloc": 0,
-        "typeEscapesPerKloc": 0
-      }
-    },
-    {
       "path": "products/workflows/frontend/scenes/settings",
       "files": 3,
       "lines": 195,
-      "code": 96.40178571428571,
+      "code": 96.16190476190476,
       "scores": {
         "architecture": 100,
         "complexity": 88.4857142857143,

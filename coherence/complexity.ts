@@ -40,7 +40,7 @@ export async function measureComplexity(files: ScopeFile[], toolbox: Toolbox, ca
   };
 }
 
-export function complexityMeasures({ functions, files }: Pick<Complexity, "functions" | "files">): Record<string, Measure> {
+export function complexityMeasures({ functions, files }: Pick<Complexity, "functions" | "files">): Record<"p90Ccn" | "shareOverTen" | "shareOverTwenty" | "p90FunctionNloc" | "p90FileLines", Measure> {
   const measured = functions.count > 0;
   return {
     p90Ccn: measure(measured ? functions.p90Ccn : null, anchors.p90Ccn),

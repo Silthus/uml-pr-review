@@ -1,0 +1,17 @@
+error: expect(received).toEqual(expected)
+(fail) the weekly backfill > computes every delta from the unrounded scores it stores [0.71ms]
+error: expect(received).toEqual(expected)
+(fail) the weekly backfill > rescores stored measurements under the current anchors instead of trusting their stored scores [366.78ms]
+error: expect(received).toBe(expected)
+(fail) stored results > deletes stored reports that no point, noise pair, or mover reaches [369.34ms]
+error: expect(received).rejects.toThrow(expected)
+(fail) stored results > refuses a manifest scored under another scoring version [0.49ms]
+(fail) architecture > every facade bypass costs the same per thousand production lines, however many bypasses and compliant crossings the scope already has [355.29ms]
+error: expect(received).toEqual(expected)
+(fail) tests > facade coverage is reported but never scored, so growing a facade, even an untested one, leaves the tests score to the test ratio [238.85ms]
+error: expect(received).toBeCloseTo(expected, precision)
+(fail) tests > the test ratio moves the composite at a tenth of its own move, since the tests dimension weighs 10 of 100 [129.97ms]
+error: expect(received).toBeGreaterThanOrEqual(expected)
+(fail) extraction cache > waits out another process's write instead of failing with SQLITE_BUSY, so two indexers run in parallel [210.81ms]
+ 32 pass
+ 8 fail

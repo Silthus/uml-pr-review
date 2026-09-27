@@ -1,6 +1,7 @@
 {
   "index": {
     "version": 1,
+    "scoringVersion": 2,
     "scope": "products/workflows",
     "commit": "11219ae927e844238ad72ed8433d00631f66ac6b",
     "tree": "7c0b4b8cd9219af70b94804fc4b275639026bc1e",
@@ -19,17 +20,17 @@
       "generatedLines": 9325
     },
     "composite": {
-      "score": 70.78893174603174,
+      "score": 75.02185953797819,
       "weights": {
-        "architecture": 35,
-        "complexity": 25,
+        "architecture": 40,
+        "complexity": 30,
         "smells": 20,
         "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 71.125,
+        "score": 81.47946313065977,
         "measures": {
           "propagationCost": {
             "value": 0.0665,
@@ -43,11 +44,11 @@
             "best": 0,
             "worst": 0.3
           },
-          "facadeBypasses": {
-            "value": 44,
-            "score": 56.00000000000001,
+          "facadeBypassesPerKloc": {
+            "value": 1.2936610608020698,
+            "score": 87.06338939197931,
             "best": 0,
-            "worst": 100
+            "worst": 10
           }
         },
         "propagationCost": {
@@ -120,7 +121,6 @@
         },
         "facade": {
           "crossings": 45,
-          "share": 0.0222,
           "inbound": {
             "crossings": 28,
             "bypasses": 28
@@ -963,12 +963,6 @@
           "testRatio": {
             "value": 0.5247,
             "score": 52.470000000000006,
-            "best": 1,
-            "worst": 0
-          },
-          "facadeCoverage": {
-            "value": null,
-            "score": null,
             "best": 1,
             "worst": 0
           }

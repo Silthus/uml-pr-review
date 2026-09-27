@@ -2,12 +2,10 @@ import type { ArchitecturePayload } from "../src/architecture/contracts/index.ts
 import type { Measure, Tests } from "./contract.ts";
 import { compare } from "./drivers.ts";
 import { totalLines, type Scope, type ScopeFile } from "./scope.ts";
-import { anchors, dimensionScore, measure, ratio, unscoredMeasure } from "./score.ts";
+import { anchors, dimensionScore, measure, ratio } from "./score.ts";
 
 type FacadeFunction = { file: string; name: string };
 type FacadeReference = { text: string; names: string[] };
-
-export const minimumFacadeFunctions = 10;
 
 const facadeSegment = /(^|\/)facade(\/|\.py$|\.tsx?$)/;
 const pythonPublicFunction = /^(?:async\s+)?def\s+([A-Za-z]\w*)\s*\(/gm;
@@ -23,12 +21,8 @@ export function measureTests(payload: ArchitecturePayload, scope: Scope): Tests 
   return { score: dimensionScore(measures), measures, ...facts };
 }
 
-export function testsMeasures({ ratio: { value }, facadeCoverage }: Pick<Tests, "ratio" | "facadeCoverage">): Record<string, Measure> {
-  const scoreCoverage = facadeCoverage.functions >= minimumFacadeFunctions ? measure : unscoredMeasure;
-  return {
-    testRatio: measure(value, anchors.testRatio),
-    facadeCoverage: scoreCoverage(facadeCoverage.share, anchors.facadeCoverage),
-  };
+export function testsMeasures({ ratio: { value } }: Pick<Tests, "ratio">): Record<"testRatio", Measure> {
+  return { testRatio: measure(value, anchors.testRatio) };
 }
 
 function facadeCoverageOf(payload: ArchitecturePayload, scope: Scope): Tests["facadeCoverage"] {

@@ -1,7 +1,6 @@
 import { scoreKeys, type Scores } from "../backfill.ts";
-import { dimensionWeights } from "../score.ts";
 import { escape, lineChart, sparkline, type ChartSeries } from "./charts.ts";
-import { score, signed } from "./format.ts";
+import { score, signed, weightsText } from "./format.ts";
 import { dimensions, labelOf, type MoverView, type ReportModel, type ScopeView } from "./model.ts";
 import type { ModuleRow } from "./modules.ts";
 import { style } from "./style.ts";
@@ -83,15 +82,10 @@ function compositeSection(model: ReportModel): string {
 </section>`;
 }
 
-function compositeWeights(): string {
-  const weights = Object.entries(dimensionWeights).map(([dimension, weight]) => `${dimension} ${weight}`);
-  return `${weights.slice(0, -1).join(", ")}, and ${weights.at(-1)}`;
-}
-
 function dimensionSection(model: ReportModel): string {
   return `<section>
   <h2>Each dimension</h2>
-  <p class="note">The composite weights ${compositeWeights()}. Each chart keeps the full 0 to 100 axis so the products compare honestly.</p>
+  <p class="note">The composite weights ${weightsText(["architecture", "complexity", "smells", "tests"])}. Each chart keeps the full 0 to 100 axis so the products compare honestly.</p>
   <div class="charts">${dimensions.map((dimension) => figure(model, `${capitalise(dimension)} score, 0 to 100`, dimension, 540, 240)).join("")}</div>
 </section>`;
 }
@@ -121,7 +115,7 @@ function moversSection(model: ReportModel): string {
   const largest = Math.max(1, ...movers.map(({ delta }) => Math.abs(delta.composite)));
   return `<section>
   <h2>Biggest movers, per product</h2>
-  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored and compared with the commit scored before it. The five largest per product are listed. A commit outside the product that changes its inbound imports is attributed to the next commit inside it.</p>
+  <p class="note">Inside the three weeks that moved each product most, every first-parent commit touching the product was scored and compared with the commit scored before it. The five largest per product are listed. A commit outside the product that changes its inbound imports is attributed to the next commit inside it. Every facade bypass costs the same per thousand production lines. A commit that moves code into a product, such as models moving into a products app, can expose imports that already crossed into it: they count as new bypasses. Under the rule that is correct, since the coupling was always there, but it is a change in what the index sees, not new coupling.</p>
   <table class="movers">
     <thead><tr><th>Product</th><th>Δ composite</th><th>× band</th><th>Date</th><th>Moved most</th><th>Change</th></tr></thead>
     <tbody>${movers.map((mover) => moverRow(mover, largest, model.github)).join("")}</tbody>
@@ -151,7 +145,7 @@ function modulesSection(model: ReportModel): string {
   const row = (module: ModuleRow) => moduleRow(module, modules.scope);
   return `<section>
   <h2>${escape(labelOf(modules.scope))} modules at <code>${modules.commit.slice(0, 12)}</code>, worst first</h2>
-  <p class="note">Each directory of the scope is scored as its own scope with the same index, at the repository head. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Parents and their children are both listed, so a large parent such as <code>backend</code> summarises the rows beneath it. Modules with fewer than 3 production files are not listed.</p>
+  <p class="note">Each directory of the scope is scored as its own scope with the same index, at the repository head. The code score weights ${weightsText(["architecture", "complexity", "smells"])}; tests are left out because a module's tests live outside it. Parents and their children are both listed, so a large parent such as <code>backend</code> summarises the rows beneath it. Modules with fewer than 3 production files are not listed.</p>
   <table class="modules">
     <thead><tr>
       <th>Module</th><th>Files</th><th>Code</th>

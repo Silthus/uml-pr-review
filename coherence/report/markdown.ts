@@ -1,5 +1,5 @@
 import { scoreKeys } from "../backfill.ts";
-import { score, signed } from "./format.ts";
+import { score, signed, weightsText } from "./format.ts";
 import { dimensions, type ReportModel } from "./model.ts";
 
 export function renderMarkdown(model: ReportModel): string {
@@ -36,6 +36,8 @@ export function renderMarkdown(model: ReportModel): string {
     "",
     "## Biggest movers, per product",
     "",
+    "Every facade bypass costs the same per thousand production lines. A commit that moves code into a product, such as models moving into a products app, can expose imports that already crossed into it: they count as new bypasses. Under the rule that is correct, since the coupling was always there, but it is a change in what the index sees, not new coupling.",
+    "",
     "| Product | Δ composite | × band | Date | Moved most | Change |",
     "| --- | --- | --- | --- | --- | --- |",
     ...model.scopes.flatMap(({ topMovers }) =>
@@ -60,7 +62,7 @@ function modulesTable(model: ReportModel): string[] {
   return [
     `## ${modules.scope} modules at \`${modules.commit.slice(0, 12)}\`, worst first`,
     "",
-    "Each directory is scored as its own scope at the repository head. The code score weights architecture 35, complexity 25, and smells 20; tests are left out because a module's tests live outside it. Parents and children are both listed.",
+    `Each directory is scored as its own scope at the repository head. The code score weights ${weightsText(["architecture", "complexity", "smells"])}; tests are left out because a module's tests live outside it. Parents and children are both listed.`,
     "",
     "| Module | Files | Code | Architecture | Complexity | Smells | Propagation cost | Files on cycles | p90 CCN | Functions over CCN 10 | ruff / KLOC | Duplicated lines | Type escapes / KLOC |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",

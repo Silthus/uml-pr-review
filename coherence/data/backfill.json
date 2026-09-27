@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "scoringVersion": 2,
   "repository": "posthog",
   "ref": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
   "head": "c25b27f874a162fb5510cc5b26cc4c6e853ddde8",
@@ -14,8 +15,8 @@
           "week": "2026-03-23",
           "file": "products/workflows/2026-03-22-d2953186c204.json",
           "scores": {
-            "composite": 70.73171410934745,
-            "architecture": 74.61944444444445,
+            "composite": 71.9009329534218,
+            "architecture": 75.3103109549831,
             "complexity": 84.70142857142858,
             "smells": 70.0669,
             "tests": 23.53
@@ -27,8 +28,8 @@
           "week": "2026-03-30",
           "file": "products/workflows/2026-03-29-b5db3557e4a6.json",
           "scores": {
-            "composite": 69.61145978835978,
-            "architecture": 73.15833333333333,
+            "composite": 70.94428461248017,
+            "architecture": 74.08579010262899,
             "complexity": 85.30142857142857,
             "smells": 68.0877,
             "tests": 21.02
@@ -40,8 +41,8 @@
           "week": "2026-04-06",
           "file": "products/workflows/2026-04-05-0927d6b52d38.json",
           "scores": {
-            "composite": 69.87068924162257,
-            "architecture": 73.21111111111111,
+            "composite": 71.14179419536062,
+            "architecture": 74.20337120268725,
             "complexity": 84.0142857142857,
             "smells": 68.9858,
             "tests": 24.59
@@ -53,8 +54,8 @@
           "week": "2026-04-13",
           "file": "products/workflows/2026-04-12-a560cb1c0e82.json",
           "scores": {
-            "composite": 70.12640035273368,
-            "architecture": 73.21111111111111,
+            "composite": 71.38281930531194,
+            "architecture": 74.21808397756556,
             "complexity": 84.11428571428571,
             "smells": 69.84649999999999,
             "tests": 24.92
@@ -66,8 +67,8 @@
           "week": "2026-04-20",
           "file": "products/workflows/2026-04-19-f55d8340b44b.json",
           "scores": {
-            "composite": 70.36158641975308,
-            "architecture": 73.34722222222221,
+            "composite": 71.71493473934083,
+            "architecture": 74.70383684835205,
             "complexity": 83.59,
             "smells": 71.15700000000001,
             "tests": 25.25
@@ -79,8 +80,8 @@
           "week": "2026-04-27",
           "file": "products/workflows/2026-04-26-137de4d5a44f.json",
           "scores": {
-            "composite": 70.5807700176367,
-            "architecture": 73.40555555555555,
+            "composite": 71.94083727485298,
+            "architecture": 74.76450747284673,
             "complexity": 84.08571428571429,
             "smells": 71.0566,
             "tests": 25.979999999999997
@@ -92,8 +93,8 @@
           "week": "2026-05-04",
           "file": "products/workflows/2026-05-03-698149ad3370.json",
           "scores": {
-            "composite": 70.38719841269841,
-            "architecture": 74.325,
+            "composite": 71.83104317864206,
+            "architecture": 75.72132223231945,
             "complexity": 84.1557142857143,
             "smells": 68.799,
             "tests": 25.36
@@ -105,8 +106,8 @@
           "week": "2026-05-11",
           "file": "products/workflows/2026-05-10-f41c55b2f7a5.json",
           "scores": {
-            "composite": 70.52746507936507,
-            "architecture": 74.325,
+            "composite": 71.95961573725018,
+            "architecture": 75.73340362883972,
             "complexity": 84.1057142857143,
             "smells": 68.92769999999999,
             "tests": 26.490000000000002
@@ -118,8 +119,8 @@
           "week": "2026-05-18",
           "file": "products/workflows/2026-05-17-8bf1ce63224d.json",
           "scores": {
-            "composite": 70.52990952380952,
-            "architecture": 74.325,
+            "composite": 71.96333202467905,
+            "architecture": 75.73719434741189,
             "complexity": 84.1057142857143,
             "smells": 68.9687,
             "tests": 26.43
@@ -131,8 +132,8 @@
           "week": "2026-05-25",
           "file": "products/workflows/2026-05-24-4406542d2c42.json",
           "scores": {
-            "composite": 71.09825026455027,
-            "architecture": 73.90833333333333,
+            "composite": 72.44748501397864,
+            "architecture": 75.3042268206609,
             "complexity": 84.1057142857143,
             "smells": 71.49539999999999,
             "tests": 27.950000000000003
@@ -144,8 +145,8 @@
           "week": "2026-06-01",
           "file": "products/workflows/2026-05-31-309c3b6b9169.json",
           "scores": {
-            "composite": 69.84410458553792,
-            "architecture": 71.56944444444444,
+            "composite": 71.65047414863601,
+            "architecture": 74.40574965730427,
             "complexity": 81.55571428571429,
             "smells": 68.7073,
             "tests": 36.8
@@ -157,8 +158,8 @@
           "week": "2026-06-08",
           "file": "products/workflows/2026-06-07-1050dad2a10e.json",
           "scores": {
-            "composite": 71.33925273368607,
-            "architecture": 73.68611111111112,
+            "composite": 73.23439233134346,
+            "architecture": 76.96104511407293,
             "complexity": 80.69571428571429,
             "smells": 72.0613,
             "tests": 38.29
@@ -170,8 +171,8 @@
           "week": "2026-06-15",
           "file": "products/workflows/2026-06-14-57696b06d2b3.json",
           "scores": {
-            "composite": 71.85190652557317,
-            "architecture": 73.00555555555555,
+            "composite": 73.9997859486885,
+            "architecture": 77.06200058600699,
             "complexity": 81.2042857142857,
             "smells": 73.6985,
             "tests": 40.739999999999995
@@ -183,8 +184,8 @@
           "week": "2026-06-22",
           "file": "products/workflows/2026-06-21-8e473b6a37a4.json",
           "scores": {
-            "composite": 72.0947229276896,
-            "architecture": 73.34722222222223,
+            "composite": 74.21062274395679,
+            "architecture": 77.4936782884634,
             "complexity": 79.98857142857143,
             "smells": 74.9179,
             "tests": 42.33
@@ -196,8 +197,8 @@
           "week": "2026-06-29",
           "file": "products/workflows/2026-06-28-13c7dfaea7ab.json",
           "scores": {
-            "composite": 72.01962786596118,
-            "architecture": 72.97777777777777,
+            "composite": 74.26623555903332,
+            "architecture": 77.56966032615473,
             "complexity": 79.25857142857141,
             "smells": 75.524,
             "tests": 43.56
@@ -209,8 +210,8 @@
           "week": "2026-07-06",
           "file": "products/workflows/2026-07-05-6577fc44f726.json",
           "scores": {
-            "composite": 72.59509700176366,
-            "architecture": 73.50555555555555,
+            "composite": 74.90021983288443,
+            "architecture": 78.3028710107825,
             "complexity": 79.40857142857143,
             "smells": 77.0325,
             "tests": 43.5
@@ -222,8 +223,8 @@
           "week": "2026-07-13",
           "file": "products/workflows/2026-07-12-7026f7ec439a.json",
           "scores": {
-            "composite": 72.2172266313933,
-            "architecture": 72.56388888888888,
+            "composite": 74.86320442120167,
+            "architecture": 78.26783248157561,
             "complexity": 79.15857142857142,
             "smells": 76.08250000000001,
             "tests": 45.92
@@ -235,8 +236,8 @@
           "week": "2026-07-20",
           "file": "products/workflows/2026-07-19-6f8208e93ef6.json",
           "scores": {
-            "composite": 72.67322134038801,
-            "architecture": 73.44722222222224,
+            "composite": 75.3510427336963,
+            "architecture": 79.37364254852649,
             "complexity": 78.0442857142857,
             "smells": 77.6665,
             "tests": 46.550000000000004
@@ -248,8 +249,8 @@
           "week": "2026-07-27",
           "file": "products/workflows/2026-07-26-78b3689515fd.json",
           "scores": {
-            "composite": 73.02987566137567,
-            "architecture": 74.50833333333334,
+            "composite": 75.78554509960296,
+            "architecture": 80.69339846329312,
             "complexity": 77.18428571428572,
             "smells": 77.6645,
             "tests": 48.199999999999996
@@ -261,8 +262,8 @@
           "week": "2026-08-03",
           "file": "products/workflows/2026-08-02-634bad0710c6.json",
           "scores": {
-            "composite": 72.9342151675485,
-            "architecture": 74.37777777777778,
+            "composite": 75.9053882725866,
+            "architecture": 81.20400639575224,
             "complexity": 76.30428571428573,
             "smells": 78.1425,
             "tests": 49.04
@@ -274,8 +275,8 @@
           "week": "2026-08-10",
           "file": "products/workflows/2026-08-09-7da1c4690c65.json",
           "scores": {
-            "composite": 71.624612345679,
-            "architecture": 71.68888888888888,
+            "composite": 75.40732625511188,
+            "architecture": 80.68321563777972,
             "complexity": 75.25999999999999,
             "smells": 77.3202,
             "tests": 50.92
@@ -287,8 +288,8 @@
           "week": "2026-08-17",
           "file": "products/workflows/2026-08-16-42d5edca6dc4.json",
           "scores": {
-            "composite": 71.71529647266314,
-            "architecture": 71.91388888888889,
+            "composite": 75.58601043315667,
+            "architecture": 81.17186894003457,
             "complexity": 74.86714285714285,
             "smells": 77.5606,
             "tests": 51.449999999999996
@@ -300,8 +301,8 @@
           "week": "2026-08-24",
           "file": "products/workflows/2026-08-23-0250a2b68bcf.json",
           "scores": {
-            "composite": 70.57093298059964,
-            "architecture": 70.8888888888889,
+            "composite": 75.06509547068138,
+            "architecture": 81.88145296241775,
             "complexity": 72.19571428571429,
             "smells": 76.999,
             "tests": 52.54
@@ -313,8 +314,8 @@
           "week": "2026-08-31",
           "file": "products/workflows/2026-08-30-e62b8dd5e87c.json",
           "scores": {
-            "composite": 70.57686014109348,
-            "architecture": 71.06944444444444,
+            "composite": 75.11786876544556,
+            "architecture": 82.21928619932821,
             "complexity": 71.70571428571428,
             "smells": 77.1972,
             "tests": 52.790000000000006
@@ -326,8 +327,8 @@
           "week": "2026-09-07",
           "file": "products/workflows/2026-09-06-5f8bc937a84b.json",
           "scores": {
-            "composite": 70.48138148148149,
-            "architecture": 70.39166666666667,
+            "composite": 75.48260731067501,
+            "architecture": 82.90236827668753,
             "complexity": 70.51,
             "smells": 78.2333,
             "tests": 55.22
@@ -339,8 +340,8 @@
           "week": "2026-09-14",
           "file": "products/workflows/2026-09-13-66ea432ade17.json",
           "scores": {
-            "composite": 70.41420511463845,
-            "architecture": 70.23611111111111,
+            "composite": 75.74404441203414,
+            "architecture": 83.58385388722823,
             "complexity": 70.40714285714286,
             "smells": 79.37180000000001,
             "tests": 53.14
@@ -352,8 +353,8 @@
           "week": "2026-09-21",
           "file": "products/workflows/2026-09-20-6bbc94fa5128.json",
           "scores": {
-            "composite": 70.60336455026454,
-            "architecture": 70.20833333333333,
+            "composite": 75.98338132806339,
+            "architecture": 83.6451390344442,
             "complexity": 71.10428571428571,
             "smells": 79.6852,
             "tests": 52.56999999999999
@@ -372,7 +373,7 @@
               "date": "2026-03-25T23:54:17Z"
             },
             "delta": {
-              "composite": 0.029999999999986926,
+              "composite": 0.027000000000001023,
               "architecture": 0,
               "complexity": 0,
               "smells": 0,
@@ -389,8 +390,8 @@
               "date": "2026-04-02T01:50:38+02:00"
             },
             "delta": {
-              "composite": 0.02541093474427214,
-              "architecture": 0.19444444444444287,
+              "composite": -0.0036175041135919628,
+              "architecture": 0.25481338257318953,
               "complexity": -1.2071428571428697,
               "smells": 0.8430000000000035,
               "tests": 0.879999999999999
@@ -406,8 +407,8 @@
               "date": "2026-04-15T16:04:48-07:00"
             },
             "delta": {
-              "composite": 0.2728770723103935,
-              "architecture": 0.2527777777777658,
+              "composite": 0.26032516506931813,
+              "architecture": 0.26534148410189573,
               "complexity": -0.058571428571426054,
               "smells": 0.8738000000000028,
               "tests": -0.02999999999999403
@@ -423,8 +424,8 @@
               "date": "2026-05-06T23:43:12Z"
             },
             "delta": {
-              "composite": 0.00359999999999161,
-              "architecture": 0,
+              "composite": 0.0032742519706090434,
+              "architecture": 0.00008562992654503887,
               "complexity": 0,
               "smells": 0.021199999999993224,
               "tests": -0.010000000000001563
@@ -440,8 +441,8 @@
               "date": "2026-05-14T00:26:28+01:00"
             },
             "delta": {
-              "composite": 0.003244444444433725,
-              "architecture": 0,
+              "composite": 0.004301213212897892,
+              "architecture": 0.003453033032215558,
               "complexity": 0,
               "smells": 0.039600000000007185,
               "tests": -0.04999999999999716
@@ -457,8 +458,8 @@
               "date": "2026-05-20T16:54:22-07:00"
             },
             "delta": {
-              "composite": 0.7039333333333389,
-              "architecture": 0.2499999999999858,
+              "composite": 0.6492275798433269,
+              "architecture": 0.2567189496083415,
               "complexity": 0.010000000000005116,
               "smells": 2.777699999999996,
               "tests": -0.11999999999999744
@@ -474,8 +475,8 @@
               "date": "2026-06-03T23:33:21Z"
             },
             "delta": {
-              "composite": 0.2741481481481429,
-              "architecture": 0.1666666666666714,
+              "composite": 0.2590672634743072,
+              "architecture": 0.18666815868576236,
               "complexity": -0.0799999999999983,
               "smells": 0.777000000000001,
               "tests": 0.5300000000000011
@@ -491,8 +492,8 @@
               "date": "2026-06-10T16:49:34-07:00"
             },
             "delta": {
-              "composite": 0.26026913580246,
-              "architecture": 0.17777777777777715,
+              "composite": 0.2469589006606583,
+              "architecture": 0.19609725165159375,
               "complexity": -0.07000000000000739,
               "smells": 0.5025999999999868,
               "tests": 0.8900000000000006
@@ -508,8 +509,8 @@
               "date": "2026-06-17T20:44:22-03:00"
             },
             "delta": {
-              "composite": 0.2392345679012493,
-              "architecture": 0.3388888888888886,
+              "composite": 0.20974489935615281,
+              "architecture": 0.4238622483903498,
               "complexity": -1.1299999999999955,
               "smells": 1.1509999999999962,
               "tests": 1.4899999999999949
@@ -525,8 +526,8 @@
               "date": "2026-06-24T16:37:31-07:00"
             },
             "delta": {
-              "composite": -0.17265555555555068,
-              "architecture": -0.025000000000005684,
+              "composite": -0.1868301984942633,
+              "architecture": -0.017975496235649757,
               "complexity": -0.6600000000000108,
               "smells": 0.09180000000002053,
               "tests": 0
@@ -542,8 +543,8 @@
               "date": "2026-07-01T23:51:07Z"
             },
             "delta": {
-              "composite": 0.010134567901232572,
-              "architecture": 0.16388888888889142,
+              "composite": -0.06301271042336509,
+              "architecture": -0.04068177605843459,
               "complexity": 0.030000000000001137,
               "smells": -0.22869999999998925,
               "tests": -0.10000000000000142
@@ -559,8 +560,8 @@
               "date": "2026-07-08T16:16:44-07:00"
             },
             "delta": {
-              "composite": -0.005488888888891097,
-              "architecture": 0,
+              "composite": -0.002253791684225348,
+              "architecture": 0.006715520789413176,
               "complexity": 0,
               "smells": 0.015299999999982106,
               "tests": -0.0799999999999983
@@ -576,8 +577,8 @@
               "date": "2026-07-15T16:53:17-07:00"
             },
             "delta": {
-              "composite": 0.14608271604937784,
-              "architecture": 0.13055555555555998,
+              "composite": 0.13539992235808995,
+              "architecture": 0.167799805895271,
               "complexity": -0.3500000000000085,
               "smells": 0.37639999999998963,
               "tests": 0.9799999999999969
@@ -593,8 +594,8 @@
               "date": "2026-07-22T23:13:28Z"
             },
             "delta": {
-              "composite": 0.19038395061728863,
-              "architecture": 0.5694444444444571,
+              "composite": 0.2335587625029376,
+              "architecture": 0.6962969062573734,
               "complexity": -0.3400000000000034,
               "smells": 0.02019999999998845,
               "tests": 0.5300000000000011
@@ -610,8 +611,8 @@
               "date": "2026-07-29T23:02:40Z"
             },
             "delta": {
-              "composite": -0.05976172839505978,
-              "architecture": -0.21944444444444855,
+              "composite": 0.028248777498120603,
+              "architecture": 0.01432194374531548,
               "complexity": -0.009999999999990905,
               "smells": 0.11760000000002435,
               "tests": 0.020000000000003126
@@ -627,8 +628,8 @@
               "date": "2026-08-05T23:58:18Z"
             },
             "delta": {
-              "composite": -0.09835343915344197,
-              "architecture": -0.3333333333333428,
+              "composite": -0.025808267308363497,
+              "architecture": -0.08435638255660649,
               "complexity": -0.40428571428572013,
               "smells": 0.2161000000000115,
               "tests": 0.8599999999999994
@@ -644,8 +645,8 @@
               "date": "2026-08-12T23:49:00Z"
             },
             "delta": {
-              "composite": -0.0014492063492070884,
-              "architecture": 0.125,
+              "composite": 0.051361362377392084,
+              "architecture": 0.24764626308632387,
               "complexity": -0.0528571428571496,
               "smells": 0.11079999999999757,
               "tests": -0.5400000000000063
@@ -661,8 +662,8 @@
               "date": "2026-08-19T23:44:35Z"
             },
             "delta": {
-              "composite": 0.008944444444452415,
-              "architecture": 0.42499999999999716,
+              "composite": 0.052875355196533746,
+              "architecture": 0.5026883879913555,
               "complexity": -0.15000000000000568,
               "smells": -0.2860000000000156,
               "tests": -0.46000000000000796
@@ -678,8 +679,8 @@
               "date": "2026-08-26T23:13:56Z"
             },
             "delta": {
-              "composite": -0.01744444444445037,
-              "architecture": 0,
+              "composite": -0.012228582789859388,
+              "architecture": 0.007428543025355339,
               "complexity": 0.010000000000005116,
               "smells": -0.09099999999999397,
               "tests": 0
@@ -695,8 +696,8 @@
               "date": "2026-09-02T23:54:39Z"
             },
             "delta": {
-              "composite": 0.19466296296295127,
-              "architecture": 0.3083333333333371,
+              "composite": 0.20530740607568987,
+              "architecture": 0.33881851518923156,
               "complexity": 0.05000000000001137,
               "smells": 0.3038999999999987,
               "tests": -0.06000000000000938
@@ -712,8 +713,8 @@
               "date": "2026-09-09T23:53:02Z"
             },
             "delta": {
-              "composite": -0.13560476190477289,
-              "architecture": -0.17499999999998295,
+              "composite": 0.041209431643821404,
+              "architecture": 0.24786643625243698,
               "complexity": 0.057142857142849834,
               "smells": 0.49459999999999127,
               "tests": -1.740000000000002
@@ -729,8 +730,8 @@
               "date": "2026-09-16T23:43:04Z"
             },
             "delta": {
-              "composite": 0.2989098765432061,
-              "architecture": 0.4861111111111285,
+              "composite": 0.20651755090855772,
+              "architecture": 0.2590938772713969,
               "complexity": 0.0800000000000125,
               "smells": 0.2143999999999835,
               "tests": 0.3599999999999923
@@ -746,8 +747,8 @@
               "date": "2026-09-23T15:06:50Z"
             },
             "delta": {
-              "composite": -0.40122980599647917,
-              "architecture": -1.2138888888889028,
+              "composite": -0.4015224288970245,
+              "architecture": -1.1735489293853902,
               "complexity": 0.08285714285713652,
               "smells": 0.18019999999999925,
               "tests": 0.07000000000000028
@@ -755,21 +756,36 @@
           }
         ],
         "median": {
-          "composite": 0.13560476190477289,
-          "architecture": 0.17777777777777715,
+          "composite": 0.06301271042336509,
+          "architecture": 0.19609725165159375,
           "complexity": 0.058571428571426054,
           "smells": 0.2161000000000115,
           "tests": 0.2699999999999996
         },
         "band": {
-          "composite": 0.2989098765432061,
-          "architecture": 0.4861111111111285,
+          "composite": 0.26032516506931813,
+          "architecture": 0.5026883879913555,
           "complexity": 0.6600000000000108,
           "smells": 0.8738000000000028,
           "tests": 0.9799999999999969
         }
       },
       "movers": [
+        {
+          "commit": "d56970d60bf90aa7281699171b8a42792be850cd",
+          "date": "2026-03-24T10:29:08+01:00",
+          "week": "2026-03-30",
+          "subject": "chore(messaging): move messaging models to products app (#51608)",
+          "pr": 51608,
+          "previous": "1e7d1f9f5aa08d210b432024d0a148f7ff38d84a",
+          "delta": {
+            "composite": -1.3449179092200723,
+            "architecture": -1.4935947730501624,
+            "complexity": 1.039999999999992,
+            "smells": -3.1174000000000177,
+            "tests": -4.359999999999999
+          }
+        },
         {
           "commit": "fefcae2b83f33439bc9e179596fed91c9649e1cf",
           "date": "2026-05-29T08:53:16Z",
@@ -778,26 +794,26 @@
           "pr": 60248,
           "previous": "da87cf3ebbeab799070431c2e3e80c4a2a4645b6",
           "delta": {
-            "composite": -1.2724049382715918,
-            "architecture": -2.00555555555556,
+            "composite": -0.8638912998726198,
+            "architecture": -0.7329282496815779,
             "complexity": -2.5500000000000114,
             "smells": -2.7935999999999837,
             "tests": 7.529999999999994
           }
         },
         {
-          "commit": "ae741c00f9689f9ee00314d71c4ed2d801294463",
-          "date": "2026-08-03T15:04:14Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): surgical email patching for workflow email steps (#76015)",
-          "pr": 76015,
-          "previous": "6500c0c4545503c7170a3dd01d088a49d71229f6",
+          "commit": "3724fa6cb2cc5767458e0391d7b30fd3c9db66ff",
+          "date": "2026-03-27T11:13:34+01:00",
+          "week": "2026-03-30",
+          "subject": "feat(workflows): Add recurring schedule support for batch triggers (#51875)",
+          "pr": 51875,
+          "previous": "a30e7efb6c20a45e9e5e1ee0595f5ae86426c5ef",
           "delta": {
-            "composite": -0.6534074074074141,
-            "architecture": -1.3333333333333428,
-            "complexity": -0.29000000000002046,
-            "smells": -0.6145000000000067,
-            "tests": 0.7399999999999949
+            "composite": 0.7320392339915571,
+            "architecture": 0.27824094212171246,
+            "complexity": 0.8571428571428612,
+            "smells": 1.2630000000000052,
+            "tests": 1.1099999999999994
           }
         },
         {
@@ -808,26 +824,11 @@
           "pr": 62026,
           "previous": "d8c7134083105f962071eeab772a24d3aef0444e",
           "delta": {
-            "composite": 0.6225432098765538,
-            "architecture": 1.6111111111111143,
+            "composite": 0.640372013576652,
+            "architecture": 1.6099300339416374,
             "complexity": 0,
             "smells": -0.023000000000010346,
             "tests": 0.010000000000005116
-          }
-        },
-        {
-          "commit": "80e0a4a8348d0e4ea58fbef1946a968193254f58",
-          "date": "2026-08-04T15:26:18Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): account audience for the batch trigger (#76808)",
-          "pr": 76808,
-          "previous": "25d710bc95a20c600343224344d8071032f75b05",
-          "delta": {
-            "composite": -0.621297530864183,
-            "architecture": -0.8972222222222115,
-            "complexity": -0.38999999999998636,
-            "smells": -0.8281999999999954,
-            "tests": 0.17999999999999972
           }
         },
         {
@@ -838,11 +839,26 @@
           "pr": 60388,
           "previous": "2d0591c792179de20cf76db886e8e1c4d939f0f3",
           "delta": {
-            "composite": 0.4001999999999981,
-            "architecture": 0,
+            "composite": 0.38467298071797984,
+            "architecture": 0.02123245179491562,
             "complexity": 0.3200000000000074,
             "smells": 1.1958999999999946,
             "tests": 0.4100000000000037
+          }
+        },
+        {
+          "commit": "554ec4d6d0554841f834a69491833c297819e12c",
+          "date": "2026-03-23T15:30:37+01:00",
+          "week": "2026-03-30",
+          "subject": "feat(workflows): Add response value filtering to survey triggers (#51874)",
+          "pr": 51874,
+          "previous": "d2953186c204c01d86dd0ca893bdde45327b10d0",
+          "delta": {
+            "composite": -0.3804685666603689,
+            "architecture": -0.013364273793797565,
+            "complexity": -1.3371428571428652,
+            "smells": -0.15489999999999782,
+            "tests": 0.5699999999999967
           }
         },
         {
@@ -853,8 +869,8 @@
           "pr": 60652,
           "previous": "309c3b6b9169c394ef29aa063761c5fa511798bf",
           "delta": {
-            "composite": 0.37455555555555975,
-            "architecture": 0.5999999999999943,
+            "composite": 0.37334220388181905,
+            "architecture": 0.6156055097045794,
             "complexity": 0,
             "smells": 0.7355000000000018,
             "tests": -0.19999999999999574
@@ -868,26 +884,11 @@
           "pr": 61001,
           "previous": "d6bf7cca94135550f6776d416a0112175407f0e6",
           "delta": {
-            "composite": 0.19575555555556434,
-            "architecture": 0,
+            "composite": 0.1796363614005685,
+            "architecture": 0.01864090350142078,
             "complexity": -0.0799999999999983,
             "smells": 0.7058999999999997,
             "tests": 0.5499999999999972
-          }
-        },
-        {
-          "commit": "e2742a2974d1e9a54ce97594386145fdb09da333",
-          "date": "2026-08-05T16:41:27Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): materialize referenced email templates at save (#78272)",
-          "pr": 78272,
-          "previous": "ceb9196ed23d40fdbe612f2e1d31d17266a841cf",
-          "delta": {
-            "composite": -0.12800740740740935,
-            "architecture": -0.3333333333333428,
-            "complexity": -0.30000000000001137,
-            "smells": 0.14730000000001553,
-            "tests": 0.47000000000000597
           }
         },
         {
@@ -898,41 +899,11 @@
           "pr": 60438,
           "previous": "cb5b59f6da85bbb6c568e335fa2e7521d96804d9",
           "delta": {
-            "composite": -0.12782222222223538,
-            "architecture": 0,
+            "composite": -0.13509592878533283,
+            "architecture": -0.00013982196334438868,
             "complexity": -0.3999999999999915,
             "smells": -0.0002000000000066393,
             "tests": -0.15000000000000568
-          }
-        },
-        {
-          "commit": "da87cf3ebbeab799070431c2e3e80c4a2a4645b6",
-          "date": "2026-05-28T12:15:11+02:00",
-          "week": "2026-06-01",
-          "subject": "fix(workflows): require a sender on email steps (#60362)",
-          "pr": 60362,
-          "previous": "3bb2fba04cc2d1efc86bc617ab543b5e0846a151",
-          "delta": {
-            "composite": 0.11266666666665515,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.001999999999995339,
-            "tests": 1.0100000000000016
-          }
-        },
-        {
-          "commit": "b6f1064fe0ed3a3984ecbbe802246844ee1db816",
-          "date": "2026-08-07T11:25:05Z",
-          "week": "2026-08-10",
-          "subject": "feat(messaging): add remove_opt_out and open preferences API to keys (#74632)",
-          "pr": 74632,
-          "previous": "01fa042dbad9501bc556bd6c6c6b92bd6d73b929",
-          "delta": {
-            "composite": -0.11227936507937386,
-            "architecture": 0,
-            "complexity": -0.5142857142857054,
-            "smells": 0.037599999999997635,
-            "tests": 0.20000000000000284
           }
         },
         {
@@ -943,11 +914,26 @@
           "pr": 59299,
           "previous": "02b3560c5f7b870f38bcb155c6d2dab562f49a1a",
           "delta": {
-            "composite": -0.11188888888888471,
-            "architecture": 0,
+            "composite": -0.11566217213952257,
+            "architecture": 0.01134456965118602,
             "complexity": -0.3900000000000148,
             "smells": 0.0589999999999975,
             "tests": -0.14999999999999858
+          }
+        },
+        {
+          "commit": "da87cf3ebbeab799070431c2e3e80c4a2a4645b6",
+          "date": "2026-05-28T12:15:11+02:00",
+          "week": "2026-06-01",
+          "subject": "fix(workflows): require a sender on email steps (#60362)",
+          "pr": 60362,
+          "previous": "3bb2fba04cc2d1efc86bc617ab543b5e0846a151",
+          "delta": {
+            "composite": 0.10153710309057828,
+            "architecture": 0.0003427577264574211,
+            "complexity": 0,
+            "smells": 0.001999999999995339,
+            "tests": 1.0100000000000016
           }
         },
         {
@@ -958,8 +944,8 @@
           "pr": 61480,
           "previous": "aaed68c2b81620d00f705172644fb21472e4aa72",
           "delta": {
-            "composite": 0.10317777777777337,
-            "architecture": 0,
+            "composite": 0.09683747206423732,
+            "architecture": 0.008693680160604345,
             "complexity": 0.010000000000005116,
             "smells": 0.30680000000000973,
             "tests": 0.29000000000000625
@@ -973,8 +959,8 @@
           "pr": 60700,
           "previous": "60e1fe1d43778839e8c58e19a85232fecbddf265",
           "delta": {
-            "composite": 0.07839259259257858,
-            "architecture": 0.1666666666666714,
+            "composite": 0.07943090207373871,
+            "architecture": 0.16802725518434158,
             "complexity": 0,
             "smells": 0.07110000000000127,
             "tests": -0.01999999999999602
@@ -988,56 +974,11 @@
           "pr": 50122,
           "previous": "638ef884e8edd7e35b68b0bfb632d9f02b6843a6",
           "delta": {
-            "composite": -0.06236543209874412,
-            "architecture": -0.26111111111110574,
+            "composite": 0.07435967255901232,
+            "architecture": 0.09774918139750355,
             "complexity": 0,
             "smells": 0.13630000000000564,
             "tests": 0.07999999999999119
-          }
-        },
-        {
-          "commit": "01fa042dbad9501bc556bd6c6c6b92bd6d73b929",
-          "date": "2026-08-07T00:20:55Z",
-          "week": "2026-08-10",
-          "subject": "feat(nav): Flag dead projects in project switcher (#76967)",
-          "pr": 76967,
-          "previous": "a598b4b5e0d61d47e371d6374cdc024e9b3a4513",
-          "delta": {
-            "composite": 0.04429876543210298,
-            "architecture": 0.11111111111110006,
-            "complexity": 0,
-            "smells": 0.004900000000006344,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "ceb9196ed23d40fdbe612f2e1d31d17266a841cf",
-          "date": "2026-08-05T14:10:58Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): infer fixed template_id and coerce UUID references (#78208)",
-          "pr": 78208,
-          "previous": "9e925324f9652ff3df7fc5fb572722c880518745",
-          "delta": {
-            "composite": 0.03864444444444359,
-            "architecture": 0,
-            "complexity": 0.010000000000005116,
-            "smells": 0.021399999999999864,
-            "tests": 0.28000000000000114
-          }
-        },
-        {
-          "commit": "25d710bc95a20c600343224344d8071032f75b05",
-          "date": "2026-08-04T15:24:14Z",
-          "week": "2026-08-10",
-          "subject": "fix(workflows): let cohort branch split evenly across any number of branches (#75757)",
-          "pr": 75757,
-          "previous": "ae741c00f9689f9ee00314d71c4ed2d801294463",
-          "delta": {
-            "composite": 0.03757777777776994,
-            "architecture": 0,
-            "complexity": 0.060000000000002274,
-            "smells": 0.039099999999976376,
-            "tests": 0.11000000000000654
           }
         },
         {
@@ -1048,86 +989,71 @@
           "pr": 60097,
           "previous": "4406542d2c429e7dcca1bebf12bbcacdc97c8d1d",
           "delta": {
-            "composite": 0.035222222222216715,
-            "architecture": 0,
+            "composite": 0.03194007152897882,
+            "architecture": 0.0006001788224239135,
             "complexity": 0,
             "smells": 0.003500000000002501,
             "tests": 0.3099999999999987
           }
         },
         {
-          "commit": "a00ab91023a942e6a3e9ac4584e094ff88492db9",
-          "date": "2026-08-04T18:22:27Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): opt-out list import/export via CSV, API and MCP (#76874)",
-          "pr": 76874,
-          "previous": "52311547b53d743b6fe39c30ae6162b0580f64ea",
+          "commit": "590e11b789534110f432a914c90ea06895ad84ab",
+          "date": "2026-03-25T01:44:25+01:00",
+          "week": "2026-03-30",
+          "subject": "fix(workflows): Make action created_at/updated_at optional in Zod schema (#52200)",
+          "pr": 52200,
+          "previous": "c54dc9e8bbb5e98d00f2211649f1a549d41fbdd6",
           "delta": {
-            "composite": 0.03189753086421376,
-            "architecture": 0.09722222222222854,
-            "complexity": 0.009999999999990905,
-            "smells": 0.1308999999999969,
-            "tests": -0.3400000000000034
-          }
-        },
-        {
-          "commit": "30f11071d8128b26537e3231feb29361d310375a",
-          "date": "2026-08-05T10:09:42Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): show open rate and CTR in email metrics (#78136)",
-          "pr": 78136,
-          "previous": "d5d222348833b388d3fe0d60c0a167c3eacb22dd",
-          "delta": {
-            "composite": -0.03161269841270098,
-            "architecture": 0,
-            "complexity": -0.11428571428571388,
-            "smells": 0.0006000000000057071,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "6279198ace82d339c3c0b4600f409e99371b5926",
-          "date": "2026-08-04T19:29:49Z",
-          "week": "2026-08-10",
-          "subject": "chore(workflows): remove the revisions and timing-reschedule flags (#77578)",
-          "pr": 77578,
-          "previous": "3a76c664856be7c9116f27b98aaf11d20c7a8039",
-          "delta": {
-            "composite": 0.03050617283950885,
-            "architecture": -0.10555555555555429,
-            "complexity": 0.29000000000002046,
-            "smells": 0.10449999999998738,
-            "tests": -0.28999999999999915
-          }
-        },
-        {
-          "commit": "6500c0c4545503c7170a3dd01d088a49d71229f6",
-          "date": "2026-08-03T15:04:05Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): slim inline email template editor (#75989)",
-          "pr": 75989,
-          "previous": "314be6e9aefd7646d94e8d3817b3643be73b16d7",
-          "delta": {
-            "composite": 0.027133333333338783,
+            "composite": 0.027000000000001023,
             "architecture": 0,
             "complexity": 0,
-            "smells": 0.027100000000018554,
-            "tests": 0.19000000000000483
+            "smells": 0,
+            "tests": 0.2699999999999996
           }
         },
         {
-          "commit": "b292786aeccc55fdd4e4f323f4454e93de295f6d",
-          "date": "2026-08-05T19:24:35Z",
-          "week": "2026-08-10",
-          "subject": "fix(workflows): name the source template for webhook/manual/pixel triggers (#73703)",
-          "pr": 73703,
-          "previous": "e2742a2974d1e9a54ce97594386145fdb09da333",
+          "commit": "c54dc9e8bbb5e98d00f2211649f1a549d41fbdd6",
+          "date": "2026-03-25T00:33:58+01:00",
+          "week": "2026-03-30",
+          "subject": "chore(workflows): Use single table with status filter instead of three separate tables (#52006)",
+          "pr": 52006,
+          "previous": "06a0d1fcdf704caddebf43f200f4eee8b7c77d66",
           "delta": {
-            "composite": 0.024533333333337737,
-            "architecture": 0,
+            "composite": -0.021688369511480232,
+            "architecture": -0.002120923778718975,
             "complexity": 0,
-            "smells": 0.04039999999999111,
-            "tests": 0.13999999999999346
+            "smells": -0.12919999999999732,
+            "tests": 0.05000000000000071
+          }
+        },
+        {
+          "commit": "a30e7efb6c20a45e9e5e1ee0595f5ae86426c5ef",
+          "date": "2026-03-26T17:25:48-05:00",
+          "week": "2026-03-30",
+          "subject": "feat(): cleanup workflow trigger options (#52471)",
+          "pr": 52471,
+          "previous": "475466e80cc78842e9b38528bed5958ba64d457e",
+          "delta": {
+            "composite": 0.020488453443249455,
+            "architecture": 0.004421133608133232,
+            "complexity": 0.030000000000001137,
+            "smells": 0.09860000000000468,
+            "tests": -0.10000000000000142
+          }
+        },
+        {
+          "commit": "06a0d1fcdf704caddebf43f200f4eee8b7c77d66",
+          "date": "2026-03-24T19:34:13+01:00",
+          "week": "2026-03-30",
+          "subject": "fix(workflows): Show error toast instead of onboarding screen when workflow list fails to load (#51997)",
+          "pr": 51997,
+          "previous": "14adb442ce641e0a7824407055c3dd09c94b74cb",
+          "delta": {
+            "composite": 0.0067963081463062736,
+            "architecture": 0.0005907703657754837,
+            "complexity": 0.010000000000005116,
+            "smells": 0.02779999999999916,
+            "tests": -0.019999999999999574
           }
         },
         {
@@ -1138,116 +1064,41 @@
           "pr": 57847,
           "previous": "f38b5d3cc76ddf1773ea3d89f235d5c94efb35c5",
           "delta": {
-            "composite": 0.022466666666673518,
-            "architecture": 0,
+            "composite": 0.00576026912068528,
+            "architecture": 0.0038506728017182468,
             "complexity": -0.3200000000000074,
             "smells": 0.16610000000001435,
             "tests": 0.6700000000000017
           }
         },
         {
-          "commit": "f206baa1a4e5c560b0cd1e4368874b0bd94cf154",
-          "date": "2026-08-04T18:22:32Z",
-          "week": "2026-08-10",
-          "subject": "feat(messaging): verify push identity tokens with ES256 public keys (#76592)",
-          "pr": 76592,
-          "previous": "a00ab91023a942e6a3e9ac4584e094ff88492db9",
+          "commit": "475466e80cc78842e9b38528bed5958ba64d457e",
+          "date": "2026-03-26T13:48:24-05:00",
+          "week": "2026-03-30",
+          "subject": "feat(workflows): emit email_delivered metric from SES Delivery events (#52321)",
+          "pr": 52321,
+          "previous": "5e7c25a697c04c217f1c4c767b2bb87509fcbd39",
           "delta": {
-            "composite": -0.01035555555554879,
-            "architecture": 0,
+            "composite": 0.0036376915068530025,
+            "architecture": 0.0004942287671383383,
             "complexity": 0,
-            "smells": -0.006599999999991724,
-            "tests": -0.0799999999999983
+            "smells": 0.02719999999999345,
+            "tests": -0.019999999999999574
           }
         },
         {
-          "commit": "a598b4b5e0d61d47e371d6374cdc024e9b3a4513",
-          "date": "2026-08-06T12:52:15Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): poll AWS SES account reputation for alerting (#78805)",
-          "pr": 78805,
-          "previous": "927233fa833c96455d87ee4506651e95620827f6",
+          "commit": "2e7d3f9b45dc6f6aa740406103ad5c6371c75321",
+          "date": "2026-03-27T15:51:05-04:00",
+          "week": "2026-03-30",
+          "subject": "chore(devex): Upgrade to Typescript 5.6 (#52510)",
+          "pr": 52510,
+          "previous": "3724fa6cb2cc5767458e0391d7b30fd3c9db66ff",
           "delta": {
-            "composite": 0.008432451499118088,
-            "architecture": -0.2277777777777743,
-            "complexity": 0.18428571428569285,
-            "smells": 0.061199999999985266,
-            "tests": 0.28999999999999915
-          }
-        },
-        {
-          "commit": "42286aaf3ec5f85e21c11c63f392f2dd0e76f0f4",
-          "date": "2026-08-07T12:00:16Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): auto-wrap html-only emails into an editable design (#78876)",
-          "pr": 78876,
-          "previous": "b6f1064fe0ed3a3984ecbbe802246844ee1db816",
-          "delta": {
-            "composite": 0.005555555555545766,
-            "architecture": 0,
+            "composite": 0.0003851094544558009,
+            "architecture": 0.0007627736361399684,
             "complexity": 0,
-            "smells": 0,
-            "tests": 0.04999999999999716
-          }
-        },
-        {
-          "commit": "927233fa833c96455d87ee4506651e95620827f6",
-          "date": "2026-08-05T23:12:30Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): show share of sent on email metric cards (#77883)",
-          "pr": 77883,
-          "previous": "b292786aeccc55fdd4e4f323f4454e93de295f6d",
-          "delta": {
-            "composite": -0.0014000000000038426,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.0037000000000091404,
-            "tests": -0.01999999999999602
-          }
-        },
-        {
-          "commit": "a9f22eeeecfbe04f6e6f584166a558a68c601ba4",
-          "date": "2026-08-05T10:12:30Z",
-          "week": "2026-08-10",
-          "subject": "fix(workflows): split random cohort traffic by relative weight at runtime (#75157)",
-          "pr": 75157,
-          "previous": "30f11071d8128b26537e3231feb29361d310375a",
-          "delta": {
-            "composite": -0.0007999999999981355,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.0013999999999896318,
-            "tests": -0.010000000000005116
-          }
-        },
-        {
-          "commit": "d86813b2cfa35406f79e1d9425c04687ec4e1c31",
-          "date": "2026-08-07T12:17:04Z",
-          "week": "2026-08-10",
-          "subject": "fix(workflows): export SES reputation gauges as mostrecent in multiprocess mode (#79512)",
-          "pr": 79512,
-          "previous": "42286aaf3ec5f85e21c11c63f392f2dd0e76f0f4",
-          "delta": {
-            "composite": 0.0007999999999981355,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.008600000000001273,
+            "smells": 0.00539999999999452,
             "tests": -0.00999999999999801
-          }
-        },
-        {
-          "commit": "52311547b53d743b6fe39c30ae6162b0580f64ea",
-          "date": "2026-08-04T16:38:21Z",
-          "week": "2026-08-10",
-          "subject": "feat(cdp): stage agent destination edits as reviewable drafts (#74507)",
-          "pr": 74507,
-          "previous": "80e0a4a8348d0e4ea58fbef1946a968193254f58",
-          "delta": {
-            "composite": -0.0006000000000199179,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": -0.007699999999999818,
-            "tests": 0.00999999999999801
           }
         },
         {
@@ -1258,55 +1109,25 @@
           "pr": 61994,
           "previous": "c4889dda4e8220406403a49aeebb12eec490806a",
           "delta": {
-            "composite": 0.0005999999999914962,
-            "architecture": 0,
+            "composite": 0.00030392137041701517,
+            "architecture": -0.0005901965739809611,
             "complexity": 0,
             "smells": -0.002299999999991087,
             "tests": 0.00999999999999801
           }
         },
         {
-          "commit": "3a76c664856be7c9116f27b98aaf11d20c7a8039",
-          "date": "2026-08-04T18:22:37Z",
-          "week": "2026-08-10",
-          "subject": "feat(conversations): emit message sent event for private team notes (#76685)",
-          "pr": 76685,
-          "previous": "f206baa1a4e5c560b0cd1e4368874b0bd94cf154",
-          "delta": {
-            "composite": 0.0004888888888814336,
-            "architecture": 0,
-            "complexity": 0.009999999999990905,
-            "smells": 0.004700000000013915,
-            "tests": -0.030000000000001137
-          }
-        },
-        {
-          "commit": "02b3560c5f7b870f38bcb155c6d2dab562f49a1a",
-          "date": "2026-06-02T15:32:53Z",
+          "commit": "c4889dda4e8220406403a49aeebb12eec490806a",
+          "date": "2026-06-06T19:49:33+01:00",
           "week": "2026-06-08",
-          "subject": "feat(workflows): hide generic schedule trigger from selector (#60938)",
-          "pr": 60938,
-          "previous": "41c3a2014a7a53b7be636121f7f28fabd19a6a6f",
+          "subject": "refactor(frontend): replace tabAwareUrlToAction with urlToAction (#61990)",
+          "pr": 61990,
+          "previous": "2fde546c6c585990f4f6ab0a17d4f404723788a2",
           "delta": {
-            "composite": -0.0004666666666821584,
-            "architecture": 0,
+            "composite": -0.00009900541590468492,
+            "architecture": -0.00014751353972997094,
             "complexity": 0,
-            "smells": 0.002899999999982583,
-            "tests": -0.010000000000005116
-          }
-        },
-        {
-          "commit": "d5d222348833b388d3fe0d60c0a167c3eacb22dd",
-          "date": "2026-08-05T01:41:25Z",
-          "week": "2026-08-10",
-          "subject": "chore(feature-flags): return frozen dataclasses instead of tuples (#76138)",
-          "pr": 76138,
-          "previous": "6279198ace82d339c3c0b4600f409e99371b5926",
-          "delta": {
-            "composite": 0.0002888888888890051,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.001300000000000523,
+            "smells": -0.0002000000000066393,
             "tests": 0
           }
         },
@@ -1318,25 +1139,70 @@
           "pr": 60866,
           "previous": "6970121e6400d8766641cb3a7d33ce3b6c661d85",
           "delta": {
-            "composite": 0.00004444444445539375,
-            "architecture": 0,
+            "composite": 0.00009508825858972614,
+            "architecture": 0.00013772064650652283,
             "complexity": 0,
             "smells": 0.0002000000000066393,
             "tests": 0
           }
         },
         {
-          "commit": "c4889dda4e8220406403a49aeebb12eec490806a",
-          "date": "2026-06-06T19:49:33+01:00",
-          "week": "2026-06-08",
-          "subject": "refactor(frontend): replace tabAwareUrlToAction with urlToAction (#61990)",
-          "pr": 61990,
-          "previous": "2fde546c6c585990f4f6ab0a17d4f404723788a2",
+          "commit": "14adb442ce641e0a7824407055c3dd09c94b74cb",
+          "date": "2026-03-24T11:06:19-04:00",
+          "week": "2026-03-30",
+          "subject": "feat(devex): Lazy-load load large frontend libraries (elkjs, zxcvbn, and hls.js) (#51523)",
+          "pr": 51523,
+          "previous": "d56970d60bf90aa7281699171b8a42792be850cd",
           "delta": {
-            "composite": -0.00004444444445539375,
+            "composite": 0.00007970790787226179,
+            "architecture": 0.00004926976967567498,
+            "complexity": 0,
+            "smells": 0.00030000000000995897,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "02b3560c5f7b870f38bcb155c6d2dab562f49a1a",
+          "date": "2026-06-02T15:32:53Z",
+          "week": "2026-06-08",
+          "subject": "feat(workflows): hide generic schedule trigger from selector (#60938)",
+          "pr": 60938,
+          "previous": "41c3a2014a7a53b7be636121f7f28fabd19a6a6f",
+          "delta": {
+            "composite": -0.000035595975489854936,
+            "architecture": 0.0009610100613031136,
+            "complexity": 0,
+            "smells": 0.002899999999982583,
+            "tests": -0.010000000000005116
+          }
+        },
+        {
+          "commit": "1e7d1f9f5aa08d210b432024d0a148f7ff38d84a",
+          "date": "2026-03-24T09:03:48+01:00",
+          "week": "2026-03-30",
+          "subject": "fix(test): add missing MSW mock for hog_function_templates endpoint (#52034)",
+          "pr": 52034,
+          "previous": "554ec4d6d0554841f834a69491833c297819e12c",
+          "delta": {
+            "composite": 0,
             "architecture": 0,
             "complexity": 0,
-            "smells": -0.0002000000000066393,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5e7c25a697c04c217f1c4c767b2bb87509fcbd39",
+          "date": "2026-03-26T11:49:05Z",
+          "week": "2026-03-30",
+          "subject": "chore(mcp): enable all mcp tools (#52398)",
+          "pr": 52398,
+          "previous": "590e11b789534110f432a914c90ea06895ad84ab",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
             "tests": 0
           }
         },
@@ -1384,51 +1250,6 @@
             "smells": 0,
             "tests": 0
           }
-        },
-        {
-          "commit": "314be6e9aefd7646d94e8d3817b3643be73b16d7",
-          "date": "2026-08-03T14:09:16Z",
-          "week": "2026-08-10",
-          "subject": "feat(signup): add student role and randomize role order (#76606)",
-          "pr": 76606,
-          "previous": "634bad0710c614fcd5dde95804481e8ad822f35e",
-          "delta": {
-            "composite": 0,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "9e925324f9652ff3df7fc5fb572722c880518745",
-          "date": "2026-08-05T14:05:40Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): attribute run metrics and conversions to a version (#75100)",
-          "pr": 75100,
-          "previous": "a9f22eeeecfbe04f6e6f584166a558a68c601ba4",
-          "delta": {
-            "composite": 0,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "25a7d4d6ab01868b04653c905469bef4ba8b51ac",
-          "date": "2026-08-07T12:25:59Z",
-          "week": "2026-08-10",
-          "subject": "feat(workflows): design-first email authoring for MCP agents (#78879)",
-          "pr": 78879,
-          "previous": "d86813b2cfa35406f79e1d9425c04687ec4e1c31",
-          "delta": {
-            "composite": 0,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0
-          }
         }
       ]
     },
@@ -1440,8 +1261,8 @@
           "week": "2026-03-23",
           "file": "products/surveys/2026-03-22-d2953186c204.json",
           "scores": {
-            "composite": 77.47886825396826,
-            "architecture": 89.825,
+            "composite": 74.87737066555279,
+            "architecture": 83.36106237816766,
             "complexity": 64.81428571428572,
             "smells": 81.4383,
             "tests": 58.01
@@ -1453,8 +1274,8 @@
           "week": "2026-03-30",
           "file": "products/surveys/2026-03-29-b5db3557e4a6.json",
           "scores": {
-            "composite": 58.388538447971776,
-            "architecture": 61.43611111111111,
+            "composite": 52.63663199011826,
+            "architecture": 51.08932283243849,
             "complexity": 23.07714285714286,
             "smells": 76.3888,
             "tests": 100
@@ -1466,8 +1287,8 @@
           "week": "2026-04-06",
           "file": "products/surveys/2026-04-05-0927d6b52d38.json",
           "scores": {
-            "composite": 61.22196984126984,
-            "architecture": 64.425,
+            "composite": 58.40149538461538,
+            "architecture": 60.31510989010989,
             "complexity": 34.48857142857143,
             "smells": 73.9444,
             "tests": 91.4
@@ -1479,8 +1300,8 @@
           "week": "2026-04-13",
           "file": "products/surveys/2026-04-12-a560cb1c0e82.json",
           "scores": {
-            "composite": 61.13193492063492,
-            "architecture": 64.425,
+            "composite": 58.329023094293916,
+            "architecture": 60.38329345002052,
             "complexity": 34.114285714285714,
             "smells": 73.23710000000001,
             "tests": 92.94
@@ -1492,8 +1313,8 @@
           "week": "2026-04-20",
           "file": "products/surveys/2026-04-19-f55d8340b44b.json",
           "scores": {
-            "composite": 60.99198677248678,
-            "architecture": 63.75833333333333,
+            "composite": 58.11860657028862,
+            "architecture": 59.556302140007254,
             "complexity": 34.37428571428572,
             "smells": 73.41900000000001,
             "tests": 93
@@ -1505,8 +1326,8 @@
           "week": "2026-04-27",
           "file": "products/surveys/2026-04-26-137de4d5a44f.json",
           "scores": {
-            "composite": 51.92895061728395,
-            "architecture": 65.04444444444444,
+            "composite": 51.02106730826887,
+            "architecture": 64.11891827067218,
             "complexity": 28.060000000000002,
             "smells": 47.88250000000001,
             "tests": 73.79
@@ -1518,8 +1339,8 @@
           "week": "2026-05-04",
           "file": "products/surveys/2026-05-03-698149ad3370.json",
           "scores": {
-            "composite": 52.87770123456791,
-            "architecture": 65.53888888888889,
+            "composite": 52.30254158654893,
+            "architecture": 65.1793039663723,
             "complexity": 31.589999999999996,
             "smells": 47.539100000000005,
             "tests": 72.46000000000001
@@ -1531,8 +1352,8 @@
           "week": "2026-05-11",
           "file": "products/surveys/2026-05-10-f41c55b2f7a5.json",
           "scores": {
-            "composite": 52.76098271604939,
-            "architecture": 65.20555555555556,
+            "composite": 52.28178417590814,
+            "architecture": 65.07086043977034,
             "complexity": 31.810000000000002,
             "smells": 47.1522,
             "tests": 72.8
@@ -1544,8 +1365,8 @@
           "week": "2026-05-18",
           "file": "products/surveys/2026-05-17-8bf1ce63224d.json",
           "scores": {
-            "composite": 52.75627160493827,
-            "architecture": 65.20555555555556,
+            "composite": 52.280977598131685,
+            "architecture": 65.0794439953292,
             "complexity": 31.810000000000002,
             "smells": 47.15599999999999,
             "tests": 72.75
@@ -1557,8 +1378,8 @@
           "week": "2026-05-25",
           "file": "products/surveys/2026-05-24-4406542d2c42.json",
           "scores": {
-            "composite": 57.192134391534395,
-            "architecture": 61.98333333333333,
+            "composite": 52.21472836402329,
+            "architecture": 53.52832805291535,
             "complexity": 20.492857142857144,
             "smells": 73.27770000000001,
             "tests": 100
@@ -1570,8 +1391,8 @@
           "week": "2026-06-01",
           "file": "products/surveys/2026-05-31-309c3b6b9169.json",
           "scores": {
-            "composite": 56.54398624338624,
-            "architecture": 60.31666666666666,
+            "composite": 51.103061419439875,
+            "architecture": 50.74916069145684,
             "complexity": 20.492857142857144,
             "smells": 73.27770000000001,
             "tests": 100
@@ -1583,8 +1404,8 @@
           "week": "2026-06-08",
           "file": "products/surveys/2026-06-07-1050dad2a10e.json",
           "scores": {
-            "composite": 52.3590470899471,
-            "architecture": 47.85833333333334,
+            "composite": 47.84472864403541,
+            "architecture": 41.052864467231394,
             "complexity": 21.017142857142858,
             "smells": 75.59219999999999,
             "tests": 100
@@ -1596,8 +1417,8 @@
           "week": "2026-06-15",
           "file": "products/surveys/2026-06-14-57696b06d2b3.json",
           "scores": {
-            "composite": 52.70160264550264,
-            "architecture": 48.458333333333336,
+            "composite": 48.31957352302266,
+            "architecture": 41.96172666469952,
             "complexity": 21.27714285714286,
             "smells": 75.7587,
             "tests": 100
@@ -1609,8 +1430,8 @@
           "week": "2026-06-22",
           "file": "products/surveys/2026-06-21-8e473b6a37a4.json",
           "scores": {
-            "composite": 52.61406190476191,
-            "architecture": 48.125,
+            "composite": 48.2224407016296,
+            "architecture": 41.62419461121687,
             "complexity": 21.27714285714286,
             "smells": 75.9481,
             "tests": 100
@@ -1622,8 +1443,8 @@
           "week": "2026-06-29",
           "file": "products/surveys/2026-06-28-13c7dfaea7ab.json",
           "scores": {
-            "composite": 52.61039523809524,
-            "architecture": 48.125,
+            "composite": 48.32534443418301,
+            "architecture": 41.83220394260038,
             "complexity": 21.737142857142864,
             "smells": 75.3566,
             "tests": 100
@@ -1635,8 +1456,8 @@
           "week": "2026-07-06",
           "file": "products/surveys/2026-07-05-6577fc44f726.json",
           "scores": {
-            "composite": 52.84398130511464,
-            "architecture": 45.461111111111116,
+            "composite": 48.830985524636965,
+            "architecture": 39.79412095444953,
             "complexity": 25.302857142857146,
             "smells": 76.61240000000001,
             "tests": 100
@@ -1648,8 +1469,8 @@
           "week": "2026-07-13",
           "file": "products/surveys/2026-07-12-7026f7ec439a.json",
           "scores": {
-            "composite": 53.23600035273368,
-            "architecture": 46.46111111111111,
+            "composite": 49.35527485036319,
+            "architecture": 41.10137284019367,
             "complexity": 25.274285714285718,
             "smells": 76.6622,
             "tests": 100
@@ -1661,8 +1482,8 @@
           "week": "2026-07-20",
           "file": "products/surveys/2026-07-19-6f8208e93ef6.json",
           "scores": {
-            "composite": 52.599941093474435,
-            "architecture": 45.794444444444444,
+            "composite": 48.637084261684215,
+            "architecture": 40.31119636849625,
             "complexity": 24.014285714285716,
             "smells": 76.5416,
             "tests": 100
@@ -1674,8 +1495,8 @@
           "week": "2026-07-27",
           "file": "products/surveys/2026-07-26-78b3689515fd.json",
           "scores": {
-            "composite": 52.59279294532627,
-            "architecture": 46.12777777777777,
+            "composite": 48.689478894362345,
+            "architecture": 40.817432950191574,
             "complexity": 23.47428571428572,
             "smells": 76.6011,
             "tests": 100
@@ -1687,8 +1508,8 @@
           "week": "2026-08-03",
           "file": "products/surveys/2026-08-02-634bad0710c6.json",
           "scores": {
-            "composite": 53.03472627865961,
-            "architecture": 46.12777777777777,
+            "composite": 49.23167465857037,
+            "architecture": 40.95232236071163,
             "complexity": 25.284285714285716,
             "smells": 76.32730000000001,
             "tests": 100
@@ -1700,8 +1521,8 @@
           "week": "2026-08-10",
           "file": "products/surveys/2026-08-09-7da1c4690c65.json",
           "scores": {
-            "composite": 50.17409541446209,
-            "architecture": 38.580555555555556,
+            "composite": 46.38440510484082,
+            "architecture": 33.66674847638777,
             "complexity": 25.284285714285716,
             "smells": 76.66210000000001,
             "tests": 100
@@ -1713,8 +1534,8 @@
           "week": "2026-08-17",
           "file": "products/surveys/2026-08-16-42d5edca6dc4.json",
           "scores": {
-            "composite": 49.58225097001763,
-            "architecture": 38.580555555555556,
+            "composite": 45.760063299139375,
+            "architecture": 33.707543962134146,
             "complexity": 23.124285714285715,
             "smells": 76.6988,
             "tests": 100
@@ -1726,8 +1547,8 @@
           "week": "2026-08-24",
           "file": "products/surveys/2026-08-23-0250a2b68bcf.json",
           "scores": {
-            "composite": 49.711880599647266,
-            "architecture": 38.91388888888889,
+            "composite": 45.939806266695776,
+            "architecture": 34.156901381025136,
             "complexity": 23.124285714285715,
             "smells": 76.6988,
             "tests": 100
@@ -1739,8 +1560,8 @@
           "week": "2026-08-31",
           "file": "products/surveys/2026-08-30-e62b8dd5e87c.json",
           "scores": {
-            "composite": 49.514243562610226,
-            "architecture": 38.24722222222222,
+            "composite": 45.68685439947586,
+            "architecture": 33.37212171297537,
             "complexity": 23.234285714285715,
             "smells": 76.8386,
             "tests": 100
@@ -1752,8 +1573,8 @@
           "week": "2026-09-07",
           "file": "products/surveys/2026-09-06-5f8bc937a84b.json",
           "scores": {
-            "composite": 53.85747671957672,
-            "architecture": 44.64166666666666,
+            "composite": 50.60899897720767,
+            "architecture": 40.64124030016202,
             "complexity": 30.107142857142854,
             "smells": 76.6018,
             "tests": 100
@@ -1765,8 +1586,8 @@
           "week": "2026-09-14",
           "file": "products/surveys/2026-09-13-66ea432ade17.json",
           "scores": {
-            "composite": 55.260464373897705,
-            "architecture": 48.35277777777778,
+            "composite": 52.01160060129307,
+            "architecture": 44.263244360375516,
             "complexity": 29.907142857142855,
             "smells": 76.6708,
             "tests": 100
@@ -1778,8 +1599,8 @@
           "week": "2026-09-21",
           "file": "products/surveys/2026-09-20-6bbc94fa5128.json",
           "scores": {
-            "composite": 57.593929805996474,
-            "architecture": 52.93888888888889,
+            "composite": 54.8294181315258,
+            "architecture": 49.83408818595734,
             "complexity": 31.79714285714286,
             "smells": 76.78320000000001,
             "tests": 100
@@ -1815,8 +1636,8 @@
               "date": "2026-04-15T16:04:48-07:00"
             },
             "delta": {
-              "composite": -0.14334814814815644,
-              "architecture": -0.6666666666666643,
+              "composite": -0.21520372921455078,
+              "architecture": -0.8313093230363862,
               "complexity": 0.2600000000000051,
               "smells": 0.1565999999999832,
               "tests": 0.0799999999999983
@@ -1849,8 +1670,8 @@
               "date": "2026-05-20T16:54:22-07:00"
             },
             "delta": {
-              "composite": 6.007423633156961,
-              "architecture": -2.5555555555555642,
+              "composite": 1.4474918777962813,
+              "architecture": -11.243727448366421,
               "complexity": -7.122857142857143,
               "smells": 27.2842,
               "tests": 26.25
@@ -1866,8 +1687,8 @@
               "date": "2026-05-27T20:27:25-03:00"
             },
             "delta": {
-              "composite": -0.5185185185185262,
-              "architecture": -1.3333333333333286,
+              "composite": -0.889333555666731,
+              "architecture": -2.2233338891668026,
               "complexity": 0,
               "smells": 0,
               "tests": 0
@@ -1883,8 +1704,8 @@
               "date": "2026-06-03T23:33:21Z"
             },
             "delta": {
-              "composite": -4.17700264550264,
-              "architecture": -12.458333333333321,
+              "composite": -3.24976134683304,
+              "architecture": -9.696296224225442,
               "complexity": 0.5528571428571425,
               "smells": 2.314499999999981,
               "tests": 0
@@ -1917,8 +1738,8 @@
               "date": "2026-06-17T20:44:22-03:00"
             },
             "delta": {
-              "composite": -0.08754074074072804,
-              "architecture": -0.3333333333333357,
+              "composite": -0.09713282139306045,
+              "architecture": -0.33753205348264714,
               "complexity": 0,
               "smells": 0.18939999999999202,
               "tests": 0
@@ -1934,8 +1755,8 @@
               "date": "2026-07-08T16:16:44-07:00"
             },
             "delta": {
-              "composite": -0.053111111111121545,
-              "architecture": 0,
+              "composite": -0.058399696010773994,
+              "architecture": -0.0027492400269437667,
               "complexity": -0.18999999999999773,
               "smells": -0.0014999999999929514,
               "tests": 0
@@ -1951,8 +1772,8 @@
               "date": "2026-07-15T16:53:17-07:00"
             },
             "delta": {
-              "composite": -0.4296666666666553,
-              "architecture": 0,
+              "composite": -0.44556835492146973,
+              "architecture": 0.052829112696329616,
               "complexity": -1.6000000000000014,
               "smells": 0.06650000000000489,
               "tests": 0
@@ -1985,8 +1806,8 @@
               "date": "2026-08-05T23:58:18Z"
             },
             "delta": {
-              "composite": 0.007088888888887368,
-              "architecture": 0,
+              "composite": 0.011629234989605663,
+              "architecture": 0.013123087474035344,
               "complexity": 0,
               "smells": 0.031899999999993156,
               "tests": 0
@@ -2019,8 +1840,8 @@
               "date": "2026-08-26T23:13:56Z"
             },
             "delta": {
-              "composite": -0.22894074074074666,
-              "architecture": -0.3333333333333357,
+              "composite": -0.2792136660427289,
+              "architecture": -0.4258341651068278,
               "complexity": -0.39000000000000057,
               "smells": 0.04059999999999775,
               "tests": 0
@@ -2036,8 +1857,8 @@
               "date": "2026-09-02T23:54:39Z"
             },
             "delta": {
-              "composite": 0.5722444444444506,
-              "architecture": 0,
+              "composite": 0.7854368530945308,
+              "architecture": 0.3172921327362985,
               "complexity": 2.8699999999999903,
               "smells": -1.0124000000000137,
               "tests": 0
@@ -2053,8 +1874,8 @@
               "date": "2026-09-09T23:53:02Z"
             },
             "delta": {
-              "composite": -0.12767407407408626,
-              "architecture": -0.3333333333333357,
+              "composite": -0.16368021016133838,
+              "architecture": -0.41360052540335346,
               "complexity": 0,
               "smells": 0.008799999999993702,
               "tests": 0
@@ -2079,15 +1900,15 @@
           }
         ],
         "median": {
-          "composite": 0.08754074074072804,
-          "architecture": 0,
+          "composite": 0.09713282139306045,
+          "architecture": 0.052829112696329616,
           "complexity": 0,
           "smells": 0.008799999999993702,
           "tests": 0
         },
         "band": {
-          "composite": 4.17700264550264,
-          "architecture": 2.5555555555555642,
+          "composite": 1.4474918777962813,
+          "architecture": 9.696296224225442,
           "complexity": 2.8699999999999903,
           "smells": 2.314499999999981,
           "tests": 0.0799999999999983
@@ -2102,8 +1923,8 @@
           "pr": 51611,
           "previous": "af18966458a1cb1e034ec868355049e7f3e82507",
           "delta": {
-            "composite": -18.90881128747796,
-            "architecture": -28.055555555555557,
+            "composite": -21.944616627273533,
+            "architecture": -31.67318442532666,
             "complexity": -41.537142857142854,
             "smells": -5.0660000000000025,
             "tests": 41.99
@@ -2117,55 +1938,40 @@
           "pr": 54698,
           "previous": "7d69f056cc748e537af13ff15e997e1b5c552b98",
           "delta": {
-            "composite": -9.270636155202823,
-            "architecture": 1.2861111111111043,
+            "composite": -7.264455088937531,
+            "architecture": 4.612426563370462,
             "complexity": -6.314285714285717,
             "smells": -26.33070000000002,
             "tests": -19.49000000000001
           }
         },
         {
-          "commit": "706db7c3d5ee4ab321334a717d365fc6d43d5616",
-          "date": "2026-05-20T11:30:30-03:00",
-          "week": "2026-05-25",
-          "subject": "refactor(onboarding): compose flow from per-product step providers (#57579)",
-          "pr": 57579,
-          "previous": "87f0ad3266eddb1e127bac5a33f832336b8e1a9e",
+          "commit": "cd4d507fd89b9a50dedac829d7926a0e4d0939c6",
+          "date": "2026-03-30T15:15:34-03:00",
+          "week": "2026-04-06",
+          "subject": "refactor: Multitude of simplifications for MCP Apps (#51379)",
+          "pr": 51379,
+          "previous": "b5db3557e4a6d3d700e4649f7894c237f0056fba",
           "delta": {
-            "composite": 6.007423633156961,
-            "architecture": -2.5555555555555642,
-            "complexity": -7.122857142857143,
-            "smells": 27.2842,
-            "tests": 26.25
+            "composite": 5.7648633944971195,
+            "architecture": 9.225787057671397,
+            "complexity": 11.411428571428573,
+            "smells": -2.4444000000000017,
+            "tests": -8.599999999999994
           }
         },
         {
-          "commit": "1095361a044ac7586ab30fc033b035f7b624d322",
-          "date": "2026-05-21T14:04:10-03:00",
-          "week": "2026-05-25",
-          "subject": "feat(surveys): replace 'Default' translation with explicit base_language (#58628)",
-          "pr": 58628,
-          "previous": "60d10aafdf1bffab21a4cc06b80d7645f4f636b9",
+          "commit": "f950f8e267af213b2f2ced4718110131d1a6f72f",
+          "date": "2026-03-26T20:53:12Z",
+          "week": "2026-03-30",
+          "subject": "fix(feature-flags): update null checks to enable per-condition aggregation_group_type_index (#52179)",
+          "pr": 52179,
+          "previous": "5e7c25a697c04c217f1c4c767b2bb87509fcbd39",
           "delta": {
-            "composite": -1.5664349206349186,
-            "architecture": 0,
-            "complexity": -4.574285714285718,
-            "smells": -1.3310999999999922,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "54d24c825c63ac7f957f308f6ae2c9b15fdecf49",
-          "date": "2026-05-21T14:22:02+02:00",
-          "week": "2026-05-25",
-          "subject": "chore(devex): move alert and action models to product folders (#59224)",
-          "pr": 59224,
-          "previous": "029887d11c9861c9fb0ab0b6b36931e77feb30c0",
-          "delta": {
-            "composite": -0.38819999999999766,
-            "architecture": -1,
+            "composite": -0.25930247633864667,
+            "architecture": -0.6482561908466309,
             "complexity": 0,
-            "smells": 0.0031000000000034333,
+            "smells": 0,
             "tests": 0
           }
         },
@@ -2177,71 +1983,11 @@
           "pr": 55443,
           "previous": "f88c5c995b4c69fbf2e3c619b0804618d7e3531a",
           "delta": {
-            "composite": 0.18782222222221634,
+            "composite": 0.16903999999999542,
             "architecture": 0,
             "complexity": 0,
             "smells": 0.8452000000000055,
             "tests": 0
-          }
-        },
-        {
-          "commit": "87f0ad3266eddb1e127bac5a33f832336b8e1a9e",
-          "date": "2026-05-19T20:41:28-03:00",
-          "week": "2026-05-25",
-          "subject": "feat(surveys): resolve $survey_response_<id> taxonomy to question text (#59072)",
-          "pr": 59072,
-          "previous": "cc0d74f8d36a6c86ae45aebc857f991cf967c08f",
-          "delta": {
-            "composite": 0.167555555555559,
-            "architecture": 0,
-            "complexity": 0.38000000000000256,
-            "smells": 0.049000000000006594,
-            "tests": 0.45999999999999375
-          }
-        },
-        {
-          "commit": "f950f8e267af213b2f2ced4718110131d1a6f72f",
-          "date": "2026-03-26T20:53:12Z",
-          "week": "2026-03-30",
-          "subject": "fix(feature-flags): update null checks to enable per-condition aggregation_group_type_index (#52179)",
-          "pr": 52179,
-          "previous": "5e7c25a697c04c217f1c4c767b2bb87509fcbd39",
-          "delta": {
-            "composite": -0.12962962962963331,
-            "architecture": -0.3333333333333357,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "e89d0efc36e45dfa2ec20bd0f84f2be369d6d2a0",
-          "date": "2026-05-18T15:15:44Z",
-          "week": "2026-05-25",
-          "subject": "chore(rbac): replace deprecated ADVANCED_PERMISSIONS (#56976)",
-          "pr": 56976,
-          "previous": "8bf1ce63224da919897fe8d8fcdc22824b2f3fbf",
-          "delta": {
-            "composite": 0.12962962962963331,
-            "architecture": 0.3333333333333286,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "cc0d74f8d36a6c86ae45aebc857f991cf967c08f",
-          "date": "2026-05-19T16:26:56Z",
-          "week": "2026-05-25",
-          "subject": "fix(surveys): enforce object access control on generate_translations (#59003)",
-          "pr": 59003,
-          "previous": "e89d0efc36e45dfa2ec20bd0f84f2be369d6d2a0",
-          "delta": {
-            "composite": 0.060000000000002274,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0.5400000000000063
           }
         },
         {
@@ -2252,56 +1998,11 @@
           "pr": 52510,
           "previous": "54dfcb5ae168213a1ad6b6e56cf0cb331f127855",
           "delta": {
-            "composite": -0.05260000000000531,
-            "architecture": 0,
+            "composite": -0.039073592293625836,
+            "architecture": 0.04566601926592995,
             "complexity": -0.1999999999999993,
             "smells": 0.013299999999986767,
             "tests": 0
-          }
-        },
-        {
-          "commit": "029887d11c9861c9fb0ab0b6b36931e77feb30c0",
-          "date": "2026-05-21T12:11:59Z",
-          "week": "2026-05-25",
-          "subject": "chore(flags): log when surveys/EAF mutate flags without feature_flag:write (#59226)",
-          "pr": 59226,
-          "previous": "706db7c3d5ee4ab321334a717d365fc6d43d5616",
-          "delta": {
-            "composite": 0.025888888888886186,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.11650000000000205,
-            "tests": 0
-          }
-        },
-        {
-          "commit": "e29bd4156d6755e0e83f4d7cbbd7fe0d4f85b359",
-          "date": "2026-04-21T09:23:09+02:00",
-          "week": "2026-04-27",
-          "subject": "chore(deps): bump Django ecosystem deps for 5.2 readiness (#55226)",
-          "pr": 55226,
-          "previous": "f55d8340b44b9f815a1c0555ebb71a1d40d57d75",
-          "delta": {
-            "composite": 0.013044444444439307,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": -0.05129999999999768,
-            "tests": 0.21999999999999886
-          }
-        },
-        {
-          "commit": "66cb6614f8eb738fe874d38d5848e4f00283262f",
-          "date": "2026-04-24T12:45:40+02:00",
-          "week": "2026-04-27",
-          "subject": "fix(openapi): eliminate all drf-spectacular warnings and gate CI with --fail-on-warn (#54909)",
-          "pr": 54909,
-          "previous": "7b4e45fd1585ec340f2d750588f88f9b1127de86",
-          "delta": {
-            "composite": 0.006733333333336589,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.00030000000000995897,
-            "tests": 0.060000000000016485
           }
         },
         {
@@ -2312,8 +2013,8 @@
           "pr": 52341,
           "previous": "ee68aa21adb3c08ae3312c2b8a3b9de0ac69986a",
           "delta": {
-            "composite": 0.006622222222226526,
-            "architecture": 0,
+            "composite": 0.010803945851051822,
+            "architecture": 0.012109864627618094,
             "complexity": 0,
             "smells": 0.02980000000002292,
             "tests": 0
@@ -2327,11 +2028,41 @@
           "pr": 50254,
           "previous": "465b2a2c15e5339a842b72904b977d0618f823c9",
           "delta": {
-            "composite": -0.005911111111110756,
-            "architecture": 0,
+            "composite": -0.008549925379774947,
+            "architecture": -0.008074813449425733,
             "complexity": 0,
             "smells": -0.026600000000001955,
             "tests": 0
+          }
+        },
+        {
+          "commit": "e29bd4156d6755e0e83f4d7cbbd7fe0d4f85b359",
+          "date": "2026-04-21T09:23:09+02:00",
+          "week": "2026-04-27",
+          "subject": "chore(deps): bump Django ecosystem deps for 5.2 readiness (#55226)",
+          "pr": 55226,
+          "previous": "f55d8340b44b9f815a1c0555ebb71a1d40d57d75",
+          "delta": {
+            "composite": -0.0038387598298186276,
+            "architecture": -0.038946899574561655,
+            "complexity": 0,
+            "smells": -0.05129999999999768,
+            "tests": 0.21999999999999886
+          }
+        },
+        {
+          "commit": "66cb6614f8eb738fe874d38d5848e4f00283262f",
+          "date": "2026-04-24T12:45:40+02:00",
+          "week": "2026-04-27",
+          "subject": "fix(openapi): eliminate all drf-spectacular warnings and gate CI with --fail-on-warn (#54909)",
+          "pr": 54909,
+          "previous": "7b4e45fd1585ec340f2d750588f88f9b1127de86",
+          "delta": {
+            "composite": 0.001714586747603164,
+            "architecture": -0.010863533130972769,
+            "complexity": 0,
+            "smells": 0.00030000000000995897,
+            "tests": 0.060000000000016485
           }
         },
         {
@@ -2483,21 +2214,6 @@
             "smells": 0,
             "tests": 0
           }
-        },
-        {
-          "commit": "60d10aafdf1bffab21a4cc06b80d7645f4f636b9",
-          "date": "2026-05-21T12:17:09-04:00",
-          "week": "2026-05-25",
-          "subject": "chore(llma): rename visible/comments from LLMA to AIO (#59264)",
-          "pr": 59264,
-          "previous": "54d24c825c63ac7f957f308f6ae2c9b15fdecf49",
-          "delta": {
-            "composite": 0,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0,
-            "tests": 0
-          }
         }
       ]
     },
@@ -2509,8 +2225,8 @@
           "week": "2026-03-23",
           "file": "products/error_tracking/2026-03-22-d2953186c204.json",
           "scores": {
-            "composite": 75.72450017636685,
-            "architecture": 87.35555555555555,
+            "composite": 78.50128661272605,
+            "architecture": 91.69330938895796,
             "complexity": 84.92714285714285,
             "smells": 72.61410000000001,
             "tests": 18.23
@@ -2522,8 +2238,8 @@
           "week": "2026-03-30",
           "file": "products/error_tracking/2026-03-29-b5db3557e4a6.json",
           "scores": {
-            "composite": 76.07609065255731,
-            "architecture": 87.45555555555556,
+            "composite": 78.91071881123233,
+            "architecture": 91.96027559950942,
             "complexity": 85.35142857142856,
             "smells": 73.7709,
             "tests": 17.669999999999998
@@ -2535,8 +2251,8 @@
           "week": "2026-04-06",
           "file": "products/error_tracking/2026-04-05-0927d6b52d38.json",
           "scores": {
-            "composite": 76.03997283950616,
-            "architecture": 87.09444444444443,
+            "composite": 78.93566827259141,
+            "architecture": 91.79562068147852,
             "complexity": 85.29,
             "smells": 74.38210000000001,
             "tests": 17.54
@@ -2548,8 +2264,8 @@
           "week": "2026-04-13",
           "file": "products/error_tracking/2026-04-12-a560cb1c0e82.json",
           "scores": {
-            "composite": 74.8732869488536,
-            "architecture": 86.81388888888888,
+            "composite": 77.94731467534193,
+            "architecture": 91.85911525978338,
             "complexity": 84.05142857142857,
             "smells": 70.4562,
             "tests": 18.970000000000002
@@ -2561,11 +2277,11 @@
           "week": "2026-04-20",
           "file": "products/error_tracking/2026-04-19-f55d8340b44b.json",
           "scores": {
-            "composite": 77.67013139329806,
-            "architecture": 88.46388888888889,
+            "composite": 78.95295567960656,
+            "architecture": 93.17906777044499,
             "complexity": 84.67142857142858,
             "smells": 71.3295,
-            "tests": 35.07
+            "tests": 20.14
           }
         },
         {
@@ -2574,11 +2290,11 @@
           "week": "2026-04-27",
           "file": "products/error_tracking/2026-04-26-137de4d5a44f.json",
           "scores": {
-            "composite": 77.4492947089947,
-            "architecture": 86.00833333333333,
+            "composite": 79.27782990426003,
+            "architecture": 90.80023904636437,
             "complexity": 84.56571428571428,
             "smells": 77.91009999999999,
-            "tests": 28.78
+            "tests": 20.06
           }
         },
         {
@@ -2587,11 +2303,11 @@
           "week": "2026-05-04",
           "file": "products/error_tracking/2026-05-03-698149ad3370.json",
           "scores": {
-            "composite": 77.48024532627866,
-            "architecture": 86.00277777777778,
+            "composite": 79.30865337647555,
+            "architecture": 90.85154772690315,
             "complexity": 84.49571428571429,
             "smells": 78.2266,
-            "tests": 28.619999999999997
+            "tests": 19.74
           }
         },
         {
@@ -2600,11 +2316,11 @@
           "week": "2026-05-11",
           "file": "products/error_tracking/2026-05-10-f41c55b2f7a5.json",
           "scores": {
-            "composite": 77.27400052910053,
-            "architecture": 86.64166666666667,
+            "composite": 79.21462308251104,
+            "architecture": 91.60883627770617,
             "complexity": 81.64142857142858,
             "smells": 78.9733,
-            "tests": 30.17
+            "tests": 22.84
           }
         },
         {
@@ -2613,11 +2329,11 @@
           "week": "2026-05-18",
           "file": "products/error_tracking/2026-05-17-8bf1ce63224d.json",
           "scores": {
-            "composite": 77.06677089947091,
-            "architecture": 86.30833333333334,
+            "composite": 79.0918175786925,
+            "architecture": 91.48892251815981,
             "complexity": 81.58142857142857,
             "smells": 78.7091,
-            "tests": 30.15
+            "tests": 22.8
           }
         },
         {
@@ -2626,11 +2342,11 @@
           "week": "2026-05-25",
           "file": "products/error_tracking/2026-05-24-4406542d2c42.json",
           "scores": {
-            "composite": 76.74474991181658,
-            "architecture": 86.37222222222222,
+            "composite": 78.84832265295223,
+            "architecture": 91.62438520380915,
             "complexity": 81.55142857142857,
             "smells": 77.1057,
-            "tests": 30.31
+            "tests": 23.119999999999997
           }
         },
         {
@@ -2639,11 +2355,11 @@
           "week": "2026-06-01",
           "file": "products/error_tracking/2026-05-31-309c3b6b9169.json",
           "scores": {
-            "composite": 76.46968201058202,
-            "architecture": 85.40833333333335,
+            "composite": 78.91841367851823,
+            "architecture": 91.32261276772412,
             "complexity": 81.44142857142859,
             "smells": 77.15970000000002,
-            "tests": 31.375
+            "tests": 25.25
           }
         },
         {
@@ -2652,11 +2368,11 @@
           "week": "2026-06-08",
           "file": "products/error_tracking/2026-06-07-1050dad2a10e.json",
           "scores": {
-            "composite": 76.84347971781305,
-            "architecture": 85.06111111111112,
+            "composite": 79.53445173789117,
+            "architecture": 91.55320077329935,
             "complexity": 82.16857142857143,
             "smells": 78.393,
-            "tests": 31.67
+            "tests": 25.840000000000003
           }
         },
         {
@@ -2665,11 +2381,11 @@
           "week": "2026-06-15",
           "file": "products/error_tracking/2026-06-14-57696b06d2b3.json",
           "scores": {
-            "composite": 77.48986278659612,
-            "architecture": 84.02777777777777,
+            "composite": 80.59835387930003,
+            "architecture": 91.43764184110718,
             "complexity": 82.68285714285715,
             "smells": 81.7622,
-            "tests": 33.08
+            "tests": 28.660000000000004
           }
         },
         {
@@ -2678,11 +2394,11 @@
           "week": "2026-06-22",
           "file": "products/error_tracking/2026-06-21-8e473b6a37a4.json",
           "scores": {
-            "composite": 78.09487266313933,
-            "architecture": 88.28888888888889,
+            "composite": 81.22660164027238,
+            "architecture": 92.9254612435381,
             "complexity": 83.01285714285714,
             "smells": 81.4078,
-            "tests": 23.494999999999997
+            "tests": 28.71
           }
         },
         {
@@ -2691,11 +2407,11 @@
           "week": "2026-06-29",
           "file": "products/error_tracking/2026-06-28-13c7dfaea7ab.json",
           "scores": {
-            "composite": 77.23244268077602,
-            "architecture": 88.09444444444443,
+            "composite": 80.7505562337681,
+            "architecture": 93.08246201299163,
             "complexity": 83.01857142857143,
             "smells": 78.655,
-            "tests": 21.905
+            "tests": 28.810000000000002
           }
         },
         {
@@ -2704,11 +2420,11 @@
           "week": "2026-07-06",
           "file": "products/error_tracking/2026-07-05-6577fc44f726.json",
           "scores": {
-            "composite": 77.28535097001765,
-            "architecture": 88.15555555555557,
+            "composite": 80.89149960890987,
+            "architecture": 93.19478473656038,
             "complexity": 83.0942857142857,
             "smells": 78.7165,
-            "tests": 21.855
+            "tests": 29.42
           }
         },
         {
@@ -2717,11 +2433,11 @@
           "week": "2026-07-13",
           "file": "products/error_tracking/2026-07-12-7026f7ec439a.json",
           "scores": {
-            "composite": 78.12835626102293,
-            "architecture": 90.47222222222223,
+            "composite": 81.10432835070475,
+            "architecture": 93.92164230533331,
             "complexity": 82.91857142857143,
             "smells": 78.3305,
-            "tests": 22.545
+            "tests": 29.94
           }
         },
         {
@@ -2730,11 +2446,11 @@
           "week": "2026-07-20",
           "file": "products/error_tracking/2026-07-19-6f8208e93ef6.json",
           "scores": {
-            "composite": 78.91302557319224,
-            "architecture": 90.53055555555557,
+            "composite": 81.44840905222962,
+            "architecture": 94.02398691628837,
             "complexity": 82.77571428571429,
             "smells": 79.99549999999999,
-            "tests": 26.43
+            "tests": 30.070000000000004
           }
         },
         {
@@ -2743,11 +2459,11 @@
           "week": "2026-07-27",
           "file": "products/error_tracking/2026-07-26-78b3689515fd.json",
           "scores": {
-            "composite": 79.00712768959434,
-            "architecture": 90.57222222222221,
+            "composite": 81.55509264621584,
+            "architecture": 94.09096018696818,
             "complexity": 82.68142857142857,
             "smells": 80.3914,
-            "tests": 26.575
+            "tests": 30.36
           }
         },
         {
@@ -2756,11 +2472,11 @@
           "week": "2026-08-03",
           "file": "products/error_tracking/2026-08-02-634bad0710c6.json",
           "scores": {
-            "composite": 79.33020423280423,
-            "architecture": 90.83333333333333,
+            "composite": 81.982976800213,
+            "architecture": 94.3772205719611,
             "complexity": 82.67142857142858,
             "smells": 80.82829999999998,
-            "tests": 27.72
+            "tests": 32.65
           }
         },
         {
@@ -2769,11 +2485,11 @@
           "week": "2026-08-10",
           "file": "products/error_tracking/2026-08-09-7da1c4690c65.json",
           "scores": {
-            "composite": 79.43764162257494,
-            "architecture": 90.8611111111111,
+            "composite": 82.11316156085786,
+            "architecture": 94.43721818785893,
             "complexity": 82.76571428571428,
             "smells": 81.0728,
-            "tests": 27.865000000000002
+            "tests": 32.940000000000005
           }
         },
         {
@@ -2782,11 +2498,11 @@
           "week": "2026-08-17",
           "file": "products/error_tracking/2026-08-16-42d5edca6dc4.json",
           "scores": {
-            "composite": 79.43410317460318,
-            "architecture": 90.925,
+            "composite": 82.23078418322157,
+            "architecture": 94.54103188662533,
             "complexity": 82.31857142857143,
             "smells": 80.884,
-            "tests": 29.105
+            "tests": 35.42
           }
         },
         {
@@ -2795,11 +2511,11 @@
           "week": "2026-08-24",
           "file": "products/error_tracking/2026-08-23-0250a2b68bcf.json",
           "scores": {
-            "composite": 79.00780299823633,
-            "architecture": 90.96944444444443,
+            "composite": 82.21610650298679,
+            "architecture": 94.63454482889553,
             "complexity": 81.88142857142857,
             "smells": 80.9443,
-            "tests": 26.085
+            "tests": 36.09
           }
         },
         {
@@ -2808,11 +2524,11 @@
           "week": "2026-08-31",
           "file": "products/error_tracking/2026-08-30-e62b8dd5e87c.json",
           "scores": {
-            "composite": 79.07862768959436,
-            "architecture": 90.79722222222222,
+            "composite": 82.40082880798171,
+            "architecture": 94.81880059138285,
             "complexity": 81.67142857142858,
             "smells": 81.6044,
-            "tests": 26.53
+            "tests": 36.51
           }
         },
         {
@@ -2821,11 +2537,11 @@
           "week": "2026-09-07",
           "file": "products/error_tracking/2026-09-06-5f8bc937a84b.json",
           "scores": {
-            "composite": 78.89512522045855,
-            "architecture": 90.64444444444445,
+            "composite": 82.4188593318237,
+            "architecture": 95.00932690098783,
             "complexity": 81.68142857142857,
             "smells": 81.4485,
-            "tests": 25.700000000000003
+            "tests": 36.21
           }
         },
         {
@@ -2834,11 +2550,11 @@
           "week": "2026-09-14",
           "file": "products/error_tracking/2026-09-13-66ea432ade17.json",
           "scores": {
-            "composite": 79.07957354497353,
-            "architecture": 90.76666666666665,
+            "composite": 82.62290495632789,
+            "architecture": 95.15423381939115,
             "complexity": 81.93857142857144,
             "smells": 81.7432,
-            "tests": 25.699999999999996
+            "tests": 36.309999999999995
           }
         },
         {
@@ -2847,11 +2563,11 @@
           "week": "2026-09-21",
           "file": "products/error_tracking/2026-09-20-6bbc94fa5128.json",
           "scores": {
-            "composite": 79.39339576719576,
-            "architecture": 91.16666666666667,
+            "composite": 83.0696490172543,
+            "architecture": 95.6187439717072,
             "complexity": 81.29857142857144,
             "smells": 82.5479,
-            "tests": 27.115
+            "tests": 39.23
           }
         }
       ],
@@ -2867,8 +2583,8 @@
               "date": "2026-03-25T23:54:17Z"
             },
             "delta": {
-              "composite": 0.0028222222222211713,
-              "architecture": 0,
+              "composite": 0.0068716939167075,
+              "architecture": 0.010829234791771114,
               "complexity": 0,
               "smells": 0.0327000000000055,
               "tests": -0.0400000000000027
@@ -2884,8 +2600,8 @@
               "date": "2026-04-09T01:34:12+02:00"
             },
             "delta": {
-              "composite": -0.20224761904759703,
-              "architecture": 0,
+              "composite": -0.1738979800538658,
+              "architecture": 0.023883621293919077,
               "complexity": -0.028571428571424917,
               "smells": -0.8294000000000068,
               "tests": -0.08999999999999986
@@ -2901,8 +2617,8 @@
               "date": "2026-04-15T16:04:48-07:00"
             },
             "delta": {
-              "composite": 0.3742604938271654,
-              "architecture": 0.08055555555556282,
+              "composite": 0.4062455098335249,
+              "architecture": 0.1252637745838001,
               "complexity": 0.9500000000000028,
               "smells": 0.2956999999999965,
               "tests": 0.120000000000001
@@ -2918,11 +2634,11 @@
               "date": "2026-04-22T23:35:51Z"
             },
             "delta": {
-              "composite": 0.0015111111110996944,
-              "architecture": 0,
+              "composite": 0.002040589877580601,
+              "architecture": 0.0029514746939440784,
               "complexity": 0,
               "smells": 0.0093000000000103,
-              "tests": -0.005000000000002558
+              "tests": -0.00999999999999801
             }
           },
           {
@@ -2935,11 +2651,11 @@
               "date": "2026-04-29T16:57:27-07:00"
             },
             "delta": {
-              "composite": 0.036822222222212986,
-              "architecture": 0,
+              "composite": 0.03587853310185096,
+              "architecture": 0.021846332754648756,
               "complexity": 0,
               "smells": 0.1957000000000022,
-              "tests": -0.060000000000002274
+              "tests": -0.120000000000001
             }
           },
           {
@@ -2952,8 +2668,8 @@
               "date": "2026-05-06T23:43:12Z"
             },
             "delta": {
-              "composite": 0.000044444444441182895,
-              "architecture": 0,
+              "composite": 0.00013998593964004158,
+              "architecture": 0.00024996484908967886,
               "complexity": 0,
               "smells": 0.0002000000000066393,
               "tests": 0
@@ -2969,11 +2685,11 @@
               "date": "2026-05-14T00:26:28+01:00"
             },
             "delta": {
-              "composite": -0.05299999999998306,
-              "architecture": 0,
+              "composite": -0.04758361084651597,
+              "architecture": 0.006540972883655627,
               "complexity": 0,
               "smells": -0.22599999999998488,
-              "tests": -0.02500000000000213
+              "tests": -0.05000000000000071
             }
           },
           {
@@ -2986,11 +2702,11 @@
               "date": "2026-05-20T16:54:22-07:00"
             },
             "delta": {
-              "composite": 0.023402469135774595,
-              "architecture": 0.027777777777771462,
+              "composite": 0.02352137866013493,
+              "architecture": 0.03545344665033667,
               "complexity": 0.009999999999990905,
               "smells": 0.0566999999999922,
-              "tests": -0.02499999999999858
+              "tests": -0.04999999999999716
             }
           },
           {
@@ -3003,11 +2719,11 @@
               "date": "2026-05-27T20:27:25-03:00"
             },
             "delta": {
-              "composite": -0.19396825396823658,
-              "architecture": 0,
+              "composite": -0.18272608542245905,
+              "architecture": 0.005149072158147305,
               "complexity": -0.7742857142856963,
               "smells": -0.04749999999999943,
-              "tests": 0.28500000000000014
+              "tests": 0.5700000000000003
             }
           },
           {
@@ -3020,11 +2736,11 @@
               "date": "2026-06-03T23:33:21Z"
             },
             "delta": {
-              "composite": 0.23908148148147745,
-              "architecture": 0.06666666666666288,
+              "composite": 0.26719251621021556,
+              "architecture": 0.1646312905255769,
               "complexity": 0.03999999999997783,
               "smells": 0.8716999999999899,
-              "tests": 0.07500000000000284
+              "tests": 0.15000000000000213
             }
           },
           {
@@ -3037,11 +2753,11 @@
               "date": "2026-06-10T16:49:34-07:00"
             },
             "delta": {
-              "composite": 0.22215061728392982,
-              "architecture": 0.6944444444444429,
+              "composite": 0.11194711183117079,
+              "architecture": 0.29766777957797785,
               "complexity": -0.040000000000020464,
               "smells": -0.3556000000000097,
-              "tests": 0.38000000000000256
+              "tests": 0.7600000000000016
             }
           },
           {
@@ -3054,11 +2770,11 @@
               "date": "2026-06-17T20:44:22-03:00"
             },
             "delta": {
-              "composite": 0.867898765432102,
-              "architecture": 4.311111111111117,
+              "composite": 0.6585772469865248,
+              "architecture": 1.4808931174663371,
               "complexity": 0,
               "smells": 0.1261000000000081,
-              "tests": -7.530000000000001
+              "tests": 0.4099999999999966
             }
           },
           {
@@ -3071,11 +2787,11 @@
               "date": "2026-06-24T16:37:31-07:00"
             },
             "delta": {
-              "composite": -0.00013333333332354869,
-              "architecture": 0,
+              "composite": -0.0005273996539614245,
+              "architecture": 0.00023150086508394452,
               "complexity": 0,
               "smells": 0.00190000000000623,
-              "tests": -0.004999999999999005
+              "tests": -0.00999999999999801
             }
           },
           {
@@ -3088,11 +2804,11 @@
               "date": "2026-07-01T23:51:07Z"
             },
             "delta": {
-              "composite": 0.013565079365079669,
-              "architecture": 0.04999999999999716,
+              "composite": 0.08666761511911147,
+              "architecture": 0.08793332351203276,
               "complexity": 0.06571428571427873,
               "smells": -0.021099999999989905,
-              "tests": -0.1750000000000007
+              "tests": 0.35999999999999943
             }
           },
           {
@@ -3105,11 +2821,11 @@
               "date": "2026-07-08T16:16:44-07:00"
             },
             "delta": {
-              "composite": 0.060590476190483855,
-              "architecture": 0,
+              "composite": -0.0019747344851026583,
+              "architecture": 0.005698878072976754,
               "complexity": -0.13571428571428612,
               "smells": 0.052300000000002456,
-              "tests": 0.7800000000000047
+              "tests": 0.2600000000000051
             }
           },
           {
@@ -3122,11 +2838,11 @@
               "date": "2026-07-15T16:53:17-07:00"
             },
             "delta": {
-              "composite": -0.010845679012348342,
-              "architecture": 0.03611111111111143,
+              "composite": -0.03000879054044958,
+              "architecture": 0.04097802364890413,
               "complexity": 0.010000000000005116,
               "smells": -0.0020000000000095497,
-              "tests": -0.245000000000001
+              "tests": -0.490000000000002
             }
           },
           {
@@ -3139,11 +2855,11 @@
               "date": "2026-07-22T23:13:28Z"
             },
             "delta": {
-              "composite": 0.10415167548498516,
-              "architecture": 0.07777777777775441,
+              "composite": 0.12002609073968529,
+              "architecture": 0.10717236970634758,
               "complexity": -0.22714285714286575,
               "smells": 0.5065000000000026,
-              "tests": 0.22000000000000242
+              "tests": 0.4400000000000013
             }
           },
           {
@@ -3173,11 +2889,11 @@
               "date": "2026-08-05T23:58:18Z"
             },
             "delta": {
-              "composite": -0.005177777777788606,
-              "architecture": 0,
+              "composite": -0.006459687673014969,
+              "architecture": 0.0005007808174468664,
               "complexity": 0,
               "smells": -0.013300000000000978,
-              "tests": -0.019999999999999574
+              "tests": -0.03999999999999915
             }
           },
           {
@@ -3190,11 +2906,11 @@
               "date": "2026-08-12T23:49:00Z"
             },
             "delta": {
-              "composite": 0.15854479717812353,
-              "architecture": -0.013888888888885731,
+              "composite": 0.21306027406089356,
+              "architecture": -0.024263600562036913,
               "complexity": 0.2042857142857173,
               "smells": 0.15739999999999554,
-              "tests": 0.6499999999999986
+              "tests": 1.2999999999999972
             }
           },
           {
@@ -3207,11 +2923,11 @@
               "date": "2026-08-19T23:44:35Z"
             },
             "delta": {
-              "composite": 0.003814462081109582,
-              "architecture": 0.005555555555545766,
+              "composite": -0.003943243340515323,
+              "architecture": 0.026956177362976064,
               "complexity": -0.18428571428572127,
               "smells": -0.012200000000007094,
-              "tests": 0.5
+              "tests": 0.4299999999999997
             }
           },
           {
@@ -3224,11 +2940,11 @@
               "date": "2026-08-26T23:13:56Z"
             },
             "delta": {
-              "composite": -0.11330493827161092,
-              "architecture": 0.019444444444445708,
+              "composite": -0.10810776658934174,
+              "architecture": 0.0316805835266365,
               "complexity": 0.060000000000002274,
               "smells": -0.5438999999999936,
-              "tests": -0.15000000000000213
+              "tests": -0.30000000000000426
             }
           },
           {
@@ -3241,11 +2957,11 @@
               "date": "2026-09-02T23:54:39Z"
             },
             "delta": {
-              "composite": 0.030228395061740798,
-              "architecture": 0.019444444444445708,
+              "composite": 0.05374599612214581,
+              "architecture": 0.03211499030535947,
               "complexity": -0.03999999999999204,
               "smells": 0.039499999999989654,
-              "tests": 0.22500000000000142
+              "tests": 0.45000000000000284
             }
           },
           {
@@ -3258,8 +2974,8 @@
               "date": "2026-09-09T23:53:02Z"
             },
             "delta": {
-              "composite": -0.00006666666668309063,
-              "architecture": 0,
+              "composite": -0.00009538000712439043,
+              "architecture": -0.00008845001781310202,
               "complexity": 0,
               "smells": -0.00030000000000995897,
               "tests": 0
@@ -3275,11 +2991,11 @@
               "date": "2026-09-16T23:43:04Z"
             },
             "delta": {
-              "composite": -0.030953086419742704,
-              "architecture": 0.027777777777771462,
+              "composite": -0.029098802577351535,
+              "architecture": 0.033702993556616434,
               "complexity": 0.010000000000005116,
               "smells": -0.1728999999999985,
-              "tests": -0.054999999999999716
+              "tests": -0.10999999999999943
             }
           },
           {
@@ -3292,45 +3008,30 @@
               "date": "2026-09-23T15:06:50Z"
             },
             "delta": {
-              "composite": 0.0033333333333303017,
+              "composite": 0.0059999999999860165,
               "architecture": 0,
               "complexity": 0,
               "smells": 0,
-              "tests": 0.030000000000001137
+              "tests": 0.060000000000002274
             }
           }
         ],
         "median": {
-          "composite": 0.030228395061740798,
-          "architecture": 0,
+          "composite": 0.03000879054044958,
+          "architecture": 0.023883621293919077,
           "complexity": 0.010000000000005116,
           "smells": 0.04749999999999943,
-          "tests": 0.07500000000000284
+          "tests": 0.120000000000001
         },
         "band": {
-          "composite": 0.23908148148147745,
-          "architecture": 0.08055555555556282,
+          "composite": 0.26719251621021556,
+          "architecture": 0.1646312905255769,
           "complexity": 0.22714285714286575,
           "smells": 0.5438999999999936,
-          "tests": 0.6499999999999986
+          "tests": 0.5700000000000003
         }
       },
       "movers": [
-        {
-          "commit": "9a84ad66f544fd737550396c036df2280a6c4c1c",
-          "date": "2026-04-16T12:09:34Z",
-          "week": "2026-04-20",
-          "subject": "feat(error_tracking): migrate digest and task callers to facade (#54749)",
-          "pr": 54749,
-          "previous": "cf7a56580c53092b9a2364bfbbb2357e749df153",
-          "delta": {
-            "composite": 1.91144074074073,
-            "architecture": 0.6583333333333172,
-            "complexity": 0.05999999999998806,
-            "smells": -0.4456000000000131,
-            "tests": 15.639999999999997
-          }
-        },
         {
           "commit": "3a3205c09caa01811e195c3556965f57a3722785",
           "date": "2026-04-09T18:01:25+02:00",
@@ -3339,41 +3040,26 @@
           "pr": 53303,
           "previous": "54615ade4f3b4fdf3b5cdb5ae303b747397a9dbe",
           "delta": {
-            "composite": -0.9957753086419956,
-            "architecture": 0.027777777777785673,
+            "composite": -0.9026196641243445,
+            "architecture": 0.1157508396891842,
             "complexity": -0.8600000000000136,
             "smells": -3.5996000000000095,
             "tests": 0.2900000000000027
           }
         },
         {
-          "commit": "2063736de527ca41df6eed008d879f6232540a94",
-          "date": "2026-06-23T10:45:50+02:00",
-          "week": "2026-06-29",
-          "subject": "chore(error_tracking): complete facade presentation wave (#64880)",
-          "pr": 64880,
-          "previous": "d3899189d25f7af37bf47c494860ad205ca936ff",
+          "commit": "5fdf6815648a739a66a6641adcdb42b9c9474b8e",
+          "date": "2026-06-12T15:12:06+02:00",
+          "week": "2026-06-15",
+          "subject": "chore(error-tracking): make V3 the only error tracking query path (#63007)",
+          "pr": 63007,
+          "previous": "a498fb5f085e7af17787b5430fcc002d1e0f7258",
           "delta": {
-            "composite": -0.7581955908289331,
-            "architecture": 0.06388888888888289,
-            "complexity": 0.3285714285714221,
-            "smells": -2.8644000000000176,
-            "tests": -2.139999999999997
-          }
-        },
-        {
-          "commit": "cf7a56580c53092b9a2364bfbbb2357e749df153",
-          "date": "2026-04-16T13:00:30+02:00",
-          "week": "2026-04-20",
-          "subject": "feat(error_tracking): migrate issue readers to facade (#54724)",
-          "pr": 54724,
-          "previous": "74bfbbfe15bc8932a293ced7d0ae8c40128b9db3",
-          "delta": {
-            "composite": 0.4138666666666495,
-            "architecture": 1,
-            "complexity": 0,
-            "smells": 0.06239999999999668,
-            "tests": 0.10000000000000142
+            "composite": 0.45176464942151995,
+            "architecture": -0.19480980501765544,
+            "complexity": 0.6914285714285597,
+            "smells": 1.5063000000000102,
+            "tests": 0.21000000000000796
           }
         },
         {
@@ -3384,11 +3070,11 @@
           "pr": 55053,
           "previous": "86b8e1ccf36acc2838152374d9f98f0b82d0638a",
           "delta": {
-            "composite": 0.382140740740752,
-            "architecture": 0.08333333333334281,
+            "composite": 0.4170491050566483,
+            "architecture": 0.13447276264162156,
             "complexity": 1.0200000000000102,
             "smells": 0.3113000000000028,
-            "tests": -0.02499999999999858
+            "tests": -0.05000000000000071
           }
         },
         {
@@ -3399,8 +3085,8 @@
           "pr": 54718,
           "previous": "2706b5d0fef8ccddc019b486d660f3b77c94c00a",
           "delta": {
-            "composite": 0.3742604938271654,
-            "architecture": 0.08055555555556282,
+            "composite": 0.4062455098335249,
+            "architecture": 0.1252637745838001,
             "complexity": 0.9500000000000028,
             "smells": 0.2956999999999965,
             "tests": 0.120000000000001
@@ -3414,41 +3100,26 @@
           "pr": 52593,
           "previous": "9a84ad66f544fd737550396c036df2280a6c4c1c",
           "delta": {
-            "composite": -0.3225999999999942,
-            "architecture": 0,
+            "composite": -0.3270358313394297,
+            "architecture": 0.08576042165142894,
             "complexity": -0.980000000000004,
             "smells": -0.11669999999999447,
-            "tests": -0.21999999999999886
+            "tests": -0.4399999999999977
           }
         },
         {
-          "commit": "727728a39f5581af3dc98cc43b34632ec7e516ca",
-          "date": "2026-06-25T14:37:33+02:00",
-          "week": "2026-06-29",
-          "subject": "feat(error-tracking): add code owners assignment import (#65766)",
-          "pr": 65766,
-          "previous": "bb99f73412eb672f17a0409c05b5aa573a1f2b0d",
+          "commit": "a498fb5f085e7af17787b5430fcc002d1e0f7258",
+          "date": "2026-06-12T15:18:29+03:00",
+          "week": "2026-06-15",
+          "subject": "perf(error-tracking): fetch first/last events with a two-pass point lookup (#62804)",
+          "pr": 62804,
+          "previous": "17d94adf4d2bf528cf8fe2d27b8f2a0dcaa28252",
           "delta": {
-            "composite": 0.20918465608464487,
-            "architecture": 0.19166666666664867,
-            "complexity": 0.10857142857142321,
-            "smells": 0.3976999999999862,
-            "tests": 0.14499999999999957
-          }
-        },
-        {
-          "commit": "797e160bbca4d03e7360d50ce3588ec64d508005",
-          "date": "2026-04-08T14:40:57+02:00",
-          "week": "2026-04-13",
-          "subject": "feat: error tracking denormalized fingerprints CH migration (#52070)",
-          "pr": 52070,
-          "previous": "27da176a24a6aef8f3416665b98b1ece505095b1",
-          "delta": {
-            "composite": -0.20426984126982006,
-            "architecture": 0,
-            "complexity": -0.028571428571424917,
-            "smells": -0.8385000000000105,
-            "tests": -0.08999999999999986
+            "composite": 0.26325622911508617,
+            "architecture": -0.0012594272122754546,
+            "complexity": -0.05999999999998806,
+            "smells": 1.4037999999999897,
+            "tests": 0.00999999999999801
           }
         },
         {
@@ -3459,26 +3130,56 @@
           "pr": 54531,
           "previous": "4d76a4dfe8df03a09b4ecff1c382c64f7336ecb9",
           "delta": {
-            "composite": 0.1967777777777684,
-            "architecture": 0,
+            "composite": 0.23022150564528943,
+            "architecture": 0.011553764113202192,
             "complexity": 0.009999999999990905,
             "smells": 0.6330000000000098,
-            "tests": 0.480000000000004
+            "tests": 0.9600000000000009
           }
         },
         {
-          "commit": "585edd6a29bb3b120023db633b5428e7b1484569",
-          "date": "2026-06-23T17:33:06Z",
-          "week": "2026-06-29",
-          "subject": "feat(error-tracking): per-issue rate-limit metrics in app_metrics2 + history view (#65536)",
-          "pr": 65536,
-          "previous": "a64ea9fde4f9cab20a68d32cb317a2c68b328450",
+          "commit": "eec9e34977cfde77faffb8311499bb8e4094f661",
+          "date": "2026-06-09T18:14:41+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): add fingerprint embedding workflow (#62360)",
+          "pr": 62360,
+          "previous": "533d527ce8ab84094cca0ad17f30a2764024fb67",
           "delta": {
-            "composite": -0.18804126984129255,
-            "architecture": 0,
-            "complexity": -0.37142857142856656,
-            "smells": -0.3469000000000193,
-            "tests": -0.07000000000000028
+            "composite": 0.21508655536131016,
+            "architecture": 0.1874663884032799,
+            "complexity": -0.029999999999986926,
+            "smells": 0.41049999999998477,
+            "tests": 0.6699999999999982
+          }
+        },
+        {
+          "commit": "cf7a56580c53092b9a2364bfbbb2357e749df153",
+          "date": "2026-04-16T13:00:30+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error_tracking): migrate issue readers to facade (#54724)",
+          "pr": 54724,
+          "previous": "74bfbbfe15bc8932a293ced7d0ae8c40128b9db3",
+          "delta": {
+            "composite": 0.2102556615947293,
+            "architecture": 0.46943915398684055,
+            "complexity": 0,
+            "smells": 0.06239999999999668,
+            "tests": 0.10000000000000142
+          }
+        },
+        {
+          "commit": "797e160bbca4d03e7360d50ce3588ec64d508005",
+          "date": "2026-04-08T14:40:57+02:00",
+          "week": "2026-04-13",
+          "subject": "feat: error tracking denormalized fingerprints CH migration (#52070)",
+          "pr": 52070,
+          "previous": "27da176a24a6aef8f3416665b98b1ece505095b1",
+          "delta": {
+            "composite": -0.175260576490885,
+            "architecture": 0.025027130201394243,
+            "complexity": -0.028571428571424917,
+            "smells": -0.8385000000000105,
+            "tests": -0.08999999999999986
           }
         },
         {
@@ -3489,8 +3190,8 @@
           "pr": 54379,
           "previous": "916fdd93387d39f24f8c5cbe9f7534a9b7e57922",
           "delta": {
-            "composite": -0.16916790123457304,
-            "architecture": 0.011111111111119953,
+            "composite": -0.17355866825917587,
+            "architecture": 0.09020332935207875,
             "complexity": -1.0700000000000074,
             "smells": 0.7217999999999876,
             "tests": -0.33000000000000185
@@ -3504,71 +3205,26 @@
           "pr": 55040,
           "previous": "8a1617576b8d4d734a1cfa0bad7d9c7f87de285e",
           "delta": {
-            "composite": 0.15586666666668236,
-            "architecture": 0,
+            "composite": 0.17078143574273952,
+            "architecture": 0.0012535893568639267,
             "complexity": 0.5999999999999943,
             "smells": -0.048600000000007526,
             "tests": 0
           }
         },
         {
-          "commit": "86b8e1ccf36acc2838152374d9f98f0b82d0638a",
-          "date": "2026-04-18T22:53:13+03:00",
-          "week": "2026-04-20",
-          "subject": "chore(error-tracking): update grouping rule create schema (#54535)",
-          "pr": 54535,
-          "previous": "d2530e62cc5ff29babb7f70f794d033113d00525",
+          "commit": "c94b96a10524e1cea059b4b0b82a6c5e4753c582",
+          "date": "2026-06-08T17:10:24+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): add rate limits recommendation (#62079)",
+          "pr": 62079,
+          "previous": "1050dad2a10e5cb253416d4fec3e3563d3c31063",
           "delta": {
-            "composite": -0.1310444444444414,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": -0.7421999999999969,
-            "tests": 0.3049999999999997
-          }
-        },
-        {
-          "commit": "bb99f73412eb672f17a0409c05b5aa573a1f2b0d",
-          "date": "2026-06-25T08:23:06Z",
-          "week": "2026-06-29",
-          "subject": "feat(data-warehouse): move temporal data-imports into warehouse_sources (#65817)",
-          "pr": 65817,
-          "previous": "26784364e1cf6a108e154a0ac701645ad2c37b00",
-          "delta": {
-            "composite": -0.12922962962962004,
-            "architecture": -0.3333333333333428,
-            "complexity": 0,
-            "smells": 0.0018000000000171212,
+            "composite": 0.14195266252868066,
+            "architecture": 0.07486737060742144,
+            "complexity": 0.35428571428570876,
+            "smells": 0.028600000000011505,
             "tests": 0
-          }
-        },
-        {
-          "commit": "774fab89331c2f577c149306e2fa8128bf07bf6b",
-          "date": "2026-04-10T11:54:48+02:00",
-          "week": "2026-04-13",
-          "subject": "feat(error_tracking): add demo error tracking data (#53736)",
-          "pr": 53736,
-          "previous": "3a3205c09caa01811e195c3556965f57a3722785",
-          "delta": {
-            "composite": -0.12891851851851754,
-            "architecture": -0.3333333333333286,
-            "complexity": 0,
-            "smells": -0.0018000000000029104,
-            "tests": 0.00999999999999801
-          }
-        },
-        {
-          "commit": "0e048298d45e1884bc2064f98157bf5eaa5b1ba9",
-          "date": "2026-04-18T18:44:38+03:00",
-          "week": "2026-04-20",
-          "subject": "fix(error-tracking): use dedicated logs query runner for checking logs existence (#55177)",
-          "pr": 55177,
-          "previous": "4e038bf65ddf2076dc45cf9b87cf25e46d65b90e",
-          "delta": {
-            "composite": -0.12711851851852884,
-            "architecture": -0.3333333333333428,
-            "complexity": 0,
-            "smells": 0.013799999999989154,
-            "tests": -0.005000000000002558
           }
         },
         {
@@ -3579,11 +3235,26 @@
           "pr": 54690,
           "previous": "f974d78be7ce12b7aabf2f1a5f7bb635512306ba",
           "delta": {
-            "composite": 0.10729506172837944,
-            "architecture": 0.16944444444443718,
+            "composite": 0.13054410029300811,
+            "architecture": 0.2394602507325203,
             "complexity": 0.030000000000015348,
             "smells": 0.1688000000000045,
-            "tests": -0.03999999999999915
+            "tests": -0.0799999999999983
+          }
+        },
+        {
+          "commit": "d870bf6f3aaee88559529c7659e7ca54c7579889",
+          "date": "2026-06-10T21:24:10+03:00",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): skip deleted teams in recommendations batch refresh (#62702)",
+          "pr": 62702,
+          "previous": "b2db1a4f9be767ca72bf949a1484f69cc5dad174",
+          "delta": {
+            "composite": 0.103912699991767,
+            "architecture": 0.228031749979408,
+            "complexity": 0,
+            "smells": 0.028499999999993975,
+            "tests": 0.06999999999999673
           }
         },
         {
@@ -3594,41 +3265,161 @@
           "pr": 53068,
           "previous": "797e160bbca4d03e7360d50ce3588ec64d508005",
           "delta": {
-            "composite": 0.08793333333332498,
-            "architecture": 0,
+            "composite": 0.08428490481773565,
+            "architecture": 0.012862262044336603,
             "complexity": 0,
             "smells": 0.11570000000000391,
             "tests": 0.5599999999999987
           }
         },
         {
-          "commit": "3c4c99c49a69d96ac6893660e9b937541d822c7b",
-          "date": "2026-06-23T11:12:46+02:00",
-          "week": "2026-06-29",
-          "subject": "feat(error-tracking): add source maps wizard prompt to weekly digest (#65219)",
-          "pr": 65219,
-          "previous": "2063736de527ca41df6eed008d879f6232540a94",
+          "commit": "86b8e1ccf36acc2838152374d9f98f0b82d0638a",
+          "date": "2026-04-18T22:53:13+03:00",
+          "week": "2026-04-20",
+          "subject": "chore(error-tracking): update grouping rule create schema (#54535)",
+          "pr": 54535,
+          "previous": "d2530e62cc5ff29babb7f70f794d033113d00525",
           "delta": {
-            "composite": -0.04759259259257931,
-            "architecture": -0.11666666666664582,
+            "composite": -0.08335724629975516,
+            "architecture": 0.01020688425063554,
             "complexity": 0,
-            "smells": -0.022499999999993747,
-            "tests": 0.02499999999999858
+            "smells": -0.7421999999999969,
+            "tests": 0.6099999999999994
           }
         },
         {
-          "commit": "57ae208b7bad1efc31cb497e4489010a6bcfb57a",
-          "date": "2026-06-26T17:57:42+03:00",
-          "week": "2026-06-29",
-          "subject": "feat(error-tracking): allow api tokens to manage external references (#65719)",
-          "pr": 65719,
-          "previous": "3e33e41967bf3b36538e172652197e612cfd959b",
+          "commit": "67ae04f54936d2309459c7d58150aff7a4aaa48f",
+          "date": "2026-06-08T14:46:35-04:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): shared assignee and status picker components (2/5) (#61748)",
+          "pr": 61748,
+          "previous": "eef058cc4e479317d6fbc2c8175454cbac1335d6",
           "delta": {
-            "composite": 0.044044444444452324,
-            "architecture": 0,
-            "complexity": -0.04999999999999716,
-            "smells": 0.03320000000000789,
-            "tests": 0.45500000000000185
+            "composite": -0.07774463236556528,
+            "architecture": -0.21726158091391312,
+            "complexity": 0.010000000000019327,
+            "smells": 0.06579999999998165,
+            "tests": -0.07000000000000384
+          }
+        },
+        {
+          "commit": "7fffe63e9a29efd91f58f3418ce0ed6caeff0f08",
+          "date": "2026-06-09T10:45:53+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): hourly temporal refresh of recommendations (#61975)",
+          "pr": 61975,
+          "previous": "67ae04f54936d2309459c7d58150aff7a4aaa48f",
+          "delta": {
+            "composite": 0.06648694590259652,
+            "architecture": -0.02288263524354761,
+            "complexity": 0.009999999999990905,
+            "smells": 0.20820000000000505,
+            "tests": 0.3099999999999987
+          }
+        },
+        {
+          "commit": "eef058cc4e479317d6fbc2c8175454cbac1335d6",
+          "date": "2026-06-08T15:28:05Z",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): schedule temporal cleanup jobs (#61861)",
+          "pr": 61861,
+          "previous": "c94b96a10524e1cea059b4b0b82a6c5e4753c582",
+          "delta": {
+            "composite": -0.0649772513414888,
+            "architecture": -0.24969312835368385,
+            "complexity": 0,
+            "smells": -0.07550000000000523,
+            "tests": 0.5
+          }
+        },
+        {
+          "commit": "774fab89331c2f577c149306e2fa8128bf07bf6b",
+          "date": "2026-04-10T11:54:48+02:00",
+          "week": "2026-04-13",
+          "subject": "feat(error_tracking): add demo error tracking data (#53736)",
+          "pr": 53736,
+          "previous": "3a3205c09caa01811e195c3556965f57a3722785",
+          "delta": {
+            "composite": -0.06371889841190637,
+            "architecture": -0.1608972460297906,
+            "complexity": 0,
+            "smells": -0.0018000000000029104,
+            "tests": 0.00999999999999801
+          }
+        },
+        {
+          "commit": "9a84ad66f544fd737550396c036df2280a6c4c1c",
+          "date": "2026-04-16T12:09:34Z",
+          "week": "2026-04-20",
+          "subject": "feat(error_tracking): migrate digest and task callers to facade (#54749)",
+          "pr": 54749,
+          "previous": "cf7a56580c53092b9a2364bfbbb2357e749df153",
+          "delta": {
+            "composite": 0.06282301460659312,
+            "architecture": 0.3148575365164703,
+            "complexity": 0.05999999999998806,
+            "smells": -0.4456000000000131,
+            "tests": 0.0799999999999983
+          }
+        },
+        {
+          "commit": "1a4942cd4ce50d42140f4ba870ad504691c6f8b4",
+          "date": "2026-06-09T14:13:17+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): show pending recommendations count on tab (#62323)",
+          "pr": 62323,
+          "previous": "f2810fdb75c94a99cc6c1c11a5df57195164a4b8",
+          "delta": {
+            "composite": -0.05963585714697217,
+            "architecture": 0.002010357132590457,
+            "complexity": -0.20000000000000284,
+            "smells": 0.0027999999999934744,
+            "tests": -0.00999999999999801
+          }
+        },
+        {
+          "commit": "0e048298d45e1884bc2064f98157bf5eaa5b1ba9",
+          "date": "2026-04-18T18:44:38+03:00",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): use dedicated logs query runner for checking logs existence (#55177)",
+          "pr": 55177,
+          "previous": "4e038bf65ddf2076dc45cf9b87cf25e46d65b90e",
+          "delta": {
+            "composite": -0.05646353462064724,
+            "architecture": -0.14555883655162916,
+            "complexity": 0,
+            "smells": 0.013799999999989154,
+            "tests": -0.010000000000001563
+          }
+        },
+        {
+          "commit": "f2810fdb75c94a99cc6c1c11a5df57195164a4b8",
+          "date": "2026-06-09T11:04:04+02:00",
+          "week": "2026-06-15",
+          "subject": "chore(devex): move cohorts and replay models to product apps (#62112)",
+          "pr": 62112,
+          "previous": "7fffe63e9a29efd91f58f3418ce0ed6caeff0f08",
+          "delta": {
+            "composite": -0.046134505149765914,
+            "architecture": -0.11533626287440768,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "5faf9382faa8bf3f9e565cd75817e7a86d51c029",
+          "date": "2026-06-11T11:02:47Z",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): break circular import in query runners (#62883)",
+          "pr": 62883,
+          "previous": "64549d964b5b0e0dc385bbf3626b68fe616a10dd",
+          "delta": {
+            "composite": 0.045167874165130684,
+            "architecture": 0.0866196854128134,
+            "complexity": 0,
+            "smells": 0.002600000000001046,
+            "tests": 0.09999999999999787
           }
         },
         {
@@ -3639,26 +3430,11 @@
           "pr": 53682,
           "previous": "7fa9c231afe9cbfdd82e6b3c8f77a06a60a0d952",
           "delta": {
-            "composite": 0.03497777777776889,
-            "architecture": 0,
+            "composite": 0.030420087275089713,
+            "architecture": -0.002649781812280594,
             "complexity": 0,
             "smells": 0.1524000000000001,
             "tests": 0.010000000000001563
-          }
-        },
-        {
-          "commit": "4e038bf65ddf2076dc45cf9b87cf25e46d65b90e",
-          "date": "2026-04-18T09:05:47-03:00",
-          "week": "2026-04-20",
-          "subject": "feat: Add Settings section to context panel (#53104)",
-          "pr": 53104,
-          "previous": "86ba2268bd985254f7f0d90fb76cee3a3cb1b465",
-          "delta": {
-            "composite": -0.01920246913579149,
-            "architecture": -0.027777777777785673,
-            "complexity": 0,
-            "smells": -0.04779999999999518,
-            "tests": 0.01999999999999602
           }
         },
         {
@@ -3669,26 +3445,11 @@
           "pr": 54528,
           "previous": "7dcce43498f89b359a442d6adf5288c449fb0fd1",
           "delta": {
-            "composite": 0.0161555555555708,
-            "architecture": 0,
+            "composite": 0.02015966846343531,
+            "architecture": 0.004049171158570175,
             "complexity": 0,
             "smells": 0.05269999999998731,
-            "tests": 0.03999999999999204
-          }
-        },
-        {
-          "commit": "37a64d2e1751fbc9e19f1fb529ba2a2ace9faea2",
-          "date": "2026-04-16T20:09:38+02:00",
-          "week": "2026-04-20",
-          "subject": "feat(error-tracking): add banner pointing users to integrations in global settings (#54855)",
-          "pr": 54855,
-          "previous": "5880e5dd2fa4a0c2356737bf88e4a19c8a2c77db",
-          "delta": {
-            "composite": -0.015425925925924844,
-            "architecture": 0.008333333333354176,
-            "complexity": -0.010000000000005116,
-            "smells": -0.08899999999999864,
-            "tests": 0.035000000000003695
+            "tests": 0.0799999999999983
           }
         },
         {
@@ -3699,71 +3460,56 @@
           "pr": 54196,
           "previous": "b248d6a60b3a2ba39f886c94049536401a9a34cd",
           "delta": {
-            "composite": 0.014244444444457827,
-            "architecture": 0,
+            "composite": 0.020043803589075537,
+            "architecture": 0.016809508972670528,
             "complexity": 0.010000000000019327,
             "smells": 0.08660000000001844,
             "tests": -0.07000000000000028
           }
         },
         {
-          "commit": "e5ab82a98a83c384fd67775d8f8154a8c944cd9e",
-          "date": "2026-04-09T14:54:41+03:00",
-          "week": "2026-04-13",
-          "subject": "fix(error-tracking): declare issue merge schema (#53606)",
-          "pr": 53606,
-          "previous": "29945f34b16cd7139085fccae9727423ad2de66e",
-          "delta": {
-            "composite": 0.011755555555552633,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.022899999999992815,
-            "tests": 0.05999999999999872
-          }
-        },
-        {
-          "commit": "7fa9c231afe9cbfdd82e6b3c8f77a06a60a0d952",
-          "date": "2026-04-10T13:02:14+02:00",
-          "week": "2026-04-13",
-          "subject": "feat: add backfill command (#53306)",
-          "pr": 53306,
-          "previous": "774fab89331c2f577c149306e2fa8128bf07bf6b",
-          "delta": {
-            "composite": 0.010477777777779806,
-            "architecture": 0.024999999999991473,
-            "complexity": -0.3499999999999943,
-            "smells": 0.12590000000000146,
-            "tests": 0.6300000000000026
-          }
-        },
-        {
-          "commit": "916fdd93387d39f24f8c5cbe9f7534a9b7e57922",
-          "date": "2026-04-13T15:50:26-05:00",
+          "commit": "4e038bf65ddf2076dc45cf9b87cf25e46d65b90e",
+          "date": "2026-04-18T09:05:47-03:00",
           "week": "2026-04-20",
-          "subject": "feat(web-analytics): Add Web Analytics Digest Email Job (#52785)",
-          "pr": 52785,
-          "previous": "c1500b8ce0070d08fde0d875c0fdbe7ff5149013",
+          "subject": "feat: Add Settings section to context panel (#53104)",
+          "pr": 53104,
+          "previous": "86ba2268bd985254f7f0d90fb76cee3a3cb1b465",
           "delta": {
-            "composite": -0.00991111111110854,
-            "architecture": 0,
+            "composite": -0.019790712835316526,
+            "architecture": -0.03557678208828463,
             "complexity": 0,
-            "smells": -0.05459999999999354,
-            "tests": 0.019999999999999574
+            "smells": -0.04779999999999518,
+            "tests": 0.03999999999999915
           }
         },
         {
-          "commit": "aa769b44f47f1acd43524d26d14fc5d18b748bd7",
-          "date": "2026-04-06T16:33:21+02:00",
-          "week": "2026-04-13",
-          "subject": "fix(error-tracking): correct Apple dSYM symbolication and stable re-uploads (#53325)",
-          "pr": 53325,
-          "previous": "43c13bb3b4e5b979b6e8ff9c3ebc45490997c71e",
+          "commit": "37a64d2e1751fbc9e19f1fb529ba2a2ace9faea2",
+          "date": "2026-04-16T20:09:38+02:00",
+          "week": "2026-04-20",
+          "subject": "feat(error-tracking): add banner pointing users to integrations in global settings (#54855)",
+          "pr": 54855,
+          "previous": "5880e5dd2fa4a0c2356737bf88e4a19c8a2c77db",
           "delta": {
-            "composite": 0.009688888888888414,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.05859999999999843,
-            "tests": -0.030000000000001137
+            "composite": -0.0159232465906598,
+            "architecture": -0.0053081164766268785,
+            "complexity": -0.010000000000005116,
+            "smells": -0.08899999999999864,
+            "tests": 0.07000000000000028
+          }
+        },
+        {
+          "commit": "60f257bbae3e0c2f72afd98cbe51f9da53fb9980",
+          "date": "2026-06-11T00:50:18+03:00",
+          "week": "2026-06-15",
+          "subject": "chore(error-tracking): reject deprecated archived/pending_release statuses, add backfill command (#59542)",
+          "pr": 59542,
+          "previous": "e1ed7ca83acc9065cf79da9eec1c834772b57c4d",
+          "delta": {
+            "composite": 0.015730346218305158,
+            "architecture": 0.04552586554575555,
+            "complexity": 0.009999999999990905,
+            "smells": -0.20239999999999725,
+            "tests": 0.3500000000000014
           }
         },
         {
@@ -3774,11 +3520,86 @@
           "pr": 54533,
           "previous": "0e048298d45e1884bc2064f98157bf5eaa5b1ba9",
           "delta": {
-            "composite": 0.009333333333330529,
-            "architecture": 0,
+            "composite": 0.013875434303542988,
+            "architecture": 0.002438585758852696,
             "complexity": 0,
             "smells": 0.019499999999993634,
-            "tests": 0.045000000000001705
+            "tests": 0.09000000000000341
+          }
+        },
+        {
+          "commit": "aa769b44f47f1acd43524d26d14fc5d18b748bd7",
+          "date": "2026-04-06T16:33:21+02:00",
+          "week": "2026-04-13",
+          "subject": "fix(error-tracking): correct Apple dSYM symbolication and stable re-uploads (#53325)",
+          "pr": 53325,
+          "previous": "43c13bb3b4e5b979b6e8ff9c3ebc45490997c71e",
+          "delta": {
+            "composite": 0.012201955703773137,
+            "architecture": 0.008704889259448123,
+            "complexity": 0,
+            "smells": 0.05859999999999843,
+            "tests": -0.030000000000001137
+          }
+        },
+        {
+          "commit": "17d94adf4d2bf528cf8fe2d27b8f2a0dcaa28252",
+          "date": "2026-06-12T13:26:47+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): polish source maps wizard banner, modal and CTA (#63200)",
+          "pr": 63200,
+          "previous": "bb904b61a6aa0ceed56c02d85f7df658c6718c50",
+          "delta": {
+            "composite": 0.011868885136479435,
+            "architecture": 0.02777221284117104,
+            "complexity": 0,
+            "smells": 0.0338000000000136,
+            "tests": -0.05999999999999872
+          }
+        },
+        {
+          "commit": "e5ab82a98a83c384fd67775d8f8154a8c944cd9e",
+          "date": "2026-04-09T14:54:41+03:00",
+          "week": "2026-04-13",
+          "subject": "fix(error-tracking): declare issue merge schema (#53606)",
+          "pr": 53606,
+          "previous": "29945f34b16cd7139085fccae9727423ad2de66e",
+          "delta": {
+            "composite": 0.011839258481145976,
+            "architecture": 0.0031481462028750684,
+            "complexity": 0,
+            "smells": 0.022899999999992815,
+            "tests": 0.05999999999999872
+          }
+        },
+        {
+          "commit": "916fdd93387d39f24f8c5cbe9f7534a9b7e57922",
+          "date": "2026-04-13T15:50:26-05:00",
+          "week": "2026-04-20",
+          "subject": "feat(web-analytics): Add Web Analytics Digest Email Job (#52785)",
+          "pr": 52785,
+          "previous": "c1500b8ce0070d08fde0d875c0fdbe7ff5149013",
+          "delta": {
+            "composite": -0.010863359464906353,
+            "architecture": -0.0048583986622645625,
+            "complexity": 0,
+            "smells": -0.05459999999999354,
+            "tests": 0.019999999999999574
+          }
+        },
+        {
+          "commit": "25f53db9727469c993f58e8d89b8a0181963ec5e",
+          "date": "2026-06-10T13:07:26+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): update stack trace actions (#62625)",
+          "pr": 62625,
+          "previous": "060b689c138fab866e1d13f6cea172965acdff78",
+          "delta": {
+            "composite": -0.010680695621729797,
+            "architecture": -0.004701739054326026,
+            "complexity": -0.010000000000005116,
+            "smells": -0.0589999999999975,
+            "tests": 0.060000000000002274
           }
         },
         {
@@ -3789,11 +3610,41 @@
           "pr": 54284,
           "previous": "d528d73a4e95169a32f693a2de0d72ee38679e39",
           "delta": {
-            "composite": 0.008400000000008845,
-            "architecture": 0,
+            "composite": 0.00888457441300261,
+            "architecture": 0.0033114360324759673,
             "complexity": 0,
             "smells": 0.04279999999999973,
             "tests": -0.010000000000001563
+          }
+        },
+        {
+          "commit": "7fa9c231afe9cbfdd82e6b3c8f77a06a60a0d952",
+          "date": "2026-04-10T13:02:14+02:00",
+          "week": "2026-04-13",
+          "subject": "feat: add backfill command (#53306)",
+          "pr": 53306,
+          "previous": "774fab89331c2f577c149306e2fa8128bf07bf6b",
+          "delta": {
+            "composite": 0.007054381556400813,
+            "architecture": 0.05968595389099107,
+            "complexity": -0.3499999999999943,
+            "smells": 0.12590000000000146,
+            "tests": 0.6300000000000026
+          }
+        },
+        {
+          "commit": "e1ed7ca83acc9065cf79da9eec1c834772b57c4d",
+          "date": "2026-06-10T23:51:20+03:00",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): escape search text and fingerprints in issue events query (#62716)",
+          "pr": 62716,
+          "previous": "801e2cc7db4c08128b428297c0319af4e31ea53b",
+          "delta": {
+            "composite": 0.006999999999990791,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0.06999999999999673
           }
         },
         {
@@ -3804,26 +3655,26 @@
           "pr": 53352,
           "previous": "0927d6b52d38de56e5bed3506dd5eb84e81df34d",
           "delta": {
-            "composite": 0.005888888888890165,
-            "architecture": 0,
+            "composite": 0.006861969069476004,
+            "architecture": 0.0039049226736835863,
             "complexity": 0,
             "smells": 0.03149999999999409,
             "tests": -0.00999999999999801
           }
         },
         {
-          "commit": "5569bf4e1aeb755590c6c22b728e914c5b2afcd8",
-          "date": "2026-06-22T11:26:17Z",
-          "week": "2026-06-29",
-          "subject": "fix(error-tracking): align summary stats and insight charts on same filters (#56637)",
-          "pr": 56637,
-          "previous": "8e473b6a37a49ba94fb59ce8810821381540e980",
+          "commit": "801e2cc7db4c08128b428297c0319af4e31ea53b",
+          "date": "2026-06-10T22:09:32+03:00",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): reject malformed issueId and personId params (#62714)",
+          "pr": 62714,
+          "previous": "e593f8b0b1281a0afaaa9c76afdd35d8f13207ec",
           "delta": {
-            "composite": 0.004800000000017235,
-            "architecture": 0,
-            "complexity": -0.009999999999990905,
-            "smells": 0.04410000000000025,
-            "tests": -0.01999999999999602
+            "composite": -0.0037489526877578783,
+            "architecture": 0.0029776182806102724,
+            "complexity": 0,
+            "smells": -0.06470000000000198,
+            "tests": 0.08000000000000185
           }
         },
         {
@@ -3834,26 +3685,71 @@
           "pr": 53639,
           "previous": "30ad4bc26afdd80b33d409a0f7ede64bc3d58499",
           "delta": {
-            "composite": 0.00251111111111868,
-            "architecture": 0,
+            "composite": 0.003539399794391329,
+            "architecture": 0.003198499486003925,
             "complexity": 0,
             "smells": 0.021300000000010755,
             "tests": -0.019999999999999574
           }
         },
         {
-          "commit": "d3899189d25f7af37bf47c494860ad205ca936ff",
-          "date": "2026-06-22T20:33:55Z",
-          "week": "2026-06-29",
-          "subject": "fix(error-tracking): make first/last event fetch opt-in (#64648)",
-          "pr": 64648,
-          "previous": "be1cbb1fe87fbc83591038d5ef306e9b645dd117",
+          "commit": "060b689c138fab866e1d13f6cea172965acdff78",
+          "date": "2026-06-09T20:52:52+01:00",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): open Explain in Max side panel with issue context (#62532)",
+          "pr": 62532,
+          "previous": "ff42d5120dc0c0542de76377ad98931a65d6668d",
           "delta": {
-            "composite": 0.0023999999999944066,
-            "architecture": 0,
+            "composite": 0.0034518161531451597,
+            "architecture": 0.000829540382852656,
             "complexity": 0,
-            "smells": 0.0008000000000123464,
-            "tests": 0.01999999999999602
+            "smells": 0.02060000000001594,
+            "tests": -0.010000000000001563
+          }
+        },
+        {
+          "commit": "04a6dc820f3217928b515333d110cfc901457b19",
+          "date": "2026-06-11T19:56:57+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): capture event when source maps banner is shown (#63041)",
+          "pr": 63041,
+          "previous": "4cb55f89b7cd3d655d4d165217d2f30052c0cac5",
+          "delta": {
+            "composite": 0.003342325201558083,
+            "architecture": 0.0019058130039013577,
+            "complexity": 0,
+            "smells": 0.022899999999992815,
+            "tests": -0.01999999999999602
+          }
+        },
+        {
+          "commit": "27da176a24a6aef8f3416665b98b1ece505095b1",
+          "date": "2026-04-08T11:28:53Z",
+          "week": "2026-04-13",
+          "subject": "fix(error-tracking): remove settings split for autocapture (#53577)",
+          "pr": 53577,
+          "previous": "4ce482b0c20cadfe64e649f7cc42a04609e8e014",
+          "delta": {
+            "composite": -0.0025682569041975967,
+            "architecture": -0.004570642260532054,
+            "complexity": 0,
+            "smells": -0.013700000000000045,
+            "tests": 0.019999999999999574
+          }
+        },
+        {
+          "commit": "64549d964b5b0e0dc385bbf3626b68fe616a10dd",
+          "date": "2026-06-11T09:47:52Z",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): speed up symbol set cleanup (#62859)",
+          "pr": 62859,
+          "previous": "60f257bbae3e0c2f72afd98cbe51f9da53fb9980",
+          "delta": {
+            "composite": -0.002410444272115342,
+            "architecture": 0.00662388931968394,
+            "complexity": -0.05999999999998806,
+            "smells": 0.044699999999991746,
+            "tests": 0.0400000000000027
           }
         },
         {
@@ -3864,8 +3760,8 @@
           "pr": 54245,
           "previous": "1dda9ccda65841808048b4742da9edd49c291b95",
           "delta": {
-            "composite": 0.0013777777777761457,
-            "architecture": 0,
+            "composite": 0.0015051428753167784,
+            "architecture": 0.0006628571883027234,
             "complexity": 0,
             "smells": 0.006199999999992656,
             "tests": 0
@@ -3879,41 +3775,26 @@
           "pr": 54869,
           "previous": "e126f1bc9f1e4400a7ba1979610792b565fb146d",
           "delta": {
-            "composite": 0.0010888888888871406,
-            "architecture": 0,
+            "composite": 0.0013236693167613112,
+            "architecture": 0.00210917329191318,
             "complexity": 0,
             "smells": 0.007400000000018281,
-            "tests": -0.0049999999999954525
+            "tests": -0.010000000000001563
           }
         },
         {
-          "commit": "27da176a24a6aef8f3416665b98b1ece505095b1",
-          "date": "2026-04-08T11:28:53Z",
-          "week": "2026-04-13",
-          "subject": "fix(error-tracking): remove settings split for autocapture (#53577)",
-          "pr": 53577,
-          "previous": "4ce482b0c20cadfe64e649f7cc42a04609e8e014",
+          "commit": "49493119ffc9b193648f05af85ed50f6908094d0",
+          "date": "2026-06-10T14:37:08+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): batch DB queries in recommendations refresh sweep (#62526)",
+          "pr": 62526,
+          "previous": "25f53db9727469c993f58e8d89b8a0181963ec5e",
           "delta": {
-            "composite": -0.0008222222222258324,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": -0.013700000000000045,
-            "tests": 0.019999999999999574
-          }
-        },
-        {
-          "commit": "1dda9ccda65841808048b4742da9edd49c291b95",
-          "date": "2026-04-13T11:58:24Z",
-          "week": "2026-04-20",
-          "subject": "fix(error-tracking): remove id ordering from issue state backfill query (#54241)",
-          "pr": 54241,
-          "previous": "a560cb1c0e82634e294998f6b10ec8ae64b36639",
-          "delta": {
-            "composite": -0.0006222222222191931,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": -0.0027999999999934744,
-            "tests": 0
+            "composite": -0.0009846264133699378,
+            "architecture": 0.02378843396658681,
+            "complexity": -0.04000000000000625,
+            "smells": -0.06250000000001421,
+            "tests": 0.14000000000000057
           }
         },
         {
@@ -3924,25 +3805,85 @@
           "pr": 53733,
           "previous": "478a48eaa3f9f48bfa44970dbacacf3673f1ec8e",
           "delta": {
-            "composite": -0.0004666666666537367,
-            "architecture": 0,
+            "composite": -0.0007796115629901124,
+            "architecture": -0.0008990289075114788,
             "complexity": 0,
             "smells": -0.0020999999999844476,
             "tests": 0
           }
         },
         {
-          "commit": "be1cbb1fe87fbc83591038d5ef306e9b645dd117",
-          "date": "2026-06-22T16:47:26+02:00",
-          "week": "2026-06-29",
-          "subject": "feat(error-tracking): add recommendations MCP tool with action guidance (#63512)",
-          "pr": 63512,
-          "previous": "5569bf4e1aeb755590c6c22b728e914c5b2afcd8",
+          "commit": "1dda9ccda65841808048b4742da9edd49c291b95",
+          "date": "2026-04-13T11:58:24Z",
+          "week": "2026-04-20",
+          "subject": "fix(error-tracking): remove id ordering from issue state backfill query (#54241)",
+          "pr": 54241,
+          "previous": "a560cb1c0e82634e294998f6b10ec8ae64b36639",
           "delta": {
-            "composite": 0.00039999999999906777,
-            "architecture": 0,
+            "composite": -0.0007367703675242865,
+            "architecture": -0.00044192591879266274,
             "complexity": 0,
-            "smells": 0.0018000000000029104,
+            "smells": -0.0027999999999934744,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "7ce1d38070597d2e70a2a51f9f585e9873d7970e",
+          "date": "2026-06-09T14:24:30+02:00",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): show full range in rate limit previews (#62387)",
+          "pr": 62387,
+          "previous": "1a4942cd4ce50d42140f4ba870ad504691c6f8b4",
+          "delta": {
+            "composite": -0.0006877849737918496,
+            "architecture": 0.0004305375655064836,
+            "complexity": 0,
+            "smells": 0.0007000000000090267,
+            "tests": -0.010000000000001563
+          }
+        },
+        {
+          "commit": "533d527ce8ab84094cca0ad17f30a2764024fb67",
+          "date": "2026-06-09T14:58:25+02:00",
+          "week": "2026-06-15",
+          "subject": "refactor(error-tracking): stream recommendation refresh batches via semaphore (#62373)",
+          "pr": 62373,
+          "previous": "7ce1d38070597d2e70a2a51f9f585e9873d7970e",
+          "delta": {
+            "composite": 0.0006851939530037043,
+            "architecture": -0.0002870151175073943,
+            "complexity": 0,
+            "smells": -0.000999999999990564,
+            "tests": 0.010000000000001563
+          }
+        },
+        {
+          "commit": "b2db1a4f9be767ca72bf949a1484f69cc5dad174",
+          "date": "2026-06-10T15:00:58+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): add docs button to source maps banner and card (#62630)",
+          "pr": 62630,
+          "previous": "49493119ffc9b193648f05af85ed50f6908094d0",
+          "delta": {
+            "composite": 0.00045468346147004013,
+            "architecture": 0.001786708653696678,
+            "complexity": 0,
+            "smells": 0.0037000000000091404,
+            "tests": -0.00999999999999801
+          }
+        },
+        {
+          "commit": "3f26908c50448ce551b430a2b1026d2e146b408b",
+          "date": "2026-06-12T10:19:12Z",
+          "week": "2026-06-15",
+          "subject": "perf(devex): cut setup-time import chains into the HogQL/schema layer (#62726)",
+          "pr": 62726,
+          "previous": "cb2e0bfca5bbb4502f8a923912dd6ab3933712a6",
+          "delta": {
+            "composite": 0.00041176299082223977,
+            "architecture": 0.0003794074770695488,
+            "complexity": 0,
+            "smells": 0.0013000000000147338,
             "tests": 0
           }
         },
@@ -3954,8 +3895,8 @@
           "pr": 53553,
           "previous": "aa769b44f47f1acd43524d26d14fc5d18b748bd7",
           "delta": {
-            "composite": 0.000333333333330188,
-            "architecture": 0,
+            "composite": 0.00039145354682545985,
+            "architecture": 0.00022863386705296307,
             "complexity": 0,
             "smells": 0.0014999999999929514,
             "tests": 0
@@ -3969,71 +3910,56 @@
           "pr": 53103,
           "previous": "fc38e6c57dcaef8051225bb7a0a77228b160ce62",
           "delta": {
-            "composite": -0.000311111111116702,
-            "architecture": 0,
+            "composite": -0.0003422516916202767,
+            "architecture": -0.00015562922904166498,
             "complexity": 0,
             "smells": -0.0014000000000038426,
             "tests": 0
           }
         },
         {
-          "commit": "26784364e1cf6a108e154a0ac701645ad2c37b00",
-          "date": "2026-06-24T14:14:09-03:00",
-          "week": "2026-06-29",
-          "subject": "feat(cohorts): stream-native cohorts mvp (#61317)",
-          "pr": 61317,
-          "previous": "585edd6a29bb3b120023db633b5428e7b1484569",
+          "commit": "e593f8b0b1281a0afaaa9c76afdd35d8f13207ec",
+          "date": "2026-06-10T22:08:27+03:00",
+          "week": "2026-06-15",
+          "subject": "fix(error-tracking): run digest team enumeration on the offline cluster (#62715)",
+          "pr": 62715,
+          "previous": "d870bf6f3aaee88559529c7659e7ca54c7579889",
           "delta": {
-            "composite": -0.00013333333332354869,
-            "architecture": 0,
+            "composite": 0.0002636568824954111,
+            "architecture": 0.00025914220624656537,
             "complexity": 0,
-            "smells": 0.00190000000000623,
-            "tests": -0.004999999999999005
-          }
-        },
-        {
-          "commit": "c584607fab68a7d1026619acc3ed5322db41392b",
-          "date": "2026-06-25T16:41:29Z",
-          "week": "2026-06-29",
-          "subject": "fix(error-tracking): don't crash issues list when aggregations are missing (#66055)",
-          "pr": 66055,
-          "previous": "727728a39f5581af3dc98cc43b34632ec7e516ca",
-          "delta": {
-            "composite": -0.00006666666666887977,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": -0.0002999999999957481,
+            "smells": 0.0007999999999981355,
             "tests": 0
           }
         },
         {
-          "commit": "d1ba6e173c82496bbdda82c71eed0be272e4fc18",
-          "date": "2026-06-23T14:20:51Z",
-          "week": "2026-06-29",
-          "subject": "chore(devex): upgrade kea-typegen to 3.7.0 (#65466)",
-          "pr": 65466,
-          "previous": "3c4c99c49a69d96ac6893660e9b937541d822c7b",
+          "commit": "4cb55f89b7cd3d655d4d165217d2f30052c0cac5",
+          "date": "2026-06-11T16:05:00Z",
+          "week": "2026-06-15",
+          "subject": "chore(error-tracking): trigger temporal worker deploy (#63014)",
+          "pr": 63014,
+          "previous": "5faf9382faa8bf3f9e565cd75817e7a86d51c029",
           "delta": {
-            "composite": -0.00002222222221348602,
-            "architecture": 0,
+            "composite": 0.00011084891391988094,
+            "architecture": 0.00012712228476630116,
             "complexity": 0,
-            "smells": -0.0000999999999891088,
+            "smells": 0.0003000000000241698,
             "tests": 0
           }
         },
         {
-          "commit": "b7f000e386fdf9abb6f49d72d3ee4eb38081eb0e",
-          "date": "2026-06-25T16:45:57-03:00",
-          "week": "2026-06-29",
-          "subject": "chore(growth): Remove fully rolled-out feature flags (#65677)",
-          "pr": 65677,
-          "previous": "c584607fab68a7d1026619acc3ed5322db41392b",
+          "commit": "cb2e0bfca5bbb4502f8a923912dd6ab3933712a6",
+          "date": "2026-06-12T10:55:10+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(error-tracking): auto-merge close fingerprints (#62969)",
+          "pr": 62969,
+          "previous": "2a0f0ea100a334edd382606cce877ab85bb63278",
           "delta": {
-            "composite": 0.00002222222221348602,
-            "architecture": 0,
-            "complexity": 0,
-            "smells": 0.0000999999999891088,
-            "tests": 0
+            "composite": -0.00004024401586377735,
+            "architecture": -0.0007291814682162112,
+            "complexity": -0.1614285714285728,
+            "smells": 0.048399999999972465,
+            "tests": 0.38999999999999346
           }
         },
         {
@@ -4187,12 +4113,12 @@
           }
         },
         {
-          "commit": "a64ea9fde4f9cab20a68d32cb317a2c68b328450",
-          "date": "2026-06-23T16:49:40Z",
-          "week": "2026-06-29",
-          "subject": "perf(hogql): drop tuple wrapping in argMax for non-nullable columns (#64577)",
-          "pr": 64577,
-          "previous": "d1ba6e173c82496bbdda82c71eed0be272e4fc18",
+          "commit": "ff42d5120dc0c0542de76377ad98931a65d6668d",
+          "date": "2026-06-09T20:25:57+01:00",
+          "week": "2026-06-15",
+          "subject": "chore(openapi): bump orval to 8.14.0 (#62248)",
+          "pr": 62248,
+          "previous": "eec9e34977cfde77faffb8311499bb8e4094f661",
           "delta": {
             "composite": 0,
             "architecture": 0,
@@ -4202,12 +4128,12 @@
           }
         },
         {
-          "commit": "3e33e41967bf3b36538e172652197e612cfd959b",
-          "date": "2026-06-26T10:07:29-04:00",
-          "week": "2026-06-29",
-          "subject": "chore(storybook): upgrade storybook 8 to 10 (#64714)",
-          "pr": 64714,
-          "previous": "6f754093c7be143e20f8f45b3f6ebd8ac6975297",
+          "commit": "5e933cbd52e79ffdb1f6c01c87986c67d5d0cf41",
+          "date": "2026-06-11T20:44:35+02:00",
+          "week": "2026-06-15",
+          "subject": "feat(hogql): type system proof of concept (#61108)",
+          "pr": 61108,
+          "previous": "04a6dc820f3217928b515333d110cfc901457b19",
           "delta": {
             "composite": 0,
             "architecture": 0,
@@ -4217,12 +4143,12 @@
           }
         },
         {
-          "commit": "6f754093c7be143e20f8f45b3f6ebd8ac6975297",
-          "date": "2026-06-26T13:55:38+02:00",
-          "week": "2026-06-29",
-          "subject": "chore(phai): move agent runner scene into posthog_ai frontend (#66167)",
-          "pr": 66167,
-          "previous": "b7f000e386fdf9abb6f49d72d3ee4eb38081eb0e",
+          "commit": "2a0f0ea100a334edd382606cce877ab85bb63278",
+          "date": "2026-06-12T01:06:17Z",
+          "week": "2026-06-15",
+          "subject": "refactor(hogql): redesign events predicate pushdown on the lowering architecture (#62239)",
+          "pr": 62239,
+          "previous": "5e933cbd52e79ffdb1f6c01c87986c67d5d0cf41",
           "delta": {
             "composite": 0,
             "architecture": 0,
@@ -4232,12 +4158,27 @@
           }
         },
         {
-          "commit": "2749db1d2c5d7069c4762dcc48cd1ac17eaa3e4a",
-          "date": "2026-06-27T18:13:28+02:00",
-          "week": "2026-06-29",
-          "subject": "fix(oauth): attribute impersonated MCP/OAuth actions (#66398)",
-          "pr": 66398,
-          "previous": "57ae208b7bad1efc31cb497e4489010a6bcfb57a",
+          "commit": "bb904b61a6aa0ceed56c02d85f7df658c6718c50",
+          "date": "2026-06-12T11:41:17+01:00",
+          "week": "2026-06-15",
+          "subject": "fix(frontend): release the Max thread graph from the authenticated shell (#63142)",
+          "pr": 63142,
+          "previous": "3f26908c50448ce551b430a2b1026d2e146b408b",
+          "delta": {
+            "composite": 0,
+            "architecture": 0,
+            "complexity": 0,
+            "smells": 0,
+            "tests": 0
+          }
+        },
+        {
+          "commit": "74a4764ab1979eda80912a7caa27699941e5341c",
+          "date": "2026-06-12T12:02:18-04:00",
+          "week": "2026-06-15",
+          "subject": "chore: update ruff to 0.15.16 (#62780)",
+          "pr": 62780,
+          "previous": "5fdf6815648a739a66a6641adcdb42b9c9474b8e",
           "delta": {
             "composite": 0,
             "architecture": 0,
@@ -4250,12 +4191,13 @@
     }
   },
   "runtime": {
-    "seconds": 96.8,
-    "measured": 59,
-    "reused": 287,
+    "seconds": 8.5,
+    "measured": 0,
+    "reused": 342,
+    "pruned": 0,
     "total": {
-      "seconds": 427.1,
-      "measured": 427
+      "seconds": 512.8,
+      "measured": 472
     }
   }
 }

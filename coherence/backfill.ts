@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
@@ -7,7 +7,7 @@ import { git } from "../src/git.ts";
 import { CoherenceReportSchema, type CoherenceIndex, type CoherenceReport } from "./contract.ts";
 import { measureCoherence } from "./measure.ts";
 import { rescoreReport } from "./rescore.ts";
-import { percentile, roundTo } from "./score.ts";
+import { percentile, roundTo, scoringVersion } from "./score.ts";
 
 const ScoresSchema = z.object({ composite: z.number(), architecture: z.number(), complexity: z.number(), smells: z.number(), tests: z.number() });
 const CommitSchema = z.object({ commit: z.string(), date: z.string() });
@@ -17,6 +17,7 @@ const MoverSchema = CommitSchema.extend({ week: z.string(), subject: z.string(),
 
 export const BackfillManifestSchema = z.object({
   version: z.literal(1),
+  scoringVersion: z.number().int().default(1),
   repository: z.string(),
   ref: z.string(),
   head: z.string(),
@@ -30,7 +31,7 @@ export const BackfillManifestSchema = z.object({
       movers: z.array(MoverSchema),
     }),
   ),
-  runtime: z.object({ seconds: z.number(), measured: z.number().int(), reused: z.number().int(), total: z.object({ seconds: z.number(), measured: z.number().int() }) }),
+  runtime: z.object({ seconds: z.number(), measured: z.number().int(), reused: z.number().int(), pruned: z.number().int().default(0), total: z.object({ seconds: z.number(), measured: z.number().int() }) }),
 });
 
 export type Scores = z.infer<typeof ScoresSchema>;
@@ -42,13 +43,14 @@ export const scoreKeys = ["composite", "architecture", "complexity", "smells", "
 const manifestFile = "backfill.json";
 const dayMs = 24 * 60 * 60 * 1000;
 const pullRequestNumber = /\(#(\d+)\)\s*$/;
+const storedReport = /^\d{4}-\d{2}-\d{2}-[0-9a-f]{12}\.json$/;
 
 type Commit = z.infer<typeof CommitSchema>;
 type Log = (line: string) => void;
 
 export async function backfill(request: BackfillRequest, log: Log = () => {}): Promise<BackfillManifest> {
   const started = performance.now();
-  const previous = await readManifest(request.dataDir).catch(() => null);
+  const previous = await parseManifest(request.dataDir).catch(() => null);
   const store = new ScoreStore(request.repository, request.dataDir, log);
   const head = (await git(request.repository, ["rev-parse", request.ref])).trim();
   const scopes: BackfillManifest["scopes"] = {};
@@ -58,28 +60,36 @@ export async function backfill(request: BackfillRequest, log: Log = () => {}): P
     const movers = await attributeMovers(request, scope, points, store);
     scopes[scope] = { points, noise, movers };
   }
+  const pruned = await store.pruneUnreached(request.scopes);
   const manifest = BackfillManifestSchema.parse({
     version: 1,
+    scoringVersion,
     repository: basename(resolve(request.repository)),
     ref: request.ref,
     head,
     until: request.until.toISOString(),
     weeks: request.weeks,
     scopes,
-    runtime: runtimeOf(started, store, previous),
+    runtime: runtimeOf(started, store, previous, pruned),
   });
   await writeFile(join(request.dataDir, manifestFile), JSON.stringify(manifest, null, 2));
   return manifest;
 }
 
 export async function readManifest(dataDir: string): Promise<BackfillManifest> {
+  const manifest = await parseManifest(dataDir);
+  if (manifest.scoringVersion !== scoringVersion) throw new Error(`${join(dataDir, manifestFile)} was scored under scoring version ${manifest.scoringVersion}, not ${scoringVersion}. Run coherence/backfill.ts again to rescore it.`);
+  return manifest;
+}
+
+async function parseManifest(dataDir: string): Promise<BackfillManifest> {
   return BackfillManifestSchema.parse(JSON.parse(await readFile(join(dataDir, manifestFile), "utf8")));
 }
 
-function runtimeOf(started: number, store: ScoreStore, previous: BackfillManifest | null): BackfillManifest["runtime"] {
+function runtimeOf(started: number, store: ScoreStore, previous: BackfillManifest | null, pruned: number): BackfillManifest["runtime"] {
   const seconds = roundTo((performance.now() - started) / 1000, 1);
   const before = previous?.runtime.total ?? { seconds: 0, measured: 0 };
-  return { seconds, measured: store.measured, reused: store.reused, total: { seconds: roundTo(before.seconds + seconds, 1), measured: before.measured + store.measured } };
+  return { seconds, measured: store.measured, reused: store.reused, pruned, total: { seconds: roundTo(before.seconds + seconds, 1), measured: before.measured + store.measured } };
 }
 
 function scoresOf(index: CoherenceIndex): Scores {
@@ -200,6 +210,15 @@ class ScoreStore {
     return { ...commit, file, scores: scoresOf((report ?? (await this.measure(scope, commit, file))).index) };
   }
 
+  async pruneUnreached(scopes: string[]): Promise<number> {
+    const reached = new Set([...this.measuredFiles, ...this.reusedFiles]);
+    const stored = await Promise.all(scopes.map(async (scope) => (await readdir(join(this.dataDir, scope)).catch(() => [])).filter((name) => storedReport.test(name)).map((name) => join(scope, name))));
+    const unreached = stored.flat().filter((file) => !reached.has(file));
+    await Promise.all(unreached.map((file) => rm(join(this.dataDir, file))));
+    for (const file of unreached) this.log(`pruned ${file}: no point, noise pair, or mover reaches it`);
+    return unreached.length;
+  }
+
   get measured(): number {
     return this.measuredFiles.size;
   }
@@ -278,6 +297,6 @@ if (import.meta.main) {
     { repository: resolve(repo), ref, scopes, weeks: since, until: until ? new Date(until) : new Date(), dataDir: resolve(data), moverWeeks: parsed.data["mover-weeks"] },
     (line) => console.error(line),
   );
-  const { seconds, measured, reused, total } = manifest.runtime;
-  console.log(`Backfilled ${scopes.length} scopes over ${manifest.weeks} weeks in ${seconds} s (${measured} measured, ${reused} reused; ${total.measured} measured in ${total.seconds} s across runs). Manifest: ${join(resolve(data), manifestFile)}`);
+  const { seconds, measured, reused, pruned, total } = manifest.runtime;
+  console.log(`Backfilled ${scopes.length} scopes over ${manifest.weeks} weeks in ${seconds} s (${measured} measured, ${reused} reused, ${pruned} pruned; ${total.measured} measured in ${total.seconds} s across runs). Manifest: ${join(resolve(data), manifestFile)}`);
 }

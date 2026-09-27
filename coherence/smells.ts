@@ -34,7 +34,7 @@ export async function measureSmells(files: ScopeFile[], toolbox: Toolbox, cache:
   return { score: dimensionScore(measures), measures, ...facts };
 }
 
-export function smellsMeasures({ ruff, oxlint, duplication, markers, typeEscapes }: Pick<Smells, "ruff" | "oxlint" | "duplication" | "markers" | "typeEscapes">): Record<string, Measure> {
+export function smellsMeasures({ ruff, oxlint, duplication, markers, typeEscapes }: Pick<Smells, "ruff" | "oxlint" | "duplication" | "markers" | "typeEscapes">): Record<"ruffPerKloc" | "oxlintPerKloc" | "duplicationPercentage" | "markersPerKloc" | "typeEscapesPerKloc", Measure> {
   return {
     ruffPerKloc: measure(ruff.perKloc, anchors.ruffPerKloc),
     oxlintPerKloc: measure(oxlint.perKloc, anchors.oxlintPerKloc),

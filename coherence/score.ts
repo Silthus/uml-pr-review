@@ -1,11 +1,11 @@
-import type { DimensionWeights, Measure } from "./contract.ts";
+import type { CoherenceIndex, DimensionWeights, Measure } from "./contract.ts";
 
 export type Anchor = { best: number; worst: number };
 
 export const anchors = {
   propagationCost: { best: 0, worst: 0.4 },
   cycleShare: { best: 0, worst: 0.3 },
-  facadeBypasses: { best: 0, worst: 100 },
+  facadeBypassesPerKloc: { best: 0, worst: 10 },
   p90Ccn: { best: 2, worst: 12 },
   shareOverTen: { best: 0, worst: 0.2 },
   shareOverTwenty: { best: 0, worst: 0.05 },
@@ -17,17 +17,14 @@ export const anchors = {
   markersPerKloc: { best: 0, worst: 2 },
   typeEscapesPerKloc: { best: 0, worst: 20 },
   testRatio: { best: 1, worst: 0 },
-  facadeCoverage: { best: 1, worst: 0 },
 } as const satisfies Record<string, Anchor>;
 
-export const dimensionWeights: DimensionWeights = { architecture: 35, complexity: 25, smells: 20, tests: 10 };
+export const scoringVersion = 2;
+
+export const dimensionWeights: DimensionWeights = { architecture: 40, complexity: 30, smells: 20, tests: 10 };
 
 export function measure(value: number | null, anchor: Anchor): Measure {
   return { value, score: value === null ? null : anchoredScore(value, anchor), ...anchor };
-}
-
-export function unscoredMeasure(value: number | null, anchor: Anchor): Measure {
-  return { value, score: null, ...anchor };
 }
 
 export function anchoredScore(value: number, { best, worst }: Anchor): number {
@@ -47,6 +44,10 @@ export function compositeScore(scores: Record<keyof DimensionWeights, number | n
   });
   const totalWeight = weighted.reduce((total, { weight }) => total + weight, 0);
   return totalWeight === 0 ? 0 : weighted.reduce((total, { score, weight }) => total + score * weight, 0) / totalWeight;
+}
+
+export function compositeOf({ architecture, complexity, smells, tests }: Pick<CoherenceIndex["dimensions"], "architecture" | "complexity" | "smells" | "tests">): CoherenceIndex["composite"] {
+  return { score: compositeScore({ architecture: architecture.score, complexity: complexity.score, smells: smells.score, tests: tests.score }), weights: dimensionWeights };
 }
 
 export function roundTo(value: number, digits: number): number {

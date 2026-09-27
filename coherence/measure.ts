@@ -5,8 +5,8 @@ import { BlobCache } from "./blob-cache.ts";
 import { measureComplexity } from "./complexity.ts";
 import { CoherenceReportSchema, type CoherenceReport } from "./contract.ts";
 import { readLadder } from "./ladder.ts";
-import { compositeOf } from "./rescore.ts";
 import { readScope, totalLines } from "./scope.ts";
+import { compositeOf, scoringVersion } from "./score.ts";
 import { measureSmells } from "./smells.ts";
 import { measureTests } from "./tests.ts";
 import { toolVersions, withToolbox } from "./tools.ts";
@@ -27,6 +27,7 @@ export async function measureCoherence({ repository, scope: scopePath, commit, r
     return CoherenceReportSchema.parse({
       index: {
         version: 1,
+        scoringVersion,
         scope: scope.path,
         commit: payload.commit,
         tree: payload.tree,

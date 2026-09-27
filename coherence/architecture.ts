@@ -4,7 +4,7 @@ import type { ArchitecturePayload } from "../src/architecture/contracts/index.ts
 import { ArchitectureModel } from "../src/architecture/model/index.ts";
 import type { Architecture, Measure, ModuleCoupling } from "./contract.ts";
 import { compare, topFiles } from "./drivers.ts";
-import { moduleChain, unmeasuredModules, type Scope } from "./scope.ts";
+import { moduleChain, totalLines, unmeasuredModules, type Scope } from "./scope.ts";
 import { anchors, dimensionScore, measure, ratio, roundTo } from "./score.ts";
 
 type FileImport = { from: string; to: string; typeOnly: boolean };
@@ -21,7 +21,7 @@ export function measureArchitecture(payload: ArchitecturePayload, scope: Scope, 
   const propagationCost = propagationCostOf(scope, internal, outboundFiles.size);
   const cycles = cyclesOf(scope, internal);
   const facade = facadeOf(imports, scope);
-  const measures = architectureMeasures({ propagationCost, cycles, facade });
+  const measures = architectureMeasures({ propagationCost, cycles, facade }, totalLines(scope.production));
   return {
     score: dimensionScore(measures),
     measures,
@@ -33,12 +33,19 @@ export function measureArchitecture(payload: ArchitecturePayload, scope: Scope, 
   };
 }
 
-export function architectureMeasures({ propagationCost, cycles, facade }: Pick<Architecture, "propagationCost" | "cycles" | "facade">): Record<string, Measure> {
+export function architectureMeasures(
+  { propagationCost, cycles, facade }: Pick<Architecture, "propagationCost" | "cycles" | "facade">,
+  productionLines: number,
+): Record<"propagationCost" | "cycleShare" | "facadeBypassesPerKloc", Measure> {
   return {
     propagationCost: measure(propagationCost.value, anchors.propagationCost),
     cycleShare: measure(ratio(cycles.files.length, propagationCost.files), anchors.cycleShare),
-    facadeBypasses: measure(facade.bypasses.length, anchors.facadeBypasses),
+    facadeBypassesPerKloc: measure(perKloc(facade.bypasses.length, productionLines), anchors.facadeBypassesPerKloc),
   };
+}
+
+function perKloc(count: number, lines: number): number | null {
+  return lines === 0 ? null : (1000 * count) / lines;
 }
 
 function productionImports(payload: ArchitecturePayload): FileImport[] {
@@ -131,7 +138,6 @@ function facadeOf(imports: FileImport[], scope: Scope): Architecture["facade"] {
   });
   return {
     crossings: crossings.length,
-    share: ratio(crossings.length - bypasses.length, crossings.length),
     inbound: countOf("inbound"),
     outbound: countOf("outbound"),
     bypasses,

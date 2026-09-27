@@ -1,7 +1,6 @@
-checkConformance: 38400 files, 170250 imports, 50 changed files, median 9.67 ms
 
- 484 pass
+ 490 pass
  0 fail
- 1168 expect() calls
-Ran 484 tests across 52 files. [35.91s]
+ 1174 expect() calls
+Ran 490 tests across 53 files. [35.23s]
 $ tsc --noEmit

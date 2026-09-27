@@ -12,7 +12,7 @@ export const ReviewCommentSchema = z.object({ id: z.string(), url: z.string(), a
 export type ReviewComment = z.infer<typeof ReviewCommentSchema>;
 
 const pullRequestNumber = /\(#(\d+)\)\s*$/;
-const automatedMarkers = [/not written by a human/i, /^\s*🤖/u, /^\s*AI reply:/i, /\b(?:posted|generated|written|drafted) (?:by|with) \[?claude\b/i, /\bagent-drafted\b/i, /\bAI-suggested\b/i];
+const automatedMarkers = [/not written by a human/i, /^\s*(?:>|&gt;)?\s*🤖/mu, /^\s*AI reply:/i, /(?:posted|generated|written|drafted) (?:by|with) (?:\[?claude\b|an? AI\b)/i, /agent-drafted/i, /AI-suggested/i, /automated reply/i];
 const classificationBatch = 100;
 const bodyLimit = 700;
 

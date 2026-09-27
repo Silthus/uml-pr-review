@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { readConfig, type GraderConfig } from "../../benchmark/grader/config.ts";
 import { createGrader, type GradeReport } from "../../benchmark/grader/grade.ts";
 import { detectorNames, type DetectorName } from "../../benchmark/grader/violations.ts";
-import { repositoryWithChange, type Files } from "../support/repository.ts";
+import { commit, repositoryWithChange, type Files } from "../support/repository.ts";
 
 let scratch: string;
 let config: GraderConfig;
@@ -68,6 +68,20 @@ describe("facade bypasses", () => {
     );
     expect(rules(report, "facade", "introduced")).toEqual(["facade-bypass products/crm/backend/logic.py:1"]);
   });
+
+  const bypassing = "from products.billing.backend.models import Invoice\n\ndef run():\n    return Invoice\n";
+
+  test("renaming a file that already bypasses the facade neither introduces nor removes the bypass", async () => {
+    const report = await grade({ ...product, "products/crm/backend/__init__.py": "", "products/crm/backend/logic.py": bypassing }, { "products/crm/backend/logic.py": null, "products/crm/backend/service.py": bypassing });
+    expect(report.files.map(({ path }) => path)).toEqual(["products/crm/backend/service.py"]);
+    expect(rules(report, "facade", "introduced")).toEqual([]);
+    expect(rules(report, "facade", "removed")).toEqual([]);
+  });
+
+  test("deleting the file that bypasses the facade removes the bypass", async () => {
+    const report = await grade({ ...product, "products/crm/backend/__init__.py": "", "products/crm/backend/logic.py": bypassing }, { "products/crm/backend/logic.py": null });
+    expect(rules(report, "facade", "removed")).toEqual(["facade-bypass products/crm/backend/logic.py:1"]);
+  });
 });
 
 describe("layering", () => {
@@ -86,6 +100,31 @@ describe("layering", () => {
       },
     );
     expect(rules(report, "layering", "introduced").sort()).toEqual(["component-state frontend/src/scenes/billing/Invoices.tsx:2", "presentation-imports-internals products/billing/backend/presentation/views.py:1"]);
+  });
+});
+
+describe("more layering rules", () => {
+  test("routes importing past presentation, a command importing models, and apps.get_model are introduced", async () => {
+    const report = await grade(
+      {
+        "products/billing/backend/__init__.py": "",
+        "products/billing/backend/models.py": "class Invoice:\n    pass\n",
+        "products/billing/backend/api.py": "def views():\n    return []\n",
+        "products/billing/backend/routes.py": "def register_routes(routers):\n    return routers\n",
+        "products/billing/backend/management/commands/backfill.py": "def handle():\n    return None\n",
+        "posthog/tasks/cleanup.py": "def cleanup():\n    return None\n",
+      },
+      {
+        "products/billing/backend/routes.py": "from products.billing.backend.api import views\n\ndef register_routes(routers):\n    return views\n",
+        "products/billing/backend/management/commands/backfill.py": "from products.billing.backend.models import Invoice\n\ndef handle():\n    return Invoice\n",
+        "posthog/tasks/cleanup.py": "from django.apps import apps\n\ndef cleanup():\n    return apps.get_model('billing', 'Invoice')\n",
+      },
+    );
+    expect(rules(report, "layering", "introduced").sort()).toEqual([
+      "entrypoint-imports-internals products/billing/backend/management/commands/backfill.py:1",
+      "get-model posthog/tasks/cleanup.py:4",
+      "routes-imports-non-presentation products/billing/backend/routes.py:1",
+    ]);
   });
 });
 
@@ -160,6 +199,24 @@ describe("duplication", () => {
     );
     expect(rules(report, "duplication", "introduced")).toEqual(["clone products/crm/backend/export.py:5"]);
     expect(report.detectors.duplication?.introduced[0]?.message).toContain("products/billing/backend/report.py");
+  });
+});
+
+describe("one grader over consecutive ranges", () => {
+  test("updates its repository index between trees, so a helper added in the previous range makes a later twin", async () => {
+    const helper = "def region_to_host(region):\n    return f'https://{region}.posthog.com'\n";
+    const repository = await repositoryWithChange({ "ee/api/provisioning.py": "def provision():\n    return None\n" }, { "posthog/utils.py": helper });
+    const twin = await commit(repository.dir, { "ee/api/provisioning.py": `def provision():\n    return None\n\n\n${helper}` }, "twin");
+    const grader = await createGrader(repository.dir, config, join(scratch, "cache", `consecutive-${repository.base}`));
+    try {
+      await grader.grade(repository.base, repository.head);
+      const report = await grader.grade(repository.head, twin);
+      expect(rules(report, "reuse", "introduced")).toEqual(["name-twin ee/api/provisioning.py:5"]);
+      expect(rules(report, "duplication", "introduced")).toEqual([]);
+    } finally {
+      grader.close();
+      await repository.cleanup();
+    }
   });
 });
 

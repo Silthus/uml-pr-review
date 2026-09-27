@@ -15,7 +15,7 @@ export async function repositoryWithChange(base: Files, head: Files): Promise<Co
   return { dir, base: baseSha, head: headSha, cleanup: () => rm(dir, { recursive: true, force: true }) };
 }
 
-async function commit(dir: string, files: Files, message: string): Promise<string> {
+export async function commit(dir: string, files: Files, message: string): Promise<string> {
   for (const [path, content] of Object.entries(files)) {
     const target = join(dir, path);
     if (content === null) await rm(target);

@@ -1,11 +1,11 @@
 import { subtypes, type Subtype } from "../../corrections/labels.ts";
 import { isProductionSource } from "../change.ts";
-import type { DetectorName, Violation } from "../violations.ts";
-import type { StoredGrade } from "./store.ts";
+import type { DetectorName } from "../violations.ts";
+import type { StoredGrade, StoredViolation } from "./store.ts";
 
 export type ScoredCase = { id: string; subtype: Subtype; path: string; line: number | null; verified: boolean | undefined; reviewed: StoredGrade; fixed: StoredGrade };
 export type Rate = { hits: number; total: number };
-export type CaseOutcome = { flagged: Set<DetectorName>; near: Set<DetectorName>; fixed: Set<DetectorName>; addedLines: number };
+type CaseOutcome = { flagged: Set<DetectorName>; near: Set<DetectorName>; fixed: Set<DetectorName>; addedLines: number };
 
 const nearLines = 20;
 
@@ -16,7 +16,7 @@ export function outcomeOf(scored: ScoredCase, detectors: readonly DetectorName[]
   for (const detector of detectors) {
     const introduced = (scored.reviewed.detectors[detector]?.introduced ?? []).filter(({ file }) => file === scored.path);
     if (introduced.length > 0) flagged.add(detector);
-    if (scored.line !== null && introduced.some(({ line }) => Math.abs(line - scored.line!) <= nearLines)) near.add(detector);
+    if (scored.line !== null && introduced.some(({ line }) => line !== null && Math.abs(line - scored.line!) <= nearLines)) near.add(detector);
     if ((scored.fixed.detectors[detector]?.removed ?? []).some(({ file }) => file === scored.path)) fixed.add(detector);
   }
   return { flagged, near, fixed, addedLines: scored.reviewed.files.find(({ path }) => path === scored.path)?.addedLines ?? 0 };
@@ -40,7 +40,7 @@ export function bySubtype<T>(cases: ScoredCase[], measure: (scored: ScoredCase) 
   return grouped;
 }
 
-export type FileFlags = { flagged: boolean[]; addedLines: number[] };
+type FileFlags = { flagged: boolean[]; addedLines: number[] };
 
 export function productionFileFlags(grades: StoredGrade[], detectors: readonly DetectorName[]): FileFlags {
   const flags: FileFlags = { flagged: [], addedLines: [] };
@@ -60,6 +60,10 @@ export function matchedLineThreshold(addedLines: number[], flagRate: number): nu
   return flaggedCount >= sorted.length ? 0 : sorted[flaggedCount]!;
 }
 
-export function introducedIn(grade: StoredGrade, detectors: readonly DetectorName[]): Violation[] {
+export function introducedIn(grade: StoredGrade, detectors: readonly DetectorName[]): StoredViolation[] {
   return detectors.flatMap((detector) => grade.detectors[detector]?.introduced ?? []);
+}
+
+export function quantile(sorted: number[], q: number): number {
+  return sorted.length === 0 ? 0 : sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))]!;
 }

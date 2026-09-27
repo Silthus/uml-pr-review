@@ -10,7 +10,7 @@ export type CorrectionCase = { fix: IsolatedFix; reviewed: Range; fixed: Range }
 export type CleanPullRequest = { pr: number; mergedAt: string; range: Range };
 
 const SlimPullRequestSchema = z.object({ number: z.number(), mergedAt: z.string(), mergeCommit: z.string().nullable() });
-export type SlimPullRequest = z.infer<typeof SlimPullRequestSchema>;
+type SlimPullRequest = z.infer<typeof SlimPullRequestSchema>;
 
 const mainline = "upstream/master";
 

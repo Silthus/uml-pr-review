@@ -28,6 +28,11 @@ describe("a correction's outcome", () => {
 
     const elsewhere = outcomeOf(scored(stored([["app/rules.py", 120]], [violation("app/other.py", 40)]), stored([])), ["complexity"]);
     expect(elsewhere.flagged.size).toBe(0);
+
+    const far = outcomeOf(scored(stored([["app/rules.py", 120]], [violation("app/rules.py", 61)]), stored([])), ["complexity"]);
+    expect([...far.flagged]).toEqual(["complexity"]);
+    expect(far.near.size).toBe(0);
+    expect(far.fixed.size).toBe(0);
   });
 });
 

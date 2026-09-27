@@ -1,0 +1,52 @@
+[
+  {
+    "pr": 101488,
+    "score": 2,
+    "reason": "The visible truncated diff replaces workflow-specific webhook verification with shared ingress and a facade entry point, separating transport concerns from SES business handling."
+  },
+  {
+    "pr": 70823,
+    "score": 0,
+    "reason": "In the truncated diff, explicit draft fields and meaningful routing tests balance additional client-specific lifecycle branching in the already large workflow API."
+  },
+  {
+    "pr": 71078,
+    "score": -1,
+    "reason": "Adds a parallel push-specific loading, mapping, and rendering path alongside email metrics, increasing duplicated maintenance without tests for the new aggregation logic."
+  },
+  {
+    "pr": 78272,
+    "score": -1,
+    "reason": "Despite meaningful visible tests, the truncated diff adds direct messaging-model coupling and a lengthy materialization helper with mutable context bookkeeping to the already large API module."
+  },
+  {
+    "pr": 94113,
+    "score": 1,
+    "reason": "The visible truncated diff introduces a composable template card with explicit presentation slots and reusable preview components, supported by stories covering varied layouts."
+  },
+  {
+    "pr": 96739,
+    "score": 1,
+    "reason": "The truncated diff isolates audience counting in a service, reuses the email deduplication expression, and adds meaningful ClickHouse tests for versioning, aliases, and cohorts."
+  },
+  {
+    "pr": 65974,
+    "score": 0,
+    "reason": "The truncated diff adds a reasonably separated asset API with meaningful database tests, balanced by viewset growth and frontend effect dependency suppression."
+  },
+  {
+    "pr": 92983,
+    "score": 0,
+    "reason": "The truncated diff barely touches workflows, removing an obsolete event test case and preserving mixed-event validation coverage with a replacement event."
+  },
+  {
+    "pr": 89924,
+    "score": 1,
+    "reason": "The truncated diff shares tier decisions between backfill and scheduled processing, uses explicit immutable data structures, and adds meaningful promotion and demotion tests."
+  },
+  {
+    "pr": 78402,
+    "score": 0,
+    "reason": "The truncated diff changes only a tool description within workflows, leaving its implementation and architecture unchanged."
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "pr": 97753,
+    "score": 1,
+    "reason": "The visible truncated diff centralizes action visibility filtering, adds a workflow-owner facade, and tests task idempotency and reference-input behavior."
+  },
+  {
+    "pr": 76808,
+    "score": 1,
+    "reason": "The visible truncated diff isolates account queries behind a typed provider interface and centralizes filter validation with meaningful API and parser tests."
+  },
+  {
+    "pr": 76015,
+    "score": -1,
+    "reason": "Despite meaningful tests, the visible truncated diff grows the large workflow API module and couples it to messaging API internals and a private graph helper."
+  },
+  {
+    "pr": 102689,
+    "score": 1,
+    "reason": "The visible truncated diff adds meaningful tests for sample reloads after trigger changes, including stale event-name selection and test-account filtering."
+  },
+  {
+    "pr": 82615,
+    "score": 1,
+    "reason": "The visible truncated diff moves workflow access-control imports to the owning product and removes four silent ImportError workarounds from workflow tests."
+  },
+  {
+    "pr": 99007,
+    "score": 0,
+    "reason": "Workflows adds a small serializer field and forwards it through the existing task creation boundary; space resolution remains owned by Tasks."
+  },
+  {
+    "pr": 97290,
+    "score": 1,
+    "reason": "Structured-output validation stays behind the Tasks facade, with a dedicated schema module and meaningful tests covering workflow API validation and step-result warnings."
+  },
+  {
+    "pr": 104309,
+    "score": 0,
+    "reason": "The visible truncated diff changes workflow warning copy; deduplication remains inside warehouse ingestion without changing workflow module boundaries."
+  },
+  {
+    "pr": 69510,
+    "score": 0,
+    "reason": "The visible truncated diff adds focused registry actions through existing template and renderer mechanisms, with updated tests but no substantial workflow structural cleanup."
+  },
+  {
+    "pr": 93383,
+    "score": 1,
+    "reason": "The visible truncated diff centralizes audience detection and schedule pausing across live update paths, with API tests distinguishing batch audiences from personless schedules."
+  }
+]

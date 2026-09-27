@@ -1,0 +1,12 @@
+[
+  { "pr": 64001, "score": 0, "reason": "Optimistic concurrency and edit events go through the notifications facade and are well tested, but they grow the already large workflowLogic and perform_update (diff truncated)." },
+  { "pr": 97307, "score": 0, "reason": "Trigger volume is cleanly split into a pure tested module, a logic and a component, but the flag check is duplicated and a tasks backend constant is mirrored by hand." },
+  { "pr": 69943, "score": 1, "reason": "Pulls the inline sample-globals construction out of the component into a pure buildSampleGlobals function and adds focused tests for it." },
+  { "pr": 103711, "score": 0, "reason": "Canvas goes through a new workflows facade function, which is a proper boundary, but that function imports the DRF serializer and splits enable and disable into different save paths (diff truncated)." },
+  { "pr": 67022, "score": 0, "reason": "Small, correct timezone fix in computePreviewOccurrences using the existing fakeUtcToReal helper, with a targeted regression test; the code is about as good as before." },
+  { "pr": 87696, "score": 1, "reason": "Removes a rolled-out feature flag, deleting the featureFlagLogic connect, the redirect special case and the conditional tab spread in WorkflowsScene." },
+  { "pr": 74143, "score": 0, "reason": "A shared PushIdentityVerificationField avoids duplication across the FCM and APNs modals, but the new file-upload listener logic in the APNs modal is untested (diff truncated)." },
+  { "pr": 82343, "score": -1, "reason": "The backend type filter is refactored into a tested workflow_type_q, but a large prototype broadcasts surface (a 929-line wizard logic) and a big StepTrigger change are added, mostly unseen (diff truncated)." },
+  { "pr": 73437, "score": 0, "reason": "A small, tested server-side search filter with a clean kea reducer and debounce; it hardcodes a WORKFLOW_LIMIT that mirrors the backend cap." },
+  { "pr": 91486, "score": -1, "reason": "Adds a cache-based save-context queue and a nextSaveChangesStatus mutable flag inside the already huge saveWorkflow loader; there are good tests, but it is more tangled (diff truncated)." }
+]

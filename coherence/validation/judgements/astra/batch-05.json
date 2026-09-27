@@ -1,0 +1,52 @@
+[
+  {
+    "pr": 89731,
+    "score": 0,
+    "reason": "Changes workflow metric copy and adds taxonomy descriptions without changing workflows architecture or executable logic."
+  },
+  {
+    "pr": 78182,
+    "score": 1,
+    "reason": "Visible truncated diff separates SNS verification, webhook handling, and shared state reconciliation, with transactional notification deduplication and focused webhook tests."
+  },
+  {
+    "pr": 71460,
+    "score": 0,
+    "reason": "Visible truncated diff relocates generated Kea declarations into logic files without demonstrating changed runtime behavior or stronger types."
+  },
+  {
+    "pr": 82920,
+    "score": 1,
+    "reason": "Visible truncated diff isolates delay validation and adds meaningful API tests for server-controlled bytecode, invalid configurations, and incomplete drafts."
+  },
+  {
+    "pr": 71038,
+    "score": 1,
+    "reason": "Visible truncated diff separates suppression UI from state logic, uses messaging API contracts, and adds meaningful access-control, pagination-failure, and routing tests."
+  },
+  {
+    "pr": 84345,
+    "score": 2,
+    "reason": "Visible truncated diff establishes a tasks facade with a typed result and explicit exceptions, keeping task creation internals outside workflows."
+  },
+  {
+    "pr": 92281,
+    "score": 1,
+    "reason": "Visible truncated diff extends the tasks facade for skill validation and adds API tests covering unavailable, restricted, malformed, and archived skills."
+  },
+  {
+    "pr": 90938,
+    "score": 0,
+    "reason": "Visible truncated diff adds a facade-based scout endpoint with meaningful tests, balanced by duplicated workflow-token parsing and bespoke Redis replay handling."
+  },
+  {
+    "pr": 88244,
+    "score": 1,
+    "reason": "Visible truncated diff reuses connector validation through the tasks facade and adds focused save-time validation tests for connectors, repositories, models, and reasoning effort."
+  },
+  {
+    "pr": 103523,
+    "score": 1,
+    "reason": "Adds workflow search and test-creation facades, keeping AI callers off workflow models, with tests for archived exclusion and shared ranking limits."
+  }
+]

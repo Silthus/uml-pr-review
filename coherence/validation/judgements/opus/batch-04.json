@@ -1,0 +1,12 @@
+[
+  { "pr": 68541, "score": 1, "reason": "Replaces in-place action mutations with immutable updates, reuses shared reconcileById/objectsEqual helpers, stops leaking elk internals, and adds focused identity tests." },
+  { "pr": 106341, "score": 0, "reason": "Only adds two cache options to workflowsSetupLogic; the substantive shared setup-detection changes live outside products/workflows." },
+  { "pr": 106686, "score": 0, "reason": "Sender check extracted into a tested pure function, but the review step matches on an error string and the validation selector grows further." },
+  { "pr": 69305, "score": 1, "reason": "Adds a workflows-owned batch_audience service with solid tests and serializer validation, but still reaches into feature_flags internals and keeps flag-gated dual paths (diff truncated)." },
+  { "pr": 92860, "score": -1, "reason": "customer_analytics now imports more workflows service internals (HogFlowReference, access filter) and the HogFlow model directly; the added workflows helper itself is small and tested." },
+  { "pr": 102302, "score": 0, "reason": "Only help-text wording changes on the conversion window serializer fields plus regenerated schema." },
+  { "pr": 76606, "score": 0, "reason": "Signup role change; workflows is touched only through regenerated API schema files." },
+  { "pr": 73506, "score": -1, "reason": "Copy-pastes the tracked-count rendering across Opened and Clicked columns and adds a manual keep-in-sync schema comment; large metrics logic changes were truncated." },
+  { "pr": 95047, "score": -1, "reason": "Large flagged tree builder adds about 480 lines to already large hogFlowEditorLogic, a parallel React context for selection, and DOM drag hacks; tree module has tests (heavily truncated)." },
+  { "pr": 73166, "score": 0, "reason": "Removes the risky whole-graph MCP escape hatch and updates tests, but duplicates perform_update's staleness check inline with raw request.data parsing." }
+]

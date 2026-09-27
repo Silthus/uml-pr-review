@@ -1,0 +1,22 @@
+[
+  {
+    "pr": 72584,
+    "score": 0,
+    "reason": "Support triggers reuse the existing property-filter component and share configuration rendering, adding functionality without materially changing workflows architecture or code quality."
+  },
+  {
+    "pr": 85239,
+    "score": 1,
+    "reason": "Adds a focused legacy-data cleanup with meaningful tests for dry runs, idempotency, draft handling, and preserving concurrent edits."
+  },
+  {
+    "pr": 75237,
+    "score": 0,
+    "reason": "The visible, truncated diff keeps AWS calls behind SESProvider and adds meaningful tests, but expands the already large API module without improving its structure."
+  },
+  {
+    "pr": 92406,
+    "score": 1,
+    "reason": "Isolates notification policy in a dedicated service using the notifications facade, with meaningful gating and failure-isolation tests; only a registration snapshot is omitted."
+  }
+]

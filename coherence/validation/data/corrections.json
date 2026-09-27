@@ -1,0 +1,2724 @@
+[
+ {
+  "id": "gh:89643:3911783677",
+  "url": "https://github.com/PostHog/posthog/pull/89643#discussion_r3911783677",
+  "author": "meikelmosby",
+  "path": "products/workflows/backend/providers/ses.py",
+  "line": 74,
+  "at": "2026-09-02T07:33:39Z",
+  "pr": 89643,
+  "kind": "remove-duplication",
+  "quote": "we should have the boto3 type somewhere to import",
+  "verification": {
+   "addressed": "no",
+   "where": "in-scope",
+   "note": "The first commit touching ses.py splits a function; it imports no boto3 types and adds dict[str, Any]."
+  },
+  "base": "75a989f934475187e2ccdcae8f599e603717b6b4",
+  "commentCommit": "d614950b4efb150d6a18199b3f304cc78e0474fd",
+  "isolable": true,
+  "before": "d614950b4efb150d6a18199b3f304cc78e0474fd",
+  "fix": "081c66838608d2bdbb367ff53fd8803501d0eff1",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": -0.1,
+    "architecture": 0,
+    "complexity": -0.2,
+    "smells": 0,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.064,
+     "after": 0.064,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.0717,
+     "after": 0.0717,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0.0909,
+     "after": 0.0909,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 6,
+     "after": 6,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0398,
+     "after": 0.0398,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0121,
+     "after": 0.0116,
+     "scoreDelta": 1
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 23,
+     "after": 24,
+     "scoreDelta": -2
+    },
+    "complexity.p90FileLines": {
+     "before": 359,
+     "after": 359,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 3.2916,
+     "after": 3.2826,
+     "scoreDelta": 0.1
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2123,
+     "after": 0.2123,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 3.57,
+     "after": 3.57,
+     "scoreDelta": 0
+    },
+    "smells.markersPerKloc": {
+     "before": 0.1786,
+     "after": 0.1785,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 5.5364,
+     "after": 5.5832,
+     "scoreDelta": -0.2
+    },
+    "tests.testRatio": {
+     "before": 0.545,
+     "after": 0.5446,
+     "scoreDelta": 0
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/backend/services/email_sending_tier.py:decide_tier (ccn 28)"
+    ],
+    "left": [
+     "products/workflows/backend/providers/ses.py:get_identity_isp_metrics (ccn 29)"
+    ],
+    "functions": 3,
+    "overTen": 0,
+    "overTwenty": -1
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 2,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 30,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     359,
+     359
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 58.5,
+    "architecture": 56.4,
+    "complexity": 70.6,
+    "smells": 78.1,
+    "tests": 27.3
+   },
+   "scoresAfter": {
+    "composite": 58.4,
+    "architecture": 56.4,
+    "complexity": 70.4,
+    "smells": 78.1,
+    "tests": 27.3
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 673,
+    "functions": 17,
+    "overTen": 3,
+    "overTwenty": 2,
+    "lint": 1,
+    "typeEscapes": 9,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 703,
+    "functions": 20,
+    "overTen": 3,
+    "overTwenty": 1,
+    "lint": 1,
+    "typeEscapes": 11,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 1,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:89643:3911807455",
+  "url": "https://github.com/PostHog/posthog/pull/89643#discussion_r3911807455",
+  "author": "meikelmosby",
+  "path": "products/workflows/backend/providers/ses.py",
+  "line": 713,
+  "at": "2026-09-02T07:36:53Z",
+  "pr": 89643,
+  "kind": "split-or-merge",
+  "quote": "this is a crazy long function to parse",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Splits get_identity_isp_metrics into phase helpers."
+  },
+  "base": "75a989f934475187e2ccdcae8f599e603717b6b4",
+  "commentCommit": "d614950b4efb150d6a18199b3f304cc78e0474fd",
+  "isolable": true,
+  "before": "d614950b4efb150d6a18199b3f304cc78e0474fd",
+  "fix": "081c66838608d2bdbb367ff53fd8803501d0eff1",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": -0.1,
+    "architecture": 0,
+    "complexity": -0.2,
+    "smells": 0,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.064,
+     "after": 0.064,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.0717,
+     "after": 0.0717,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0.0909,
+     "after": 0.0909,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 6,
+     "after": 6,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0398,
+     "after": 0.0398,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0121,
+     "after": 0.0116,
+     "scoreDelta": 1
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 23,
+     "after": 24,
+     "scoreDelta": -2
+    },
+    "complexity.p90FileLines": {
+     "before": 359,
+     "after": 359,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 3.2916,
+     "after": 3.2826,
+     "scoreDelta": 0.1
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2123,
+     "after": 0.2123,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 3.57,
+     "after": 3.57,
+     "scoreDelta": 0
+    },
+    "smells.markersPerKloc": {
+     "before": 0.1786,
+     "after": 0.1785,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 5.5364,
+     "after": 5.5832,
+     "scoreDelta": -0.2
+    },
+    "tests.testRatio": {
+     "before": 0.545,
+     "after": 0.5446,
+     "scoreDelta": 0
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/backend/services/email_sending_tier.py:decide_tier (ccn 28)"
+    ],
+    "left": [
+     "products/workflows/backend/providers/ses.py:get_identity_isp_metrics (ccn 29)"
+    ],
+    "functions": 3,
+    "overTen": 0,
+    "overTwenty": -1
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 2,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 30,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     359,
+     359
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 58.5,
+    "architecture": 56.4,
+    "complexity": 70.6,
+    "smells": 78.1,
+    "tests": 27.3
+   },
+   "scoresAfter": {
+    "composite": 58.4,
+    "architecture": 56.4,
+    "complexity": 70.4,
+    "smells": 78.1,
+    "tests": 27.3
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 673,
+    "functions": 17,
+    "overTen": 3,
+    "overTwenty": 2,
+    "lint": 1,
+    "typeEscapes": 9,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 703,
+    "functions": 20,
+    "overTen": 3,
+    "overTwenty": 1,
+    "lint": 1,
+    "typeEscapes": 11,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 1,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:85156:3811770267",
+  "url": "https://github.com/PostHog/posthog/pull/85156#discussion_r3811770267",
+  "author": "dmarchuk",
+  "path": "products/workflows/frontend/workflowsIncidentReplayLogic.ts",
+  "line": 170,
+  "at": "2026-08-19T09:31:18Z",
+  "pr": 85156,
+  "kind": "move",
+  "quote": "Might be better to filter by the message on server side",
+  "verification": {
+   "addressed": "yes",
+   "where": "both",
+   "note": "Adds an error_message_contains filter to posthog/api/hog_invocation_results.py and uses it from the logic."
+  },
+  "base": "58a04111103dbefa57b70dfaf14ece2ca14437f5",
+  "commentCommit": "98f81894acd46d162004f394902b9cd8e0c96b2b",
+  "isolable": true,
+  "before": "809da6d184c872279ba80e61cf6f61e33772fffd",
+  "fix": "0b4e426763f9cb02e59b5e1d589d6f12411c8029",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0,
+    "architecture": 0,
+    "complexity": 0,
+    "smells": 0,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.0653,
+     "after": 0.0653,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.0773,
+     "after": 0.0773,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0.0222,
+     "after": 0.0222,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 6,
+     "after": 6,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0341,
+     "after": 0.0341,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0097,
+     "after": 0.0097,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 23,
+     "after": 23,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 349,
+     "after": 349,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 3.8305,
+     "after": 3.83,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2317,
+     "after": 0.2315,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 3.3,
+     "after": 3.3,
+     "scoreDelta": 0
+    },
+    "smells.markersPerKloc": {
+     "before": 0.2044,
+     "after": 0.2043,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 5.1679,
+     "after": 5.1649,
+     "scoreDelta": 0
+    },
+    "tests.testRatio": {
+     "before": 0.521,
+     "after": 0.5207,
+     "scoreDelta": 0
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [],
+    "left": [],
+    "functions": 1,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 20,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     349,
+     349
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 57.5,
+    "architecture": 53.4,
+    "complexity": 72.4,
+    "smells": 77.6,
+    "tests": 26.1
+   },
+   "scoresAfter": {
+    "composite": 57.5,
+    "architecture": 53.4,
+    "complexity": 72.4,
+    "smells": 77.6,
+    "tests": 26.1
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 4524,
+    "functions": 135,
+    "overTen": 14,
+    "overTwenty": 7,
+    "lint": 22,
+    "typeEscapes": 19,
+    "markers": 1,
+    "bypasses": 11,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 4544,
+    "functions": 136,
+    "overTen": 14,
+    "overTwenty": 7,
+    "lint": 22,
+    "typeEscapes": 19,
+    "markers": 1,
+    "bypasses": 11,
+    "cycleFiles": 0
+   },
+   "files": 4,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:72667:4807627642",
+  "url": "https://github.com/PostHog/posthog/pull/72667#pullrequestreview-4807627642",
+  "author": "sampennington",
+  "path": null,
+  "line": null,
+  "at": "2026-07-29T11:38:48Z",
+  "pr": 72667,
+  "kind": "remove-duplication",
+  "quote": "newer more customisable version of this component that would be better",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Rebuilds WorkflowMetricCard on quill's composable Metric."
+  },
+  "base": "6f9bf4aafe2727bf285550cd9860bf5b7df4942c",
+  "commentCommit": "1f236e7fc8c0612ab3ca89adc0ce3b58055bbd51",
+  "isolable": true,
+  "before": "1f236e7fc8c0612ab3ca89adc0ce3b58055bbd51",
+  "fix": "94dd94a28387f487e272d1b9ac5c5b67fb9ecfae",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": -0.1,
+    "architecture": 0,
+    "complexity": -0.5,
+    "smells": 0.1,
+    "tests": -0.1
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.0719,
+     "after": 0.0719,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.0865,
+     "after": 0.0865,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0.0323,
+     "after": 0.0323,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 5,
+     "after": 5,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0284,
+     "after": 0.029,
+     "scoreDelta": -0.3
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0097,
+     "after": 0.0097,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 19,
+     "after": 20,
+     "scoreDelta": -2
+    },
+    "complexity.p90FileLines": {
+     "before": 320,
+     "after": 320,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 3.3355,
+     "after": 3.3355,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.225,
+     "after": 0.2242,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 3.64,
+     "after": 3.63,
+     "scoreDelta": 0.1
+    },
+    "smells.markersPerKloc": {
+     "before": 0.2455,
+     "after": 0.2448,
+     "scoreDelta": 0.1
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.5584,
+     "after": 4.5461,
+     "scoreDelta": 0.1
+    },
+    "tests.testRatio": {
+     "before": 0.4874,
+     "after": 0.4861,
+     "scoreDelta": -0.1
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [],
+    "left": [],
+    "functions": 1,
+    "overTen": 1,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": -0.01,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 77,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     320,
+     320
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 58.1,
+    "architecture": 52.1,
+    "complexity": 77.4,
+    "smells": 78.1,
+    "tests": 24.4
+   },
+   "scoresAfter": {
+    "composite": 58,
+    "architecture": 52.1,
+    "complexity": 76.9,
+    "smells": 78.2,
+    "tests": 24.3
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 471,
+    "functions": 23,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 548,
+    "functions": 24,
+    "overTen": 1,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 3,
+   "score": -1,
+   "moved": "worsened"
+  }
+ },
+ {
+  "id": "gh:72667:4810731966",
+  "url": "https://github.com/PostHog/posthog/pull/72667#pullrequestreview-4810731966",
+  "author": "sampennington",
+  "path": null,
+  "line": null,
+  "at": "2026-07-29T17:02:37Z",
+  "pr": 72667,
+  "kind": "remove-duplication",
+  "quote": "`WorkflowMetricCard` already computes these totals in `sumSeries`",
+  "verification": {
+   "addressed": "yes",
+   "where": "outside-scope",
+   "note": "Changes quill's Metric in packages/quill; workflows changes 4 lines."
+  },
+  "base": "6f9bf4aafe2727bf285550cd9860bf5b7df4942c",
+  "commentCommit": "94dd94a28387f487e272d1b9ac5c5b67fb9ecfae",
+  "isolable": true,
+  "before": "0ee6df4894e9f1c455e8e041404a767268ac616f",
+  "fix": "73f4f229164028d2b383499128ebc7697bff83e1",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0,
+    "architecture": 0,
+    "complexity": 0,
+    "smells": 0,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.0704,
+     "after": 0.0704,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.0856,
+     "after": 0.0856,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0.0313,
+     "after": 0.0313,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 5,
+     "after": 5,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0294,
+     "after": 0.0294,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0096,
+     "after": 0.0096,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 20,
+     "after": 20,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 320,
+     "after": 320,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 3.4193,
+     "after": 3.4193,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.222,
+     "after": 0.222,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 3.62,
+     "after": 3.62,
+     "scoreDelta": 0
+    },
+    "smells.markersPerKloc": {
+     "before": 0.2418,
+     "after": 0.2418,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.3519,
+     "after": 4.3519,
+     "scoreDelta": 0
+    },
+    "tests.testRatio": {
+     "before": 0.4841,
+     "after": 0.4841,
+     "scoreDelta": 0
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [],
+    "left": [],
+    "functions": 0,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 0,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     320,
+     320
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 58,
+    "architecture": 52.3,
+    "complexity": 76.9,
+    "smells": 78.3,
+    "tests": 24.2
+   },
+   "scoresAfter": {
+    "composite": 58,
+    "architecture": 52.3,
+    "complexity": 76.9,
+    "smells": 78.3,
+    "tests": 24.2
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 209,
+    "functions": 19,
+    "overTen": 1,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 209,
+    "functions": 19,
+    "overTen": 1,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 1,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:72913:3637255791",
+  "url": "https://github.com/PostHog/posthog/pull/72913#discussion_r3637255791",
+  "author": "dmarchuk",
+  "path": "products/workflows/backend/api/hog_flow.py",
+  "line": 2272,
+  "at": "2026-07-23T10:06:18Z",
+  "pr": 72913,
+  "kind": "remove-duplication",
+  "quote": "Looks very similar to `_strip_secret_inputs`, might be worth adding a shared helper",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
+  "base": "a9f6638fa7b3b457018815e50c559b6a0e0b477a",
+  "commentCommit": null,
+  "isolable": false,
+  "before": "54181a21dc52f0077e74a15cb41f9f3584f9461c",
+  "fix": "c91bf9b5be9aa613a7c7c05b5f53e97389639b80",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0.1,
+    "architecture": 0,
+    "complexity": 0.1,
+    "smells": 0.3,
+    "tests": 0.2
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.0727,
+     "after": 0.0727,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.0879,
+     "after": 0.0879,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0.0333,
+     "after": 0.0333,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 5,
+     "after": 5,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0294,
+     "after": 0.0292,
+     "scoreDelta": 0.1
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0094,
+     "after": 0.0093,
+     "scoreDelta": 0.2
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 19,
+     "after": 19,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 320,
+     "after": 320,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 3.2691,
+     "after": 3.1901,
+     "scoreDelta": 0.8
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2296,
+     "after": 0.2296,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 3.71,
+     "after": 3.69,
+     "scoreDelta": 0.2
+    },
+    "smells.markersPerKloc": {
+     "before": 0.2537,
+     "after": 0.2524,
+     "scoreDelta": 0.1
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.5308,
+     "after": 4.5433,
+     "scoreDelta": 0
+    },
+    "tests.testRatio": {
+     "before": 0.476,
+     "after": 0.4788,
+     "scoreDelta": 0.3
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/backend/api/hog_flow.py:validate (ccn 65)"
+    ],
+    "left": [
+     "products/workflows/backend/api/hog_flow.py:validate (ccn 63)"
+    ],
+    "functions": 8,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": -0.02,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 1,
+   "tests": {
+    "testLines": 146,
+    "productionLines": 144,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     320,
+     320
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 57.9,
+    "architecture": 51.9,
+    "complexity": 77.4,
+    "smells": 78,
+    "tests": 23.8
+   },
+   "scoresAfter": {
+    "composite": 58,
+    "architecture": 51.9,
+    "complexity": 77.5,
+    "smells": 78.3,
+    "tests": 24
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 2825,
+    "functions": 71,
+    "overTen": 11,
+    "overTwenty": 3,
+    "lint": 13,
+    "typeEscapes": 4,
+    "markers": 1,
+    "bypasses": 6,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 2969,
+    "functions": 79,
+    "overTen": 11,
+    "overTwenty": 3,
+    "lint": 13,
+    "typeEscapes": 5,
+    "markers": 1,
+    "bypasses": 6,
+    "cycleFiles": 0
+   },
+   "files": 2,
+   "score": -1,
+   "moved": "worsened"
+  }
+ },
+ {
+  "id": "gh:59468:3347822341",
+  "url": "https://github.com/PostHog/posthog/pull/59468#discussion_r3347822341",
+  "author": "meikelmosby",
+  "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers/data_warehouse_table.tsx",
+  "line": null,
+  "at": "2026-06-03T10:45:25Z",
+  "pr": 59468,
+  "kind": "move",
+  "quote": "i think we should handle all of this on the serializer level",
+  "verification": {
+   "addressed": "partly",
+   "where": "outside-scope",
+   "note": "Enforces the behaviour in the Node consumer, not the serializer; the workflows change is UI copy and validation display."
+  },
+  "base": "3a5a753d4b0b76162c1f8c975c6166a04a67214e",
+  "commentCommit": "ffcfd7f3c77ea24644b35e245526ea6223713e26",
+  "isolable": true,
+  "before": "ffcfd7f3c77ea24644b35e245526ea6223713e26",
+  "fix": "d0181832015f7650df9a3e87646a6032d2090948",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0.1,
+    "architecture": 0,
+    "complexity": 0.4,
+    "smells": 0,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1002,
+     "after": 0.1002,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.1241,
+     "after": 0.1241,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 5,
+     "after": 5,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0187,
+     "after": 0.0188,
+     "scoreDelta": -0.1
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0033,
+     "after": 0.0033,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 17,
+     "after": 16,
+     "scoreDelta": 2
+    },
+    "complexity.p90FileLines": {
+     "before": 342,
+     "after": 342,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 5.5508,
+     "after": 5.5508,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2762,
+     "after": 0.2761,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 4.39,
+     "after": 4.39,
+     "scoreDelta": 0
+    },
+    "smells.markersPerKloc": {
+     "before": 0.3913,
+     "after": 0.3912,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.5483,
+     "after": 4.5477,
+     "scoreDelta": 0
+    },
+    "tests.testRatio": {
+     "before": 0.3726,
+     "after": 0.3726,
+     "scoreDelta": 0
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/frontend/Workflows/hogflows/steps/StepTrigger.tsx:*global* (ccn 17)"
+    ],
+    "left": [
+     "products/workflows/frontend/Workflows/hogflows/panel/hogFlowOutputMappingLogic.ts:async (ccn 15)"
+    ],
+    "functions": -3,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 3,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     342,
+     342
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 53.7,
+    "architecture": 44.5,
+    "complexity": 81.1,
+    "smells": 70.6,
+    "tests": 18.7
+   },
+   "scoresAfter": {
+    "composite": 53.8,
+    "architecture": 44.5,
+    "complexity": 81.5,
+    "smells": 70.6,
+    "tests": 18.7
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 917,
+    "functions": 43,
+    "overTen": 1,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 9,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 920,
+    "functions": 40,
+    "overTen": 1,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 9,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 2,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:58152:3215463766",
+  "url": "https://github.com/PostHog/posthog/pull/58152#discussion_r3215463766",
+  "author": "dmarchuk",
+  "path": "products/workflows/frontend/Workflows/WorkflowScene.tsx",
+  "line": 47,
+  "at": "2026-05-10T20:25:08Z",
+  "pr": 58152,
+  "kind": "remove-duplication",
+  "quote": "Couldn't we use `TZLabel` for this instead?",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
+  "base": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
+  "commentCommit": null,
+  "isolable": false,
+  "before": "67adf172c2a6a6c3fca4603af3736c9fec3da242",
+  "fix": "8f8a21a45c1f1e4c512ba8f320907b00570dc286",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0,
+    "architecture": 0,
+    "complexity": 0,
+    "smells": 0.1,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1173,
+     "after": 0.1173,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.1221,
+     "after": 0.1221,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0157,
+     "after": 0.0156,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0026,
+     "after": 0.0026,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 16,
+     "after": 16,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 342,
+     "after": 342,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 6.7114,
+     "after": 6.7114,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2817,
+     "after": 0.2804,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 4.4,
+     "after": 4.38,
+     "scoreDelta": 0.2
+    },
+    "smells.markersPerKloc": {
+     "before": 0.3244,
+     "after": 0.323,
+     "scoreDelta": 0.1
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.8121,
+     "after": 4.7911,
+     "scoreDelta": 0.1
+    },
+    "tests.testRatio": {
+     "before": 0.27,
+     "after": 0.2688,
+     "scoreDelta": -0.1
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:async (ccn 27)"
+    ],
+    "left": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:async (ccn 26)"
+    ],
+    "functions": 9,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": -0.02,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 81,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     342,
+     342
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 52.6,
+    "architecture": 43.3,
+    "complexity": 84.1,
+    "smells": 68.6,
+    "tests": 13.5
+   },
+   "scoresAfter": {
+    "composite": 52.6,
+    "architecture": 43.3,
+    "complexity": 84.1,
+    "smells": 68.7,
+    "tests": 13.5
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 848,
+    "functions": 58,
+    "overTen": 2,
+    "overTwenty": 1,
+    "lint": 0,
+    "typeEscapes": 12,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 929,
+    "functions": 67,
+    "overTen": 2,
+    "overTwenty": 1,
+    "lint": 0,
+    "typeEscapes": 12,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 2,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:58152:3215464468",
+  "url": "https://github.com/PostHog/posthog/pull/58152#discussion_r3215464468",
+  "author": "dmarchuk",
+  "path": "products/workflows/frontend/Workflows/WorkflowScene.tsx",
+  "line": 35,
+  "at": "2026-05-10T20:25:47Z",
+  "pr": 58152,
+  "kind": "move",
+  "quote": "add this into lib instead so it's available for others",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
+  "base": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
+  "commentCommit": null,
+  "isolable": false,
+  "before": "67adf172c2a6a6c3fca4603af3736c9fec3da242",
+  "fix": "8f8a21a45c1f1e4c512ba8f320907b00570dc286",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0,
+    "architecture": 0,
+    "complexity": 0,
+    "smells": 0.1,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1173,
+     "after": 0.1173,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.1221,
+     "after": 0.1221,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0157,
+     "after": 0.0156,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0026,
+     "after": 0.0026,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 16,
+     "after": 16,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 342,
+     "after": 342,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 6.7114,
+     "after": 6.7114,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2817,
+     "after": 0.2804,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 4.4,
+     "after": 4.38,
+     "scoreDelta": 0.2
+    },
+    "smells.markersPerKloc": {
+     "before": 0.3244,
+     "after": 0.323,
+     "scoreDelta": 0.1
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.8121,
+     "after": 4.7911,
+     "scoreDelta": 0.1
+    },
+    "tests.testRatio": {
+     "before": 0.27,
+     "after": 0.2688,
+     "scoreDelta": -0.1
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:async (ccn 27)"
+    ],
+    "left": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:async (ccn 26)"
+    ],
+    "functions": 9,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": -0.02,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 81,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     342,
+     342
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 52.6,
+    "architecture": 43.3,
+    "complexity": 84.1,
+    "smells": 68.6,
+    "tests": 13.5
+   },
+   "scoresAfter": {
+    "composite": 52.6,
+    "architecture": 43.3,
+    "complexity": 84.1,
+    "smells": 68.7,
+    "tests": 13.5
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 848,
+    "functions": 58,
+    "overTen": 2,
+    "overTwenty": 1,
+    "lint": 0,
+    "typeEscapes": 12,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 929,
+    "functions": 67,
+    "overTen": 2,
+    "overTwenty": 1,
+    "lint": 0,
+    "typeEscapes": 12,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 2,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:58152:3215474210",
+  "url": "https://github.com/PostHog/posthog/pull/58152#discussion_r3215474210",
+  "author": "dmarchuk",
+  "path": "products/workflows/frontend/Workflows/WorkflowScene.tsx",
+  "line": 165,
+  "at": "2026-05-10T20:34:20Z",
+  "pr": 58152,
+  "kind": "remove-duplication",
+  "quote": "extracting this into separate small component to not duplicate it",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Rebased branch; the fix is inside the whole feature commit."
+  },
+  "base": "0e61ac210d2aa61818820c7ad1f61d1b2cc0bb08",
+  "commentCommit": null,
+  "isolable": false,
+  "before": "67adf172c2a6a6c3fca4603af3736c9fec3da242",
+  "fix": "8f8a21a45c1f1e4c512ba8f320907b00570dc286",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0,
+    "architecture": 0,
+    "complexity": 0,
+    "smells": 0.1,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1173,
+     "after": 0.1173,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.1221,
+     "after": 0.1221,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0157,
+     "after": 0.0156,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0026,
+     "after": 0.0026,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 16,
+     "after": 16,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 342,
+     "after": 342,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 6.7114,
+     "after": 6.7114,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.2817,
+     "after": 0.2804,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 4.4,
+     "after": 4.38,
+     "scoreDelta": 0.2
+    },
+    "smells.markersPerKloc": {
+     "before": 0.3244,
+     "after": 0.323,
+     "scoreDelta": 0.1
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.8121,
+     "after": 4.7911,
+     "scoreDelta": 0.1
+    },
+    "tests.testRatio": {
+     "before": 0.27,
+     "after": 0.2688,
+     "scoreDelta": -0.1
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:async (ccn 27)"
+    ],
+    "left": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:async (ccn 26)"
+    ],
+    "functions": 9,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": -0.02,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 81,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     342,
+     342
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 52.6,
+    "architecture": 43.3,
+    "complexity": 84.1,
+    "smells": 68.6,
+    "tests": 13.5
+   },
+   "scoresAfter": {
+    "composite": 52.6,
+    "architecture": 43.3,
+    "complexity": 84.1,
+    "smells": 68.7,
+    "tests": 13.5
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 848,
+    "functions": 58,
+    "overTen": 2,
+    "overTwenty": 1,
+    "lint": 0,
+    "typeEscapes": 12,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 929,
+    "functions": 67,
+    "overTen": 2,
+    "overTwenty": 1,
+    "lint": 0,
+    "typeEscapes": 12,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 2,
+   "score": 0,
+   "moved": "blind"
+  }
+ },
+ {
+  "id": "gh:51875:2997760124",
+  "url": "https://github.com/PostHog/posthog/pull/51875#discussion_r2997760124",
+  "author": "havenbarnes",
+  "path": "products/workflows/backend/models/hog_flow_scheduled_run/hog_flow_scheduled_run.py",
+  "line": 6,
+  "at": "2026-03-26T21:28:38Z",
+  "pr": 51875,
+  "kind": "remove-duplication",
+  "quote": "most of the fields in this model are just duplicated data",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Deletes HogFlowScheduledRun and moves next_run_at onto the schedule, alongside new CRUD endpoints."
+  },
+  "base": "0e5e7730217173950839e911b1234d8a451821fd",
+  "commentCommit": "a5c831858ccc87288c67f66a866954334b283826",
+  "isolable": true,
+  "before": "4e31c852e4b331ed62f57f8526ba9a4373ee1579",
+  "fix": "29995def6ccb6485d21086b859cc70142383ee3e",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": -1.2,
+    "architecture": -3.2,
+    "complexity": 0,
+    "smells": -0.4,
+    "tests": -0.4
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.114,
+     "after": 0.1179,
+     "scoreDelta": -1
+    },
+    "architecture.cycleShare": {
+     "before": 0.128,
+     "after": 0.1545,
+     "scoreDelta": -8.8
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0153,
+     "after": 0.0153,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0019,
+     "after": 0.0019,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 16,
+     "after": 16,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 311,
+     "after": 311,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 5.0251,
+     "after": 5.168,
+     "scoreDelta": -1.4
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.3802,
+     "after": 0.3802,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 5.05,
+     "after": 5.06,
+     "scoreDelta": -0.1
+    },
+    "smells.markersPerKloc": {
+     "before": 0.4223,
+     "after": 0.4229,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.9469,
+     "after": 4.9535,
+     "scoreDelta": -0.1
+    },
+    "tests.testRatio": {
+     "before": 0.226,
+     "after": 0.2183,
+     "scoreDelta": -0.8
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [],
+    "left": [],
+    "functions": 0,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [
+     "products/workflows/backend/models/hog_flow_schedule/__init__.py",
+     "products/workflows/backend/models/hog_flow_schedule/hog_flow_schedule.py",
+     "products/workflows/backend/utils/schedule_sync.py"
+    ],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": [
+     "inbound posthog/admin/admins/hog_flow_admin.py -> products/workflows/backend/models/hog_flow_scheduled_run/__init__.py",
+     "inbound posthog/api/hog_flow.py -> products/workflows/backend/models/hog_flow_scheduled_run/__init__.py",
+     "inbound posthog/api/hog_flow.py -> products/workflows/backend/utils/schedule_sync.py",
+     "inbound posthog/models/hog_flow/hog_flow.py -> products/workflows/backend/utils/schedule_sync.py"
+    ]
+   },
+   "crossings": {
+    "inbound": -4,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0.01,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": -134,
+    "productionLines": -22,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": -2,
+    "p90Lines": [
+     311,
+     311
+    ]
+   },
+   "outsideDriven": true,
+   "scoresBefore": {
+    "composite": 52.4,
+    "architecture": 42.9,
+    "complexity": 85.3,
+    "smells": 69.2,
+    "tests": 11.3
+   },
+   "scoresAfter": {
+    "composite": 51.2,
+    "architecture": 39.7,
+    "complexity": 85.3,
+    "smells": 68.8,
+    "tests": 10.9
+   },
+   "moved": "worsened"
+  },
+  "local": {
+   "before": {
+    "lines": 102,
+    "functions": 4,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 4,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 80,
+    "functions": 4,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 2
+   },
+   "files": 9,
+   "score": 10,
+   "moved": "improved"
+  }
+ },
+ {
+  "id": "gh:51875:2998199827",
+  "url": "https://github.com/PostHog/posthog/pull/51875#discussion_r2998199827",
+  "author": "havenbarnes",
+  "path": "products/workflows/backend/utils/schedule_sync.py",
+  "line": 5,
+  "at": "2026-03-26T23:19:30Z",
+  "pr": 51875,
+  "kind": "move",
+  "quote": "pretty clean to limit that responsibility to the poller",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Removes the post_save schedule signals; the scheduler owns next_run_at."
+  },
+  "base": "0e5e7730217173950839e911b1234d8a451821fd",
+  "commentCommit": "8d3254f2c4e0e2db5bbe312dc6a88bc041b5f0e1",
+  "isolable": true,
+  "before": "8d3254f2c4e0e2db5bbe312dc6a88bc041b5f0e1",
+  "fix": "df69d9b301d6343d17debdd06139994b42c34d71",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0.7,
+    "architecture": 2.7,
+    "complexity": 0,
+    "smells": -0.7,
+    "tests": -0.3
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1179,
+     "after": 0.1175,
+     "scoreDelta": 0.1
+    },
+    "architecture.cycleShare": {
+     "before": 0.1545,
+     "after": 0.1301,
+     "scoreDelta": 8.1
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.0153,
+     "after": 0.0154,
+     "scoreDelta": -0.1
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0019,
+     "after": 0.0019,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 16,
+     "after": 16,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 311,
+     "after": 311,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 5.168,
+     "after": 5.5096,
+     "scoreDelta": -3.4
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.3802,
+     "after": 0.3802,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 5.06,
+     "after": 5.08,
+     "scoreDelta": -0.2
+    },
+    "smells.markersPerKloc": {
+     "before": 0.4229,
+     "after": 0.4241,
+     "scoreDelta": -0.1
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 4.9535,
+     "after": 4.9679,
+     "scoreDelta": 0
+    },
+    "tests.testRatio": {
+     "before": 0.2189,
+     "after": 0.2131,
+     "scoreDelta": -0.6
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [],
+    "left": [],
+    "functions": -2,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": [
+     "products/workflows/backend/models/hog_flow_schedule/__init__.py",
+     "products/workflows/backend/models/hog_flow_schedule/hog_flow_schedule.py",
+     "products/workflows/backend/utils/schedule_sync.py"
+    ]
+   },
+   "bypasses": {
+    "added": [],
+    "removed": [
+     "inbound posthog/models/hog_flow/hog_flow.py -> products/workflows/backend/models/hog_flow_schedule/__init__.py",
+     "inbound posthog/models/hog_flow/hog_flow.py -> products/workflows/backend/utils/schedule_sync.py"
+    ]
+   },
+   "crossings": {
+    "inbound": -2,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0.02,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": -105,
+    "productionLines": -48,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     311,
+     311
+    ]
+   },
+   "outsideDriven": true,
+   "scoresBefore": {
+    "composite": 51.2,
+    "architecture": 39.7,
+    "complexity": 85.3,
+    "smells": 68.8,
+    "tests": 11
+   },
+   "scoresAfter": {
+    "composite": 51.9,
+    "architecture": 42.4,
+    "complexity": 85.3,
+    "smells": 68.1,
+    "tests": 10.7
+   },
+   "moved": "improved"
+  },
+  "local": {
+   "before": {
+    "lines": 80,
+    "functions": 4,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 1,
+    "cycleFiles": 2
+   },
+   "after": {
+    "lines": 32,
+    "functions": 2,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 5,
+   "score": 5,
+   "moved": "improved"
+  }
+ },
+ {
+  "id": "gh:47035:2877422332",
+  "url": "https://github.com/PostHog/posthog/pull/47035#discussion_r2877422332",
+  "author": "meikelmosby",
+  "path": "products/workflows/frontend/Workflows/hogflows/registry/triggers/surveyTriggerLogic.ts",
+  "line": null,
+  "at": "2026-03-03T10:22:22Z",
+  "pr": 47035,
+  "kind": "move",
+  "quote": "would be cool to move this into `registry/triggers/`",
+  "verification": {
+   "addressed": "unverifiable",
+   "where": "in-scope",
+   "note": "Squashed branch; the fix is the whole feature commit."
+  },
+  "base": "f41a5a5a98b862754374b1c8acaae43e99d18555",
+  "commentCommit": null,
+  "isolable": false,
+  "before": "6453ddbf4821a9af04f339268c5be3f966a0d5ae",
+  "fix": "3c6bdd040d512dbc29c05e9092ae82a66bdb05ff",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0.3,
+    "architecture": 0,
+    "complexity": 0.1,
+    "smells": 0.1,
+    "tests": 1
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1229,
+     "after": 0.126,
+     "scoreDelta": -0.8
+    },
+    "architecture.cycleShare": {
+     "before": 0.1391,
+     "after": 0.1368,
+     "scoreDelta": 0.8
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.017,
+     "after": 0.0165,
+     "scoreDelta": 0.3
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0021,
+     "after": 0.0021,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 18,
+     "after": 18,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 311,
+     "after": 311,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 4.6656,
+     "after": 4.6656,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.4246,
+     "after": 0.4123,
+     "scoreDelta": 0.3
+    },
+    "smells.duplicationPercentage": {
+     "before": 4.17,
+     "after": 4.06,
+     "scoreDelta": 1.1
+    },
+    "smells.markersPerKloc": {
+     "before": 0.454,
+     "after": 0.442,
+     "scoreDelta": 0.6
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 5.5783,
+     "after": 5.8723,
+     "scoreDelta": -1.5
+    },
+    "tests.testRatio": {
+     "before": 0.2244,
+     "after": 0.2436,
+     "scoreDelta": 2
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:getTemplatingError (ccn 19)"
+    ],
+    "left": [
+     "products/workflows/frontend/Workflows/workflowLogic.ts:getTemplatingError (ccn 16)"
+    ],
+    "functions": 29,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": -0.11,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 7,
+   "tests": {
+    "testLines": 398,
+    "productionLines": 420,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 2,
+    "p90Lines": [
+     311,
+     311
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 51.7,
+    "architecture": 41,
+    "complexity": 84.2,
+    "smells": 70.5,
+    "tests": 11.2
+   },
+   "scoresAfter": {
+    "composite": 52,
+    "architecture": 41,
+    "complexity": 84.3,
+    "smells": 70.6,
+    "tests": 12.2
+   },
+   "moved": "improved"
+  },
+  "local": {
+   "before": {
+    "lines": 725,
+    "functions": 54,
+    "overTen": 2,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 20,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 1145,
+    "functions": 83,
+    "overTen": 2,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 27,
+    "markers": 3,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 8,
+   "score": -7,
+   "moved": "worsened"
+  }
+ },
+ {
+  "id": "gh:49670:2879038689",
+  "url": "https://github.com/PostHog/posthog/pull/49670#discussion_r2879038689",
+  "author": "skoob13",
+  "path": "products/workflows/mcp/tools.yaml",
+  "line": 23,
+  "at": "2026-03-03T15:45:40Z",
+  "pr": 49670,
+  "kind": "rename-concept",
+  "quote": "Can we align it with the documentation?",
+  "verification": {
+   "addressed": "yes",
+   "where": "in-scope",
+   "note": "Removes HogFlow wording from mcp/tools.yaml."
+  },
+  "base": "7a810eee45959c3625819485488d1d26a11db253",
+  "commentCommit": "6c30268ac4f81dd755107830a916dd5ef6e7db45",
+  "isolable": true,
+  "before": "6c30268ac4f81dd755107830a916dd5ef6e7db45",
+  "fix": "bfe5d6a54cae472c0d798eb0d7e523f5422bd5a4",
+  "missing": null,
+  "index": {
+   "delta": {
+    "composite": 0,
+    "architecture": 0,
+    "complexity": 0,
+    "smells": 0,
+    "tests": 0
+   },
+   "measures": {
+    "architecture.propagationCost": {
+     "before": 0.1229,
+     "after": 0.1229,
+     "scoreDelta": 0
+    },
+    "architecture.cycleShare": {
+     "before": 0.1391,
+     "after": 0.1391,
+     "scoreDelta": 0
+    },
+    "architecture.facadeShare": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    },
+    "complexity.p90Ccn": {
+     "before": 4,
+     "after": 4,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTen": {
+     "before": 0.017,
+     "after": 0.017,
+     "scoreDelta": 0
+    },
+    "complexity.shareOverTwenty": {
+     "before": 0.0021,
+     "after": 0.0021,
+     "scoreDelta": 0
+    },
+    "complexity.p90FunctionNloc": {
+     "before": 18,
+     "after": 18,
+     "scoreDelta": 0
+    },
+    "complexity.p90FileLines": {
+     "before": 311,
+     "after": 311,
+     "scoreDelta": 0
+    },
+    "smells.ruffPerKloc": {
+     "before": 4.6656,
+     "after": 4.6656,
+     "scoreDelta": 0
+    },
+    "smells.oxlintPerKloc": {
+     "before": 0.4246,
+     "after": 0.4246,
+     "scoreDelta": 0
+    },
+    "smells.duplicationPercentage": {
+     "before": 4.17,
+     "after": 4.17,
+     "scoreDelta": 0
+    },
+    "smells.markersPerKloc": {
+     "before": 0.454,
+     "after": 0.454,
+     "scoreDelta": 0
+    },
+    "smells.typeEscapesPerKloc": {
+     "before": 5.5783,
+     "after": 5.5783,
+     "scoreDelta": 0
+    },
+    "tests.testRatio": {
+     "before": 0.2244,
+     "after": 0.2244,
+     "scoreDelta": 0
+    },
+    "tests.facadeCoverage": {
+     "before": 0,
+     "after": 0,
+     "scoreDelta": 0
+    }
+   },
+   "complexity": {
+    "entered": [],
+    "left": [],
+    "functions": 0,
+    "overTen": 0,
+    "overTwenty": 0
+   },
+   "cycles": {
+    "entered": [],
+    "left": []
+   },
+   "bypasses": {
+    "added": [],
+    "removed": []
+   },
+   "crossings": {
+    "inbound": 0,
+    "outbound": 0
+   },
+   "lint": {},
+   "duplication": {
+    "percentage": 0,
+    "clones": 0,
+    "lines": 0
+   },
+   "markers": 0,
+   "typeEscapes": 0,
+   "tests": {
+    "testLines": 0,
+    "productionLines": 0,
+    "facadeFunctions": 0,
+    "facadeCovered": 0
+   },
+   "files": {
+    "production": 0,
+    "p90Lines": [
+     311,
+     311
+    ]
+   },
+   "outsideDriven": false,
+   "scoresBefore": {
+    "composite": 51.7,
+    "architecture": 41,
+    "complexity": 84.2,
+    "smells": 70.5,
+    "tests": 11.2
+   },
+   "scoresAfter": {
+    "composite": 51.7,
+    "architecture": 41,
+    "complexity": 84.2,
+    "smells": 70.5,
+    "tests": 11.2
+   },
+   "moved": "blind"
+  },
+  "local": {
+   "before": {
+    "lines": 0,
+    "functions": 0,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "after": {
+    "lines": 0,
+    "functions": 0,
+    "overTen": 0,
+    "overTwenty": 0,
+    "lint": 0,
+    "typeEscapes": 0,
+    "markers": 0,
+    "bypasses": 0,
+    "cycleFiles": 0
+   },
+   "files": 1,
+   "score": 0,
+   "moved": "blind"
+  }
+ }
+]

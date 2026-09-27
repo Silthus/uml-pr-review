@@ -1,0 +1,6 @@
+[
+  { "pr": 72584, "score": 0, "reason": "Merges the message trigger config into one metadata-driven component that reuses HogFlowPropertyFilters, but keeps `node: any` and adds another near-duplicate trigger registration." },
+  { "pr": 85239, "score": 0, "reason": "Self-contained, well-tested one-off cleanup command. It repeats the draft-extraction logic in the scan and locked paths and leaves the module structure unchanged." },
+  { "pr": 75237, "score": -1, "reason": "SES provider method is clean and tested, but the caching helper, health mapping and two serializers grow the huge hog_flow.py API file further; frontend diff truncated." },
+  { "pr": 92406, "score": 0, "reason": "Tier notifications live in a new focused service module, use the notifications facade, and have focused tests. The feature is clean but improves no existing code." }
+]

@@ -6,6 +6,8 @@ import { z } from "zod";
 import { git } from "../../src/git.ts";
 import { CoherenceReportSchema, type CoherenceIndex } from "../contract.ts";
 import { measureCoherence } from "../measure.ts";
+import { rescore } from "../rescore.ts";
+import { scoringVersion } from "../score.ts";
 import { changesBetween, ChangesSchema, scoresOf, ScoresSchema } from "./changes.ts";
 
 const LineCountSchema = z.object({ files: z.number(), added: z.number(), deleted: z.number() });
@@ -24,7 +26,7 @@ export const AttributionSchema = ChangesSchema.extend({
 });
 export type Attribution = z.infer<typeof AttributionSchema>;
 
-export const AttributionRunSchema = z.object({ repository: z.string(), ref: z.string(), head: z.string(), since: z.string(), scope: z.string(), commits: z.array(AttributionSchema) });
+export const AttributionRunSchema = z.object({ scoringVersion: z.number().int().default(1), repository: z.string(), ref: z.string(), head: z.string(), since: z.string(), scope: z.string(), commits: z.array(AttributionSchema) });
 export type AttributionRun = z.infer<typeof AttributionRunSchema>;
 
 type Commit = { commit: string; parent: string; date: string; subject: string };
@@ -46,7 +48,7 @@ export async function attribute(options: { repository: string; ref: string; sinc
     log(`${position + 1}/${commits.length} ${commit.commit.slice(0, 12)} ${after.composite.score - before.composite.score >= 0 ? "+" : ""}${(after.composite.score - before.composite.score).toFixed(1)} ${commit.subject}`);
     return attributionOf(commit, before, after, files, scope);
   });
-  return { repository: resolve(repository).split("/").pop()!, ref, head, since, scope, commits: attributions };
+  return { scoringVersion, repository: resolve(repository).split("/").pop()!, ref, head, since, scope, commits: attributions };
 }
 
 function attributionOf(commit: Commit, before: CoherenceIndex, after: CoherenceIndex, files: FileChange[], scope: string): Attribution {
@@ -99,7 +101,7 @@ async function changedFiles(repository: string, { parent, commit }: Commit): Pro
 export async function storedIndex(repository: string, scope: string, commit: string, reports: string): Promise<CoherenceIndex> {
   const file = join(reports, `${commit}.json`);
   const stored = await readFile(file, "utf8").catch(() => null);
-  if (stored !== null) return CoherenceReportSchema.parse(JSON.parse(stored)).index;
+  if (stored !== null) return rescore(CoherenceReportSchema.parse(JSON.parse(stored)).index);
   const report = await measureCoherence({ repository, scope, commit });
   await writeFile(file, JSON.stringify(report));
   return report.index;

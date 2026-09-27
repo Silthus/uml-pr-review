@@ -1,6 +1,7 @@
 {
   "index": {
     "version": 1,
+    "scoringVersion": 2,
     "scope": "products/surveys",
     "commit": "dcca3c438f508a809f0428c0d9421bc84bbb91b9",
     "tree": "11263fd0e80c9aa21f57ee8e85f05c251e8d3801",
@@ -19,21 +20,21 @@
       "generatedLines": 0
     },
     "composite": {
-      "score": 40.6,
+      "score": 48.2224407016296,
       "weights": {
-        "architecture": 35,
-        "complexity": 25,
+        "architecture": 40,
+        "complexity": 30,
         "smells": 20,
-        "tests": 20
+        "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 28.8,
+        "score": 41.62419461121687,
         "measures": {
           "propagationCost": {
             "value": 0.2121,
-            "score": 47,
+            "score": 46.975,
             "best": 0,
             "worst": 0.4
           },
@@ -43,11 +44,11 @@
             "best": 0,
             "worst": 0.3
           },
-          "facadeShare": {
-            "value": 0,
-            "score": 0,
-            "best": 1,
-            "worst": 0
+          "facadeBypassesPerKloc": {
+            "value": 6.150241616634939,
+            "score": 38.49758383365061,
+            "best": 0,
+            "worst": 10
           }
         },
         "propagationCost": {
@@ -110,7 +111,6 @@
         },
         "facade": {
           "crossings": 42,
-          "share": 0,
           "inbound": {
             "crossings": 35,
             "bypasses": 35
@@ -397,7 +397,7 @@
         ]
       },
       "complexity": {
-        "score": 21.3,
+        "score": 21.27714285714286,
         "measures": {
           "p90Ccn": {
             "value": 14,
@@ -425,7 +425,7 @@
           },
           "p90FileLines": {
             "value": 287,
-            "score": 73.3,
+            "score": 73.28571428571429,
             "best": 100,
             "worst": 800
           }
@@ -506,11 +506,11 @@
         ]
       },
       "smells": {
-        "score": 76,
+        "score": 75.9481,
         "measures": {
           "ruffPerKloc": {
             "value": 3.0111,
-            "score": 69.9,
+            "score": 69.889,
             "best": 0,
             "worst": 10
           },
@@ -534,7 +534,7 @@
           },
           "typeEscapesPerKloc": {
             "value": 10.6897,
-            "score": 46.6,
+            "score": 46.551500000000004,
             "best": 0,
             "worst": 20
           }
@@ -642,17 +642,11 @@
         }
       },
       "tests": {
-        "score": 50,
+        "score": 100,
         "measures": {
           "testRatio": {
             "value": 1.3075,
             "score": 100,
-            "best": 1,
-            "worst": 0
-          },
-          "facadeCoverage": {
-            "value": 0,
-            "score": 0,
             "best": 1,
             "worst": 0
           }

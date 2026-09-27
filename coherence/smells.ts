@@ -1,5 +1,5 @@
 import type { BlobCache } from "./blob-cache.ts";
-import type { Smells } from "./contract.ts";
+import type { Measure, Smells } from "./contract.ts";
 import { topFiles } from "./drivers.ts";
 import { measureDuplication } from "./duplication.ts";
 import { lintFindings, oxlint, ruff } from "./lint.ts";
@@ -29,15 +29,19 @@ export async function measureSmells(files: ScopeFile[], toolbox: Toolbox, cache:
     measureDuplication(files, toolbox, cache),
   ]);
   const markers = markersOf(files);
-  const escapes = typeEscapesOf(files);
-  const measures = {
-    ruffPerKloc: measure(ruffFindings.perKloc, anchors.ruffPerKloc),
-    oxlintPerKloc: measure(oxlintFindings.perKloc, anchors.oxlintPerKloc),
+  const facts = { ruff: ruffFindings, oxlint: oxlintFindings, duplication, markers, typeEscapes: typeEscapesOf(files) };
+  const measures = smellsMeasures(facts);
+  return { score: dimensionScore(measures), measures, ...facts };
+}
+
+export function smellsMeasures({ ruff, oxlint, duplication, markers, typeEscapes }: Pick<Smells, "ruff" | "oxlint" | "duplication" | "markers" | "typeEscapes">): Record<"ruffPerKloc" | "oxlintPerKloc" | "duplicationPercentage" | "markersPerKloc" | "typeEscapesPerKloc", Measure> {
+  return {
+    ruffPerKloc: measure(ruff.perKloc, anchors.ruffPerKloc),
+    oxlintPerKloc: measure(oxlint.perKloc, anchors.oxlintPerKloc),
     duplicationPercentage: measure(duplication.percentage, anchors.duplicationPercentage),
     markersPerKloc: measure(markers.perKloc, anchors.markersPerKloc),
-    typeEscapesPerKloc: measure(escapes.perKloc, anchors.typeEscapesPerKloc),
+    typeEscapesPerKloc: measure(typeEscapes.perKloc, anchors.typeEscapesPerKloc),
   };
-  return { score: dimensionScore(measures), measures, ruff: ruffFindings, oxlint: oxlintFindings, duplication, markers, typeEscapes: escapes };
 }
 
 function markersOf(files: ScopeFile[]): Smells["markers"] {

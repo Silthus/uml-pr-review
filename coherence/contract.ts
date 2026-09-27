@@ -25,7 +25,6 @@ export const ArchitectureSchema = z.object({
   cycles: z.object({ count: z.number().int(), files: z.array(z.string()) }),
   facade: z.object({
     crossings: z.number().int(),
-    share: z.number().nullable(),
     inbound: CrossingCountSchema,
     outbound: CrossingCountSchema,
     bypasses: z.array(z.object({ from: z.string(), to: z.string(), direction: z.enum(["inbound", "outbound"]) })),
@@ -59,6 +58,7 @@ export const DimensionWeightsSchema = z.object({ architecture: z.number(), compl
 
 export const CoherenceIndexSchema = z.object({
   version: z.literal(1),
+  scoringVersion: z.number().int().default(1),
   scope: z.string(),
   commit: z.string(),
   tree: z.string(),

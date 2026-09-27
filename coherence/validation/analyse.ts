@@ -2,12 +2,13 @@
 import { writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { dimensionWeights, percentile, roundTo } from "../score.ts";
+import type { DimensionWeights } from "../contract.ts";
+import { dimensionWeights, percentile, roundTo, scoringVersion } from "../score.ts";
 import type { Attribution } from "./attribute.ts";
 import { dimensions } from "./changes.ts";
 import { diffLocalDensity, DiffLocalRunSchema } from "./diff-local.ts";
 import { readVerdicts, type Verdict, type Verdicts } from "./judges.ts";
-import { asScored, compositeUnder, facadeCountsInsteadOfShares, facadeCoverageGated, facadeCoverageSmoothed, readIndex, without, type MeasureRule } from "./rescore.ts";
+import { asScored, compositeUnder, readIndex, without, type MeasureRule } from "./rescore.ts";
 import { classOf, flatSampleSize, judged, prThreshold, readAttribution, sampleStratumOf, type IndexClass } from "./selection.ts";
 import { cohenKappa, spearman } from "./statistics.ts";
 
@@ -15,14 +16,11 @@ type JudgeClass = "better" | "neutral" | "worse";
 type Row = Attribution & { exact: number; indexClass: IndexClass; sampleStratum: IndexClass; weight: number; judged: boolean; opus: Verdict | null; astra: Verdict | null; mean: number | null; variants: Record<string, number>; local: { score: number; density: number } };
 
 const repository = "https://github.com/PostHog/posthog";
-const measureNames = ["architecture.propagationCost", "architecture.cycleShare", "architecture.facadeShare", "complexity.p90Ccn", "complexity.shareOverTen", "complexity.shareOverTwenty", "complexity.p90FunctionNloc", "complexity.p90FileLines", "smells.ruffPerKloc", "smells.oxlintPerKloc", "smells.duplicationPercentage", "smells.markersPerKloc", "smells.typeEscapesPerKloc", "tests.testRatio", "tests.facadeCoverage"];
+const measureNames = ["architecture.propagationCost", "architecture.cycleShare", "architecture.facadeBypassesPerKloc", "complexity.p90Ccn", "complexity.shareOverTen", "complexity.shareOverTwenty", "complexity.p90FunctionNloc", "complexity.p90FileLines", "smells.ruffPerKloc", "smells.oxlintPerKloc", "smells.duplicationPercentage", "smells.markersPerKloc", "smells.typeEscapesPerKloc", "tests.testRatio"];
 const measuresPerDimension = Object.fromEntries(dimensions.map((dimension) => [dimension, measureNames.filter((name) => name.startsWith(`${dimension}.`)).length]));
 
 const variantRules: Record<string, MeasureRule> = {
   current: asScored,
-  "facade coverage gated below 5 functions": facadeCoverageGated,
-  "facade coverage Laplace-smoothed": facadeCoverageSmoothed,
-  "facade measures as counts (untested facade functions, bypasses)": facadeCountsInsteadOfShares,
   ...Object.fromEntries(measureNames.map((name) => [`without ${name}`, without(name)])),
 };
 
@@ -61,7 +59,7 @@ function sign(value: number): string {
 }
 
 function contribution(row: Attribution, measure: string): number {
-  const dimension = measure.split(".")[0] as keyof typeof dimensionWeights;
+  const dimension = measure.split(".")[0] as keyof DimensionWeights;
   return (row.measures[measure]!.scoreDelta * dimensionWeights[dimension]) / 100 / measuresPerDimension[dimension]!;
 }
 
@@ -270,15 +268,15 @@ function checks(rows: Row[]): string {
       scored.length === 0 ? "n/a" : `${fixed(mean(scored.map(({ mean: judge }) => judge!)))} (n=${scored.length})`,
     ];
   };
-  const facadeMoves = rows.filter((row) => row.measures["tests.facadeCoverage"]!.scoreDelta !== 0);
-  const facadeRows = facadeMoves.map((row) => [prLink(row), `${row.measures["tests.facadeCoverage"]!.before ?? "null"} → ${row.measures["tests.facadeCoverage"]!.after ?? "null"}`, `${signed(row.tests.facadeFunctions, 0)} / ${signed(row.tests.facadeCovered, 0)}`, signed(contribution(row, "tests.facadeCoverage"), 2), signed(row.delta.composite), row.variants["facade coverage gated below 5 functions"]!.toFixed(2)]);
-  const shareMoves = rows.filter((row) => row.measures["architecture.facadeShare"]!.scoreDelta !== 0);
+  const facadeMoves = rows.filter((row) => row.tests.facadeFunctions !== 0 || row.tests.facadeCovered !== 0);
+  const facadeRows = facadeMoves.map((row) => [prLink(row), `${signed(row.tests.facadeFunctions, 0)} / ${signed(row.tests.facadeCovered, 0)}`, signed(row.delta.composite)]);
+  const bypassMoves = rows.filter((row) => row.measures["architecture.facadeBypassesPerKloc"]!.scoreDelta !== 0);
   return [
     "## Targeted checks",
     table(["group", "PRs", "mean Δ composite", "mean Δ complexity", "mean Δ tests", "worsened / improved", "mean judge"], [describe("feat with ≥ 300 added production lines in scope", bigFeatures), describe("test-only in scope", testOnly), describe("all", rows)]),
-    `Facade coverage moved on ${facadeMoves.length} PRs:`,
-    table(["PR", "coverage share", "Δ functions / covered", "composite contribution", "Δ composite", "Δ composite if gated"], facadeRows),
-    `Facade share moved on ${shareMoves.length} PRs, ${shareMoves.filter(({ outsideDriven }) => outsideDriven).length} of them through inbound crossings; a single crossing is worth about ${fixed(contribution(shareMoves[0] ?? rows[0]!, "architecture.facadeShare"))} composite points in the first of them.`,
+    `Facade functions or their tests changed on ${facadeMoves.length} PRs; facade coverage is reported, not scored:`,
+    table(["PR", "Δ functions / covered", "Δ composite"], facadeRows),
+    `Facade bypasses per KLOC moved on ${bypassMoves.length} PRs, ${bypassMoves.filter(({ outsideDriven }) => outsideDriven).length} of them through inbound crossings.`,
   ].join("\n\n");
 }
 
@@ -337,7 +335,8 @@ if (import.meta.main) {
       tables: { type: "string", default: join(import.meta.dir, "..", "..", "docs", "coherence", "validation", "tables.md") },
     },
   });
-  const { commits } = await readAttribution();
+  const { commits, scoringVersion: attributedUnder } = await readAttribution();
+  if (attributedUnder !== scoringVersion) throw new Error(`The attribution was scored under scoring version ${attributedUnder}, not ${scoringVersion}; its committed tables are a historical record. Run attribute.ts again first.`);
   const local = new Map(DiffLocalRunSchema.parse(await Bun.file(join(import.meta.dir, "data", "diff-local.json")).json()).map(({ commit, score, before, after }) => [commit, { score, density: diffLocalDensity(before, after) }]));
   const rows = await rowsOf(commits, await readVerdicts(), resolve(values.reports!), local);
   const tables = [overview(rows), interJudge(rows), indexVersusJudges(rows), perMeasure(rows), variants(rows), diffLocalSection(rows), checks(rows), movers(rows, "improvers"), movers(rows, "worseners"), disagreements(rows)].join("\n\n");

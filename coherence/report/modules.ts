@@ -3,12 +3,12 @@ import { join } from "node:path";
 import { z } from "zod";
 import type { CoherenceIndex } from "../contract.ts";
 import { measureCoherence } from "../measure.ts";
-import { compositeScore } from "../score.ts";
+import { compositeScore, scoringVersion } from "../score.ts";
 
 const RawSchema = z.object({
   propagationCost: z.number(),
   cycleFiles: z.number().int(),
-  facadeShare: z.number().nullable(),
+  facadeBypasses: z.number().int(),
   p90Ccn: z.number(),
   shareOverTen: z.number().nullable(),
   p90Nloc: z.number(),
@@ -29,7 +29,7 @@ export const ModuleRowSchema = z.object({
   raw: RawSchema,
 });
 
-export const ModuleBreakdownSchema = z.object({ scope: z.string(), commit: z.string(), rows: z.array(ModuleRowSchema) });
+export const ModuleBreakdownSchema = z.object({ scope: z.string(), commit: z.string(), scoringVersion: z.number().int().default(1), rows: z.array(ModuleRowSchema) });
 
 export type ModuleRow = z.infer<typeof ModuleRowSchema>;
 export type ModuleBreakdown = z.infer<typeof ModuleBreakdownSchema>;
@@ -41,19 +41,25 @@ export async function scoreModules(
   log: (line: string) => void = () => {},
 ): Promise<ModuleBreakdown | null> {
   const file = join(dataDir, scope, `modules-${commit.slice(0, 12)}.json`);
-  const stored = await readFile(file, "utf8").catch(() => null);
-  if (stored !== null) return withoutPassThroughParents(ModuleBreakdownSchema.parse(JSON.parse(stored)));
+  const stored = await readCurrentBreakdown(file);
+  if (stored !== null) return withoutPassThroughParents(stored);
   if (repository === undefined) return null;
   const rows: ModuleRow[] = [];
   for (const path of await modulePaths(repository, scope, commit)) {
     const { index } = await measureCoherence({ repository, scope: path, commit });
     if (index.files.production < minimumFiles) continue;
     rows.push(moduleRow(index));
-    log(`${path} code ${rows.at(-1)!.code} (${index.files.production} files)`);
+    log(`${path} code ${rows.at(-1)!.code.toFixed(1)} (${index.files.production} files)`);
   }
-  const breakdown = ModuleBreakdownSchema.parse({ scope, commit, rows: rows.sort((a, b) => a.code - b.code || a.path.localeCompare(b.path)) });
+  const breakdown = ModuleBreakdownSchema.parse({ scope, commit, scoringVersion, rows: rows.sort((a, b) => a.code - b.code || a.path.localeCompare(b.path)) });
   await writeFile(file, JSON.stringify(breakdown, null, 2));
   return withoutPassThroughParents(breakdown);
+}
+
+async function readCurrentBreakdown(file: string): Promise<ModuleBreakdown | null> {
+  const stored = await readFile(file, "utf8").catch(() => null);
+  const breakdown = stored === null ? null : ModuleBreakdownSchema.parse(JSON.parse(stored));
+  return breakdown?.scoringVersion === scoringVersion ? breakdown : null;
 }
 
 function withoutPassThroughParents(breakdown: ModuleBreakdown): ModuleBreakdown {
@@ -78,7 +84,7 @@ function moduleRow(index: CoherenceIndex): ModuleRow {
     raw: {
       propagationCost: architecture.propagationCost.value,
       cycleFiles: architecture.cycles.files.length,
-      facadeShare: architecture.facade.share,
+      facadeBypasses: architecture.facade.bypasses.length,
       p90Ccn: complexity.functions.p90Ccn,
       shareOverTen: complexity.measures.shareOverTen?.value ?? null,
       p90Nloc: complexity.functions.p90Nloc,

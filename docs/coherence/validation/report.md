@@ -1,5 +1,7 @@
 # Does the Coherence Index see real quality changes? `products/workflows` PRs and review corrections
 
+> **Historical record, scoring v1.** This file was produced by #95 under Coherence Index scoring v1 (facade share and facade coverage scored, tests weight 20, scores rounded to 0.1), as were `prs.csv`, `tables.md`, `corrections.csv`, and `corrections-tables.md`. It is not regenerated. For the same PRs under the current scoring, see [`fixed-measures.md`](fixed-measures.md).
+
 Ticket [#94](https://github.com/Silthus/uml-pr-review/issues/94). PostHog `upstream/master` pinned at [`57ca3577`](https://github.com/PostHog/posthog/commit/57ca357730843205c2d659098ac8e4c5e07a6698) (2026-09-26). Scope `products/workflows`. Two windows:
 - **Blind-judge set:** 321 PRs merged from 2026-06-27.
 - **Review corrections:** PRs merged from 2026-03-01, the harvest window.

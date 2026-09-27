@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { readdir } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { backfill, type BackfillManifest } from "../../coherence/backfill.ts";
+import { backfill, readManifest, type BackfillManifest } from "../../coherence/backfill.ts";
+import { CoherenceReportSchema } from "../../coherence/contract.ts";
 import { backfillFixture, mergeSubject, type BackfillFixture } from "./backfill-fixture.ts";
 
 const toolTimeoutMs = 300_000;
@@ -62,4 +63,58 @@ describe("the weekly backfill", () => {
     expect(movers[1]!.delta.composite).toBeCloseTo(-movers[0]!.delta.composite, 5);
     expect(movers[1]!.subject).toBe(mergeSubject);
   });
+
+  test("computes every delta from the unrounded scores it stores", async () => {
+    const stored = await storedComposites("products/a");
+    const deltas = manifest.scopes["products/a"]!.movers.map(({ commit, previous, delta }) => ({ delta: delta.composite, exact: stored.get(commit)! - stored.get(previous)! }));
+
+    expect(deltas.map(({ delta }) => delta)).toEqual(deltas.map(({ exact }) => exact));
+    expect(deltas.some(({ delta }) => Math.abs(delta * 10 - Math.round(delta * 10)) > 1e-9)).toBe(true);
+  });
+
+  test("rescores stored measurements under the current anchors instead of trusting their stored scores", async () => {
+    const file = join(dataDir, manifest.scopes["products/a"]!.points[0]!.file);
+    const stored = CoherenceReportSchema.parse(JSON.parse(await readFile(file, "utf8")));
+    const staleScores = structuredClone(stored);
+    staleScores.index.composite.score = 0;
+    staleScores.index.dimensions.architecture.score = 0;
+    staleScores.index.dimensions.architecture.measures = { facadeShare: { value: 0, score: 0, best: 1, worst: 0 } };
+    await writeFile(file, JSON.stringify(staleScores));
+
+    const again = await backfill(fixture.request);
+
+    expect(again.runtime.measured).toBe(0);
+    expect(again.scopes).toEqual(manifest.scopes);
+    expect(CoherenceReportSchema.parse(JSON.parse(await readFile(file, "utf8"))).index).toEqual(stored.index);
+  });
 });
+
+describe("stored results", () => {
+  test("deletes stored reports that no point, noise pair, or mover reaches", async () => {
+    const orphan = join(dataDir, "products/a", "2026-01-01-000000000000.json");
+    await writeFile(orphan, await readFile(join(dataDir, manifest.scopes["products/a"]!.points[0]!.file), "utf8"));
+
+    const again = await backfill(fixture.request);
+
+    expect(again.runtime.pruned).toBe(1);
+    expect(await Bun.file(orphan).exists()).toBe(false);
+  });
+
+  test("refuses a manifest scored under another scoring version", async () => {
+    const manifestFile = join(dataDir, "backfill.json");
+    const current = await readFile(manifestFile, "utf8");
+    await writeFile(manifestFile, JSON.stringify({ ...JSON.parse(current), scoringVersion: 1 }));
+
+    try {
+      expect(readManifest(dataDir)).rejects.toThrow("scoring version 1");
+    } finally {
+      await writeFile(manifestFile, current);
+    }
+  });
+});
+
+async function storedComposites(scope: string): Promise<Map<string, number>> {
+  const files = (await readdir(join(dataDir, scope))).filter((file) => /^\d{4}-\d{2}-\d{2}-/.test(file));
+  const reports = await Promise.all(files.map(async (file) => CoherenceReportSchema.parse(JSON.parse(await readFile(join(dataDir, scope, file), "utf8"))).index));
+  return new Map(reports.map(({ commit, composite }) => [commit, composite.score]));
+}

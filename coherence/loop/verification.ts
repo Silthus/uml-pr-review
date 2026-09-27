@@ -147,14 +147,13 @@ async function indexCheck(iteration: Iteration, workspace: string, head: string,
   const after = await measureCoherence({ repository: workspace, scope, commit: head, rules });
   const scores = (report: CoherenceReport, dimension: Dimension) => report.index.dimensions[dimension].score;
   const targeted = targetedDimensions[iteration.target.step];
-  const rounded = (value: number | null) => (value === null ? null : Math.round(value * 100) / 100);
   return {
     scope,
-    composite: { before: rounded(before.index.composite.score), after: rounded(after.index.composite.score) },
-    dimensions: Object.fromEntries(dimensions.map((dimension) => [dimension, { before: rounded(scores(before, dimension)), after: rounded(scores(after, dimension)) }])),
+    composite: { before: before.index.composite.score, after: after.index.composite.score },
+    dimensions: Object.fromEntries(dimensions.map((dimension) => [dimension, { before: scores(before, dimension), after: scores(after, dimension) }])),
     targeted,
     regressed: targeted.filter((dimension) => {
-      const [was, is] = [rounded(scores(before, dimension)), rounded(scores(after, dimension))];
+      const [was, is] = [scores(before, dimension), scores(after, dimension)];
       return was !== null && is !== null && is < was;
     }),
   };

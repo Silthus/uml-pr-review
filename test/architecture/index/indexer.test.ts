@@ -24,12 +24,33 @@ afterEach(async () => {
   await Promise.all(installations.splice(0).map((installation) => rm(installation, { recursive: true, force: true })));
 });
 
-function indexInFreshProcess(entry: string, repositoryDir: string) {
-  const script = `const { createRepositoryIndexer } = await import(${JSON.stringify(entry)});
+function indexingScript(entry: string, repositoryDir: string): string {
+  return `const { createRepositoryIndexer } = await import(${JSON.stringify(entry)});
     const payload = await createRepositoryIndexer().index(${JSON.stringify(repositoryDir)}, { commit: "HEAD" });
     console.log(JSON.stringify(payload.stats));`;
-  const child = Bun.spawnSync(["bun", "--eval", script], { stdout: "pipe", stderr: "pipe" });
+}
+
+function indexInFreshProcess(entry: string, repositoryDir: string) {
+  const child = Bun.spawnSync(["bun", "--eval", indexingScript(entry, repositoryDir)], { stdout: "pipe", stderr: "pipe" });
   return { exitCode: child.exitCode, stdout: child.stdout.toString(), stderr: child.stderr.toString() };
+}
+
+async function indexInBackgroundProcess(repositoryDir: string) {
+  const child = Bun.spawn(["bun", "--eval", indexingScript(indexerEntry, repositoryDir)], { stdout: "pipe", stderr: "pipe" });
+  const [exitCode, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+  return { exitCode, stdout, stderr };
+}
+
+async function holdWriteLock(databasePath: string, milliseconds: number): Promise<{ released: Promise<number> }> {
+  const script = `const { Database } = await import("bun:sqlite");
+    const database = new Database(${JSON.stringify(databasePath)});
+    database.run("BEGIN IMMEDIATE");
+    console.log("locked");
+    await Bun.sleep(${milliseconds});
+    database.run("COMMIT");`;
+  const holder = Bun.spawn(["bun", "--eval", script], { stdout: "pipe" });
+  await holder.stdout.getReader().read();
+  return { released: holder.exited };
 }
 
 async function installationWithoutGrammars(): Promise<string> {
@@ -156,6 +177,25 @@ describe("extraction cache", () => {
     expect(healed.stats).toMatchObject({ parsed: 1, cacheHits: 2, failed: 0 });
     expect(importsOf(healed)).toEqual(["app/a.py:1 -> app/b.py static", "app/b.py:1 -> app/c.py static"]);
   });
+
+  test("waits out another process's write instead of failing with SQLITE_BUSY, so two indexers run in parallel", async () => {
+    const repository = await repositoryOf(threeFiles);
+    await createRepositoryIndexer().index(repository.dir, { commit: "HEAD" });
+    await repository.commit({ "app/d.py": "from app import a\n" });
+    const lockMs = 1500;
+    const writer = await holdWriteLock(join(repository.dir, ".git/uml-pr-review/index-cache.sqlite"), lockMs);
+    const started = performance.now();
+
+    const indexers = await Promise.all([indexInBackgroundProcess(repository.dir), indexInBackgroundProcess(repository.dir)]);
+
+    expect(performance.now() - started).toBeGreaterThanOrEqual(lockMs - 100);
+    expect(await writer.released).toBe(0);
+    for (const { exitCode, stdout, stderr } of indexers) {
+      expect(stderr).toBe("");
+      expect(exitCode).toBe(0);
+      expect(JSON.parse(stdout)).toMatchObject({ files: 4, failed: 0 });
+    }
+  }, 30_000);
 
   test("parses only the blobs a new tree adds, and each distinct blob once", async () => {
     const repository = await repositoryOf(threeFiles);

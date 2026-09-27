@@ -1,5 +1,5 @@
 import type { ArchitecturePayload } from "../src/architecture/contracts/index.ts";
-import type { Tests } from "./contract.ts";
+import type { Measure, Tests } from "./contract.ts";
 import { compare } from "./drivers.ts";
 import { totalLines, type Scope, type ScopeFile } from "./scope.ts";
 import { anchors, dimensionScore, measure, ratio } from "./score.ts";
@@ -16,11 +16,13 @@ export function measureTests(payload: ArchitecturePayload, scope: Scope): Tests 
   const productionLines = totalLines(scope.production);
   const testRatio = ratio(testLines, productionLines);
   const facadeCoverage = facadeCoverageOf(payload, scope);
-  const measures = {
-    testRatio: measure(testRatio, anchors.testRatio),
-    facadeCoverage: measure(facadeCoverage.share ?? 0, anchors.facadeCoverage),
-  };
-  return { score: dimensionScore(measures), measures, ratio: { testLines, productionLines, value: testRatio }, facadeCoverage };
+  const facts = { ratio: { testLines, productionLines, value: testRatio }, facadeCoverage };
+  const measures = testsMeasures(facts);
+  return { score: dimensionScore(measures), measures, ...facts };
+}
+
+export function testsMeasures({ ratio: { value } }: Pick<Tests, "ratio">): Record<"testRatio", Measure> {
+  return { testRatio: measure(value, anchors.testRatio) };
 }
 
 function facadeCoverageOf(payload: ArchitecturePayload, scope: Scope): Tests["facadeCoverage"] {

@@ -1,0 +1,30 @@
++ 45 |   private dropRowsOfOtherExtractors() {
++ 46 |     this.database.run("DELETE FROM extraction WHERE substr(extractor, 1, length(?1)) <> ?1", [currentExtractors]);
++                        ^
++ SQLiteError: database is locked
++       errno: 5,
++  byteOffset: -1,
++        code: "SQLITE_BUSY"
++ 
++       at run (bun:sqlite:323:14)
++       at dropRowsOfOtherExtractors (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/src/architecture/index/extraction-store.ts:46:19)
++       at new ExtractionStore (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/src/architecture/index/extraction-store.ts:26:10)
++       at storeFor (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/src/architecture/index/repository-indexer.ts:34:48)
++       at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/src/architecture/index/repository-indexer.ts:48:54)
++       at get (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/src/architecture/index/promise-cache.ts:13:21)
++       at index (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/src/architecture/index/repository-indexer.ts:46:43)
++ 
++ Bun v1.4.2 (macOS arm64)
++ "
+
+- Expected  - 1
++ Received  + 22
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-ab9ff0dc425a1deed/test/architecture/index/indexer.test.ts:191:22)
+(fail) extraction cache > waits out another process's write instead of failing with SQLITE_BUSY, so two indexers run in parallel [1683.48ms]
+
+ 0 pass
+ 14 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [1.71s]

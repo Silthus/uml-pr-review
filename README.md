@@ -145,11 +145,11 @@ bun coherence/report/build.ts --repo ~/dev/posthog --modules products/workflows 
 open docs/coherence/index-report.html
 ```
 
-The backfill scores one commit per week over 26 weeks, plus Wednesday→Thursday pairs for the noise band, and caches every point in `coherence/data/`. From scratch it takes about 6 minutes; a refresh reuses the cache and takes seconds. The report build takes about a minute for a new head commit, and seconds after that.
+The backfill scores one commit per week over 26 weeks, plus Wednesday→Thursday pairs for the noise band, and caches every point in `coherence/data/`. From scratch it takes about 6 minutes; a refresh reuses the cache, rescores every stored point under the current anchors, and takes seconds. The report build takes about a minute for a new head commit, and seconds after that.
 
 How to read the report:
 
-- **Is the index trustworthy?** A change counts only when it is bigger than the product's weekday band (the p90 of one day of ordinary commits). Workflows moves ±0.6 in a normal day; surveys ±3.9.
+- **Is the index trustworthy?** A change counts only when it is bigger than the product's weekday band (the p90 of one day of ordinary commits). Workflows moves ±0.3 in a normal day; surveys ±1.4.
 - **Composite, week by week** and **Each dimension** chart workflows next to surveys and error_tracking, the products the loop does not touch, so a trend that only workflows shows stands out.
 - **Biggest movers** name the commits behind each large week, with links to their pull requests.
 - **The module table** lists workflows modules worst first. That is where the loop will look.

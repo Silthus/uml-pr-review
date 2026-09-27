@@ -1,5 +1,7 @@
 # Blind-judge validation: generated tables
 
+> **Historical record, scoring v1.** This file was produced by #95 under Coherence Index scoring v1 (facade share and facade coverage scored, tests weight 20, scores rounded to 0.1), as were `prs.csv`, `tables.md`, `corrections.csv`, and `corrections-tables.md`. It is not regenerated. For the same PRs under the current scoring, see [`fixed-measures.md`](fixed-measures.md).
+
 ## Overview
 
 321 first-parent commits; 321 carry a PR number. The printed (rounded) composite moved at all (|Δ| ≥ 0.1) for 85/321 (26%). Classes use the unrounded composite delta with the PR threshold ±0.2.

@@ -1,6 +1,7 @@
 {
   "index": {
     "version": 1,
+    "scoringVersion": 2,
     "scope": "products/error_tracking",
     "commit": "8bf1ce63224da919897fe8d8fcdc22824b2f3fbf",
     "tree": "49bcbabec0bdd9683ef98eb4a66402c7eec35597",
@@ -19,21 +20,21 @@
       "generatedLines": 0
     },
     "composite": {
-      "score": 66.2,
+      "score": 79.0918175786925,
       "weights": {
-        "architecture": 35,
-        "complexity": 25,
+        "architecture": 40,
+        "complexity": 30,
         "smells": 20,
-        "tests": 20
+        "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 68.6,
+        "score": 91.48892251815981,
         "measures": {
           "propagationCost": {
             "value": 0.0291,
-            "score": 92.7,
+            "score": 92.72500000000001,
             "best": 0,
             "worst": 0.4
           },
@@ -43,11 +44,11 @@
             "best": 0,
             "worst": 0.3
           },
-          "facadeShare": {
-            "value": 0.2188,
-            "score": 21.9,
-            "best": 1,
-            "worst": 0
+          "facadeBypassesPerKloc": {
+            "value": 0.9458232445520581,
+            "score": 90.54176755447942,
+            "best": 0,
+            "worst": 10
           }
         },
         "propagationCost": {
@@ -110,7 +111,6 @@
         },
         "facade": {
           "crossings": 32,
-          "share": 0.2188,
           "inbound": {
             "crossings": 31,
             "bypasses": 25
@@ -576,7 +576,7 @@
         ]
       },
       "complexity": {
-        "score": 81.6,
+        "score": 81.58142857142857,
         "measures": {
           "p90Ccn": {
             "value": 5,
@@ -586,7 +586,7 @@
           },
           "shareOverTen": {
             "value": 0.0171,
-            "score": 91.5,
+            "score": 91.45,
             "best": 0,
             "worst": 0.2
           },
@@ -604,7 +604,7 @@
           },
           "p90FileLines": {
             "value": 262,
-            "score": 76.9,
+            "score": 76.85714285714286,
             "best": 100,
             "worst": 800
           }
@@ -685,17 +685,17 @@
         ]
       },
       "smells": {
-        "score": 78.7,
+        "score": 78.7091,
         "measures": {
           "ruffPerKloc": {
             "value": 2.1566,
-            "score": 78.4,
+            "score": 78.434,
             "best": 0,
             "worst": 10
           },
           "oxlintPerKloc": {
             "value": 0.1748,
-            "score": 96.5,
+            "score": 96.50399999999999,
             "best": 0,
             "worst": 5
           },
@@ -707,13 +707,13 @@
           },
           "markersPerKloc": {
             "value": 0.2648,
-            "score": 86.8,
+            "score": 86.76,
             "best": 0,
             "worst": 2
           },
           "typeEscapesPerKloc": {
             "value": 2.6105,
-            "score": 86.9,
+            "score": 86.94749999999999,
             "best": 0,
             "worst": 20
           }
@@ -919,17 +919,11 @@
         }
       },
       "tests": {
-        "score": 30.2,
+        "score": 22.8,
         "measures": {
           "testRatio": {
             "value": 0.228,
             "score": 22.8,
-            "best": 1,
-            "worst": 0
-          },
-          "facadeCoverage": {
-            "value": 0.375,
-            "score": 37.5,
             "best": 1,
             "worst": 0
           }

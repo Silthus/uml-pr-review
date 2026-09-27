@@ -1,6 +1,7 @@
 {
   "index": {
     "version": 1,
+    "scoringVersion": 2,
     "scope": "products/error_tracking",
     "commit": "f59d2a92cd54a6fc00b140916cab60e3e0bee67e",
     "tree": "a5b965fe8f427af2d0a0b5b1e174d05c4255aae7",
@@ -19,35 +20,35 @@
       "generatedLines": 2934
     },
     "composite": {
-      "score": 71.3,
+      "score": 81.96636509809363,
       "weights": {
-        "architecture": 35,
-        "complexity": 25,
+        "architecture": 40,
+        "complexity": 30,
         "smells": 20,
-        "tests": 20
+        "tests": 10
       }
     },
     "dimensions": {
       "architecture": {
-        "score": 82.6,
+        "score": 94.29889131666262,
         "measures": {
           "propagationCost": {
             "value": 0.0248,
-            "score": 93.8,
+            "score": 93.80000000000001,
             "best": 0,
             "worst": 0.4
           },
           "cycleShare": {
             "value": 0.0196,
-            "score": 93.5,
+            "score": 93.46666666666667,
             "best": 0,
             "worst": 0.3
           },
-          "facadeShare": {
-            "value": 0.6053,
-            "score": 60.5,
-            "best": 1,
-            "worst": 0
+          "facadeBypassesPerKloc": {
+            "value": 0.43699927166788055,
+            "score": 95.63000728332118,
+            "best": 0,
+            "worst": 10
           }
         },
         "propagationCost": {
@@ -110,7 +111,6 @@
         },
         "facade": {
           "crossings": 38,
-          "share": 0.6053,
           "inbound": {
             "crossings": 34,
             "bypasses": 13
@@ -628,7 +628,7 @@
         ]
       },
       "complexity": {
-        "score": 82.9,
+        "score": 82.87142857142858,
         "measures": {
           "p90Ccn": {
             "value": 5,
@@ -656,7 +656,7 @@
           },
           "p90FileLines": {
             "value": 248,
-            "score": 78.9,
+            "score": 78.85714285714286,
             "best": 100,
             "worst": 800
           }
@@ -737,35 +737,35 @@
         ]
       },
       "smells": {
-        "score": 80.9,
+        "score": 80.87689999999999,
         "measures": {
           "ruffPerKloc": {
             "value": 2.5203,
-            "score": 74.8,
+            "score": 74.797,
             "best": 0,
             "worst": 10
           },
           "oxlintPerKloc": {
             "value": 0.1468,
-            "score": 97.1,
+            "score": 97.06400000000001,
             "best": 0,
             "worst": 5
           },
           "duplicationPercentage": {
             "value": 3.98,
-            "score": 60.2,
+            "score": 60.199999999999996,
             "best": 0,
             "worst": 10
           },
           "markersPerKloc": {
             "value": 0.1748,
-            "score": 91.3,
+            "score": 91.25999999999999,
             "best": 0,
             "worst": 2
           },
           "typeEscapesPerKloc": {
             "value": 3.7873,
-            "score": 81.1,
+            "score": 81.06349999999999,
             "best": 0,
             "worst": 20
           }
@@ -967,17 +967,11 @@
         }
       },
       "tests": {
-        "score": 27.5,
+        "score": 32.1,
         "measures": {
           "testRatio": {
             "value": 0.321,
             "score": 32.1,
-            "best": 1,
-            "worst": 0
-          },
-          "facadeCoverage": {
-            "value": 0.2279,
-            "score": 22.8,
             "best": 1,
             "worst": 0
           }

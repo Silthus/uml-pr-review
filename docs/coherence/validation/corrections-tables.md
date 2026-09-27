@@ -1,5 +1,7 @@
 # Human architecture corrections: generated tables
 
+> **Historical record, scoring v1.** This file was produced by #95 under Coherence Index scoring v1 (facade share and facade coverage scored, tests weight 20, scores rounded to 0.1), as were `prs.csv`, `tables.md`, `corrections.csv`, and `corrections-tables.md`. It is not regenerated. For the same PRs under the current scoring, see [`fixed-measures.md`](fixed-measures.md).
+
 14 architecture corrections; 14 with a fix commit that still exists; 9 isolable (a PR commit before the comment survives, so the fix is a separate commit rather than a squashed or rebased whole); 8 distinct fix commits that are isolable and were checked by hand to address the comment, fully or partly.
 
 | signal | corrections | moved as asked | blind | moved the other way |

@@ -1,0 +1,12 @@
+[
+  {"id": "gh:66613:3498276263", "addressed": "yes", "note": "Removes the ticket-specific default highlight label and hardcoded stale tooltip from the groups component; callers now pass label and tooltip text via props."},
+  {"id": "gh:58607:3259434583", "addressed": "yes", "note": "Adds a replay_vision_distinct_id helper in the temporal constants module and uses it in emit_observation_event and other activities instead of the inline f-string."},
+  {"id": "gh:61179:3343912158", "addressed": "yes", "note": "Deletes the group-mapping-emptied counter from hypercache.py and defines it in feature_flags local_evaluation.py; also counts dependency-unavailable skips in sync."},
+  {"id": "gh:62561:3384827004", "addressed": "no", "note": "Handles oversized numeric flag ids in remote config lookup (returns 404 instead of panicking) and parameterizes tests; the duplicated flag_service helper is untouched."},
+  {"id": "gh:65280:3461898710", "addressed": "no", "note": "Adds per-team RBAC filtering of flags in the org feature flag retrieve and keys endpoints; the dict comprehension and representative_by_key lookup remain."},
+  {"id": "gh:69541:3614752496", "addressed": "yes", "note": "Removes the MCP-tool-only information_schema execution-mode override and moves the recompute-instead-of-cache logic into the HogQL query runner for all callers."},
+  {"id": "gh:71366:3641457766", "addressed": "no", "note": "Extracts a clear_feature_enrollment helper with raw-write fallback for demote/destroy cleanup; the raw filters feature_enrollment = True write is still present."},
+  {"id": "gh:75412:3682932624", "addressed": "no", "note": "Changes banner copy from 'Last error' to 'Error' in the suspension message; no engine constant introduced."},
+  {"id": "gh:72405:3624087317", "addressed": "yes", "note": "Adds UNKNOWN_KEYS_SINK_CONTEXT_KEY and FLAG_ID_CONTEXT_KEY constants in filters_schema and uses them in both the reader and the audit command's context."},
+  {"id": "gh:52571:3002685769", "addressed": "yes", "note": "Splits the recordings server into a separate recording-api-server and an ingestion-session-replay-server, with separate compose/mprocs services for the API."}
+]

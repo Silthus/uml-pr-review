@@ -16,9 +16,15 @@ async function ghText(args: readonly string[]): Promise<string> {
   return stdout;
 }
 
-export async function graphql<T>(query: string, variables: Record<string, string | number>, schema: z.ZodType<T>): Promise<T> {
+export type GraphqlVariables = Record<string, string | number>;
+
+export async function graphqlText(query: string, variables: GraphqlVariables): Promise<string> {
   const fields = Object.entries(variables).flatMap(([name, value]) => [typeof value === "number" ? "-F" : "-f", `${name}=${value}`]);
-  return gh(["api", "graphql", "-f", `query=${query}`, ...fields], schema);
+  return ghText(["api", "graphql", "-f", `query=${query}`, ...fields]);
+}
+
+export async function graphql<T>(query: string, variables: GraphqlVariables, schema: z.ZodType<T>): Promise<T> {
+  return schema.parse(JSON.parse(await graphqlText(query, variables)));
 }
 
 export async function rawContent(repo: string, path: string): Promise<string | null> {

@@ -1,0 +1,12 @@
+[
+  {"id": "gh:64506:3441775746", "addressed": "yes", "note": "Moves prefetchPersonsStep and its test into pipelines/analytics/steps and updates imports in the subpipeline and tests."},
+  {"id": "gh:69066:3554479806", "addressed": "yes", "note": "Adds backend refund eligibility helper in billing.py, exposes refund_ineligibility_reason on the report serializer, and the frontend hook disables the button using it."},
+  {"id": "gh:72594:3635339643", "addressed": "yes", "note": "Adds get_messaging_client async context manager holding the semaphore around get_client and switches the messaging workflow call sites to it."},
+  {"id": "gh:58774:3280991621", "addressed": "no", "note": "Adds a Review PR in GitHub button to Slack inbox messages by fetching implementation PR URLs; Slack user lookup caching is untouched."},
+  {"id": "gh:59907:3312995269", "addressed": "no", "note": "Moves OIDC public key derivation into posthog/jwt.py as get_oidc_public_key and relocates the API key prefix check; no shared hardened jwt.decode helper."},
+  {"id": "gh:63512:3451092211", "addressed": "partly", "note": "Shrinks the recommendations prompt to a short type list that delegates actions to existing skills; the prompt file itself is not converted into a skill."},
+  {"id": "gh:71509:3596898856", "addressed": "partly", "note": "Adds max_length from the label name constant and documents allowed characters in help text; no character-pattern validation added to the field."},
+  {"id": "gh:59126:3273806520", "addressed": "no", "note": "Adds db_default=False to the hide_mcp_hints boolean column and rewrites its migration; no JSONB config column introduced."},
+  {"id": "gh:64506:3441779366", "addressed": "yes", "note": "Moves processPersonlessDistinctIdsBatchStep into pipelines/analytics/steps and updates imports; tests remain as they were."},
+  {"id": "gh:52567:3001197856", "addressed": "yes", "note": "Renames WebhookS3Consumer to WebhookS3Sink, updates the command help text, log event name, and tests accordingly."}
+]

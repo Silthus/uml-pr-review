@@ -1,0 +1,38 @@
+bun test v1.4.2 (50a8a8387)
+
+test/benchmark/corrections.test.ts:
+106 |     ]);
+107 |     expect(collected.find(({ number }) => number === 11)!.reviewThreads.nodes).toEqual([]);
+108 |   });
+109 | 
+110 |   test("keeps only human comments on code from someone other than the PR's author, split at 2026-08-01", () => {
+111 |     expect(codeComments(collected).map(({ id, author, path, split }) => ({ id, author, path, split }))).toEqual([
+                                                                                                              ^
+error: expect(received).toEqual(expected)
+
+- [
+-   {
+-     "author": "reviewer",
+-     "id": "gh:10:1",
+-     "path": "products/surveys/backend/api.py",
+-     "split": "development",
+-   },
+-   {
+-     "author": "reviewer",
+-     "id": "gh:12:6",
+-     "path": "products/surveys/backend/views.py",
+-     "split": "heldout",
+-   },
+- ]
++ []
+
+- Expected  - 14
++ Received  + 1
+
+      at <anonymous> (/Users/mreichenbach/dev/uml-pr-review/.claude/worktrees/agent-a528a063f7df3d583/test/benchmark/corrections.test.ts:111:105)
+(fail) collecting every merged PR > keeps only human comments on code from someone other than the PR's author, split at 2026-08-01 [0.33ms]
+
+ 7 pass
+ 1 fail
+ 20 expect() calls
+Ran 8 tests across 1 file. [182.00ms]

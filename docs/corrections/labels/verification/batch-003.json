@@ -1,0 +1,12 @@
+[
+  {"id": "gh:68845:3535088326", "addressed": "yes", "note": "Moves category/severity/pipeline_step derivation out of the MV SELECT into MATERIALIZED table columns, so all derived columns are materialized on the table."},
+  {"id": "gh:56878:3179901171", "addressed": "yes", "note": "Explicit $ai_text_output_tokens now goes through numericProperty so garbage strings yield 0 instead of reaching bigDecimal directly."},
+  {"id": "gh:59254:3283775577", "addressed": "yes", "note": "Renames is_from_decide to is_from_legacy_decide throughout endpoint.rs, including helper parameters and doc comments; also adds emit_short_circuit helper."},
+  {"id": "gh:69858:3570836901", "addressed": "yes", "note": "Adds errors.py with error_response/typed_error_response helpers and replaces the hand-built error Response dicts across views.py with them."},
+  {"id": "gh:67395:3543315181", "addressed": "yes", "note": "Renames to declared_targets, source_floor, consumer_ceiling, SCHEDULABLE_BUCKETS; adds a vocabulary section and a 3-node worked example to the module docstring."},
+  {"id": "gh:71876:3602890920", "addressed": "yes", "note": "Removes the inline hasOtherMembers computation from the component and reads it as a selector from impersonationNoticeLogic."},
+  {"id": "gh:61443:3357775517", "addressed": "no", "note": "Adds checksum verification for the cargo-dist installer script; the rustup curl install step stays and is not switched to the pinned rust-toolchain action."},
+  {"id": "gh:75805:3687169020", "addressed": "yes", "note": "Extracts _paged_person_ids shared keyset-paging helper; load_old_membership and load_cohort_population now just call it; unifies the cursor predicate."},
+  {"id": "gh:55567:3122300896", "addressed": "yes", "note": "Wraps subscription workflow start in slo_operation with a new SUBSCRIPTION_CREATE SloOperation, replacing the plain subscription_created capture."},
+  {"id": "gh:72442:3617965216", "addressed": "no", "note": "Only rewords two doc comments in setupProbes.ts; probes remain in the central file, not moved into product folders or manifests."}
+]

@@ -33,8 +33,10 @@ export const harvestSchema = z.object({
 });
 export type Harvest = z.infer<typeof harvestSchema>;
 
+export const wholeRepository = ".";
+
 export function inScope(path: string, scopes: readonly string[]): boolean {
-  return scopes.some((scope) => path === scope || path.startsWith(`${scope.replace(/\/$/, "")}/`));
+  return scopes.some((scope) => scope === wholeRepository || path === scope || path.startsWith(`${scope.replace(/\/$/, "")}/`));
 }
 
 export class DropLedger {

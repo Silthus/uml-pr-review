@@ -1,0 +1,9 @@
+
+ 511 pass
+ 0 fail
+ 1227 expect() calls
+Ran 511 tests across 54 files. [37.70s]
+
+$ bun run typecheck
+$ tsc --noEmit
+exit 0

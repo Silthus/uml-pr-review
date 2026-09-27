@@ -55,7 +55,7 @@ export function momentOf(value: number, threshold: number): Moment {
   return value >= threshold ? "improved" : value <= -threshold ? "worsened" : "blind";
 }
 
-async function readJsonFiles<T>(directory: string, schema: z.ZodType<T>): Promise<T[]> {
+export async function readJsonFiles<T>(directory: string, schema: z.ZodType<T>): Promise<T[]> {
   const files = (await readdir(directory)).filter((file) => file.endsWith(".json")).sort();
   return (await Promise.all(files.map(async (file) => z.array(schema).parse(JSON.parse(await readFile(join(directory, file), "utf8")))))).flat();
 }
@@ -73,19 +73,19 @@ async function baseOf(pr: number): Promise<string> {
   return (await Bun.$`gh api repos/PostHog/posthog/pulls/${pr} --jq .base.sha`.text()).trim();
 }
 
-async function fetchPullRequests(repository: string, prs: number[]): Promise<void> {
+export async function fetchPullRequests(repository: string, prs: number[], namespace: string): Promise<void> {
   const credentials = ["-c", "protocol.https.allow=always", "-c", `url.${github}.insteadOf=${github}`, "-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential"];
-  await git(repository, [...credentials, "fetch", "--quiet", "--no-tags", github, ...prs.map((pr) => `+refs/pull/${pr}/head:refs/uml-pr-review/validation/${pr}`)]);
+  await git(repository, [...credentials, "fetch", "--quiet", "--no-tags", github, ...prs.map((pr) => `+refs/pull/${pr}/head:refs/uml-pr-review/${namespace}/${pr}`)]);
 }
 
-async function exists(repository: string, sha: string): Promise<boolean> {
+export async function exists(repository: string, sha: string): Promise<boolean> {
   return git(repository, ["cat-file", "-e", `${sha}^{commit}`]).then(
     () => true,
     () => false,
   );
 }
 
-async function touches(repository: string, { parent, sha }: PullCommit, area: string): Promise<boolean> {
+export async function touches(repository: string, { parent, sha }: PullCommit, area: string): Promise<boolean> {
   return (await git(repository, ["diff", "--name-only", parent, sha, "--", area])).trim() !== "";
 }
 
@@ -127,7 +127,7 @@ if (import.meta.main) {
   const comments = z.array(ReviewCommentSchema).parse(JSON.parse(await readFile(join(resolve(values.work!), "comments.json"), "utf8"))).filter(({ id }) => labels.get(id)?.architecture);
   const prs = [...new Set(comments.map(({ pr }) => pr))];
   console.error(`${comments.length} architecture comments on ${prs.length} PRs; fetching their heads`);
-  await fetchPullRequests(repository, prs);
+  await fetchPullRequests(repository, prs, "validation");
   const history = new Map(await Promise.all(prs.map(async (pr) => [pr, { commits: await pullCommits(pr), base: await baseOf(pr) }] as const)));
   const corrections: Correction[] = [];
   for (const comment of comments) {

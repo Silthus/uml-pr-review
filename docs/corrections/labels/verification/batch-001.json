@@ -1,0 +1,12 @@
+[
+  {"id": "gh:64051:3422232038", "addressed": "yes", "note": "Replaces the inline addDashboard call with runBlankDashboardFlow, passing isLoading/setIsLoading from newDashboardLogic; also adds menu click analytics."},
+  {"id": "gh:55298:3268718642", "addressed": "no", "note": "Adds an includeTime action and reducer to the testing logic; error-tip selector branch order and error kinds are untouched."},
+  {"id": "gh:70499:3577551275", "addressed": "yes", "note": "Adds last_vacuum_version properties on ExternalDataSchema and load.py reads them instead of indexing sync_type_config directly."},
+  {"id": "gh:53544:3045398780", "addressed": "yes", "note": "Extracts the timeout wrapper into exported withBackgroundTaskTimeout, documents double-resolve as a no-op, adds tests and a force-resolve config flag."},
+  {"id": "gh:53898:3072454965", "addressed": "yes", "note": "Removes the separate ssl_enabled switch and adds a require_tls field inside the shared SSH tunnel config (model, wizard, form); Postgres reads it from ssh_tunnel."},
+  {"id": "gh:61545:3420334220", "addressed": "no", "note": "Switches the artefact diff endpoint from commit SHA to branch-vs-default-branch and documents the task:write boundary; no signals-specific scopes are added."},
+  {"id": "gh:63307:3411903314", "addressed": "no", "note": "Adds a lib column and swaps the result cap to a new ACTIVITY_EVENTS_MAX_LIMIT constant; no shared pagination serializer is used."},
+  {"id": "gh:57689:3200645241", "addressed": "yes", "note": "Deletes the Stripe source-level force-refresh OAuth workaround from validate_credentials and just maps the expired-connection error message."},
+  {"id": "gh:72385:3620888119", "addressed": "yes", "note": "Extracts a PickerRow component; TemplateRow and StartWithAiRow both render it instead of duplicating the button shell."},
+  {"id": "gh:67437:3554115586", "addressed": "yes", "note": "Adds an exported autoRunMaxPrompt helper in scenes/max/maxPrompt.ts and uses it instead of hand-prefixing the prompt with '!'."}
+]

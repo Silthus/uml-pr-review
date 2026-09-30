@@ -1,0 +1,5 @@
+{"type":"assistant","content":[{"tool_use":"Write","input":{"file_path":"stdout/src/products/workflows/cost.ts","content":"import { calculatePrice } from \"../billing/internal/pricing\"\nimport type { WorkflowRun } from \"./runs\"\n\nexport function workflowRunCost(run: WorkflowRun, unitPriceCents: number): number {\n  return calculatePrice(run.steps, unitPriceCents)\n}\n"}}]}
+{"type":"user","content":[{"tool_result":"File created successfully at: stdout/src/products/workflows/cost.ts (file state is current in your context — no need to Read it back)"}]}
+{"type":"assistant","content":[{"thinking":true}]}
+{"type":"assistant","content":[{"text":"I created `src/products/workflows/cost.ts`, which exports `workflowRunCost` to price a workflow run by passing its steps to `calculatePrice` from `billing/internal/pricing`; I haven't type-checked or linted it."}]}
+{"type":"result","subtype":"success","duration_ms":6193,"num_turns":2,"total_cost_usd":0.05751980000000001}

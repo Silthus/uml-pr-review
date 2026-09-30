@@ -1,14 +1,15 @@
+baseline settings sha256, recorded before the first batch and in docs/proof/117-dogfood-kit/: aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d
 $ date -u
-Wed Sep 30 13:09:49 UTC 2026
-$ sha256sum ~/posthog/.claude/settings.json
+Wed Sep 30 13:22:17 UTC 2026
+$ sha256sum /home/coder/posthog/.claude/settings.json
 aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d  /home/coder/posthog/.claude/settings.json
-$ git -C ~/posthog status --porcelain | wc -l
+$ git -C /home/coder/posthog status --porcelain | wc -l
 0
-$ git -C ~/posthog for-each-ref refs/uml-pr-review | wc -l
+$ git -C /home/coder/posthog for-each-ref refs/uml-pr-review | wc -l
 0
-$ git -C ~/posthog worktree list | grep -c /tmp/replay-124-
+$ git -C /home/coder/posthog worktree list | grep -c /tmp/replay-124-
 0
-$ ls -d /tmp/replay-124-*/ | wc -l
-1
-$ pgrep -fc /tmp/replay-124-
+$ ls -d /tmp/replay-124-[0-9]* 2>/dev/null | wc -l
+0
+$ pgrep -fc "/tmp/replay-124-[0-9]"
 0

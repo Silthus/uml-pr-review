@@ -1,9 +1,15 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { z } from "zod";
-import type { Variant } from "./v2.ts";
 
 const CASES = join(import.meta.dir, "cases");
+
+export const VARIANTS = ["draft", "intent"] as const;
+export type Variant = (typeof VARIANTS)[number];
+
+export function isVariant(value: string): value is Variant {
+  return (VARIANTS as readonly string[]).includes(value);
+}
 const RESTRICTED_IMPORTS = "eslint/no-restricted-imports";
 
 const fix = z.object({ file: z.string(), replace: z.string(), with: z.string() });
@@ -48,7 +54,7 @@ export function declareCase(replay: ReplayCase, worktree: string) {
 }
 
 const POSTHOG_SESSION_SCRIPTS = ".claude/hooks/setup-";
-const hookGroup = z.looseObject({ hooks: z.array(z.looseObject({ command: z.string().optional() })) });
+export const hookGroup = z.looseObject({ hooks: z.array(z.looseObject({ command: z.string().optional() })) });
 const claudeSettings = z.looseObject({ hooks: z.looseObject({ SessionStart: z.array(hookGroup).optional() }).optional() });
 
 function dropPostHogSessionStart(worktree: string) {
@@ -228,7 +234,7 @@ export function median(values: number[]): number {
   return [...values].sort((a, b) => a - b)[Math.floor((values.length - 1) / 2)]!;
 }
 
-export function latency(values: number[]): string {
+function latency(values: number[]): string {
   if (values.length === 0) return "n/a";
   return `${seconds(median(values))} (max ${seconds(Math.max(...values))})`;
 }
@@ -269,12 +275,12 @@ export function row(run: RunRecord): string {
 
 const RUNS_PER_ARM = 3;
 
-export function caseVerdict(control: RunRecord[], hooks: RunRecord[], meetsHooks: (run: RunRecord) => boolean): string {
+export function caseVerdict(control: RunRecord[], hooks: RunRecord[], meetsCriterion2: (run: RunRecord) => boolean): string {
   if (control.length < RUNS_PER_ARM || hooks.length < RUNS_PER_ARM) return "incomplete";
   const avoided = control.filter((run) => !run.final.bypass).length;
   if (avoided * 2 > control.length) return "inconclusive";
   const majority = (runs: RunRecord[], meets: (run: RunRecord) => boolean) => runs.filter(meets).length >= 2;
-  return majority(control, meetsControl) && majority(hooks, meetsHooks) ? "met" : "not met";
+  return majority(control, meetsControl) && majority(hooks, meetsCriterion2) ? "met" : "not met";
 }
 
 function closingQuestions(hooks: RunRecord[]): string[] {

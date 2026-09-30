@@ -116,45 +116,34 @@ v1 above could not meet criterion 2: its task dictated the file and kept the cha
    - **draft**: v1's task with two sentences changed. The file's `before` content is given as "my draft of `<file>` to start from", and the task ends "Make this change; follow the codebase's conventions. Do not run git." The code block is v1's, byte for byte. It no longer says "exactly" or keeps the change to one file.
    - **intent**: the PR's title and intent, plus what the change does in the commented file, in prose. No code is given, so this variant measures whether the violation arises at all.
 2. **The edit hook only.** `setup.ts --hooks` runs `coherence hooks install --host claude`, which wires six events. For the hooks arm, `keepOnlyEditHook` in `benchmark/replay/v2.ts` then deletes Coherence's entries for `SessionStart`, `SubagentStart`, `UserPromptSubmit`, `Stop`, and `SubagentStop` from the `/tmp` worktree's `.claude/settings.json`, and keeps `PostToolUse`. Hooks that are not Coherence's stay. Each hooks run's `witness.txt` records the line that names what was turned off.
-   - Why not `.coherence/hooks/<Event>.override.md`: Coherence applies an override to the text only, after the event has done its work. In `runHook` (`src/lifecycle/hook.ts`), `SessionStart` computes `lexiconCoverage` and waits on `gapReading` before `voiced` applies the override, and `Stop` still checks the changed files. An empty override silences the event but keeps its cost. `coherence hooks install` has no per-event option, so deleting the entries is the only way to turn an event off. `coherence hooks check` would name the deleted events as missing.
+   - Why not `.coherence/hooks/<Event>.override.md`: Coherence applies an override to the text only, after the event has done its work. In [`runHook`](https://github.com/PostHog/coherence/blob/d7fc3482fc10941a8dc30db3588eb0ee605cd0d6/src/lifecycle/hook.ts#L834-L860) at the kit's Coherence base `d7fc348`, `SessionStart` computes `lexiconCoverage` and waits on `gapReading` before `voiced` applies the override, and `Stop` still checks the changed files. An empty override silences the event but keeps its cost. `coherence hooks install` has no per-event option, so deleting the entries is the only per-event switch we found. `coherence hooks check` would name the deleted events as missing.
 3. **Criterion 2 without the route.** A hooks run meets it when an edit hook names the invariant after the bypassing edit, the session ends without the bypass, and `run` passes. The reviewer's-route column is informational.
 
 The rest is v1's method: a fresh kit per run, the identical declaration in both arms, the witness red then green, PostHog's own SessionStart scripts removed in both arms, the same headless `claude -p` command with `acceptEdits`, and the `~/posthog` check after every run. Kits are `/tmp/replay-124-<pr>-<variant>-<arm>-<n>`, and evidence is in `docs/replay/v2/<pr>/<variant>/<arm>-<n>/`. The command was `bun benchmark/replay/run.ts <pr> --arm hooks|control --runs 3 --variant draft|intent`.
 
-The runs can't reach out. PostHog's `.claude/settings.json` grants no `permissions.allow`, the runs load only project settings, and no run gets a follow-up turn, so headless `acceptEdits` denies every Bash call that is not read-only. The command audit below also reads every v2 transcript for a Bash call that could reach the network or write outside the worktree.
+**Command audit.** PostHog's `.claude/settings.json` grants no `permissions.allow`, the runs load only project settings, and no run gets a follow-up turn. Headless, `acceptEdits` then denied every Bash call that was not read-only. That is what these transcripts show, not a guarantee. The audit below reads every v2 transcript. A call ran unless its result is an error other than the command's own exit code. Each call that ran is checked against a read-only allowlist: reading and searching programs, `sed` without `-i`, `find` without `-exec` or `-delete`, and `git status`, `diff`, `log`, `show`, `ls-files`, `grep`, `blame`, and `rev-parse`, with no redirect into a file, no heredoc, and no command substitution. The allowlist is strict, so each call it names needs reading by hand. In these runs the only such call pipes `grep -l` into `xargs grep`, which only reads.
 
 Deviations from v1:
 
 - `--max-turns` is 50, not 30, because the intent prompts leave the agent to explore. A run that hit the limit says `error_max_turns` in its row.
-- The eight arm-and-variant processes ran at the same time. Wall times include that contention, in both arms.
+- The eight arm-and-variant processes started at the same time but did not end together. Every #64506 run had finished by about 12:53 UTC and the #68756 control runs by about 13:01. #68756 hooks runs 2 and 3 ran on until 13:07 with fewer processes beside them (see the timestamps in each `run-status.txt`). The #68756 hooks runs saw less contention than their control runs, so the #68756 wall-time overhead is, if anything, understated.
+- #68756 intent hooks runs ended at 50 and 51 turns, at the raised cap, all with `success`. The cap may have squeezed that variant's turns overhead.
+- "Median" is the lower middle value when a count is even, as in v1.
 
-**Adoption cost** compares the medians of the hooks arm and the control arm in one variant: wall time, turns, and the edit hook's own time per `Write`, `Edit`, or `MultiEdit`. The SessionStart / Stop column reads `off` for v2 hooks runs, because those hooks were not installed.
+**Adoption cost** compares the medians of the hooks arm and the control arm in one variant: wall time, turns, and the edit hook's own time per `Write`, `Edit`, or `MultiEdit`. The SessionStart / Stop column reads `off` for v2 hooks runs, because those hooks were not installed. Coherence's `PostToolUse` also fires after `Bash`, `Read`, and other tools. Those hooks add a few seconds per session to wall time, but they are not in the edit-hook figure.
 
 **A separate finding, not re-measured here: the full install's SessionStart.** With every Coherence hook installed, v1's SessionStart hit its 60 s timeout in 6 of 6 hooks runs (the SessionStart / Stop column in v1's tables above), so its context never reached the agent, and Stop was cancelled in 3 of 3 Python runs. That cost at least 60 s per session. v2 does not install those hooks, so it neither repeats nor re-measures that number.
 
 Threats to validity:
 
 - **The declaration is visible in both arms.** Both arms carry the spec and the lint entry, uncommitted in the `/tmp` worktree, so the control arm is "declared, without the hook", not "undeclared". An agent free to explore can read the spec, or diff the lint config, before it writes. v1's dictated task hid this effect.
+- **Agents ran git despite the prompt.** The prompts say "Do not run git", and 16 of 24 runs still called read-only git. Some of those calls were denied, and the rest ran. That is part of how the declaration reached the control arm. #64506 draft hooks 1, 2, and 3 and intent control 3 ran `git diff -- .oxlintrc.nodejs.json`, which shows the added ban ([draft hooks 3](v2/64506/draft/hooks-3/transcript.jsonl)). #68756 draft control 2 ran `git status`, which lists the untracked `Helpers.spec.md` ([transcript](v2/68756/draft/control-2/transcript.jsonl)).
 - **The sample is small.** Three runs per arm and variant describe these runs. They do not give a rate.
 
-Command audit: 17 Bash calls in 24 transcripts tried `gh`, `git push`, `git commit`, `curl`, `wget`, `flox`, a package manager, or `uv`, and 0 of them ran.
-- v2/64506/intent/control-2, denied: `cd /tmp/replay-124-64506-intent-control-2/posthog/nodejs && npx tsc --noEmit -p . 2>&1 | grep -i "transformEventStep\|error" | head -20`
-- v2/64506/intent/control-3, denied: `npx tsc --noEmit -p . 2>&1 | grep -i "transformEventStep" ; echo tsc-done; npx oxlint -c .oxlintrc.nodejs.json src/ingestion/common/event-pipeline/transformEventStep.ts 2>&1 | tail -5`
-- v2/64506/intent/control-3, denied: `npx oxlint -c .oxlintrc.nodejs.json src/ingestion/common/event-pipeline/transformEventStep.ts 2>&1 | tail -5`
-- v2/64506/intent/hooks-1, denied: `cd /tmp/replay-124-64506-intent-hooks-1/posthog/nodejs; /home/coder/posthog/node_modules/.bin/oxlint -c .oxlintrc.nodejs.json src/ingestion/common/event-pipeline/ 2>&1 | tail -15; npx tsc --noEmit -p . 2>&1 | grep -i "event-pipeline\|error" | head`
-- v2/64506/intent/hooks-1, denied: `npx --prefix /tmp/replay-124-64506-intent-hooks-1/posthog/nodejs tsc --noEmit -p /tmp/replay-124-64506-intent-hooks-1/posthog/nodejs/tsconfig.json`
-- v2/64506/intent/control-1, denied: `cd /tmp/replay-124-64506-intent-control-1/posthog/nodejs && timeout 600 npx tsc --noEmit -p . 2>&1 | tail -15; npx oxlint src/ingestion/common/event-pipeline 2>&1 | tail -5`
-- v2/64506/intent/control-1, denied: `npx tsc --noEmit -p /tmp/replay-124-64506-intent-control-1/posthog/nodejs`
-- v2/64506/intent/hooks-2, denied: `cd .. && ./node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json nodejs/src/ingestion/common/event-pipeline/ 2>&1 | tail -5; ./node_modules/.bin/oxfmt nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts 2>&1 | tail -3; cd nodejs && npx tsc --noEmit -p . 2>&1 | grep -i "event-pipeline" | head`
-- v2/64506/intent/hooks-2, denied: `npx tsc --noEmit -p /tmp/replay-124-64506-intent-hooks-2/posthog/nodejs/tsconfig.json`
-- v2/64506/intent/hooks-3, denied: `npx oxlint -c .oxlintrc.nodejs.json src/ingestion/common/event-pipeline/ 2>&1 | tail -5; npx tsc --noEmit -p . 2>&1 | grep -i "transformEventStep" | head; echo tsc-done`
-- v2/64506/intent/hooks-3, denied: `npx oxlint -c .oxlintrc.nodejs.json src/ingestion/common/event-pipeline/`
-- v2/64506/draft/control-2, denied: `npx oxlint -c .oxlintrc.nodejs.json src/ingestion 2>&1 | tail -15`
-- v2/64506/draft/control-2, denied: `npx oxlint -c /tmp/replay-124-64506-draft-control-2/posthog/nodejs/.oxlintrc.nodejs.json /tmp/replay-124-64506-draft-control-2/posthog/nodejs/src/ingestion`
-- v2/64506/draft/control-3, denied: `npx oxlint -c .oxlintrc.nodejs.json src/ingestion 2>&1 | tail -15`
-- v2/64506/draft/hooks-1, denied: `timeout 300 npx oxlint -c .oxlintrc.nodejs.json src/ingestion 2>&1 | grep -iE "cdp|no-restricted-imports|Found|error" | tail -15`
-- v2/64506/draft/hooks-2, denied: `npx jest src/ingestion/common/steps/event-processing/hog-transform-event-step.test.ts 2>&1 | tail -20; npx tsc --noEmit -p . 2>&1 | grep hog-transform-event-step | head`
-- v2/64506/draft/hooks-2, denied: `npx jest src/ingestion/common/steps/event-processing/hog-transform-event-step.test.ts`
+Proof: the red and green test logs, the gate, and the `~/posthog` check after the last batch are in [`docs/replay/v2/proof/`](v2/proof/). The harness also stops with an error if `~/posthog` changes after any run, and all 24 runs finished.
+
+Command audit: the 24 transcripts made 301 Bash calls, and 202 of them ran. 1 of those that ran is not on the read-only allowlist:
+- v2/68756/draft/hooks-3: `grep -rln "InstanceSetting" --include=test_*.py posthog | xargs grep -ln "visibility\|is_staff" ; grep -rn "\"InstanceSetting\"" --include=test_*.py posthog | head`
 
 ### #64506: `nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts`
 
@@ -177,7 +166,7 @@ Invariant: `nodejs/src/ingestion/ingestion never reaches cdp`, at PostHog `645e1
 The violation arose in 0 of 3 control runs and 0 of 3 hooks runs.
 Adoption cost, median over each arm: wall time 45 s against 44 s (+1 s), turns 11 against 9 (+2), edit hook 4.1 s per edit (max 4.4 s).
 
-**Verdict (draft): inconclusive**
+**Verdict (draft): inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass)**
 
 #### intent
 
@@ -196,7 +185,7 @@ Adoption cost, median over each arm: wall time 45 s against 44 s (+1 s), turns 1
 The violation arose in 0 of 3 control runs and 0 of 3 hooks runs.
 Adoption cost, median over each arm: wall time 52 s against 35 s (+17 s), turns 9 against 7 (+2), edit hook 4.2 s per edit (max 10.6 s).
 
-**Verdict (intent): inconclusive**
+**Verdict (intent): inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass)**
 
 - The violation never arose in v2, so neither variant exercised the hook on this case. That is a limit of the case at this ref, not evidence for or against the hook.
 - Why: the case runs at master `645e1a78140` for v1's reasons, and there the PR's change is already merged. `nodejs/src/ingestion/common/steps/event-processing/hog-transform-event-step.ts` already runs the hog transformer through `HogTransformer` from `~/common`.
@@ -204,7 +193,7 @@ Adoption cost, median over each arm: wall time 52 s against 35 s (+17 s), turns 
 - Intent: 6 of 6 runs wrote the file and imported `HogTransformer` from `~/common/hog-transformations/hog-transformer.interface`, the reviewer's route, with or without the hook ([control 1's diff](v2/64506/intent/control-1/final.diff)).
 - The pre-fix tree that could produce the violation has no nodejs oxlint config (v1's setup notes above), so a clean TypeScript replay of this correction needs another case.
 
-**Case verdict for #64506: draft inconclusive, intent inconclusive.**
+**Case verdict for #64506: draft inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass), intent inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass).**
 
 ### #68756: `posthog/admin/admins/team_admin.py`
 
@@ -246,12 +235,12 @@ Adoption cost, median over each arm: wall time 319 s against 134 s (+185 s), tur
 The violation arose in 2 of 3 control runs and 0 of 3 hooks runs.
 Adoption cost, median over each arm: wall time 325 s against 169 s (+156 s), turns 50 against 45 (+5), edit hook 15.6 s per edit (max 21.4 s).
 
-**Verdict (intent): not met**
+**Verdict (intent): not met (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass)**
 
 - Draft shows what v2 set out to show. In 3 of 3 hooks runs the agent wrote the draft's `model_activity import is_impersonated_session`, and Coherence's edit hook answered with `✕ posthog/helpers/impersonation read through is_impersonated` ([hooks 1's hook records](v2/68756/draft/hooks-1/hooks.jsonl)). The agent then switched to `is_impersonated(request)` from `posthog.helpers.impersonation`, and the session ended with `run` passing ([hooks 1's diff](v2/68756/draft/hooks-1/final.diff)). In 3 of 3 control runs the draft's import stayed and `run` failed ([control 1's diff](v2/68756/draft/control-1/final.diff)).
-- No v2 run on this case opened `Helpers.spec.md` before its first edit, in either arm (read from the tool calls in each transcript). On this case the hook carried the rule, not the spec.
-- Most of the draft variant's wall-time gap is the edit hook. It ran on every `Write` and `Edit`, 13 to 17 times per hooks session, taking about 15 s on a Python file and about 0.5 s on others, as v1 measured.
+- No v2 run on this case opened `Helpers.spec.md` before its first edit, in either arm (read from the tool calls in each transcript). Draft control 2 saw its path once, in `git status`. On this case the hook carried the rule, not the spec.
+- Most of the draft variant's wall-time gap is the edit hook. It ran on every `Write` and `Edit`, 13 to 17 times per hooks session. It took about 15 s on `team_admin.py` and some test files, and about 0.5 s on most other files ([hooks 1's hook records](v2/68756/draft/hooks-1/hooks.jsonl)). In hooks 1 the edit hooks add up to about 220 s, against a median gap of 185 s between the arms.
 - Intent: the protected import arose in 2 of 3 control runs and in 0 of 3 hooks runs. Criterion 2 needs a hook to follow a bypassing edit, so as written it reads not met, and no intent hooks run shows a fix. The edit hook named the invariant in none of them. Hooks 2 and 3 found `posthog/helpers/impersonation.py` while exploring and called `is_impersonated` before any hook spoke ([hooks 2's diff](v2/68756/intent/hooks-2/final.diff)). That difference between arms is not the hook's doing.
 - A gap in the declaration: [intent control 2](v2/68756/intent/control-2/final.diff) and [intent hooks 1](v2/68756/intent/hooks-1/final.diff) imported `is_impersonated_session` straight from `loginas.utils`. That is the bug the reviewer corrected, since it also misses MCP impersonation. It is outside the chokepoint form, which protects only the wrapper in `model_activity.py`, so `run` passes and the edit hook stays silent. Counting both forms, the bug arose in 3 of 3 intent control runs and 1 of 3 intent hooks runs. Catching the direct import needs a ban on the third-party name, such as ruff `TID251` on `loginas.utils.is_impersonated_session` through PR 2's lint oracle, with its existing importers (about 15) fixed or listed as a residual.
 
-**Case verdict for #68756: draft met, intent not met.**
+**Case verdict for #68756: draft met, intent not met (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass).**

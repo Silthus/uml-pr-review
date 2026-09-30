@@ -1,0 +1,141 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/v2.test.ts:
+141 |   transcripts: number;
+142 |   commands: (OutwardCommand & { run: string })[];
+143 | }
+144 | 
+145 | function auditLines(audit: CommandAudit): string[] {
+146 |   const ran = audit.commands.filter((command) => command.ran).length;
+                          ^
+TypeError: undefined is not an object (evaluating 'audit.commands.filter')
+      at auditLines (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:146:21)
+      at renderV2 (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:155:69)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:78:20)
+(fail) the v2 report > a variant meets criterion 2 when flagged hooks runs end without the bypass and pass run, whatever route they take [1.91ms]
+141 |   transcripts: number;
+142 |   commands: (OutwardCommand & { run: string })[];
+143 | }
+144 | 
+145 | function auditLines(audit: CommandAudit): string[] {
+146 |   const ran = audit.commands.filter((command) => command.ran).length;
+                          ^
+TypeError: undefined is not an object (evaluating 'audit.commands.filter')
+      at auditLines (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:146:21)
+      at renderV2 (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:155:69)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:86:20)
+(fail) the v2 report > a variant whose control never writes the bypass is inconclusive, and the report says how often it arose [0.20ms]
+141 |   transcripts: number;
+142 |   commands: (OutwardCommand & { run: string })[];
+143 | }
+144 | 
+145 | function auditLines(audit: CommandAudit): string[] {
+146 |   const ran = audit.commands.filter((command) => command.ran).length;
+                          ^
+TypeError: undefined is not an object (evaluating 'audit.commands.filter')
+      at auditLines (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:146:21)
+      at renderV2 (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:155:69)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:93:20)
+(fail) the v2 report > the adoption cost reads median wall time and turns of the hooks arm against control [0.12ms]
+141 |   transcripts: number;
+142 |   commands: (OutwardCommand & { run: string })[];
+143 | }
+144 | 
+145 | function auditLines(audit: CommandAudit): string[] {
+146 |   const ran = audit.commands.filter((command) => command.ran).length;
+                          ^
+TypeError: undefined is not an object (evaluating 'audit.commands.filter')
+      at auditLines (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:146:21)
+      at renderV2 (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:155:69)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:99:20)
+(fail) the v2 report > each case closes with one verdict line over both variants [0.10ms]
+141 |   transcripts: number;
+142 |   commands: (OutwardCommand & { run: string })[];
+143 | }
+144 | 
+145 | function auditLines(audit: CommandAudit): string[] {
+146 |   const ran = audit.commands.filter((command) => command.ran).length;
+                          ^
+TypeError: undefined is not an object (evaluating 'audit.commands.filter')
+      at auditLines (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:146:21)
+      at renderV2 (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.ts:155:69)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:109:20)
+(fail) the v2 report > the command audit counts the Bash calls that ran and names each one that is not read-only [0.15ms]
+130 | 
+131 | describe("auditing a transcript's Bash calls", () => {
+132 |   test("reads, searches, and read-only git that ran pass the allowlist, quoted pipes included", () => {
+133 |     const readOnly = ["ls nodejs/src", 'cd nodejs && grep -rn "a\\|b" src | head -5; echo ---', "sed -n 1,40p f.py 2>&1 | tail -3", "git -C .. diff --stat", "timeout 300 find . -name '*.ts' | wc -l"];
+134 | 
+135 |     expect(auditTranscript(ranAll(readOnly))).toEqual({ calls: 5, ran: 5, notReadOnly: [] });
+                                                    ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "calls": 5,
++   "calls": 0,
+    "notReadOnly": [],
+-   "ran": 5,
++   "ran": 0,
+  }
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:135:47)
+(fail) auditing a transcript's Bash calls > reads, searches, and read-only git that ran pass the allowlist, quoted pipes included [0.37ms]
+136 |   });
+137 | 
+138 |   test("names every call that ran and could write or reach out", () => {
+139 |     const risky = ["sed -i s/a/b/ f.ts", "echo x > f.txt", "git -C .. push", 'bash -c "gh pr create"', "cat $(ls)", "cd x&&gh issue list", "python3 - <<'EOF'\nprint(1)\nEOF"];
+140 | 
+141 |     expect(auditTranscript(ranAll(risky)).notReadOnly).toEqual(risky);
+                                                             ^
+error: expect(received).toEqual(expected)
+
+- [
+-   "sed -i s/a/b/ f.ts",
+-   "echo x > f.txt",
+-   "git -C .. push",
+-   "bash -c "gh pr create"",
+-   "cat $(ls)",
+-   "cd x&&gh issue list",
+-   
+- "python3 - <<'EOF'
+- print(1)
+- EOF"
+- ,
+- ]
++ []
+
+- Expected  - 13
++ Received  + 1
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:141:56)
+(fail) auditing a transcript's Bash calls > names every call that ran and could write or reach out [0.09ms]
+151 |       answer("c", "Exit code 1", true),
+152 |     ]
+153 |       .map((record) => JSON.stringify(record))
+154 |       .join("\n");
+155 | 
+156 |     expect(auditTranscript(transcript)).toEqual({ calls: 3, ran: 1, notReadOnly: [] });
+                                              ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "calls": 3,
++   "calls": 0,
+    "notReadOnly": [],
+-   "ran": 1,
++   "ran": 0,
+  }
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:156:41)
+(fail) auditing a transcript's Bash calls > a call the harness denied did not run, in either wording of the denial [0.10ms]
+
+ 1 pass
+ 8 fail
+ 5 expect() calls
+Ran 9 tests across 1 file. [33.00ms]

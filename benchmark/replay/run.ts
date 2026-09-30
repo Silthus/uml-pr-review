@@ -4,8 +4,8 @@ import { basename, join, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { defaultEnvironment, setUp, tearDown, witness } from "./kit/kit.ts";
-import { declareCase, EVIDENCE_FILES, invariantName, loadCase, readSession, renderReport, type Arm, type ReplayCase, type RunRecord } from "./replay.ts";
-import { isVariant, keepOnlyEditHook, outwardCommands, renderV2, VARIANTS, type CommandAudit, type Variant } from "./v2.ts";
+import { declareCase, EVIDENCE_FILES, invariantName, isVariant, loadCase, readSession, renderReport, VARIANTS, type Arm, type ReplayCase, type RunRecord, type Variant } from "./replay.ts";
+import { auditTranscript, keepOnlyEditHook, renderV2, type CommandAudit } from "./v2.ts";
 
 const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>] [--variant draft|intent]\n       bun benchmark/replay/run.ts report";
 const EVIDENCE = resolve(import.meta.dir, "../../docs/replay");
@@ -27,13 +27,12 @@ interface Protocol {
   kit: string;
   evidence: string;
   task: string;
-  editHookOnly: boolean;
   maxTurns: number;
 }
 
 function protocolFor(replay: ReplayCase, arm: Arm, n: number, variant: Variant | undefined): Protocol {
-  if (variant === undefined) return { kit: `/tmp/replay-118-${replay.pr}-${arm}-${n}`, evidence: join(EVIDENCE, String(replay.pr), `${arm}-${n}`), task: "task.md", editHookOnly: false, maxTurns: 30 };
-  return { variant, kit: `/tmp/replay-124-${replay.pr}-${variant}-${arm}-${n}`, evidence: join(EVIDENCE, "v2", String(replay.pr), variant, `${arm}-${n}`), task: `${variant}.md`, editHookOnly: true, maxTurns: 50 };
+  if (variant === undefined) return { kit: `/tmp/replay-118-${replay.pr}-${arm}-${n}`, evidence: join(EVIDENCE, String(replay.pr), `${arm}-${n}`), task: "task.md", maxTurns: 30 };
+  return { variant, kit: `/tmp/replay-124-${replay.pr}-${variant}-${arm}-${n}`, evidence: join(EVIDENCE, "v2", String(replay.pr), variant, `${arm}-${n}`), task: `${variant}.md`, maxTurns: 50 };
 }
 
 function sh(argv: string[], cwd: string, env: Record<string, string | undefined> = process.env) {
@@ -180,7 +179,7 @@ async function replayOnce(replay: ReplayCase, arm: Arm, n: number, protocol: Pro
   try {
     const worktree = join(dir, "posthog");
     declareCase(replay, worktree);
-    if (arm === "hooks" && protocol.editHookOnly) kitLog.push(`Coherence hooks turned off in .claude/settings.json, only PostToolUse kept: ${keepOnlyEditHook(worktree).join(", ")}`);
+    if (arm === "hooks" && protocol.variant !== undefined) kitLog.push(`Coherence hooks turned off in .claude/settings.json, only PostToolUse kept: ${keepOnlyEditHook(worktree).join(", ")}`);
     const witnessed = await witness(dir, replay.invariant, (line) => kitLog.push(line));
     writeFileSync(join(evidence, "witness.txt"), `${kitLog.join("\n")}\n`);
     if (!witnessed) throw new Error(`the witness did not go red then green for ${replay.invariant}; see ${evidence}/witness.txt`);
@@ -252,8 +251,13 @@ function v2Folders(): string[] {
 }
 
 function commandAudit(folders: string[]): CommandAudit {
-  const commands = folders.flatMap((folder) => outwardCommands(readFileSync(join(folder, "transcript.jsonl"), "utf8")).map((command) => ({ ...command, run: relative(EVIDENCE, folder) })));
-  return { transcripts: folders.length, commands };
+  const audits = folders.map((folder) => ({ run: relative(EVIDENCE, folder), ...auditTranscript(readFileSync(join(folder, "transcript.jsonl"), "utf8")) }));
+  return {
+    transcripts: folders.length,
+    calls: audits.reduce((sum, audit) => sum + audit.calls, 0),
+    ran: audits.reduce((sum, audit) => sum + audit.ran, 0),
+    notReadOnly: audits.flatMap((audit) => audit.notReadOnly.map((command) => ({ run: audit.run, command }))),
+  };
 }
 
 function writeReport() {

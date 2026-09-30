@@ -1,0 +1,59 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/v2.test.ts:
+137 |       "git -C .. diff --stat",
+138 |       "timeout 300 find . -name '*.ts' | wc -l",
+139 |       'for f in src/*.ts; do echo "== $f"; cat $f; done',
+140 |     ];
+141 | 
+142 |     expect(auditTranscript(ranAll(readOnly))).toEqual({ calls: 6, ran: 6, notReadOnly: [] });
+                                                    ^
+error: expect(received).toEqual(expected)
+
+@@ -2,3 +2,6 @@
+    "calls": 6,
+-   "notReadOnly": [],
++   "notReadOnly": [
++     "cd nodejs && grep -rn -i "a\|b" src | head -5; echo ---",
++     "for f in src/*.ts; do echo "== $f"; cat $f; done",
++   ],
+    "ran": 6,
+
+- Expected  - 1
++ Received  + 4
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:142:47)
+(fail) auditing a transcript's Bash calls > reads, searches, and read-only git that ran pass the allowlist, quoted pipes included [2.28ms]
+160 |       answer("d", "Exit code 1", true),
+161 |     ]
+162 |       .map((record) => JSON.stringify(record))
+163 |       .join("\n");
+164 | 
+165 |     expect(auditTranscript(transcript)).toEqual({ calls: 4, ran: 1, notReadOnly: [] });
+                                              ^
+error: expect(received).toEqual(expected)
+
+@@ -2,4 +2,10 @@
+    "calls": 4,
+-   "notReadOnly": [],
+-   "ran": 1,
++   "notReadOnly": [
++     
++ "python3 - <<'EOF'
++ open('f', 'w')
++ EOF"
++ ,
++   ],
++   "ran": 2,
+  }
+
+- Expected  - 2
++ Received  + 8
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:165:41)
+(fail) auditing a transcript's Bash calls > an error other than a command's own exit code means the harness denied the call, so it did not run [0.40ms]
+
+ 7 pass
+ 2 fail
+ 15 expect() calls
+Ran 9 tests across 1 file. [38.00ms]

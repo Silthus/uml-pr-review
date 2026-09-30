@@ -1,0 +1,3411 @@
+coherence built: 2.1 s
+worktree added: 8.4 s
+hooks installed: 0.3 s
+export COHERENCE_HOME=/tmp/replay-124-68756-draft-hooks-3/coherence
+Coherence hooks turned off in .claude/settings.json, only PostToolUse kept: SessionStart, SubagentStart, UserPromptSubmit, Stop, SubagentStop
+staged posthog/helpers/kit_witness_bypass.py: from posthog.models.activity_logging.model_activity import is_impersonated_session  # noqa: F401
+red: 17.6 s
+$ coherence run --invariant impersonation read through is_impersonated --json --no-server --session kit-witness --agent kit
+{
+  "at": "2026-09-30T13:01:10.362Z",
+  "session": "kit-witness",
+  "agent": "kit",
+  "binding": "none: this session owns no active work order",
+  "commit": "4a6a40136a8",
+  "dirty": true,
+  "instrument": {
+    "language": "python",
+    "server": "cold"
+  },
+  "latency": 16185,
+  "invariants": [
+    {
+      "component": "posthog/helpers",
+      "name": "impersonation read through is_impersonated",
+      "form": "chokepoint",
+      "grade": "broken",
+      "verdict": "fail",
+      "refutation": "automatic",
+      "bypasses": [
+        {
+          "file": "posthog/helpers/kit_witness_bypass.py",
+          "line": 1,
+          "symbol": "module top level"
+        }
+      ],
+      "sites": [
+        {
+          "file": "ee/api/ee_property_definition.py",
+          "line": 7,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "ee/api/ee_property_definition.py",
+          "line": 107,
+          "symbol": "EnterprisePropertyDefinitionSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/api/session_summaries.py",
+          "line": 34,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "ee/api/session_summaries.py",
+          "line": 758,
+          "symbol": "SessionGroupSummaryViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 29,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 503,
+          "symbol": "GroupsViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 623,
+          "symbol": "GroupsViewSet.update_property",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 732,
+          "symbol": "GroupsViewSet.delete_property",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cimd_verification_token.py",
+          "line": 12,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/cimd_verification_token.py",
+          "line": 104,
+          "symbol": "CIMDVerificationTokenViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cimd_verification_token.py",
+          "line": 140,
+          "symbol": "CIMDVerificationTokenViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 47,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1681,
+          "symbol": "CohortViewSet.add_persons_to_static_cohort",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1722,
+          "symbol": "CohortViewSet.remove_person_from_static_cohort",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1836,
+          "symbol": "CohortViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1871,
+          "symbol": "CohortViewSet.perform_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 29,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 467,
+          "symbol": "EventDefinitionViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 504,
+          "symbol": "EventDefinitionViewSet.perform_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 524,
+          "symbol": "EventDefinitionViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/file_system_logging.py",
+          "line": 11,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/file_system/file_system_logging.py",
+          "line": 43,
+          "symbol": "log_api_file_system_view",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 17,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 55,
+          "symbol": "_log_deletion_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 85,
+          "symbol": "_log_restore_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 195,
+          "symbol": "_playlist_post_restore",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 236,
+          "symbol": "_playlist_post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/instance_settings.py",
+          "line": 11,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/instance_settings.py",
+          "line": 197,
+          "symbol": "InstanceSettingsSerializer._log_setting_change",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 13,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 193,
+          "symbol": "MaterializedColumnSlotViewSet._log_slot_created",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 267,
+          "symbol": "MaterializedColumnSlotViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 322,
+          "symbol": "MaterializedColumnSlotViewSet.retry_backfill",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 43,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 912,
+          "symbol": "PersonViewSet.split",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 1029,
+          "symbol": "PersonViewSet.delete_property",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 1176,
+          "symbol": "PersonViewSet._set_properties",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/product_enablement.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/product_enablement.py",
+          "line": 141,
+          "symbol": "ProductEnablementViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 53,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 138,
+          "symbol": "capture_team_config_diff",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1087,
+          "symbol": "ProjectBackwardCompatSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1097,
+          "symbol": "ProjectBackwardCompatSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1147,
+          "symbol": "ProjectBackwardCompatSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1242,
+          "symbol": "ProjectBackwardCompatSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1256,
+          "symbol": "ProjectBackwardCompatSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1489,
+          "symbol": "ProjectViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1500,
+          "symbol": "ProjectViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1523,
+          "symbol": "ProjectViewSet.reset_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1537,
+          "symbol": "ProjectViewSet.rotate_secret_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1550,
+          "symbol": "ProjectViewSet.delete_secret_token_backup",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1562,
+          "symbol": "ProjectViewSet.generate_conversations_public_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1801,
+          "symbol": "ProjectViewSet.change_organization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/resource_transfer.py",
+          "line": 13,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/resource_transfer.py",
+          "line": 172,
+          "symbol": "ResourceTransferViewSet.transfer",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 35,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 497,
+          "symbol": "SharingConfigurationViewSet.patch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 520,
+          "symbol": "SharingConfigurationViewSet.patch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 542,
+          "symbol": "SharingConfigurationViewSet.patch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 587,
+          "symbol": "SharingConfigurationViewSet.refresh",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 602,
+          "symbol": "SharingConfigurationViewSet.refresh",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 614,
+          "symbol": "SharingConfigurationViewSet.refresh",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 34,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1492,
+          "symbol": "TeamSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1544,
+          "symbol": "TeamSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1622,
+          "symbol": "TeamSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1792,
+          "symbol": "TeamSerializer._capture_diff",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1976,
+          "symbol": "TeamViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1993,
+          "symbol": "TeamViewSet.reset_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 2005,
+          "symbol": "TeamViewSet.rotate_secret_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 2016,
+          "symbol": "TeamViewSet.delete_secret_token_backup",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 2028,
+          "symbol": "TeamViewSet.generate_conversations_public_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/utils.py",
+          "line": 36,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/utils.py",
+          "line": 670,
+          "symbol": "log_activity_from_viewset",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/event_usage.py",
+          "line": 18,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/event_usage.py",
+          "line": 386,
+          "symbol": "get_request_analytics_properties",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/helpers/kit_witness_bypass.py",
+          "line": 1,
+          "symbol": "module top level",
+          "class": "bypass",
+          "of": "protected",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/models/activity_logging/model_activity.py",
+          "line": 135,
+          "symbol": "ImpersonatedContext.__init__",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/activity_logging/model_activity.py",
+          "line": 137,
+          "symbol": "ImpersonatedContext.__init__",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/activity_logging/signal_handlers.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/models/activity_logging/signal_handlers.py",
+          "line": 78,
+          "symbol": "_get_logout_user_context",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/person/bulk_delete.py",
+          "line": 14,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/models/person/bulk_delete.py",
+          "line": 85,
+          "symbol": "delete_persons_profile",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_api.py",
+          "line": 78,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_api.py",
+          "line": 1205,
+          "symbol": "SessionRecordingViewSet.bulk_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_playlist_api.py",
+          "line": 32,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_playlist_api.py",
+          "line": 567,
+          "symbol": "SessionRecordingPlaylistSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_playlist_api.py",
+          "line": 606,
+          "symbol": "SessionRecordingPlaylistSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/taxonomy/property_definition_api.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/taxonomy/property_definition_api.py",
+          "line": 940,
+          "symbol": "PropertyDefinitionViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/test/test_oauth_impersonation.py",
+          "line": 21,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": true,
+          "form": "import"
+        },
+        {
+          "file": "posthog/test/test_oauth_impersonation.py",
+          "line": 343,
+          "symbol": "TestIsImpersonated.test_is_impersonated",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": true
+        },
+        {
+          "file": "products/cdp/backend/api/hog_function.py",
+          "line": 37,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/cdp/backend/api/hog_function.py",
+          "line": 785,
+          "symbol": "HogFunctionViewSet.rearrange",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 26,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 211,
+          "symbol": "_update_plugin_attachment",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 565,
+          "symbol": "PluginViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 584,
+          "symbol": "PluginViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 787,
+          "symbol": "PluginConfigSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 839,
+          "symbol": "PluginConfigViewSet.rearrange",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/slack_oauth.py",
+          "line": 15,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/slack_oauth.py",
+          "line": 119,
+          "symbol": "SupportSlackDisconnectView.post",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/slack_oauth.py",
+          "line": 214,
+          "symbol": "support_slack_oauth_callback",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 11,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 439,
+          "symbol": "TeamsSelectChannelView._handle_add",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 484,
+          "symbol": "TeamsSelectChannelView._handle_remove",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 598,
+          "symbol": "TeamsSelectChannelView._handle_legacy_request",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_oauth.py",
+          "line": 18,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/teams_oauth.py",
+          "line": 181,
+          "symbol": "TeamsDisconnectView.post",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_oauth.py",
+          "line": 303,
+          "symbol": "teams_oauth_callback",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 32,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 804,
+          "symbol": "TicketViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 882,
+          "symbol": "TicketViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 931,
+          "symbol": "TicketViewSet._emit_status_change_side_effects",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 30,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 139,
+          "symbol": "CustomerProfileConfigViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 153,
+          "symbol": "CustomerProfileConfigViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 169,
+          "symbol": "CustomerProfileConfigViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 236,
+          "symbol": "CustomPropertyDefinitionViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 255,
+          "symbol": "CustomPropertyDefinitionViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 275,
+          "symbol": "CustomPropertyDefinitionViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 501,
+          "symbol": "CustomerJourneyViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 523,
+          "symbol": "CustomerJourneyViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 544,
+          "symbol": "CustomerJourneyViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 709,
+          "symbol": "AccountViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 739,
+          "symbol": "AccountViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 766,
+          "symbol": "AccountViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 33,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 477,
+          "symbol": "DataWarehouseSavedQuerySerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 626,
+          "symbol": "DataWarehouseSavedQuerySerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 967,
+          "symbol": "DataWarehouseSavedQueryViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 997,
+          "symbol": "DataWarehouseSavedQueryViewSet.run",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 1038,
+          "symbol": "DataWarehouseSavedQueryViewSet.revert_materialization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 1097,
+          "symbol": "DataWarehouseSavedQueryViewSet.materialize",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 1270,
+          "symbol": "DataWarehouseSavedQueryViewSet.cancel",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/early_access_features/backend/apps.py",
+          "line": 15,
+          "symbol": "EarlyAccessFeaturesConfig.ready",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/early_access_features/backend/apps.py",
+          "line": 53,
+          "symbol": "EarlyAccessFeaturesConfig.ready._post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/endpoints/backend/logic/crud.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/endpoints/backend/logic/crud.py",
+          "line": 75,
+          "symbol": "EndpointCrudService._log_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/endpoints/backend/logic/materialization.py",
+          "line": 25,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/endpoints/backend/logic/materialization.py",
+          "line": 147,
+          "symbol": "EndpointMaterializationService.enable_materialization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/endpoints/backend/logic/materialization.py",
+          "line": 302,
+          "symbol": "EndpointMaterializationService.disable_materialization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 17,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 189,
+          "symbol": "ErrorTrackingIssueViewSet._update_issue",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 238,
+          "symbol": "ErrorTrackingIssueViewSet.assign",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 283,
+          "symbol": "ErrorTrackingIssueViewSet.bulk",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/exports/backend/api/exports.py",
+          "line": 21,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/exports/backend/api/exports.py",
+          "line": 294,
+          "symbol": "ExportedAssetSerializer._create_asset",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/exports/backend/api/exports.py",
+          "line": 332,
+          "symbol": "ExportedAssetSerializer._log_exported_asset_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/feature_flags/backend/api/feature_flag.py",
+          "line": 52,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/feature_flags/backend/api/feature_flag.py",
+          "line": 730,
+          "symbol": "EvaluationContextSerializerMixin._log_evaluation_context_change",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/feature_flags/backend/api/feature_flag.py",
+          "line": 3381,
+          "symbol": "FeatureFlagViewSet.bulk_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/logs/backend/presentation/views/alerts_api.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/logs/backend/presentation/views/alerts_api.py",
+          "line": 1000,
+          "symbol": "LogsAlertViewSet.reset",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/apps.py",
+          "line": 15,
+          "symbol": "NotebooksConfig.ready",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/apps.py",
+          "line": 48,
+          "symbol": "NotebooksConfig.ready._post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/apps.py",
+          "line": 68,
+          "symbol": "NotebooksConfig.ready._post_restore",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 37,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 210,
+          "symbol": "NotebookSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 269,
+          "symbol": "NotebookSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1018,
+          "symbol": "NotebookViewSet.collab_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1031,
+          "symbol": "NotebookViewSet.collab_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1126,
+          "symbol": "NotebookViewSet.collab_markdown_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1138,
+          "symbol": "NotebookViewSet.collab_markdown_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 64,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 678,
+          "symbol": "InsightSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 778,
+          "symbol": "InsightSerializer._log_insight_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 2282,
+          "symbol": "InsightViewSet.bulk_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 2337,
+          "symbol": "InsightViewSet.bulk_restore",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 29,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 297,
+          "symbol": "ProductTourSerializerCreateUpdateOnly.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 389,
+          "symbol": "ProductTourSerializerCreateUpdateOnly.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 842,
+          "symbol": "ProductTourViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/signals/backend/views.py",
+          "line": 52,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/signals/backend/views.py",
+          "line": 1796,
+          "symbol": "SignalReportArtefactViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 51,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 1587,
+          "symbol": "SurveySerializerCreateUpdateOnly.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 1706,
+          "symbol": "SurveySerializerCreateUpdateOnly.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2131,
+          "symbol": "SurveyViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2172,
+          "symbol": "SurveyViewSet.launch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2218,
+          "symbol": "SurveyViewSet.stop",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2488,
+          "symbol": "SurveyViewSet.archive_response",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2521,
+          "symbol": "SurveyViewSet.unarchive_response",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 3207,
+          "symbol": "SurveyViewSet.duplicate_to_projects",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/apps.py",
+          "line": 15,
+          "symbol": "SurveysConfig.ready",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/apps.py",
+          "line": 48,
+          "symbol": "SurveysConfig.ready._post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/heatmaps_api.py",
+          "line": 33,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/web_analytics/backend/api/heatmaps_api.py",
+          "line": 1089,
+          "symbol": "SavedHeatmapViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/heatmaps_api.py",
+          "line": 1165,
+          "symbol": "SavedHeatmapViewSet.partial_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+          "line": 12,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+          "line": 94,
+          "symbol": "WebAnalyticsFilterPresetSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+          "line": 122,
+          "symbol": "WebAnalyticsFilterPresetSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 16,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 291,
+          "symbol": "HogFlowTemplateViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 324,
+          "symbol": "HogFlowTemplateViewSet.perform_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 339,
+          "symbol": "HogFlowTemplateViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        }
+      ],
+      "testReferences": 0,
+      "files": [
+        "ee/api/ee_property_definition.py",
+        "ee/api/session_summaries.py",
+        "ee/clickhouse/views/groups.py",
+        "posthog/api/cimd_verification_token.py",
+        "posthog/api/cohort.py",
+        "posthog/api/event_definition.py",
+        "posthog/api/file_system/file_system_logging.py",
+        "posthog/api/file_system/registrations.py",
+        "posthog/api/instance_settings.py",
+        "posthog/api/materialized_column_slot.py",
+        "posthog/api/person.py",
+        "posthog/api/product_enablement.py",
+        "posthog/api/project.py",
+        "posthog/api/resource_transfer.py",
+        "posthog/api/sharing.py",
+        "posthog/api/team.py",
+        "posthog/api/utils.py",
+        "posthog/event_usage.py",
+        "posthog/helpers/impersonation.py",
+        "posthog/helpers/kit_witness_bypass.py",
+        "posthog/models/activity_logging/model_activity.py",
+        "posthog/models/activity_logging/signal_handlers.py",
+        "posthog/models/person/bulk_delete.py",
+        "posthog/session_recordings/session_recording_api.py",
+        "posthog/session_recordings/session_recording_playlist_api.py",
+        "posthog/taxonomy/property_definition_api.py",
+        "posthog/test/test_oauth_impersonation.py",
+        "products/cdp/backend/api/hog_function.py",
+        "products/cdp/backend/api/plugin.py",
+        "products/conversations/backend/api/slack_oauth.py",
+        "products/conversations/backend/api/teams_channels.py",
+        "products/conversations/backend/api/teams_oauth.py",
+        "products/conversations/backend/api/tickets.py",
+        "products/customer_analytics/backend/presentation/views/views.py",
+        "products/data_warehouse/backend/presentation/views/saved_query.py",
+        "products/early_access_features/backend/apps.py",
+        "products/endpoints/backend/logic/crud.py",
+        "products/endpoints/backend/logic/materialization.py",
+        "products/error_tracking/backend/presentation/views/issues.py",
+        "products/exports/backend/api/exports.py",
+        "products/feature_flags/backend/api/feature_flag.py",
+        "products/logs/backend/presentation/views/alerts_api.py",
+        "products/notebooks/backend/apps.py",
+        "products/notebooks/backend/presentation/views/notebook.py",
+        "products/product_analytics/backend/api/insight.py",
+        "products/product_tours/backend/api/product_tour.py",
+        "products/signals/backend/views.py",
+        "products/surveys/backend/api/survey.py",
+        "products/surveys/backend/apps.py",
+        "products/web_analytics/backend/api/heatmaps_api.py",
+        "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+        "products/workflows/backend/api/hog_flow_template.py"
+      ],
+      "latency": 13888,
+      "reason": "1 reference to is_impersonated_session in posthog/models/activity_logging/model_activity.py outside is_impersonated in posthog/helpers/impersonation.py: posthog/helpers/kit_witness_bypass.py:1 in module top level"
+    }
+  ],
+  "file": "/tmp/replay-124-68756-draft-hooks-3/posthog/.coherence/runs/kit-witness.jsonl",
+  "instrumentReason": null,
+  "instrumentDied": false
+}
+[exit 1]
+green: 15.1 s
+$ coherence run --invariant impersonation read through is_impersonated --json --no-server --session kit-witness --agent kit
+{
+  "at": "2026-09-30T13:01:26.437Z",
+  "session": "kit-witness",
+  "agent": "kit",
+  "binding": "none: this session owns no active work order",
+  "commit": "4a6a40136a8",
+  "dirty": true,
+  "instrument": {
+    "language": "python",
+    "server": "cold"
+  },
+  "latency": 14688,
+  "invariants": [
+    {
+      "component": "posthog/helpers",
+      "name": "impersonation read through is_impersonated",
+      "form": "chokepoint",
+      "grade": "reference-choked",
+      "verdict": "pass",
+      "enforcer": "Coherence's check at the edit and in CI",
+      "refutation": "automatic",
+      "bypasses": [],
+      "sites": [
+        {
+          "file": "ee/api/ee_property_definition.py",
+          "line": 7,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "ee/api/ee_property_definition.py",
+          "line": 107,
+          "symbol": "EnterprisePropertyDefinitionSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/api/session_summaries.py",
+          "line": 34,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "ee/api/session_summaries.py",
+          "line": 758,
+          "symbol": "SessionGroupSummaryViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 29,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 503,
+          "symbol": "GroupsViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 623,
+          "symbol": "GroupsViewSet.update_property",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "ee/clickhouse/views/groups.py",
+          "line": 732,
+          "symbol": "GroupsViewSet.delete_property",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cimd_verification_token.py",
+          "line": 12,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/cimd_verification_token.py",
+          "line": 104,
+          "symbol": "CIMDVerificationTokenViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cimd_verification_token.py",
+          "line": 140,
+          "symbol": "CIMDVerificationTokenViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 47,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1681,
+          "symbol": "CohortViewSet.add_persons_to_static_cohort",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1722,
+          "symbol": "CohortViewSet.remove_person_from_static_cohort",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1836,
+          "symbol": "CohortViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/cohort.py",
+          "line": 1871,
+          "symbol": "CohortViewSet.perform_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 29,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 467,
+          "symbol": "EventDefinitionViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 504,
+          "symbol": "EventDefinitionViewSet.perform_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/event_definition.py",
+          "line": 524,
+          "symbol": "EventDefinitionViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/file_system_logging.py",
+          "line": 11,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/file_system/file_system_logging.py",
+          "line": 43,
+          "symbol": "log_api_file_system_view",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 17,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 55,
+          "symbol": "_log_deletion_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 85,
+          "symbol": "_log_restore_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 195,
+          "symbol": "_playlist_post_restore",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/file_system/registrations.py",
+          "line": 236,
+          "symbol": "_playlist_post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/instance_settings.py",
+          "line": 11,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/instance_settings.py",
+          "line": 197,
+          "symbol": "InstanceSettingsSerializer._log_setting_change",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 13,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 193,
+          "symbol": "MaterializedColumnSlotViewSet._log_slot_created",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 267,
+          "symbol": "MaterializedColumnSlotViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/materialized_column_slot.py",
+          "line": 322,
+          "symbol": "MaterializedColumnSlotViewSet.retry_backfill",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 43,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 912,
+          "symbol": "PersonViewSet.split",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 1029,
+          "symbol": "PersonViewSet.delete_property",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/person.py",
+          "line": 1176,
+          "symbol": "PersonViewSet._set_properties",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/product_enablement.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/product_enablement.py",
+          "line": 141,
+          "symbol": "ProductEnablementViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 53,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 138,
+          "symbol": "capture_team_config_diff",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1087,
+          "symbol": "ProjectBackwardCompatSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1097,
+          "symbol": "ProjectBackwardCompatSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1147,
+          "symbol": "ProjectBackwardCompatSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1242,
+          "symbol": "ProjectBackwardCompatSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1256,
+          "symbol": "ProjectBackwardCompatSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1489,
+          "symbol": "ProjectViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1500,
+          "symbol": "ProjectViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1523,
+          "symbol": "ProjectViewSet.reset_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1537,
+          "symbol": "ProjectViewSet.rotate_secret_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1550,
+          "symbol": "ProjectViewSet.delete_secret_token_backup",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1562,
+          "symbol": "ProjectViewSet.generate_conversations_public_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/project.py",
+          "line": 1801,
+          "symbol": "ProjectViewSet.change_organization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/resource_transfer.py",
+          "line": 13,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/resource_transfer.py",
+          "line": 172,
+          "symbol": "ResourceTransferViewSet.transfer",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 35,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 497,
+          "symbol": "SharingConfigurationViewSet.patch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 520,
+          "symbol": "SharingConfigurationViewSet.patch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 542,
+          "symbol": "SharingConfigurationViewSet.patch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 587,
+          "symbol": "SharingConfigurationViewSet.refresh",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 602,
+          "symbol": "SharingConfigurationViewSet.refresh",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/sharing.py",
+          "line": 614,
+          "symbol": "SharingConfigurationViewSet.refresh",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 34,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1492,
+          "symbol": "TeamSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1544,
+          "symbol": "TeamSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1622,
+          "symbol": "TeamSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1792,
+          "symbol": "TeamSerializer._capture_diff",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1976,
+          "symbol": "TeamViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 1993,
+          "symbol": "TeamViewSet.reset_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 2005,
+          "symbol": "TeamViewSet.rotate_secret_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 2016,
+          "symbol": "TeamViewSet.delete_secret_token_backup",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/team.py",
+          "line": 2028,
+          "symbol": "TeamViewSet.generate_conversations_public_token",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/api/utils.py",
+          "line": 36,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/api/utils.py",
+          "line": 670,
+          "symbol": "log_activity_from_viewset",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/event_usage.py",
+          "line": 18,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/event_usage.py",
+          "line": 386,
+          "symbol": "get_request_analytics_properties",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/activity_logging/model_activity.py",
+          "line": 135,
+          "symbol": "ImpersonatedContext.__init__",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/activity_logging/model_activity.py",
+          "line": 137,
+          "symbol": "ImpersonatedContext.__init__",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/activity_logging/signal_handlers.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/models/activity_logging/signal_handlers.py",
+          "line": 78,
+          "symbol": "_get_logout_user_context",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/models/person/bulk_delete.py",
+          "line": 14,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/models/person/bulk_delete.py",
+          "line": 85,
+          "symbol": "delete_persons_profile",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_api.py",
+          "line": 78,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_api.py",
+          "line": 1205,
+          "symbol": "SessionRecordingViewSet.bulk_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_playlist_api.py",
+          "line": 32,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_playlist_api.py",
+          "line": 567,
+          "symbol": "SessionRecordingPlaylistSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/session_recordings/session_recording_playlist_api.py",
+          "line": 606,
+          "symbol": "SessionRecordingPlaylistSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/taxonomy/property_definition_api.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "posthog/taxonomy/property_definition_api.py",
+          "line": 940,
+          "symbol": "PropertyDefinitionViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "posthog/test/test_oauth_impersonation.py",
+          "line": 21,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": true,
+          "form": "import"
+        },
+        {
+          "file": "posthog/test/test_oauth_impersonation.py",
+          "line": 343,
+          "symbol": "TestIsImpersonated.test_is_impersonated",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": true
+        },
+        {
+          "file": "products/cdp/backend/api/hog_function.py",
+          "line": 37,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/cdp/backend/api/hog_function.py",
+          "line": 785,
+          "symbol": "HogFunctionViewSet.rearrange",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 26,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 211,
+          "symbol": "_update_plugin_attachment",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 565,
+          "symbol": "PluginViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 584,
+          "symbol": "PluginViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 787,
+          "symbol": "PluginConfigSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/cdp/backend/api/plugin.py",
+          "line": 839,
+          "symbol": "PluginConfigViewSet.rearrange",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/slack_oauth.py",
+          "line": 15,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/slack_oauth.py",
+          "line": 119,
+          "symbol": "SupportSlackDisconnectView.post",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/slack_oauth.py",
+          "line": 214,
+          "symbol": "support_slack_oauth_callback",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 11,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 439,
+          "symbol": "TeamsSelectChannelView._handle_add",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 484,
+          "symbol": "TeamsSelectChannelView._handle_remove",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_channels.py",
+          "line": 598,
+          "symbol": "TeamsSelectChannelView._handle_legacy_request",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_oauth.py",
+          "line": 18,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/teams_oauth.py",
+          "line": 181,
+          "symbol": "TeamsDisconnectView.post",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/teams_oauth.py",
+          "line": 303,
+          "symbol": "teams_oauth_callback",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 32,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 804,
+          "symbol": "TicketViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 882,
+          "symbol": "TicketViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/conversations/backend/api/tickets.py",
+          "line": 931,
+          "symbol": "TicketViewSet._emit_status_change_side_effects",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 30,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 139,
+          "symbol": "CustomerProfileConfigViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 153,
+          "symbol": "CustomerProfileConfigViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 169,
+          "symbol": "CustomerProfileConfigViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 236,
+          "symbol": "CustomPropertyDefinitionViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 255,
+          "symbol": "CustomPropertyDefinitionViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 275,
+          "symbol": "CustomPropertyDefinitionViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 501,
+          "symbol": "CustomerJourneyViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 523,
+          "symbol": "CustomerJourneyViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 544,
+          "symbol": "CustomerJourneyViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 709,
+          "symbol": "AccountViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 739,
+          "symbol": "AccountViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/customer_analytics/backend/presentation/views/views.py",
+          "line": 766,
+          "symbol": "AccountViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 33,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 477,
+          "symbol": "DataWarehouseSavedQuerySerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 626,
+          "symbol": "DataWarehouseSavedQuerySerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 967,
+          "symbol": "DataWarehouseSavedQueryViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 997,
+          "symbol": "DataWarehouseSavedQueryViewSet.run",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 1038,
+          "symbol": "DataWarehouseSavedQueryViewSet.revert_materialization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 1097,
+          "symbol": "DataWarehouseSavedQueryViewSet.materialize",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/data_warehouse/backend/presentation/views/saved_query.py",
+          "line": 1270,
+          "symbol": "DataWarehouseSavedQueryViewSet.cancel",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/early_access_features/backend/apps.py",
+          "line": 15,
+          "symbol": "EarlyAccessFeaturesConfig.ready",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/early_access_features/backend/apps.py",
+          "line": 53,
+          "symbol": "EarlyAccessFeaturesConfig.ready._post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/endpoints/backend/logic/crud.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/endpoints/backend/logic/crud.py",
+          "line": 75,
+          "symbol": "EndpointCrudService._log_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/endpoints/backend/logic/materialization.py",
+          "line": 25,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/endpoints/backend/logic/materialization.py",
+          "line": 147,
+          "symbol": "EndpointMaterializationService.enable_materialization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/endpoints/backend/logic/materialization.py",
+          "line": 302,
+          "symbol": "EndpointMaterializationService.disable_materialization",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 17,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 189,
+          "symbol": "ErrorTrackingIssueViewSet._update_issue",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 238,
+          "symbol": "ErrorTrackingIssueViewSet.assign",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/error_tracking/backend/presentation/views/issues.py",
+          "line": 283,
+          "symbol": "ErrorTrackingIssueViewSet.bulk",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/exports/backend/api/exports.py",
+          "line": 21,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/exports/backend/api/exports.py",
+          "line": 294,
+          "symbol": "ExportedAssetSerializer._create_asset",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/exports/backend/api/exports.py",
+          "line": 332,
+          "symbol": "ExportedAssetSerializer._log_exported_asset_activity",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/feature_flags/backend/api/feature_flag.py",
+          "line": 52,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/feature_flags/backend/api/feature_flag.py",
+          "line": 730,
+          "symbol": "EvaluationContextSerializerMixin._log_evaluation_context_change",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/feature_flags/backend/api/feature_flag.py",
+          "line": 3381,
+          "symbol": "FeatureFlagViewSet.bulk_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/logs/backend/presentation/views/alerts_api.py",
+          "line": 24,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/logs/backend/presentation/views/alerts_api.py",
+          "line": 1000,
+          "symbol": "LogsAlertViewSet.reset",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/apps.py",
+          "line": 15,
+          "symbol": "NotebooksConfig.ready",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/apps.py",
+          "line": 48,
+          "symbol": "NotebooksConfig.ready._post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/apps.py",
+          "line": 68,
+          "symbol": "NotebooksConfig.ready._post_restore",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 37,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 210,
+          "symbol": "NotebookSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 269,
+          "symbol": "NotebookSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1018,
+          "symbol": "NotebookViewSet.collab_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1031,
+          "symbol": "NotebookViewSet.collab_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1126,
+          "symbol": "NotebookViewSet.collab_markdown_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/notebooks/backend/presentation/views/notebook.py",
+          "line": 1138,
+          "symbol": "NotebookViewSet.collab_markdown_save",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 64,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 678,
+          "symbol": "InsightSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 778,
+          "symbol": "InsightSerializer._log_insight_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 2282,
+          "symbol": "InsightViewSet.bulk_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_analytics/backend/api/insight.py",
+          "line": 2337,
+          "symbol": "InsightViewSet.bulk_restore",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 29,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 297,
+          "symbol": "ProductTourSerializerCreateUpdateOnly.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 389,
+          "symbol": "ProductTourSerializerCreateUpdateOnly.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/product_tours/backend/api/product_tour.py",
+          "line": 842,
+          "symbol": "ProductTourViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/signals/backend/views.py",
+          "line": 52,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/signals/backend/views.py",
+          "line": 1796,
+          "symbol": "SignalReportArtefactViewSet.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 51,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 1587,
+          "symbol": "SurveySerializerCreateUpdateOnly.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 1706,
+          "symbol": "SurveySerializerCreateUpdateOnly.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2131,
+          "symbol": "SurveyViewSet.destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2172,
+          "symbol": "SurveyViewSet.launch",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2218,
+          "symbol": "SurveyViewSet.stop",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2488,
+          "symbol": "SurveyViewSet.archive_response",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 2521,
+          "symbol": "SurveyViewSet.unarchive_response",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/api/survey.py",
+          "line": 3207,
+          "symbol": "SurveyViewSet.duplicate_to_projects",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/apps.py",
+          "line": 15,
+          "symbol": "SurveysConfig.ready",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/surveys/backend/apps.py",
+          "line": 48,
+          "symbol": "SurveysConfig.ready._post_delete",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/heatmaps_api.py",
+          "line": 33,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/web_analytics/backend/api/heatmaps_api.py",
+          "line": 1089,
+          "symbol": "SavedHeatmapViewSet.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/heatmaps_api.py",
+          "line": 1165,
+          "symbol": "SavedHeatmapViewSet.partial_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+          "line": 12,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+          "line": 94,
+          "symbol": "WebAnalyticsFilterPresetSerializer.create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+          "line": 122,
+          "symbol": "WebAnalyticsFilterPresetSerializer.update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 16,
+          "symbol": "module top level",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false,
+          "form": "import"
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 291,
+          "symbol": "HogFlowTemplateViewSet.perform_create",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 324,
+          "symbol": "HogFlowTemplateViewSet.perform_update",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        },
+        {
+          "file": "products/workflows/backend/api/hog_flow_template.py",
+          "line": 339,
+          "symbol": "HogFlowTemplateViewSet.perform_destroy",
+          "class": "chokepoint-reference",
+          "of": "chokepoint",
+          "test": false
+        }
+      ],
+      "testReferences": 0,
+      "files": [
+        "ee/api/ee_property_definition.py",
+        "ee/api/session_summaries.py",
+        "ee/clickhouse/views/groups.py",
+        "posthog/api/cimd_verification_token.py",
+        "posthog/api/cohort.py",
+        "posthog/api/event_definition.py",
+        "posthog/api/file_system/file_system_logging.py",
+        "posthog/api/file_system/registrations.py",
+        "posthog/api/instance_settings.py",
+        "posthog/api/materialized_column_slot.py",
+        "posthog/api/person.py",
+        "posthog/api/product_enablement.py",
+        "posthog/api/project.py",
+        "posthog/api/resource_transfer.py",
+        "posthog/api/sharing.py",
+        "posthog/api/team.py",
+        "posthog/api/utils.py",
+        "posthog/event_usage.py",
+        "posthog/helpers/impersonation.py",
+        "posthog/models/activity_logging/model_activity.py",
+        "posthog/models/activity_logging/signal_handlers.py",
+        "posthog/models/person/bulk_delete.py",
+        "posthog/session_recordings/session_recording_api.py",
+        "posthog/session_recordings/session_recording_playlist_api.py",
+        "posthog/taxonomy/property_definition_api.py",
+        "posthog/test/test_oauth_impersonation.py",
+        "products/cdp/backend/api/hog_function.py",
+        "products/cdp/backend/api/plugin.py",
+        "products/conversations/backend/api/slack_oauth.py",
+        "products/conversations/backend/api/teams_channels.py",
+        "products/conversations/backend/api/teams_oauth.py",
+        "products/conversations/backend/api/tickets.py",
+        "products/customer_analytics/backend/presentation/views/views.py",
+        "products/data_warehouse/backend/presentation/views/saved_query.py",
+        "products/early_access_features/backend/apps.py",
+        "products/endpoints/backend/logic/crud.py",
+        "products/endpoints/backend/logic/materialization.py",
+        "products/error_tracking/backend/presentation/views/issues.py",
+        "products/exports/backend/api/exports.py",
+        "products/feature_flags/backend/api/feature_flag.py",
+        "products/logs/backend/presentation/views/alerts_api.py",
+        "products/notebooks/backend/apps.py",
+        "products/notebooks/backend/presentation/views/notebook.py",
+        "products/product_analytics/backend/api/insight.py",
+        "products/product_tours/backend/api/product_tour.py",
+        "products/signals/backend/views.py",
+        "products/surveys/backend/api/survey.py",
+        "products/surveys/backend/apps.py",
+        "products/web_analytics/backend/api/heatmaps_api.py",
+        "products/web_analytics/backend/api/web_analytics_filter_preset.py",
+        "products/workflows/backend/api/hog_flow_template.py"
+      ],
+      "latency": 13789,
+      "reason": "is_impersonated_session in posthog/models/activity_logging/model_activity.py is reference-choked, enforced by Coherence's check at the edit and in CI: is_impersonated_session is a module attribute any file may import (is_impersonated_session carries no underscore prefix; posthog/models/activity_logging/model_activity.py declares no __all__; reportPrivateUsage is not an error in pyproject.toml [tool.pyright]); every reference in the project is inside the chokepoint"
+    }
+  ],
+  "file": "/tmp/replay-124-68756-draft-hooks-3/posthog/.coherence/runs/kit-witness.jsonl",
+  "instrumentReason": null,
+  "instrumentDied": false
+}
+[exit 0]

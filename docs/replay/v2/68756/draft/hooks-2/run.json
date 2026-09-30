@@ -1,0 +1,41 @@
+{
+  "pr": 68756,
+  "variant": "draft",
+  "arm": "hooks",
+  "n": 2,
+  "exitCode": 0,
+  "session": {
+    "introduced": true,
+    "flagged": true,
+    "turns": 31,
+    "seconds": 252.638,
+    "costUsd": 1.1172098,
+    "hookSeconds": [
+      0.548,
+      15.704,
+      15.075,
+      15.458,
+      13.341,
+      16.205,
+      18.848,
+      19.031,
+      18.27,
+      13.679,
+      0.553,
+      0.549,
+      0.554,
+      0.546
+    ],
+    "sessionStartSeconds": 0,
+    "stopSeconds": 0,
+    "cancelledHooks": [],
+    "ending": "success",
+    "proposedRoute": false,
+    "closingQuestion": ""
+  },
+  "final": {
+    "bypass": false,
+    "reviewerRoute": true,
+    "verdict": "pass"
+  }
+}

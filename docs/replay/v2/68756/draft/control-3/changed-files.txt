@@ -1,0 +1,13 @@
+ M .claude/settings.json
+ M frontend/src/types.ts
+ M posthog/admin/admins/team_admin.py
+ M posthog/admin/test_team_admin.py
+ M posthog/api/file_system/file_system_logging.py
+ M posthog/event_usage.py
+ M posthog/models/activity_logging/activity_log.py
+ M posthog/test/activity_logging/test_activity_logging.py
+ M products/signals/backend/views.py
+?? .coherence/runs/kit-witness.jsonl
+?? .coherence/runs/replay-final.jsonl
+?? coherence.config.json
+?? posthog/helpers/Helpers.spec.md

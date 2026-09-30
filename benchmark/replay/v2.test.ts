@@ -119,7 +119,7 @@ describe("auditing a transcript's commands", () => {
     const records = [
       bash("ls nodejs/src"),
       bash("cd posthog && gh issue create --title x"),
-      answer("cd posthog && gh issue create --title x", "This Bash command contains multiple operations. The following part requires approval: gh issue create --title x", true),
+      answer("cd posthog && gh issue create --title x", "This Bash command contains multiple operations. The following parts require approval: cd posthog, gh issue create --title x", true),
       bash("git diff -- a.json"),
       bash("git push origin HEAD"),
       answer("git push origin HEAD", "This command requires approval", true),

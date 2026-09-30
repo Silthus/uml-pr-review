@@ -160,7 +160,7 @@ export function renderV2(runs: RunRecord[], cases: ReplayCase[], audit: CommandA
 }
 
 const OUTWARD = /(?:^|[\s;&|(])(?:gh|git\s+(?:push|commit)|curl|wget|flox|npm|npx|pnpm|yarn|pip|uv|uvx)(?:\s|$)/m;
-const DENIED = "requires approval";
+const DENIED = /requires? approval/;
 const turn = z.object({ type: z.enum(["assistant", "user"]), message: z.object({ content: z.array(z.unknown()) }) });
 const bashUse = z.object({ type: z.literal("tool_use"), id: z.string(), name: z.literal("Bash"), input: z.object({ command: z.string() }) });
 const toolResult = z.object({ type: z.literal("tool_result"), tool_use_id: z.string(), is_error: z.boolean().default(false), content: z.unknown() });
@@ -172,7 +172,7 @@ function blocks(line: string): unknown[] {
 
 function deniedUse(block: unknown): string[] {
   const result = toolResult.safeParse(block);
-  return result.success && result.data.is_error && JSON.stringify(result.data.content).includes(DENIED) ? [result.data.tool_use_id] : [];
+  return result.success && result.data.is_error && DENIED.test(JSON.stringify(result.data.content)) ? [result.data.tool_use_id] : [];
 }
 
 export function outwardCommands(transcript: string): OutwardCommand[] {

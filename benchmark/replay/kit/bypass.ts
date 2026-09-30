@@ -48,8 +48,17 @@ function typescriptImportBypass(component: string, file: string, symbol: string 
 
 function lintBypass(worktree: string, component: string, tool: string, rule: string, matching: string): Bypass {
   if (tool === "oxlint" && rule === "no-restricted-imports") return { path: join(component, `${TYPESCRIPT_STEM}.ts`), content: `import "${matching}";\n` };
+  if (tool === "oxlint" && FORBID_ELEMENTS.has(rule)) return forbiddenElementBypass(component, matching);
   if (tool === "ruff" && rule === "TID251") return bannedApiBypass(component, bannedApi(worktree, matching));
   throw new Error(`the kit cannot stage a bypass for ${tool}:${rule}`);
+}
+
+const FORBID_ELEMENTS = new Set(["forbid-elements", "react/forbid-elements"]);
+
+function forbiddenElementBypass(component: string, matching: string): Bypass {
+  const element = /^<?([\w.]+)>?$/.exec(matching)?.[1];
+  if (element === undefined) throw new Error(`cannot read an element from the matching text "${matching}"`);
+  return { path: join(component, `${TYPESCRIPT_STEM}.tsx`), content: `export const KitWitnessBypass = () => <${element} />;\n` };
 }
 
 function bannedApiBypass(component: string, api: string): Bypass {

@@ -165,8 +165,42 @@ function auditLines(audit: CommandAudit): string[] {
   ];
 }
 
+function protocolSection(title: string, method: string[], runs: RunRecord[], cases: ReplayCase[], audit: CommandAudit): string {
+  return [`## ${title}`, "", ...method, ...auditLines(audit), ...cases.flatMap((replay) => caseSection(replay, runs))].join("\n");
+}
+
 export function renderV2(runs: RunRecord[], cases: ReplayCase[], audit: CommandAudit): string {
-  return ["## v2: protocol without the confound", "", ...METHOD, ...auditLines(audit), ...cases.flatMap((replay) => caseSection(replay, runs))].join("\n");
+  return protocolSection("v2: protocol without the confound", METHOD, runs, cases, audit);
+}
+
+const V3_METHOD = [
+  "v2's TypeScript case, #64506, ran at PostHog master, where its PR is already merged, so the violation never arose (0 of 12 runs). v3 replays one TypeScript case at its PR's merge base, where it can. Everything else is v2's protocol: the draft and intent prompts, the edit hook only, 3 hooks and 3 control runs per variant, a fresh kit per run, the witness red then green, PostHog's own SessionStart scripts removed in both arms, and the `~/posthog` check after every run. Kits are `/tmp/replay-127-<pr>-<variant>-<arm>-<n>`, and evidence is in `docs/replay/v2/<pr>/<variant>/<arm>-<n>/`. The command was `bun benchmark/replay/run.ts 53044 --arm hooks|control --runs 3 --variant draft|intent --kits /tmp/replay-127`.",
+  "",
+  "**The case.** [#53044](https://github.com/PostHog/posthog/pull/53044) replaced the notebook table's BubbleMenu with grip handles. The reviewer [asked](https://github.com/PostHog/posthog/pull/53044#discussion_r3023804339) \"Any reason this isn't a lemon button with custom styling?\", and the author swapped the grip's raw `<button>` for `LemonButton` in [`b43aacf`](https://github.com/PostHog/posthog/commit/b43aacfd88). The runs start at the merge base of the correction's `before` commit `99df399` with master, `781a8ca` (2026-04-02).",
+  "",
+  "**Validity.** The violation is possible. The draft is `TableMenu.tsx` at `99df399`, byte for byte, and it renders the grip as a raw `<button` (line 102). At `781a8ca`, `TableMenu.tsx` is the old 56-line BubbleMenu with no grip handle, so the fix is not in the tree.",
+  "",
+  "**The declaration.** `Notebooks.spec.md` declares `buttons are LemonButtons` as a totality oracle, `via: lint oxlint:react/forbid-elements matching \"<button>\"`. oxlint 1.72 has `react/forbid-elements`, and PostHog's root `.oxlintrc.json` already uses it at `781a8ca` to ban antd components, so no plugin is needed. The declaration adds one override for `frontend/src/scenes/notebooks/**/*.tsx`: the root's `forbid` list plus `button`, with a message that names the invariant's short name and its spec. Coherence's `oxlint` lint command is pointed at that config and folder.",
+  "",
+  "**Existing violations are the listed residual, not fixed.** At `781a8ca`, three notebook files render a raw `<button>` (`Nodes/NotebookNodeDuckSQL.tsx`, `NotebookNodeHogQL.tsx`, `NotebookNodePython.tsx`, four sites). A second override restores the root rule for exactly those files. The scope is notebooks, not `frontend/src/scenes/**`, because 49 files under `scenes/` render a raw `<button>` at that commit.",
+  "",
+  "**Setup deviations.**",
+  "",
+  "- oxlint is PostHog master's 1.72, linked through `node_modules`, not the version pinned in April. It rejects the April config's `\"react/prop-types\": \"off\"` (\"Rule 'prop-types' not found in plugin 'react'\"), so the case removes that one line, identically in both arms, as a pre-declaration fix. With it gone the config parses, and the witness goes red, then green over 115 files.",
+  "- `nodejs/.oxlintrc.nodejs.json` did not exist in April, so the kit skips its `coherence/chokepoint` rule at this ref and says so. The case does not use that rule.",
+  "- The four arm-and-variant processes ran at the same time. The runs inside each ran one after another.",
+  "",
+  "Threats to validity:",
+  "",
+  "- **The reviewer's-route column says nothing here.** The case's route is `<LemonButton`, and the file at the merge base and the draft both already contain it.",
+  "- **The declaration is visible in both arms**, as in v2: the spec and the lint override are uncommitted in the `/tmp` worktree.",
+  "- **`node_modules` is master's, not April's.** Only oxlint reads it here; headless agents cannot run the type checker or tests.",
+  "- **The sample is small.** Three runs per arm and variant describe these runs. They do not give a rate.",
+  "",
+];
+
+export function renderV3(runs: RunRecord[], cases: ReplayCase[], audit: CommandAudit): string {
+  return protocolSection("v3: a TypeScript case that can fire, at its merge base", V3_METHOD, runs, cases, audit);
 }
 
 const OWN_EXIT_CODE = /^\W*Exit code \d+/;

@@ -1,0 +1,65 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/replay.test.ts:
+13 |             throw new core.$ZodAsyncError();
+14 |         }
+15 |         if (result.issues.length) {
+16 |             const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => util.finalizeIssue(iss, ctx, core.config())));
+17 |             util.captureStackTrace(e, _params?.callee ?? fn);
+18 |             throw e;
+                       ^
+ZodError: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "lint",
+      "pattern"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  }
+]
+      at fn (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/node_modules/zod/v4/core/parse.js:18:19)
+      at loadCase (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/replay.ts:45:26)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/replay.test.ts:64:17)
+(fail) declaring a case in a worktree > the TSX case forbids a raw <button> in notebooks, lists today's raw buttons as the residual, and points Coherence's oxlint at notebooks [1.02ms]
+
+benchmark/replay/kit/kit.test.ts:
+159 |   delete withoutDirectiveReports["reportUnusedDisableDirectives"];
+160 |   return withoutDirectiveReports;
+161 | }
+162 | 
+163 | function readOxlintConfig(path: string) {
+164 |   return oxlintConfig.parse(Bun.JSONC.parse(readFileSync(path, "utf8")));
+                                                  ^
+ENOENT: no such file or directory, open '/tmp/kit-test-LfA7hH/kit-ts-before-oxlint/posthog/nodejs/.oxlintrc.nodejs.json'
+    path: "/tmp/kit-test-LfA7hH/kit-ts-before-oxlint/posthog/nodejs/.oxlintrc.nodejs.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at readOxlintConfig (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.ts:164:45)
+      at enableChokepointRule (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.ts:181:18)
+      at prepare (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.ts:232:42)
+      at async setUp (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.ts:217:11)
+      at async captured (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.test.ts:199:24)
+      at async <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.test.ts:275:30)
+(fail) the dogfood kit > a TypeScript worktree at a ref from before nodejs linted with oxlint sets up without the chokepoint rule, and says so [35.17ms]
+47 | }
+48 | 
+49 | function lintBypass(worktree: string, component: string, tool: string, rule: string, matching: string): Bypass {
+50 |   if (tool === "oxlint" && rule === "no-restricted-imports") return { path: join(component, `${TYPESCRIPT_STEM}.ts`), content: `import "${matching}";\n` };
+51 |   if (tool === "ruff" && rule === "TID251") return bannedApiBypass(component, bannedApi(worktree, matching));
+52 |   throw new Error(`the kit cannot stage a bypass for ${tool}:${rule}`);
+                 ^
+error: the kit cannot stage a bypass for oxlint:react/forbid-elements
+      at lintBypass (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/bypass.ts:52:13)
+      at witness (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.ts:328:18)
+      at captured (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.test.ts:199:24)
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-ac6a11935c893de06/benchmark/replay/kit/kit.test.ts:371:40)
+(fail) the dogfood kit > witnessing an invariant's enforcer > a forbidden-element oracle is refuted with the element rendered in a staged TSX file, then passes [0.55ms]
+
+ 28 pass
+ 3 fail
+ 68 expect() calls
+Ran 31 tests across 2 files. [1013.00ms]

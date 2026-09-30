@@ -1,0 +1,27 @@
+{
+  "pr": 53044,
+  "language": "typescript",
+  "ref": "781a8ca58776bbb0669e4aa77cfbaa4492aa40db",
+  "file": "frontend/src/scenes/notebooks/Notebook/TableMenu.tsx",
+  "spec": "frontend/src/scenes/notebooks/Notebooks.spec.md",
+  "invariant": "frontend/src/scenes/notebooks/buttons are LemonButtons",
+  "bypass": "<button",
+  "reviewerRoute": "<LemonButton",
+  "fixes": [{ "file": ".oxlintrc.json", "replace": "        \"react/prop-types\": \"off\",\n", "with": "" }],
+  "lint": {
+    "config": ".oxlintrc.json",
+    "override": "frontend/src/scenes/notebooks/**/*.tsx",
+    "forbid": {
+      "element": "button",
+      "message": "buttons are LemonButtons (frontend/src/scenes/notebooks/Notebooks.spec.md): use <LemonButton> instead of a raw <button>."
+    },
+    "residual": [
+      "frontend/src/scenes/notebooks/Nodes/NotebookNodeDuckSQL.tsx",
+      "frontend/src/scenes/notebooks/Nodes/NotebookNodeHogQL.tsx",
+      "frontend/src/scenes/notebooks/Nodes/NotebookNodePython.tsx"
+    ],
+    "target": "frontend/src/scenes/notebooks"
+  },
+  "notes": [],
+  "v2Notes": []
+}

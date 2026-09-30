@@ -55,6 +55,43 @@ describe("declaring a case in a worktree", () => {
     ]);
   });
 
+  test("the TSX case drops the rule oxlint 1.72 lacks, forbids a raw <button> in notebooks, lists today's raw buttons as the residual, and points Coherence's oxlint at notebooks", () => {
+    const worktree = mkdtempSync(join(scratch, "worktree-"));
+    const rootRule = ["error", { forbid: [{ element: "a", message: "use <Link> instead" }] }];
+    write(worktree, ".oxlintrc.json", `{\n    "rules": {\n        "react/prop-types": "off",\n        "react/forbid-elements": ${JSON.stringify(rootRule)}\n    },\n    "overrides": [{ "files": ["*.stories.tsx"], "rules": {} }]\n}\n`);
+    write(worktree, "coherence.config.json", JSON.stringify({ language: "typescript", lint: { oxlint: { command: ["/bin/oxlint", "-c", "nodejs/.oxlintrc.nodejs.json", "--format", "json", "nodejs"], format: "oxlint-json" } } }));
+
+    declareCase(loadCase("53044"), worktree);
+
+    expect(read(worktree, "frontend/src/scenes/notebooks/Notebooks.spec.md")).toContain('via: lint oxlint:react/forbid-elements matching "<button>"');
+    expect(JSON.parse(read(worktree, ".oxlintrc.json")).rules).toEqual({ "react/forbid-elements": rootRule });
+    expect(JSON.parse(read(worktree, ".oxlintrc.json")).overrides).toEqual([
+      { files: ["*.stories.tsx"], rules: {} },
+      {
+        files: ["frontend/src/scenes/notebooks/**/*.tsx"],
+        rules: {
+          "react/forbid-elements": [
+            "error",
+            {
+              forbid: [
+                { element: "a", message: "use <Link> instead" },
+                { element: "button", message: "buttons are LemonButtons (frontend/src/scenes/notebooks/Notebooks.spec.md): use <LemonButton> instead of a raw <button>." },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        files: ["frontend/src/scenes/notebooks/Nodes/NotebookNodeDuckSQL.tsx", "frontend/src/scenes/notebooks/Nodes/NotebookNodeHogQL.tsx", "frontend/src/scenes/notebooks/Nodes/NotebookNodePython.tsx"],
+        rules: { "react/forbid-elements": rootRule },
+      },
+    ]);
+    expect(JSON.parse(read(worktree, "coherence.config.json")).lint.oxlint).toEqual({
+      command: ["/bin/oxlint", "-c", ".oxlintrc.json", "--format", "json", "frontend/src/scenes/notebooks"],
+      format: "oxlint-json",
+    });
+  });
+
   test("the Python case fixes the existing bypasses before it declares the chokepoint", () => {
     const worktree = mkdtempSync(join(scratch, "worktree-"));
     const bypassing = 'from posthog.models.activity_logging.model_activity import is_impersonated_session\n\n"was": is_impersonated_session(request),\n';

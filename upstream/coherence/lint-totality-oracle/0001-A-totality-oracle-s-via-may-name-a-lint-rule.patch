@@ -1,0 +1,217 @@
+From 90473e833b223f4ef795818253c927e3905cc72f Mon Sep 17 00:00:00 2001
+From: "Reichenbach, Michael" <755327+Silthus@users.noreply.github.com>
+Date: Wed, 30 Sep 2026 11:02:06 +0000
+Subject: [PATCH 1/3] A totality oracle's via may name a lint rule
+
+`via: lint <tool>:<rule>` or `via: lint <tool>:<rule> matching "<text>"`
+names a rule the project's linter runs as the detector, instead of a test.
+The tool names an entry in the config, the rule is the tool's own id, and
+the matching text keeps only the findings whose message carries it, since
+one rule id carries many patterns. over: still names the set in prose.
+
+A value that begins with lint and does not read in this form is a spec
+problem with its line, never taken as a test title; the bullet carries no
+enforcement until it is fixed.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ docs/spec.md          | 22 ++++++++++++++++++
+ src/spec/Spec.spec.md |  7 ++++++
+ src/spec/grammar.ts   | 52 ++++++++++++++++++++++++++++++++++++++-----
+ src/spec/spec.test.ts | 41 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 117 insertions(+), 5 deletions(-)
+
+diff --git a/docs/spec.md b/docs/spec.md
+index 90905b9..5ef2b29 100644
+--- a/docs/spec.md
++++ b/docs/spec.md
+@@ -92,6 +92,28 @@ names the whole set the detector is total over and the test:
+   checklist: scoped-reads dismissed: reads are the capability invariant's
+ ```
+ 
++The detector may instead be a rule the project's linter runs, written
++`via: lint <tool>:<rule>` or `via: lint <tool>:<rule> matching "<text>"`.
++The tool names an entry under `lint` in `coherence.config.json`, the rule is
++the tool's own id, and `matching` keeps only the findings whose message
++carries the text, because one rule id carries many patterns. It fits a scoped
++ban or a paved path over an external API, which no chokepoint can express:
++
++```markdown
++- ingestion never reaches cdp: Ingestion code depends on CDP only through the interfaces in ~/common.
++  over: every non-test import under nodejs/src/ingestion except the listed residual: legacy/replay.ts
++  via: lint oxlint:no-restricted-imports matching "~/cdp"
++  because: ingestion and CDP deploy apart, and a direct import couples their releases
++  kinds: none
++```
++
++The rule is total over the set the lint config names. What that config
++excludes (its ignore patterns, its per-file ignores) is the listed residual,
++and `over:` names the same files; there is no count and no stored list of
++known findings. It is refuted like any totality oracle: stage a finding, run
++`refute`, restore, run. A value that begins with `lint` and does not read in
++this form is a spec problem, never taken as a test name.
++
+ `because` says why the invariant exists and what it protects against.
+ `crossing` is the security marker: two trust levels the entry spec declares.
+ `refuted` is the human account of a witnessed firing: what was broken, what
+diff --git a/src/spec/Spec.spec.md b/src/spec/Spec.spec.md
+index 36c7db9..41e6ace 100644
+--- a/src/spec/Spec.spec.md
++++ b/src/spec/Spec.spec.md
+@@ -49,6 +49,13 @@ The spec grammar and the model: one bullet shape, with each bullet's state deriv
+   crossing: project-source -> reading
+   refuted: let a bullet carrying one key of an enforcement pair through without a problem -> "half an enforcement form, an unknown key, a bad crossing, and a bad refutation are problems" went red in spec.test.ts; restored, green (2026-09-17)
+   kinds: none
++- a lint via reads in one form: A via that begins with lint names a tool, a rule, and an optional quoted matching text; any other value that begins with lint is a problem reported with its file and line, never taken as a test name.
++  over: every via value on every bullet
++  via: a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem
++  because: a lint via that does not parse would otherwise fall through to the test runner as a test title that no test carries, and the totality oracle would read not run or fail for a reason that is not the rule; refused where it is written, it is fixed before any run
++  crossing: project-source -> reading
++  refuted: made the lint via parser drop the quoted matching text, so every lint via read as the whole rule -> the totality oracle went red, then green once restored (2026-09-30)
++  kinds: none
+ - trust levels in the entry spec only: A crossing names two declared trust levels, and only the entry spec declares them.
+   over: every crossing in every spec and every trust levels section
+   via: the model: crossings name declared trust levels, and only the entry spec declares them
+diff --git a/src/spec/grammar.ts b/src/spec/grammar.ts
+index 9abb3f4..b57a543 100644
+--- a/src/spec/grammar.ts
++++ b/src/spec/grammar.ts
+@@ -22,7 +22,7 @@
+  *     protects: <symbol or module>            chokepoint form, with
+  *     chokepoint: <symbol>
+  *     over: <the set the detector is total over>   totality oracle form, with
+- *     via: <the test>
++ *     via: <the test> | lint <tool>:<rule>[ matching "<text>"]   a test, or a rule the project's linter runs
+  *     because: <why it exists, what it protects against>
+  *     crossing: <trust level> -> <trust level>
+  *     refuted: <what was broken> -> <what was seen> (YYYY-MM-DD)   the human account of a refutation record
+@@ -129,9 +129,40 @@ export function isModuleHandler(handler: string): boolean {
+   return /^[A-Za-z0-9_./@-]+\.[A-Za-z]+$/.test(handler.trim()) && !/\s/.test(handler.trim());
+ }
+ 
++/**
++ * A totality oracle whose detector is a lint rule rather than a test: the
++ * tool names an entry in the config's `lint`, the rule is the tool's own rule
++ * id, and the matching text, when given, keeps only the findings whose
++ * message carries it, since one rule id carries many patterns.
++ */
++export interface LintDetector {
++  tool: string;
++  rule: string;
++  matching: string | undefined;
++}
++
++/** How a lint via is written, for the problem that names it. The matching text holds no double quote. */
++export const LINT_VIA_FORM = 'lint <tool>:<rule> or lint <tool>:<rule> matching "<text>"';
++
++/** What a lint tool may be called, in the config and in a via. */
++export const LINT_TOOL_NAME = /^[A-Za-z0-9_.-]+$/;
++
++const LINT_VIA = /^lint\s+([A-Za-z0-9_.-]+):([^\s"]+)(?:\s+matching\s+"([^"]+)")?$/;
++
++/** Whether a via value is written in the lint form: it begins with the word lint. A test title that does is refused, not guessed at. */
++export function isLintVia(via: string): boolean {
++  return /^lint\s/.test(via);
++}
++
++/** The lint detector a via names, or undefined when the value does not read as one. */
++export function lintDetector(via: string): LintDetector | undefined {
++  const match = LINT_VIA.exec(via.trim());
++  return match === null ? undefined : { tool: match[1]!, rule: match[2]!, matching: match[3] };
++}
++
+ export type Enforcement =
+   | { form: "chokepoint"; protects: string; chokepoint: string; line: number }
+-  | { form: "totality oracle"; over: string; via: string; line: number };
++  | { form: "totality oracle"; over: string; via: string; line: number; lint?: LintDetector };
+ 
+ export interface Refutation {
+   broke: string;
+@@ -515,7 +546,7 @@ function buildInvariant(bullet: RawBullet, problem: (line: number, message: stri
+   const pair = (
+     a: Key,
+     b: Key,
+-    make: (x: string, y: string, line: number) => Enforcement,
++    make: (x: string, y: string, line: number, secondLine: number) => Enforcement | undefined,
+     form: string,
+   ): void => {
+     const fa = single.get(a);
+@@ -528,10 +559,21 @@ function buildInvariant(bullet: RawBullet, problem: (line: number, message: stri
+     }
+     const x = filled(a);
+     const y = filled(b);
+-    if (x !== undefined && y !== undefined) enforcements.push(make(x, y, fa.line));
++    const made = x === undefined || y === undefined ? undefined : make(x, y, fa.line, fb.line);
++    if (made !== undefined) enforcements.push(made);
+   };
+   pair("protects", "chokepoint", (protects, chokepoint, line) => ({ form: "chokepoint", protects, chokepoint, line }), "the chokepoint form");
+-  pair("over", "via", (over, via, line) => ({ form: "totality oracle", over, via, line }), "the totality oracle form");
++  pair("over", "via", totalityOracle, "the totality oracle form");
++
++  function totalityOracle(over: string, via: string, line: number, viaLine: number): Enforcement | undefined {
++    if (!isLintVia(via)) return { form: "totality oracle", over, via, line };
++    const lint = lintDetector(via);
++    if (lint === undefined) {
++      problem(viaLine, `via on ${bullet.name} reads ${LINT_VIA_FORM}`);
++      return undefined;
++    }
++    return { form: "totality oracle", over, via, line, lint };
++  }
+ 
+   const because = filled("because");
+ 
+diff --git a/src/spec/spec.test.ts b/src/spec/spec.test.ts
+index e641ba4..bf6e044 100644
+--- a/src/spec/spec.test.ts
++++ b/src/spec/spec.test.ts
+@@ -233,6 +233,47 @@ test("half an enforcement form, an unknown key, a bad crossing, and a bad refuta
+   assert.ok(messages.some((m) => m.includes("checklist on half reads <shape> declared as <invariant name> or <shape> dismissed: <reason>")));
+ });
+ 
++test("a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem", () => {
++  const parsed = parseSpec(
++    `${ENTRY}- ingestion never reaches cdp: Ingestion code depends on CDP only through the interfaces in ~/common.
++  over: every non-test import under src/ingestion
++  via: lint oxlint:no-restricted-imports matching "~/cdp"
++- settings read through django: Settings are read through django.conf.settings.
++  over: every Python file ruff lints
++  via: lint ruff:TID251
++- no rule named: A lint value without its rule.
++  over: every file
++  via: lint oxlint
++- unquoted text: A lint value whose matching text is not quoted.
++  over: every file
++  via: lint ruff:TID251 matching is_impersonated_session
++- a test named lint rules: The lint rules load.
++  over: every rule
++  via: lint rules load
++- a test title: A plain test.
++  over: every column
++  via: egress digest totality
++`,
++    "X.spec.md",
++    { seed },
++  );
++  const detectors = Object.fromEntries(parsed.invariants.map((i) => [i.name, i.enforcements.map((e) => (e.form === "totality oracle" ? e.lint ?? "test" : e.form))]));
++  assert.deepEqual(detectors, {
++    "ingestion never reaches cdp": [{ tool: "oxlint", rule: "no-restricted-imports", matching: "~/cdp" }],
++    "settings read through django": [{ tool: "ruff", rule: "TID251", matching: undefined }],
++    "no rule named": [],
++    "unquoted text": [],
++    "a test named lint rules": [],
++    "a test title": ["test"],
++  });
++  const messages = parsed.problems.map((p) => `${p.line}: ${p.message}`);
++  assert.deepEqual(messages, [
++    `19: via on no rule named reads lint <tool>:<rule> or lint <tool>:<rule> matching "<text>"`,
++    `22: via on unquoted text reads lint <tool>:<rule> or lint <tool>:<rule> matching "<text>"`,
++    `25: via on a test named lint rules reads lint <tool>:<rule> or lint <tool>:<rule> matching "<text>"`,
++  ]);
++});
++
+ test("every retired section is refused by name with its replacement", () => {
+   assert.ok(RETIRED_SECTIONS.length >= 7);
+   for (const retired of RETIRED_SECTIONS) {
+-- 
+2.43.0
+

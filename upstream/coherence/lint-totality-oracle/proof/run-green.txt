@@ -1,0 +1,19 @@
+src/enforcement/a lint rule is a totality oracle's detector
+  totality oracle: pass (6.3 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<6 names> src/**/*.test.ts
+src/enforcement/a lint tool not configured never passes
+  totality oracle: pass (6.3 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<6 names> src/**/*.test.ts
+src/enforcement/each lint format reads its tool's own report
+  totality oracle: pass (6.3 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<6 names> src/**/*.test.ts
+src/enforcement/a lint via never reaches the test runner
+  totality oracle: pass (6.3 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "the batched test invocation carries the test titles alone: a lint via never reaches the test runner" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<6 names> src/**/*.test.ts
+src/lifecycle/lint revelation at the edit
+  totality oracle: pass (6.3 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<6 names> src/**/*.test.ts
+src/spec/a lint via reads in one form
+  totality oracle: pass (6.3 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<6 names> src/**/*.test.ts
+run recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl: 6 enforcements, 6 pass, 0 fail, 0 not run; instrument typescript (cold); 6.5 s

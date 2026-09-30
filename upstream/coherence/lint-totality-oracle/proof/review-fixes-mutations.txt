@@ -1,0 +1,90 @@
+=== mutation: ruff's 'No Python files found' warning ignored (finding 1)
+@@ -255,5 +255,5 @@
+     message: d.message ?? "",
+     unparsed: d.code === null || d.code === undefined || d.code === "invalid-syntax",
+   }));
+-  return { diagnostics, linted: /No Python files found/.test(stderr) ? 0 : undefined };
++  return { diagnostics, linted: undefined };
+ }
+ok 1 - each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
+not ok 2 - a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
+ok 3 - a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
+ok 4 - the batched test invocation carries the test titles alone: a lint via never reaches the test runner
+ok 5 - PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
+# pass 4
+# fail 1
+=== mutation: a file that did not parse ignored (finding 2)
+@@ -126,7 +126,7 @@
+     };
+   }
+   const unparsed = report.diagnostics.filter((d) => d.unparsed).map(found);
+-  if (unparsed.length > 0) {
++  if (unparsed.length < 0) {
+     const files = [...new Set(unparsed.map((u) => u.file))];
+     return {
+       verdict: "not run",
+ok 1 - each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
+not ok 2 - a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
+ok 3 - a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
+ok 4 - the batched test invocation carries the test titles alone: a lint via never reaches the test runner
+ok 5 - PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
+# pass 4
+# fail 1
+=== mutation: lint vias sent to the batched test invocation (finding 4)
+@@ -135,7 +135,7 @@
+   let batchLatency = 0;
+   // An observed run rides the same one invocation: the observer only adds coverage to it.
+   const observing = options.observe === true && wantTotality && config.testJson !== undefined ? createObserver(root, config) : undefined;
+-  const vias: TotalityVia[] = selected.flatMap(({ component, invariant }) => testedEnforcements(invariant).map(({ via }) => ({ component, name: invariant.name, filter: adapter?.testFilter(via) ?? via })));
++  const vias: TotalityVia[] = selected.flatMap(({ component, invariant }) => totalityEnforcements(invariant).map(({ via }) => ({ component, name: invariant.name, filter: adapter?.testFilter(via) ?? via })));
+   if (wantTotality) {
+     const filters = vias.map((o) => o.filter);
+     const t0 = Date.now();
+ok 1 - each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
+ok 2 - a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
+ok 3 - a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
+not ok 4 - the batched test invocation carries the test titles alone: a lint via never reaches the test runner
+ok 5 - PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
+# pass 4
+# fail 1
+=== mutation: a scoped check that linted no file read as not run (finding 5)
+@@ -112,7 +112,7 @@
+   if (outcome.kind === "unfinished") return { verdict: "fail", reason: outcome.reason, command: outcome.command, tail: outcome.tail, findings: [], unfinished: true };
+   if (outcome.kind === "outside") return { verdict: "pass", reason: `none of the ${outcome.handed} files handed to it is a file ${via.tool} lints`, command: undefined, tail: "", findings: [] };
+   const { report, command } = outcome;
+-  if (report.linted === 0 && whole) return { verdict: "not run", reason: `${command} linted no file, so ${named(via)} was checked over nothing`, command, tail: "", findings: [] };
++  if (report.linted === 0) return { verdict: "not run", reason: `${command} linted no file, so ${named(via)} was checked over nothing`, command, tail: "", findings: [] };
+   const found = (d: Diagnostic): LintFinding => ({ file: projectPath(root, d.file), line: d.line, message: d.message });
+   const findings = report.diagnostics.filter((d) => d.rules.includes(via.rule) && (via.matching === undefined || d.message.includes(via.matching))).map(found);
+   if (findings.length > 0) {
+ok 1 - each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
+ok 2 - a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
+ok 3 - a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
+ok 4 - the batched test invocation carries the test titles alone: a lint via never reaches the test runner
+not ok 5 - PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
+# pass 4
+# fail 1
+=== mutation: every written file handed to every linter (finding 3)
+@@ -92,7 +92,7 @@
+   }
+   const format = FORMATS[tool.format];
+   const handed = files?.filter((file) => format.extensions.includes(extname(file).toLowerCase()));
+-  if (files !== undefined && handed!.length === 0) return { kind: "outside", handed: files.length };
++
+   const [command, ...args] = tool.command;
+   const shown = [command!, ...args].map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ");
+   const heard = await capture(root, command!, [...args, ...(handed ?? [])], timeoutMs);
+ok 1 - each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
+ok 2 - a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
+ok 3 - a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
+ok 4 - the batched test invocation carries the test titles alone: a lint via never reaches the test runner
+not ok 5 - PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
+# pass 4
+# fail 1
+ src/enforcement/config.ts    |   2 +
+ src/enforcement/lint.test.ts | 167 ++++++++++++++++++++++++++++++++-----------
+ src/enforcement/lint.ts      | 154 +++++++++++++++++++++++++++------------
+ src/enforcement/run.ts       |  23 ++++--
+ src/lifecycle/hook.ts        |  15 ++--
+ src/spec/grammar.ts          |  11 +--
+ 6 files changed, 272 insertions(+), 100 deletions(-)

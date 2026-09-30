@@ -1,0 +1,126 @@
+=== staged break in src/spec/grammar.ts
+diff --git a/src/spec/grammar.ts b/src/spec/grammar.ts
+index b57a543..2642e54 100644
+--- a/src/spec/grammar.ts
++++ b/src/spec/grammar.ts
+@@ -157,7 +157,7 @@ export function isLintVia(via: string): boolean {
+ /** The lint detector a via names, or undefined when the value does not read as one. */
+ export function lintDetector(via: string): LintDetector | undefined {
+   const match = LINT_VIA.exec(via.trim());
+-  return match === null ? undefined : { tool: match[1]!, rule: match[2]!, matching: match[3] };
++  return match === null ? undefined : { tool: match[1]!, rule: match[2]!, matching: undefined };
+ }
+ 
+ export type Enforcement =
+$ coherence refute "src/spec/a lint via reads in one form" --broke "made the lint via parser drop the quoted matching text, so every lint via read as the whole rule"
+refuted src/spec/a lint via reads in one form (totality oracle): made the lint via parser drop the quoted matching text, so every lint via read as the whole rule
+  the detector went red: 1 of 1 tests under "a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem" failed: a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem
+  recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl at 2026-09-30T11:02:25.252Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+restored src/spec/grammar.ts
+=== staged break in src/enforcement/run.ts
+diff --git a/src/enforcement/run.ts b/src/enforcement/run.ts
+index 3ee30cc..8c870bc 100644
+--- a/src/enforcement/run.ts
++++ b/src/enforcement/run.ts
+@@ -82,7 +82,7 @@ function chokepointEnforcements(invariant: ModelInvariant): { protects: string;
+ }
+ 
+ function totalityEnforcements(invariant: ModelInvariant): { over: string; via: string; lint: LintDetector | undefined }[] {
+-  return invariant.enforcements.flatMap((e) => (e.form === "totality oracle" ? [{ over: e.over, via: e.via, lint: e.lint }] : []));
++  return invariant.enforcements.flatMap((e) => (e.form === "totality oracle" ? [{ over: e.over, via: e.via, lint: undefined }] : []));
+ }
+ 
+ function testedEnforcements(invariant: ModelInvariant): { over: string; via: string }[] {
+$ coherence refute "src/enforcement/a lint rule is a totality oracle's detector" --broke "sent a lint via to the test runner as a test title again"
+refuted src/enforcement/a lint rule is a totality oracle's detector (totality oracle): sent a lint via to the test runner as a test title again
+  the detector went red: 1 of 1 tests under "a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed" failed: a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
+  recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl at 2026-09-30T11:02:32.848Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+restored src/enforcement/run.ts
+=== staged break in src/enforcement/lint.ts
+diff --git a/src/enforcement/lint.ts b/src/enforcement/lint.ts
+index 67c3f98..23a8f58 100644
+--- a/src/enforcement/lint.ts
++++ b/src/enforcement/lint.ts
+@@ -87,6 +87,7 @@ export async function lintTotalityOracles(root: string, config: EnforcementConfi
+ 
+ async function runTool(root: string, config: EnforcementConfig, name: string, files: readonly string[] | undefined, timeoutMs: number): Promise<ToolOutcome> {
+   const tool = config.lint[name];
++  if (tool === undefined) return { kind: "report", report: { diagnostics: [], linted: undefined }, command: name };
+   if (tool === undefined) {
+     return { kind: "not run", reason: `no lint tool "${name}" is configured; add lint.${name} to coherence.config.json with its command and its format (${LINT_FORMATS.join(" or ")})`, command: undefined, tail: "" };
+   }
+$ coherence refute "src/enforcement/a lint tool not configured never passes" --broke "made an unconfigured lint tool report pass"
+refuted src/enforcement/a lint tool not configured never passes (totality oracle): made an unconfigured lint tool report pass
+  the detector went red: 1 of 1 tests under "a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass" failed: a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
+  recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl at 2026-09-30T11:02:43.283Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+restored src/enforcement/lint.ts
+=== staged break in src/enforcement/lint.ts
+diff --git a/src/enforcement/lint.ts b/src/enforcement/lint.ts
+index 67c3f98..475bd78 100644
+--- a/src/enforcement/lint.ts
++++ b/src/enforcement/lint.ts
+@@ -219,7 +219,7 @@ function readOxlintJson(stdout: string): LintReport {
+     rules: oxlintRuleIds(d.code ?? ""),
+     file: d.filename ?? "",
+     line: d.labels?.[0]?.span?.line ?? 1,
+-    message: d.help === undefined || d.help === "" ? (d.message ?? "") : `${d.message ?? ""} ${d.help}`,
++    message: d.message ?? "",
+     unparsed: d.code === undefined || d.code === "",
+   }));
+   return { diagnostics, linted: typeof parsed.number_of_files === "number" ? parsed.number_of_files : undefined };
+$ coherence refute "src/enforcement/each lint format reads its tool's own report" --broke "made the oxlint format read the message without its help"
+refuted src/enforcement/each lint format reads its tool's own report (totality oracle): made the oxlint format read the message without its help
+  the detector went red: 1 of 1 tests under "each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line" failed: each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
+  recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl at 2026-09-30T11:02:50.016Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+restored src/enforcement/lint.ts
+=== staged break in src/lifecycle/hook.ts
+diff --git a/src/lifecycle/hook.ts b/src/lifecycle/hook.ts
+index 83fbd39..6eef56a 100644
+--- a/src/lifecycle/hook.ts
++++ b/src/lifecycle/hook.ts
+@@ -554,7 +554,7 @@ async function lintAtEdit(root: string, input: HookInput, files: string[], model
+   const detectors = model.components.flatMap((c) =>
+     c.invariants.flatMap((i) => i.enforcements.flatMap((e) => (e.form === "totality oracle" && e.lint !== undefined ? [{ component: c.folder, name: i.name, over: e.over, via: e.via, lint: e.lint }] : []))),
+   );
+-  if (detectors.length === 0) return "";
++  if (detectors.length >= 0) return "";
+   const config = readEnforcementConfig(root);
+   const results = await lintTotalityOracles(root, config, detectors.map((d) => d.lint), files, EDIT_LINT_TIMEOUT_MS);
+   const checked = detectors.map((detector, i) => ({ ...detector, result: results[i]! }));
+$ coherence refute "src/lifecycle/lint revelation at the edit" --broke "made the edit hook skip the lint totality oracles"
+refuted src/lifecycle/lint revelation at the edit (totality oracle): made the edit hook skip the lint totality oracles
+  the detector went red: 1 of 1 tests under "PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing" failed: PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
+  recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl at 2026-09-30T11:02:56.676Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+restored src/lifecycle/hook.ts
+=== staged break in src/enforcement/run.ts
+diff --git a/src/enforcement/run.ts b/src/enforcement/run.ts
+index 3ee30cc..c91a40c 100644
+--- a/src/enforcement/run.ts
++++ b/src/enforcement/run.ts
+@@ -135,7 +135,7 @@ export async function performRun(root: string, options: RunOptions): Promise<Run
+   let batchLatency = 0;
+   // An observed run rides the same one invocation: the observer only adds coverage to it.
+   const observing = options.observe === true && wantTotality && config.testJson !== undefined ? createObserver(root, config) : undefined;
+-  const vias: TotalityVia[] = selected.flatMap(({ component, invariant }) => testedEnforcements(invariant).map(({ via }) => ({ component, name: invariant.name, filter: adapter?.testFilter(via) ?? via })));
++  const vias: TotalityVia[] = selected.flatMap(({ component, invariant }) => totalityEnforcements(invariant).map(({ via }) => ({ component, name: invariant.name, filter: adapter?.testFilter(via) ?? via })));
+   if (wantTotality) {
+     const filters = vias.map((o) => o.filter);
+     const t0 = Date.now();
+$ coherence refute "src/enforcement/a lint via never reaches the test runner" --broke "sent every totality oracle's via to the batched test invocation, lint vias included"
+refuted src/enforcement/a lint via never reaches the test runner (totality oracle): sent every totality oracle's via to the batched test invocation, lint vias included
+  the detector went red: 1 of 1 tests under "the batched test invocation carries the test titles alone: a lint via never reaches the test runner" failed: the batched test invocation carries the test titles alone: a lint via never reaches the test runner
+  recorded in .coherence/runs/lint-totality-oracle-refutations.jsonl at 2026-09-30T11:03:03.398Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+restored src/enforcement/run.ts
+?? .coherence/runs/lint-totality-oracle-refutations.jsonl

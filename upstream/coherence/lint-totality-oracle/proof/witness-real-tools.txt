@@ -1,0 +1,85 @@
+## Real oxlint Version: 1.72.0 and ruff 0.16.9 on a scratch project; the listed residual is excluded by each lint config
+
+$ coherence spec --check
+  impersonation read through is_impersonated  requirement  lacks refutation
+  ingestion never reaches cdp  requirement  lacks refutation
+lacking: enforcement 0, refutation 2, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; no run yet: every enforcement is declared, unverified
+
+$ coherence run (clean tree: both pass)
+posthog/admin/impersonation read through is_impersonated
+  totality oracle: pass (109 ms); refutation missing
+    /home/coder/.local/bin/uvx ruff@0.16.9 check --force-exclude --output-format json reported no finding of ruff:TID251 matching "is_impersonated_session"
+src/ingestion/ingestion never reaches cdp
+  totality oracle: pass (109 ms); refutation missing
+    /home/coder/posthog/node_modules/.bin/oxlint -c .oxlintrc.json --format json reported no finding of oxlint:no-restricted-imports matching "~/cdp" in 1 file
+run recorded in .coherence/runs/witness.jsonl: 2 enforcements, 2 pass, 0 fail, 0 not run; instrument typescript (cold); 159 ms
+exit 0
+
+$ stage a break: src/ingestion/transform.ts imports ~/cdp; posthog/admin/team_admin.py imports is_impersonated_session
+
+$ coherence refute src/ingestion/ingestion never reaches cdp --broke imported the hog transformer service from ~/cdp in transform.ts
+refuted src/ingestion/ingestion never reaches cdp (totality oracle): imported the hog transformer service from ~/cdp in transform.ts
+  the detector went red: 1 finding of oxlint:no-restricted-imports matching "~/cdp", the first at src/ingestion/transform.ts:1
+  recorded in .coherence/runs/witness.jsonl at 2026-09-30T11:03:30.110Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+
+$ coherence refute posthog/admin/impersonation read through is_impersonated --broke imported is_impersonated_session in team_admin.py
+refuted posthog/admin/impersonation read through is_impersonated (totality oracle): imported is_impersonated_session in team_admin.py
+  the detector went red: 1 finding of ruff:TID251 matching "is_impersonated_session", the first at posthog/admin/team_admin.py:1
+  recorded in .coherence/runs/witness.jsonl at 2026-09-30T11:03:30.701Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+exit 0
+
+$ PostToolUse for the one written file src/ingestion/transform.ts (break still staged)
+Structural defect revealed at this edit (src/ingestion/transform.ts):
+✕ src/ingestion/ingestion never reaches cdp — totality oracle lint oxlint:no-restricted-imports matching "~/cdp" over every import under src/ingestion except the listed residual: src/ingestion/legacy/replay.ts
+    src/ingestion/transform.ts:1 '~/cdp/hog-transformations/hog-transformer.service' import is restricted from being used by a pattern. ingestion never reaches cdp (src/ingestion/Ingestion.spec.md): depend on the interfaces in ~/common
+Two honest options: change the site so the rule no longer reports it, or escalate a retirement for a human, who must acknowledge it:
+  node ../coh-116/src/cli.ts escalate "retire <invariant>" --because "<what changed and why the rule no longer holds>" --session witness --agent main
+The invariant stays in force, and alarming, until a person acknowledges.
+
+
+$ PostToolUse for the one written file posthog/admin/team_admin.py (break still staged)
+Structural defect revealed at this edit (posthog/admin/team_admin.py):
+✕ posthog/admin/impersonation read through is_impersonated — totality oracle lint ruff:TID251 matching "is_impersonated_session" over every Python file ruff lints except the listed residual: posthog/admin/legacy_admin.py
+    posthog/admin/team_admin.py:1 `loginas.utils.is_impersonated_session` is banned: impersonation is read through is_impersonated (posthog/admin/Admin.spec.md)
+Two honest options: change the site so the rule no longer reports it, or escalate a retirement for a human, who must acknowledge it:
+  node ../coh-116/src/cli.ts escalate "retire <invariant>" --because "<what changed and why the rule no longer holds>" --session witness --agent main
+The invariant stays in force, and alarming, until a person acknowledges.
+
+
+$ PostToolUse for the one written file src/ingestion/legacy/replay.ts (the listed residual)
+(silent)
+
+$ restore: remove transform.ts, route team_admin.py through is_impersonated
+
+$ PostToolUse for the one written file posthog/admin/team_admin.py (clean)
+(silent)
+
+$ a half-written Python file: ruff cannot parse it, so the run reads not run, not pass
+posthog/admin/impersonation read through is_impersonated
+  totality oracle: not run (83 ms); refutation witnessed
+    1 file did not parse, so ruff:TID251 matching "is_impersonated_session" was not checked there: posthog/admin/half_written.py
+    | posthog/admin/half_written.py:4 Expected `)`, found newline
+    | posthog/admin/half_written.py:5 Expected an expression
+src/ingestion/ingestion never reaches cdp
+  totality oracle: pass (83 ms); refutation witnessed
+    /home/coder/posthog/node_modules/.bin/oxlint -c .oxlintrc.json --format json reported no finding of oxlint:no-restricted-imports matching "~/cdp" in 1 file
+run recorded in .coherence/runs/witness-parse.jsonl: 2 enforcements, 1 pass, 0 fail, 1 not run; instrument typescript (cold); 124 ms
+exit 0
+
+$ coherence run (restored: both pass, refutations witnessed)
+posthog/admin/impersonation read through is_impersonated
+  totality oracle: pass (87 ms); refutation witnessed
+    /home/coder/.local/bin/uvx ruff@0.16.9 check --force-exclude --output-format json reported no finding of ruff:TID251 matching "is_impersonated_session"
+src/ingestion/ingestion never reaches cdp
+  totality oracle: pass (87 ms); refutation witnessed
+    /home/coder/posthog/node_modules/.bin/oxlint -c .oxlintrc.json --format json reported no finding of oxlint:no-restricted-imports matching "~/cdp" in 1 file
+run recorded in .coherence/runs/witness.jsonl: 2 enforcements, 2 pass, 0 fail, 0 not run; instrument typescript (cold); 143 ms
+exit 0
+
+$ coherence spec --check
+  impersonation read through is_impersonated  invariant
+  ingestion never reaches cdp  invariant
+lacking: enforcement 0, refutation 0, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; latest run 2026-09-30T11:03:33.202Z (4 runs)

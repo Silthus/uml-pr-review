@@ -1,0 +1,93 @@
+TAP version 13
+# Subtest: a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem
+not ok 1 - a via that begins with lint names a tool, a rule, and an optional matching text; any other lint value is a problem
+  ---
+  duration_ms: 4.517411
+  type: 'test'
+  location: '/tmp/coh-116/src/spec/spec.test.ts:236:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      {
+    +   'a test named lint rules': [
+    +     'test'
+    +   ],
+    -   'a test named lint rules': [],
+        'a test title': [
+          'test'
+        ],
+        'ingestion never reaches cdp': [
+    +     'test'
+    -     {
+    -       matching: '~/cdp',
+    -       rule: 'no-restricted-imports',
+    -       tool: 'oxlint'
+    -     }
+        ],
+    +   'no rule named': [
+    +     'test'
+    +   ],
+    -   'no rule named': [],
+        'settings read through django': [
+    +     'test'
+    -     {
+    -       matching: undefined,
+    -       rule: 'TID251',
+    -       tool: 'ruff'
+    -     }
+        ],
+    +   'unquoted text': [
+    +     'test'
+    +   ]
+    -   'unquoted text': []
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    ingestion never reaches cdp:
+      0:
+        tool: 'oxlint'
+        rule: 'no-restricted-imports'
+        matching: '~/cdp'
+    settings read through django:
+      0:
+        tool: 'ruff'
+        rule: 'TID251'
+    no rule named:
+    unquoted text:
+    a test named lint rules:
+    a test title:
+      0: 'test'
+  actual:
+    ingestion never reaches cdp:
+      0: 'test'
+    settings read through django:
+      0: 'test'
+    no rule named:
+      0: 'test'
+    unquoted text:
+      0: 'test'
+    a test named lint rules:
+      0: 'test'
+    a test title:
+      0: 'test'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/coh-116/src/spec/spec.test.ts:261:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 129.771632

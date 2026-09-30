@@ -97,7 +97,24 @@ export function report(rows: LabelledRow[], twice: LabelledTwice[]): string {
     "",
     ...replayCandidates(rows),
     "",
+    "## Method",
+    "",
+    ...method(rows, twice),
+    "",
   ].join("\n");
+}
+
+function method(rows: LabelledRow[], twice: LabelledTwice[]): string[] {
+  return [
+    `1. **Population.** The ${rows.length} development corrections in \`docs/corrections/corpus.jsonl\` that have an isolable fix commit (#103). Held-out rows are not read.`,
+    "2. **Rubric.** `benchmark/lintability/rubric.md` applies #107's decision order, twelve kinds, and tiers, and adds four honesty guards: `general` (a team would declare the rule up front, for the whole scope), `existed` (what the rule points to existed at `before`), `syntactic` (a linter decides it without judgment), and `firesAndClears` (the rule flags the `before` code at the commented site and not the corrected code). `catchable` is `yes` only when the kind is declarable and no guard fails; every failed guard is recorded in `failedGuards`.",
+    "3. **Calibration.** One Opus labeller labelled a seeded 50-row sample with the draft rubric. Its eight reported ambiguities became eight sentences of the frozen rubric (listed in `benchmark/lintability/prompts.md`); the calibration labels were then discarded and those rows labelled again.",
+    "4. **Labelling.** Fresh Opus sub-agents, 30 corrections per batch, each read the comment body, the fix commit's diff of the commented file, and checked `existed` against the code at `before` with read-only `git show`, `git grep`, and `git ls-tree` on the local PostHog object store. Batches are resumable: `bun benchmark/lintability/run.ts label` packs only the corrections that still lack a label.",
+    `5. **Agreement.** A second, independent Opus labeller labelled a seeded ${twice.length}-row sample with the same frozen rubric and prompt, without seeing the first labels.`,
+    "6. **Rule groups.** One Opus sub-agent gave every caught correction a canonical rule name so that corrections one declaration would catch share a name; the top rules are counted from those names.",
+    "",
+    "Limits: the fix locator is right about 68% of the time (#103), so labels are judged against the comment, not the located commit. Labels are single-pass model judgments; the agreement section measures how far a second labeller moves them. The rubric errs towards review, so the numbers are an upper bound only in the sense that each `yes` still needs its rule written and adopted.",
+  ];
 }
 
 function headline(rows: LabelledRow[]): string[] {
@@ -107,7 +124,7 @@ function headline(rows: LabelledRow[]): string[] {
   const slice = yes.filter(inFirstSlice);
   const slicePartial = partial.filter(inFirstSlice);
   return [
-    `**${yes.length} of ${rows.length} development corrections (${percent(yes.length, rows.length)})** are catchable at write time, and ${partial.length} more (${percent(partial.length, rows.length)}) partly. Every other correction failed an honesty guard or is a judgment kind, and stays in review.`,
+    `**${yes.length} of ${rows.length} development corrections (${percent(yes.length, rows.length)})** are catchable at write time, and ${partial.length} more (${percent(partial.length, rows.length)}) partly. Counting partial catches, the ceiling is ${yes.length + partial.length} of ${rows.length} (${percent(yes.length + partial.length, rows.length)}). Every other correction failed an honesty guard or is a judgment kind, and stays in review. #107's 56-row pilot, labelled from quotes only, guessed about 14%.`,
     "",
     `Through the tools of the first slice (TypeScript through oxlint \`jsPlugins\`, Python through \`tach\`, import-linter, ruff, and semgrep), the first slice catches **${slice.length} of ${rows.length} (${percent(slice.length, rows.length)})**, which is ${slice.length} of the ${sliceLanguages.length} TypeScript and Python corrections (${percent(slice.length, sliceLanguages.length)}); ${slicePartial.length} more are partly caught.`,
   ];
@@ -163,20 +180,26 @@ function agreementSection(twice: LabelledTwice[]): string[] {
 }
 
 function replayCandidates(rows: LabelledRow[]): string[] {
+  const caught = rows.filter((row) => (row.language === "TypeScript/JavaScript" || row.language === "Python") && row.catchable === "yes");
+  const preferred = caught.filter(({ path }) => preference(path) < replayPreference.length).length;
   const section = (language: Language) => {
-    const picked = rows
-      .filter((row) => row.language === language && row.catchable === "yes")
-      .toSorted((a, b) => preference(a.path) - preference(b.path) || size(a.fixStat) - size(b.fixStat) || a.pr - b.pr)
-      .slice(0, replayCount);
+    const ranked = caught.filter((row) => row.language === language).toSorted((a, b) => preference(a.path) - preference(b.path) || size(a.fixStat) - size(b.fixStat) || a.pr - b.pr);
+    const picked = ranked.filter((row, index) => ranked.findIndex(({ pr }) => pr === row.pr) === index).slice(0, replayCount);
     return [
       `### ${language}`,
       "",
       "| PR | File | Correction | `before` | Rule sketch | Fix size |",
       "| --- | --- | --- | --- | --- | --- |",
-      ...picked.map((row) => `| [#${row.pr}](${row.prUrl}) | \`${row.path}\` | [${cell(row.quote)}](${row.commentUrl}) | \`${row.before}\` | ${cell(row.ruleSketch)} | ${row.fixStat.files} files, +${row.fixStat.added}/−${row.fixStat.removed} |`),
+      ...picked.map((row) => `| [#${row.pr}](${row.prUrl}) | \`${row.path}\` | [${cell(row.quote)}](${row.commentUrl}) | \`${row.before}\` | ${cell(row.ruleSketch)} | ${row.fixStat.files} ${row.fixStat.files === 1 ? "file" : "files"}, +${row.fixStat.added}/−${row.fixStat.removed} |`),
     ];
   };
-  return ["Caught corrections, preferring `products/workflows`, `nodejs/src/cdp`, and the hog-functions and workflows scenes, then the smallest fix commit, which is the most self-contained replay.", "", ...section("TypeScript/JavaScript"), "", ...section("Python")];
+  return [
+    `Fully caught corrections, one per PR, preferring \`products/workflows\`, \`nodejs/src/cdp\`, and the hog-functions and workflows scenes, then the smallest fix commit, which is the most self-contained replay. ${preferred} of the ${caught.length} fully caught TypeScript and Python corrections lie in a preferred area.`,
+    "",
+    ...section("TypeScript/JavaScript"),
+    "",
+    ...section("Python"),
+  ];
 }
 
 function preference(path: string): number {

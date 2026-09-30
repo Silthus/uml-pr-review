@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadCase, type RunRecord } from "./replay.ts";
-import { keepOnlyEditHook, renderV2, type Variant } from "./v2.ts";
+import { keepOnlyEditHook, outwardCommands, renderV2, type Variant } from "./v2.ts";
 
 const scratch = mkdtempSync(join(tmpdir(), "replay-v2-test-"));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
@@ -70,7 +70,7 @@ function draftReport(control: Outcome[], hooks: Outcome[]): string {
     ...control.map((outcome, index) => record("draft", "control", index + 1, outcome, 20 + 10 * index, 4 + index)),
     ...hooks.map((outcome, index) => record("draft", "hooks", index + 1, outcome, 40 + 10 * index, 7 + index)),
   ];
-  return renderV2(runs, [loadCase("64506")]);
+  return renderV2(runs, [loadCase("64506")], { transcripts: runs.length, commands: [] });
 }
 
 describe("the v2 report", () => {
@@ -93,5 +93,45 @@ describe("the v2 report", () => {
     const report = draftReport(["bypassed", "bypassed", "bypassed"], ["fixed", "fixed", "fixed"]);
 
     expect(report).toContain("Adoption cost, median over each arm: wall time 50 s against 30 s (+20 s), turns 8 against 5 (+3), edit hook 3.1 s per edit (max 3.9 s).");
+  });
+
+  test("each case closes with one verdict line over both variants", () => {
+    const report = draftReport(["bypassed", "bypassed", "bypassed"], ["fixed", "fixed", "bypassed"]);
+
+    expect(report).toContain("## v2: protocol without the confound");
+    expect(report).toContain("**Case verdict for #64506: draft met, intent incomplete.**");
+  });
+
+  test("the command audit says how many transcripts it read and names every outward command", () => {
+    const runs = [record("draft", "hooks", 1, "fixed", 40, 7)];
+    const cases = [loadCase("64506")];
+
+    expect(renderV2(runs, cases, { transcripts: 6, commands: [] })).toContain("Command audit: 0 Bash calls in 6 transcripts tried `gh`, `git push`, `git commit`, `curl`, `wget`, `flox`, a package manager, or `uv`, and 0 of them ran.");
+    const audit = { transcripts: 6, commands: [{ run: "v2/64506/draft/hooks-1", command: "gh issue create", ran: false }] };
+    expect(renderV2(runs, cases, audit)).toContain("- v2/64506/draft/hooks-1, denied: `gh issue create`");
+  });
+});
+
+describe("auditing a transcript's commands", () => {
+  test("names Bash calls that could reach the network or write outside the worktree, and whether each ran", () => {
+    const bash = (command: string) => ({ type: "assistant", message: { content: [{ type: "tool_use", id: command, name: "Bash", input: { command } }] } });
+    const answer = (command: string, content: string, isError: boolean) => ({ type: "user", message: { content: [{ type: "tool_result", tool_use_id: command, content, is_error: isError }] } });
+    const records = [
+      bash("ls nodejs/src"),
+      bash("cd posthog && gh issue create --title x"),
+      answer("cd posthog && gh issue create --title x", "This Bash command contains multiple operations. The following part requires approval: gh issue create --title x", true),
+      bash("git diff -- a.json"),
+      bash("git push origin HEAD"),
+      answer("git push origin HEAD", "This command requires approval", true),
+      bash("flox activate"),
+      answer("flox activate", "✅ You are now using the environment", false),
+      bash("grep -rn 'gh ' src"),
+    ];
+
+    expect(outwardCommands(records.map((record) => JSON.stringify(record)).join("\n"))).toEqual([
+      { command: "cd posthog && gh issue create --title x", ran: false },
+      { command: "git push origin HEAD", ran: false },
+      { command: "flox activate", ran: true },
+    ]);
   });
 });

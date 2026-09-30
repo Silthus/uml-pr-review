@@ -29,6 +29,7 @@ const replayCase = z.object({
   fixes: z.array(fix),
   lint: oxlintBan.optional(),
   notes: z.array(z.string()).default([]),
+  v2Notes: z.array(z.string()).default([]),
 });
 
 export type ReplayCase = z.infer<typeof replayCase> & { dir: string };

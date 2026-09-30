@@ -1,11 +1,11 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { defaultEnvironment, setUp, tearDown, witness } from "./kit/kit.ts";
 import { declareCase, EVIDENCE_FILES, invariantName, loadCase, readSession, renderReport, type Arm, type ReplayCase, type RunRecord } from "./replay.ts";
-import { isVariant, keepOnlyEditHook, type Variant } from "./v2.ts";
+import { isVariant, keepOnlyEditHook, outwardCommands, renderV2, VARIANTS, type CommandAudit, type Variant } from "./v2.ts";
 
 const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>] [--variant draft|intent]\n       bun benchmark/replay/run.ts report";
 const EVIDENCE = resolve(import.meta.dir, "../../docs/replay");
@@ -213,6 +213,7 @@ async function replayOnce(replay: ReplayCase, arm: Arm, n: number, protocol: Pro
 
 const recordedRun = z.object({
   pr: z.number(),
+  variant: z.enum(VARIANTS).optional(),
   arm: z.enum(["hooks", "control"]),
   n: z.number(),
   exitCode: z.number(),
@@ -233,18 +234,39 @@ function isComplete(folder: string): boolean {
   return ["run.json", ...EVIDENCE_FILES.map(([, file]) => file)].every((file) => existsSync(join(folder, file)));
 }
 
-function recordedRuns(): RunRecord[] {
-  return readdirSync(EVIDENCE, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && /^\d+$/.test(entry.name))
-    .flatMap((pr) => readdirSync(join(EVIDENCE, pr.name)).map((run) => join(EVIDENCE, pr.name, run)))
-    .filter(isComplete)
-    .map(rescored);
+function subfolders(folder: string): string[] {
+  if (!existsSync(folder)) return [];
+  return readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => join(folder, entry.name));
+}
+
+function prFolders(root: string): string[] {
+  return subfolders(root).filter((folder) => /^\d+$/.test(basename(folder)));
+}
+
+function v1Folders(): string[] {
+  return prFolders(EVIDENCE).flatMap(subfolders).filter(isComplete);
+}
+
+function v2Folders(): string[] {
+  return prFolders(join(EVIDENCE, "v2")).flatMap(subfolders).flatMap(subfolders).filter(isComplete);
+}
+
+function commandAudit(folders: string[]): CommandAudit {
+  const commands = folders.flatMap((folder) => outwardCommands(readFileSync(join(folder, "transcript.jsonl"), "utf8")).map((command) => ({ ...command, run: relative(EVIDENCE, folder) })));
+  return { transcripts: folders.length, commands };
+}
+
+function writeReport() {
+  const cases = ["64506", "68756"].map(loadCase);
+  const v2 = v2Folders();
+  const v1Report = renderReport(v1Folders().map(rescored), cases);
+  writeFileSync(join(EVIDENCE, "report.md"), `${v1Report}\n${renderV2(v2.map(rescored), cases, commandAudit(v2))}`);
 }
 
 async function main() {
   const [command] = positionals;
   if (command === "report") {
-    writeFileSync(join(EVIDENCE, "report.md"), renderReport(recordedRuns(), ["64506", "68756"].map(loadCase)));
+    writeReport();
     return;
   }
   const runs = Number(values.runs);

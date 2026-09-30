@@ -21,6 +21,8 @@ The taxonomy is ticket #107's (`docs/research/architecture-as-lint.md` on branch
 | 11 | A rename for clarity where the old name is not banned elsewhere. | `concept-naming` |
 | 12 | Anything else structural: data ownership, schema shape, a mechanism choice with no nameable X, or product direction. | `design-other` |
 
+When a candidate rule fails a guard and no judgment kind fits well, choose the one that describes what the reviewer asked for, and `design-other` when none does.
+
 Use `none` only when the comment is not an architecture correction at all (the corpus classifier was wrong). The six **declarable** kinds are `import-boundary`, `public-entry`, `banned-api`, `paved-path`, `file-placement`, `vocabulary`. The other six are **judgment** kinds and are always `catchable: "no"`.
 
 A declarable kind is only reached when the correction passes the guards below. If a candidate rule fails any guard, fall through the table to the judgment kind the correction really is (usually `reuse-unnamed`, `logic-placement`, `duplication`, or `design-other`), and record the guard that failed.
@@ -29,16 +31,18 @@ A declarable kind is only reached when the correction passes the guards below. I
 
 Hindsight is the main risk: any correction can be "caught" by a rule written after the fact for exactly that PR. Evaluate every guard for the best rule you can state, even when the answer ends up `no`.
 
-1. **`general`.** State the rule without mentioning this PR: "in files matching G, X must not appear", "A must not import B", "references to P only inside C", "files of kind K live under D". It holds for the whole scope G, it applies beyond this PR, and a team would plausibly write it in a manifest before the PR existed. Fails: "`objectsEqual` is already imported in this file, use it"; "move these two steps next to the others"; a rule whose scope is one file the PR created.
-2. **`existed`.** Whatever the rule points to already existed at the `before` commit: the helper Y to reuse, the facade to route through, the module whose boundary is protected, the home directory for the file. **Check it in the code at `before`**, do not assume it. Use only these read-only commands: `cd /home/coder/posthog && git show <before>:<path>`, `git grep -n '<token>' <before> -- '<pathspec>'`, `git ls-tree -r --name-only <before> -- '<dir>'`. Never run any other git command there, never check out, fetch, or write. `n/a` when the rule points to nothing (a plain `banned-api`, an `import-boundary` without a replacement, a `vocabulary` ban). Fails when the replacement was introduced by the same PR or the fix itself.
+1. **`general`.** State the rule without mentioning this PR: "in files matching G, X must not appear", "A must not import B", "references to P only inside C", "files of kind K live under D". It holds for the whole scope G, it applies beyond this PR, and a team would plausibly write it in a manifest before the PR existed. Fails: "`objectsEqual` is already imported in this file, use it"; "move these two steps next to the others"; a rule whose scope is one file the PR created; a style nit a team would not declare (for example "prefer dayjs over `Date` here").
+   - Existing violations at `before` do **not** fail `general`: adopting any rule comes with a baseline for them. Judge whether a team would write the rule, not whether the code already obeys it.
+   - Established conventions pass: design-system elements (`LemonButton` over `<button>`), the product facade, a paved path the codebase already uses in most places, common hygiene and security rules (no script injection, no private imports across modules).
+2. **`existed`.** Whatever the rule points to already existed at the `before` commit: the helper Y to reuse, the facade to route through, the module whose boundary is protected, the home directory for the file. **Check it in the code at `before`**, do not assume it. Use only these read-only commands: `cd /home/coder/posthog && git show <before>:<path>`, `git grep -n '<token>' <before> -- '<pathspec>'`, `git ls-tree -r --name-only <before> -- '<dir>'`. Never run any other git command there, never check out, fetch, or write. `n/a` when the rule points to nothing (a plain `banned-api`, an `import-boundary` without a replacement, a `vocabulary` ban). Fails when the replacement was introduced by the same PR or the fix itself. When Y existed but had to be extended to cover this case, `existed` passes and the correction is at most `partial`.
 3. **`syntactic`.** A linter decides it from syntax or import resolution alone: an import path, a called name, a property access, a JSX element, a decorator, an AST shape matchable by esquery or semgrep, a file path pattern, an identifier pattern. Fails when deciding needs judgment of meaning, intent, size, cohesion, naming quality, or whether two pieces of logic are "the same".
-4. **`firesAndClears`.** The rule flags the `before` state of the commented file and does not flag the state the comment asks for. Judge against the comment's request, not only the located fix commit, which is sometimes the wrong commit. Fails when the rule would not fire on the `before` code or would still fire after a correct fix.
+4. **`firesAndClears`.** The rule flags the `before` state of the commented file and does not flag the state the comment asks for. Judge against the comment's request, not only the located fix commit, which is sometimes the wrong commit. Fails when the rule would not fire on the `before` code or would still fire after a correct fix. Judge at the commented site only: other occurrences in the same file are baseline, not a failure. When the located fix commit does not address the comment, judge against the comment and still check `existed` at `before`.
 
 ## Step 3: catchable
 
 - **`yes`**: a declarable kind, and all four guards pass (`existed` may be `n/a`). The rule alone would have told the author what the reviewer told them.
 - **`partial`**: a declarable kind, all four guards pass for the part the rule covers, but the correction asks for more than the rule states. Example: a `paved-path` ban on raw `fetch` in logics fires and names `api.*`, but the reviewer also asked to move the call into a loader.
-- **`no`**: a judgment kind, or any guard fails. `tool` is `review-only`.
+- **`no`**: a judgment kind, or any guard fails. `tool` is `review-only`. For a judgment kind with no candidate rule at all, record `general: "fail"`, `syntactic: "fail"`, `existed: "n/a"`, `firesAndClears: "n/a"`.
 
 When unsure between `yes` and `partial`, choose `partial`. When unsure between `partial` and `no`, choose `no`. The number this produces is quoted as an upper bound for the linter, so err towards review.
 
@@ -47,6 +51,7 @@ When unsure between `yes` and `partial`, choose `partial`. When unsure between `
 Tier, by the taxonomy:
 
 - `lintable-now`: configuration of a rule that ships today (ESLint/oxlint core or published plugin rules such as `no-restricted-imports`, `no-restricted-properties`, `react/forbid-elements`, `import/no-cycle`, eslint-plugin-boundaries; ruff incl. preview rules such as `banned-api` TID251 and `PLC2701`; clippy `disallowed-*`; tach; import-linter).
+  oxlint's native `no-restricted-imports` and `no-restricted-properties` count as now; `no-restricted-syntax` does not ship natively in oxlint, so a code-shape rule is custom.
 - `lintable-with-a-custom-rule`: deterministic and generatable from a declaration, but needs a manifest-driven ESLint-API rule loaded through oxlint `jsPlugins`, a semgrep rule, a Coherence chokepoint, or a dylint lint.
 - `not-lintable`: every `no`.
 
@@ -55,6 +60,7 @@ Tool, choosing the first that can express the rule for the file's language:
 - TypeScript or JavaScript: `oxlint` (native rules, or an ESLint-API rule through `jsPlugins`, which covers every custom rule). Use `eslint` only for a rule oxlint cannot run, such as a type-aware rule.
 - Python: `tach` (module dependencies and `[[interfaces]]` facades), `import-linter` (layers, forbidden and protected contracts), `ruff` (banned APIs and private-name imports), `semgrep` (code shapes, file-scoped bans, paths, identifier regexes).
 - Rust: `clippy`.
+- Anything else (YAML workflows, SQL, Dockerfiles, configuration): `semgrep`.
 - `coherence`: only when the rule is "every reference to first-party symbol P goes through C" and none of the above expresses it for that language.
 - `review-only`: every `no`.
 

@@ -27,3 +27,14 @@ Write a JSON array to <work>/labels/rules/<packet>.json with the Write tool: one
 ## Calibration log
 
 The rubric was frozen after the 50-row calibration sample (`calibration` stage, a seeded ranking on `sha256("110:calibration:" + id)`). The calibration labels only tuned the rubric; every calibration row was labelled again with the frozen rubric in the `label` stage.
+
+The calibration labeller labelled the 50 rows 2 `yes`, 2 `partial`, 46 `no`, and reported eight places where the rubric was ambiguous. Each became a sentence in the frozen rubric:
+
+1. Existing violations at `before` do not fail `general`; a new rule ships with a baseline. Style nits a team would not declare do fail it.
+2. Established conventions (design-system elements, the product facade, a widely used paved path, common hygiene and security rules) pass `general`.
+3. Judgment kinds with no candidate rule record `general` and `syntactic` as `fail`, and `existed` and `firesAndClears` as `n/a`.
+4. `firesAndClears` is judged at the commented site; other occurrences in the file are baseline.
+5. When the located fix does not address the comment, the label is judged against the comment, and `existed` is still checked at `before`.
+6. When the replacement existed but had to be extended for this case, `existed` passes and the correction is at most `partial`.
+7. When no judgment kind fits a failed rule, `design-other`.
+8. oxlint's native `no-restricted-imports` and `no-restricted-properties` are `lintable-now`; code shapes are custom. YAML, SQL, and other files use `semgrep`.

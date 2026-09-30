@@ -1,0 +1,14 @@
+bun test v1.4.2 (744846f84)
+
+test/benchmark/lintability.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../benchmark/lintability/pipeline.ts' from '/home/coder/dev/uml-pr-review/.claude/worktrees/agent-abb0ff520c49b431a/test/benchmark/lintability.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [14.00ms]

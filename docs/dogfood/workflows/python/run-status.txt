@@ -1,0 +1,6 @@
+$ coherence run --status
+✓ products/workflows/backend/graph-validation-has-one-door  chokepoint products/workflows/backend/presentation/views/hog_flow.py: verified 2026-09-30 checker-choked
+✓ products/workflows/backend/server-compiles-all-bytecode  totality oracle "lint ruff:TID251 matching "server-compiles-all-bytecode"": verified 2026-09-30 — kept from the run at 2026-09-30T12:03:45.816Z; the latest run skipped it
+✓ products/workflows/backend/ses-only-through-provider  totality oracle "lint ruff:TID251 matching "ses-only-through-provider"": verified 2026-09-30 — kept from the run at 2026-09-30T12:03:49.602Z; the latest run skipped it
+latest run 2026-09-30T12:22:25.130Z by implement-119 (manual-witness) at 645e1a78140, dirty; 12 runs; 0 structural defects
+[exit 0]

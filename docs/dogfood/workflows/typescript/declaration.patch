@@ -1,0 +1,65 @@
+diff --git a/nodejs/src/cdp/services/hogflows/Hogflows.spec.md b/nodejs/src/cdp/services/hogflows/Hogflows.spec.md
+new file mode 100644
+index 00000000000..78caeea2e69
+--- /dev/null
++++ b/nodejs/src/cdp/services/hogflows/Hogflows.spec.md
+@@ -0,0 +1,59 @@
++# Hogflows
++
++The Node worker's workflow runtime: the executor runs a workflow step by step through its step handlers, with billing, quota and conversion watching behind single doors
++
++## invariants
++- conversion-watcher-through-executor: Only the executor builds conversion watchers
++  protects: nodejs/src/cdp/services/hogflows/conversion-watcher.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: pinning a goal and clamping its window to MAX_CONVERSION_WINDOW_MINUTES are the executor's decisions, moved out of the class only to keep it small (PR #82953); a second builder would pin goals under its own rules. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing conversion-watcher.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming conversion-watcher-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- conditional-branch-step-through-executor: Only the executor runs the conditional-branch step handler
++  protects: nodejs/src/cdp/services/hogflows/actions/conditional_branch.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: the executor's handler registry routes each step to its handler and fails the run visibly when it cannot; a caller that runs a handler directly skips that routing. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing conditional_branch.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming conditional-branch-step-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- hog-function-step-through-executor: Only the executor runs the hog-function step handler
++  protects: nodejs/src/cdp/services/hogflows/actions/hog_function.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: the executor's handler registry routes each step to its handler and fails the run visibly when it cannot; a caller that runs a handler directly skips that routing. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing hog_function.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming hog-function-step-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- random-cohort-branch-step-through-executor: Only the executor runs the random-cohort-branch step handler
++  protects: nodejs/src/cdp/services/hogflows/actions/random_cohort_branch.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: the executor's handler registry routes each step to its handler and fails the run visibly when it cannot; a caller that runs a handler directly skips that routing. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing random_cohort_branch.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming random-cohort-branch-step-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- wait-until-time-window-step-through-executor: Only the executor runs the wait-until-time-window step handler
++  protects: nodejs/src/cdp/services/hogflows/actions/wait_until_time_window.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: the executor's handler registry routes each step to its handler and fails the run visibly when it cannot; a caller that runs a handler directly skips that routing. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing wait_until_time_window.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming wait-until-time-window-step-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- trigger-step-through-executor: Only the executor runs the trigger step handler
++  protects: nodejs/src/cdp/services/hogflows/actions/trigger.handler.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: the executor's handler registry routes each step to its handler and fails the run visibly when it cannot; a caller that runs a handler directly skips that routing. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing trigger.handler.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming trigger-step-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- exit-step-through-executor: Only the executor runs the exit step handler
++  protects: nodejs/src/cdp/services/hogflows/actions/exit.handler.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts
++  because: the executor's handler registry routes each step to its handler and fails the run visibly when it cannot; a caller that runs a handler directly skips that routing. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing exit.handler.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming exit-step-through-executor; clean after deleting it (2026-09-30)
++  kinds: none
++- quota-check-in-invocation-pipeline: Only the invocation pipeline quota-limits a workflow
++  protects: nodejs/src/cdp/services/hogflows/hogflow-quota-limiting.ts
++  chokepoint: nodejs/src/cdp/services/hog-flow-invocation-pipeline.service.ts
++  because: the quota check is one stage in the pipeline's order, after the rate limit and before masking; a second caller would skip the rate limit and count cdp_hog_flow_quota_limited twice. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing hogflow-quota-limiting.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming quota-check-in-invocation-pipeline; clean after deleting it (2026-09-30)
++  kinds: none
++- billing-in-function-step: Only the function step records workflow billing
++  protects: nodejs/src/cdp/services/hogflows/billing-utils.ts
++  chokepoint: nodejs/src/cdp/services/hogflows/actions/hog_function.ts
++  because: a workflow bills once per function invocation, or per email, SMS or push sent; a second caller of trackHogFlowBillableInvocation would bill the same invocation twice. The coherence/chokepoint oxlint rule fails any non-test import of the module from another file.
++  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing billing-utils.ts -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming billing-in-function-step; clean after deleting it (2026-09-30)
++  kinds: none

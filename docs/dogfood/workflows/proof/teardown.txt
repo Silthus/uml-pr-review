@@ -1,0 +1,12 @@
+# ~/posthog after both teardowns, against the baseline taken before setup
+settings.json sha256 before: aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d
+settings.json sha256 after:  aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d
+settings.json: identical
+git status --porcelain: identical (0 lines)
+refs/uml-pr-review: identical (0 refs)
+worktrees under /tmp/dogfood-119-*: 0
+worktree list diff against the baseline (other sessions may add or remove their own):
+36a37
+> /tmp/replay-118-68756-hooks-3/posthog                          4a6a40136a8 (detached HEAD)
+folders left under /tmp/dogfood-119-*: 0
+coherence serve processes rooted in /tmp/dogfood-119-*: 0

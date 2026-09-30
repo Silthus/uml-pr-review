@@ -1,0 +1,14 @@
+# PostHog's shape: the Coherence root holds coherence.config.json, nodejs/ has its own tsconfig mapping ~/* to ./src/*, and oxlint runs from nodejs/ with -c .oxlintrc.nodejs.json
+# oxlint Version: 1.72.0, plugin loaded as @posthog/coherence/lint (resolves to /tmp/coherence-115/dist/adapters/lint.js)
+$ cd nodejs && oxlint -c .oxlintrc.nodejs.json .   # clean
+[exit 0]
+$ cd nodejs && oxlint -c .oxlintrc.nodejs.json .   # staged src/api/leak.ts importing the protected module through ~/
+src/api/leak.ts:1:32: error coherence(chokepoint): nodejs/src/store/secrets.ts is protected by the invariant "one door" in nodejs/src/store/Store.spec.md: reach it through seal in door.ts. Because: a caller that reads the store directly skips the sealing the door does
+[exit 1]
+$ cd nodejs && oxlint -c .oxlintrc.nodejs.json .   # staged file removed
+[exit 0]
+$ cd nodejs && oxlint -c .oxlintrc.nodejs.json .   # root option left out, so the rule's root is nodejs/: said, not silent
+src/store/secrets.ts:1:1: error coherence(chokepoint): Coherence could not read coherence.config.json: no such file at the rule's root; set root to the folder that holds it
+src/store/door.ts:1:1: error coherence(chokepoint): Coherence could not read coherence.config.json: no such file at the rule's root; set root to the folder that holds it
+src/api/render.ts:1:1: error coherence(chokepoint): Coherence could not read coherence.config.json: no such file at the rule's root; set root to the folder that holds it
+[exit 1]

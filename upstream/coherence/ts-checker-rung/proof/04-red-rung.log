@@ -1,0 +1,35 @@
+TAP version 13
+# Subtest: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
+not ok 1 - a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
+  ---
+  duration_ms: 753.406533
+  type: 'test'
+  location: '/tmp/coherence-115/src/adapters/lint.test.ts:140:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    src/store/secrets.ts is reference-choked, enforced by Coherence's check at the edit and in CI: visible outside its module (src/store/secrets.ts is a module; any file may import it); every reference in the project is inside the chokepoint; 2 test references
+    + actual - expected
+    
+    + 'reference-choked'
+    - 'checker-choked'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'checker-choked'
+  actual: 'reference-choked'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/coherence-115/src/adapters/lint.test.ts:148:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 871.231374

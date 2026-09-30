@@ -1,0 +1,1428 @@
+From aa2f8fbc441104598114a5657764f30cfea8d9e8 Mon Sep 17 00:00:00 2001
+From: "Reichenbach, Michael" <755327+Silthus@users.noreply.github.com>
+Date: Wed, 30 Sep 2026 10:46:19 +0000
+Subject: [PATCH] TypeScript checker-choked rung: the linter refuses the bypass
+
+A module is visible to every file, so the compiler never refuses an import
+of it, and a TypeScript module chokepoint could only ever stand at
+reference-choked. The project's linter can refuse it. @posthog/coherence/lint
+is an ESLint v9 API plugin, coherence, with one rule, coherence/chokepoint,
+which oxlint loads through jsPlugins.
+
+The rule reads the spec, so the chokepoint is declared once: every
+*.spec.md under its root, outside the config's ignore, through Coherence's
+own spec parser. It acts on a bullet whose protects: is a module path and
+whose chokepoint: is a module path or Name in file.ts, and follows the
+check's import rulings (d-7abd1ba8): an import, import-equals require,
+typeof import() or import() of the protected module outside the
+chokepoint's module is a bypass, and an export-from or export * of it is a
+re-export wherever it stands. Files in a test folder are exempt. Specifiers
+resolve relative to the file or through the paths of the nearest
+tsconfig.json above it, since a monorepo maps one alias differently per
+package; no type information. Nothing is dropped in silence: a spec it
+cannot read, a bullet it cannot resolve, and a root without a readable
+coherence.config.json are reported at line 1 of each file under the
+component, never thrown.
+
+TYPESCRIPT_LADDER gains checker-choked between visibility-choked and
+reference-choked, earned through the existing Visibility.rung seam as
+Python's import-linter credit is. The adapter asks the rule's own reader
+(lint-guards.ts) whether it guards that protected module with that
+chokepoint's module, then looks for an .oxlintrc.json or .oxlintrc.*.json
+whose folder holds the module, which loads the plugin, sets the rule to
+error in its top-level rules with its root at the project root, and is
+shadowed by no nested .oxlintrc.json without the rule. The enforcer names
+the config. In every other case the adapter grades as before, and the
+refutation stays Coherence's own.
+
+The rule's tests run the real linter, oxlint 1.86.0 pinned as a
+devDependency: red on each import and re-export form, green once they are
+removed. Three new invariants and the ladder's, refuted eleven times with
+the break staged and witnessed; full suite 366 tests, 0 fail.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ ...5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl |  23 +
+ docs/enforcement.md                           |  58 ++-
+ package-lock.json                             | 397 ++++++++++++++++++
+ package.json                                  |   5 +
+ src/adapters/Adapters.spec.md                 |  25 +-
+ src/adapters/adapter.test.ts                  |   3 +-
+ src/adapters/lint-guards.ts                   | 167 ++++++++
+ src/adapters/lint.test.ts                     | 205 +++++++++
+ src/adapters/lint.ts                          | 202 +++++++++
+ src/adapters/typescript.ts                    |  91 +++-
+ src/spec/model.ts                             |   2 +-
+ 11 files changed, 1167 insertions(+), 11 deletions(-)
+ create mode 100644 .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl
+ create mode 100644 src/adapters/lint-guards.ts
+ create mode 100644 src/adapters/lint.test.ts
+ create mode 100644 src/adapters/lint.ts
+
+diff --git a/.coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl b/.coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl
+new file mode 100644
+index 0000000..f102148
+--- /dev/null
++++ b/.coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl
+@@ -0,0 +1,23 @@
++{"at":"2026-09-30T11:00:26.668Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":7341,"invariants":[{"component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","verdict":"fail","refutation":"missing","bypasses":[],"testReferences":0,"files":[],"latency":7219,"reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:00:26.670Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","broke":"made an override's rules count as top-level rules","verdict":"fail","reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:00:34.501Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":7530,"invariants":[{"component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":7411,"reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:00:34.503Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","broke":"credited a configuration whatever its rule's root option names","verdict":"fail","reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:00:42.390Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":7582,"invariants":[{"component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":7460,"reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:00:42.391Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","broke":"credited a chokepoint without asking whether the rule's reader holds a guard for it","verdict":"fail","reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:00:50.184Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":7484,"invariants":[{"component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":7364,"reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:00:50.186Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","broke":"ignored a nested .oxlintrc.json without the rule","verdict":"fail","reason":"1 of 1 tests under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:00:57.090Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6600,"invariants":[{"component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","verdict":"fail","refutation":"missing","bypasses":[],"testReferences":0,"files":[],"latency":6480,"reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:00:57.091Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","broke":"read path aliases from the root tsconfig.json only, as the rule first did","verdict":"fail","reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:04.009Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6622,"invariants":[{"component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":6501,"reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:01:04.010Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","broke":"made the rule pass over an import-equals require","verdict":"fail","reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:10.745Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6431,"invariants":[{"component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":6306,"reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:01:10.747Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","broke":"stopped reading the configured test folders, so only a .test or .spec name exempts a file","verdict":"fail","reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:17.507Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6443,"invariants":[{"component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","verdict":"fail","refutation":"missing","bypasses":[],"testReferences":0,"files":[],"latency":6320,"reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:01:17.509Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","broke":"dropped a bullet the rule cannot resolve without a word","verdict":"fail","reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:24.480Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6662,"invariants":[{"component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":6541,"reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:01:24.481Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","broke":"read no spec in silence when the rule's root holds no coherence.config.json","verdict":"fail","reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:31.241Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6453,"invariants":[{"component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":6328,"reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:01:31.242Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","broke":"made the rule read a spec with problems as if it had none","verdict":"fail","reason":"1 of 1 tests under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:37.814Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":6256,"invariants":[{"component":"src/adapters","name":"ladder is adapter-defined","form":"totality oracle","verdict":"fail","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":6132,"reason":"1 of 1 tests under \"the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not\" failed: the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not","mode":"batched"}]}
++{"kind":"refutation","at":"2026-09-30T11:01:37.815Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","component":"src/adapters","name":"ladder is adapter-defined","form":"totality oracle","broke":"dropped the checker-choked rung from the TypeScript ladder","verdict":"fail","reason":"1 of 1 tests under \"the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not\" failed: the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not","commit":"2196b11","dirty":true}
++{"at":"2026-09-30T11:01:47.127Z","session":"5f0e2a41-7c1b-4e0c-9a55-115c0c0de115","agent":"main","binding":"none: this session owns no active work order","commit":"2196b11","dirty":true,"instrument":{"language":"typescript","server":"none"},"latency":9052,"invariants":[{"component":"src/adapters","name":"ladder is adapter-defined","form":"totality oracle","verdict":"pass","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":8907,"reason":"1 test under \"the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not\" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts","mode":"batched"},{"component":"src/adapters","name":"TypeScript checker rung verified","form":"totality oracle","verdict":"pass","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":8907,"reason":"1 test under \"a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise\" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts","mode":"batched"},{"component":"src/adapters","name":"the lint rule follows the import rulings","form":"totality oracle","verdict":"pass","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":8907,"reason":"1 test under \"coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green\" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts","mode":"batched"},{"component":"src/adapters","name":"the lint rule never drops a bullet in silence","form":"totality oracle","verdict":"pass","refutation":"witnessed","bypasses":[],"testReferences":0,"files":[],"latency":8907,"reason":"1 test under \"coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown\" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts","mode":"batched"}]}
+diff --git a/docs/enforcement.md b/docs/enforcement.md
+index 5d83249..1be463a 100644
+--- a/docs/enforcement.md
++++ b/docs/enforcement.md
+@@ -69,8 +69,62 @@ scans its own source files for one, once per forget.
+ 
+ The rungs are adapter-defined, each a fact the adapter verifies, and the
+ grade names who enforces it. TypeScript enforces visibility, so its top is
+-visibility-choked (the compiler). Python's ladder is in its own section
+-below.
++visibility-choked (the compiler). Between it and reference-choked stands
++checker-choked, where a linter the project runs refuses the bypass; its
++section is below. Python's ladder is in its own section below too.
++
++## TypeScript's linter rung
++
++A module is visible to every file, so the compiler never refuses an import
++of it. The project's linter can: `@posthog/coherence/lint` is an ESLint v9
++API plugin named `coherence` with one rule, `coherence/chokepoint`, which
++oxlint loads through `jsPlugins`:
++
++```jsonc
++{
++  "jsPlugins": ["@posthog/coherence/lint"],
++  "rules": { "coherence/chokepoint": ["error", { "root": "." }] }
++}
++```
++
++The rule reads the spec, so the chokepoint is declared once: every
++`*.spec.md` under `root` (relative to the lint's working folder, the folder
++itself by default), outside the config's `ignore`, through Coherence's own
++spec parser. It acts only on a bullet whose `protects:` is a module path and
++whose `chokepoint:` is a module path or `Name in file.ts`; a bare symbol
++needs the language server and stays with Coherence's check. It follows the
++check's import rulings (d-7abd1ba8): an `import`, `import x = require()`,
++`typeof import()` or `import()` of the protected module from any file but
++the chokepoint's module is a bypass, and an `export … from` or `export *`
++of it is a re-export wherever it stands. A file in a test folder, or named
++`.test` or `.spec`, is exempt. Specifiers resolve relative to the file, or
++through `compilerOptions.paths` in the nearest `tsconfig.json` above the
++file, within the root (patterns with at most one `*`), since a monorepo
++maps one alias differently per package; the rule never uses type
++information.
++
++Nothing is dropped in silence. A spec it cannot read, a module-form bullet
++whose protected module or chokepoint it cannot resolve, and a root that
++holds no readable `coherence.config.json` are reported at line 1 of each
++linted file under the component, never thrown, since a plugin that throws
++fails the whole lint. Linted from a package folder, the rule needs `root`
++set to the project root (`"root": ".."` from `nodejs/`), and says so when
++it is not.
++
++The TypeScript adapter grades a clean module chokepoint **checker-choked**,
++with `oxlint (<config>) rule coherence/chokepoint` as the enforcer, when the
++rule's own reading of the specs guards that protected module with that
++chokepoint's module, and an `.oxlintrc.json` or `.oxlintrc.*.json` under the
++root loads the plugin (by its package specifier or a path to the module),
++sets the rule to error in its top-level `rules`, and holds the protected
++module in its folder. The config's folder is taken as the lint's working
++folder, so the rule's `root` must resolve from there to the project root. An
++override does not count, and neither does a config under which a nested
++`.oxlintrc.json` leaves the rule out: each lints part of the workspace, and
++a chokepoint covers all of it. In every other case the grade is what it
++was. The refutation is Coherence's own, as for Python's checker rung; the
++rule's tests witness the linter going red on a staged import and green
++without it.
+ 
+ ## Refutation
+ 
+diff --git a/package-lock.json b/package-lock.json
+index 75533b6..a4892f0 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -17,6 +17,7 @@
+       },
+       "devDependencies": {
+         "@types/node": "^22.20.3",
++        "oxlint": "1.86.0",
+         "typescript": "^5.9.3"
+       },
+       "engines": {
+@@ -322,6 +323,353 @@
+         "node": ">=20.0.0"
+       }
+     },
++    "node_modules/@oxlint/binding-android-arm-eabi": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.86.0.tgz",
++      "integrity": "sha512-63Ozq6yQn79B2UxjSZ9huJmI+3/ZPI7hxAe6TyFh9oQL447KnIMoffOdtog+h4KILbQr61ZRvFPW5gYbAUgpgQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm64": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.86.0.tgz",
++      "integrity": "sha512-JdLGp44phbf/0Du236Dt06yfK6Qw8xhTFeDvHJdjk167r59OfP5+BL31mgMYVnswS8e+j6tFuccSY0QDC/lgCw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-arm64": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.86.0.tgz",
++      "integrity": "sha512-h+vkOr4ik6KLFCXdtNVEj9xfnXfNUpPoF95QjORdhiSpLqQePzcN81kGHjAgsw1/G7WBWK5KsFKbI2UK8EyzMA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-x64": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.86.0.tgz",
++      "integrity": "sha512-wbglRuH5eKsp68keTOOeKDHU1astWSRYFsh2bwKQTAPb44rD6kVgzYI1ZrAJRTc6/7PH55ZXFCQx0rQXrj0UdA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-freebsd-x64": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.86.0.tgz",
++      "integrity": "sha512-yTQ7QSOlNfQsrfbeVweTiegQJLKPjUKgXp/JpGiFzza6Hp29S9LAoH77TM3L0RjK39iQRZB5lk5iq2t241Mfag==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-gnueabihf": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.86.0.tgz",
++      "integrity": "sha512-QYJGy0E2Tv8GAayyBIeHFTwQb8u+zrvrOYrifuDGZDr9ad5XsDhiMScpZymhS9fwWjqrgG2ZUwT4vpY0ISqp4Q==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-musleabihf": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.86.0.tgz",
++      "integrity": "sha512-oQo83CafLT8p3qh0AGkN0tSUIh5Hm63mfDsoqUmBQUBnSZLNBAbyRaAftfGY5a0cKZ34dG6jAtMYgcY5kZqt5g==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-gnu": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.86.0.tgz",
++      "integrity": "sha512-EM6wy5c2UM12qPb7iDJDBAZvHyfEJGH6iosFgaFiaRZpirz99//EHcUyD2KAskz07x1TULuiAtsojf4nvWWksw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "libc": [
++        "glibc"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-musl": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.86.0.tgz",
++      "integrity": "sha512-vCiUQb9ZNzZalxYRU4mlZwUqT5f+c7Sk9DwUOplWHtik3Dl4r3DVnUB5tBeRuTAUe6MUVCTylNW7TkkN8J1oTw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "libc": [
++        "musl"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-ppc64-gnu": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.86.0.tgz",
++      "integrity": "sha512-T0AzE89yjTYmOhB/hb6i+rWTpe2mYt+xiguBhs9DEPIJTZ1H8OYqsE4VxJHHw2Wlq8Mztwvp2P8NV87ZOuhPRw==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "libc": [
++        "glibc"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-gnu": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.86.0.tgz",
++      "integrity": "sha512-s49r0K2f5Oc7fJoMUO1WkdhYK5Ob79uYRwWQ/XNoGysaOq3RUGmGUbHSuXiyydTTA+P9xEdDEnnlZVXiaSJhlw==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "libc": [
++        "glibc"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-musl": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.86.0.tgz",
++      "integrity": "sha512-JIa2tYR8ayb3nvcMSZzn4O/xTy13S7MHllu7cBD+B5qDQXXSRy/Vwk1aNpiTjZmBJGwKCHOy/NvnY5Xcwg27uQ==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "libc": [
++        "musl"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-s390x-gnu": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.86.0.tgz",
++      "integrity": "sha512-XwXMyBsAuWZkhZU74UNcfQKr1CJJAKnS80dZzOnjl6A4fKcf91IjFgidegQugMHA5SN8ulwDXEDV1yPntjXgQQ==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "libc": [
++        "glibc"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-gnu": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.86.0.tgz",
++      "integrity": "sha512-C1WjukSyMnr66b+w1/tV8RFVv6d9v0MzDf4p9IxVXknqgmTHBgZh1pccN1eHzFr0b9Tbb3OXoPsAAdAuHAQfeA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "libc": [
++        "glibc"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-musl": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.86.0.tgz",
++      "integrity": "sha512-ap6KLmvC38c6MdYzsIh25cXQupqYvjd37tMNftzrX1DCtkX1Gcf2B+S2B17dD4lKa5c5gJog7DQJyDo82PBKyw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "libc": [
++        "musl"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-openharmony-arm64": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.86.0.tgz",
++      "integrity": "sha512-996Q9w/2GLwNyy5Djs39Jt09aFlr4b7TPhoj7dvo5FHmcyiF68nPz73HNc5UAYKIYeK+M9JzPQ4Wg1r1dXvP6A==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-arm64-msvc": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.86.0.tgz",
++      "integrity": "sha512-9uTCHYTknNkug5+46ViSoUMuOuGWK61D87QnblU6CXaWKJC630Z7dbls61vdHxya/cR2ycQZ6Mm6ckgF6Cag5g==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-ia32-msvc": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.86.0.tgz",
++      "integrity": "sha512-a47ga7EKVfMU8rO0i1m3mGwfNRj3FhQyt1d/ukO/E9u1HHF3KpR3tyb3VhuJBGEVPF8uR4exSyHUyx7xbE+uxw==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-x64-msvc": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.86.0.tgz",
++      "integrity": "sha512-az4dzifCRzES1crwu6pDFXzJTIanrdxXFL9TbiJWrx9LKcuacbR83aPvxDA1LKLNswi/RoqitC7Afcflhu3zBQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
+     "node_modules/@reflink/reflink": {
+       "version": "0.1.19",
+       "resolved": "https://registry.npmjs.org/@reflink/reflink/-/reflink-0.1.19.tgz",
+@@ -1466,6 +1814,55 @@
+         "url": "https://github.com/sponsors/sindresorhus"
+       }
+     },
++    "node_modules/oxlint": {
++      "version": "1.86.0",
++      "resolved": "https://registry.npmjs.org/oxlint/-/oxlint-1.86.0.tgz",
++      "integrity": "sha512-og0lhgvZfgGF//gOOmZXvtr+GmBbAGEnbEhv/QUg7UW2Wi4wHMnJbnMD+zuHgPdJxdklfgpPupdlAaAySyxrZg==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "oxlint": "bin/oxlint"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/oxc-project"
++      },
++      "optionalDependencies": {
++        "@oxlint/binding-darwin-x64": "1.86.0",
++        "@oxlint/binding-freebsd-x64": "1.86.0",
++        "@oxlint/binding-darwin-arm64": "1.86.0",
++        "@oxlint/binding-android-arm64": "1.86.0",
++        "@oxlint/binding-linux-x64-gnu": "1.86.0",
++        "@oxlint/binding-linux-x64-musl": "1.86.0",
++        "@oxlint/binding-win32-x64-msvc": "1.86.0",
++        "@oxlint/binding-linux-arm64-gnu": "1.86.0",
++        "@oxlint/binding-linux-ppc64-gnu": "1.86.0",
++        "@oxlint/binding-linux-s390x-gnu": "1.86.0",
++        "@oxlint/binding-win32-ia32-msvc": "1.86.0",
++        "@oxlint/binding-android-arm-eabi": "1.86.0",
++        "@oxlint/binding-linux-arm64-musl": "1.86.0",
++        "@oxlint/binding-win32-arm64-msvc": "1.86.0",
++        "@oxlint/binding-linux-riscv64-gnu": "1.86.0",
++        "@oxlint/binding-openharmony-arm64": "1.86.0",
++        "@oxlint/binding-linux-riscv64-musl": "1.86.0",
++        "@oxlint/binding-linux-arm-gnueabihf": "1.86.0",
++        "@oxlint/binding-linux-arm-musleabihf": "1.86.0"
++      },
++      "peerDependencies": {
++        "vite-plus": "*",
++        "oxlint-tsgolint": ">=7.0.2003"
++      },
++      "peerDependenciesMeta": {
++        "vite-plus": {
++          "optional": true
++        },
++        "oxlint-tsgolint": {
++          "optional": true
++        }
++      }
++    },
+     "node_modules/parse-ms": {
+       "version": "4.0.0",
+       "resolved": "https://registry.npmjs.org/parse-ms/-/parse-ms-4.0.0.tgz",
+diff --git a/package.json b/package.json
+index 2f89106..a859d1f 100644
+--- a/package.json
++++ b/package.json
+@@ -33,11 +33,16 @@
+   },
+   "devDependencies": {
+     "@types/node": "^22.20.3",
++    "oxlint": "1.86.0",
+     "typescript": "^5.9.3"
+   },
+   "bin": {
+     "coherence": "dist/cli.js"
+   },
++  "exports": {
++    "./lint": "./dist/adapters/lint.js",
++    "./package.json": "./package.json"
++  },
+   "files": [
+     "dist",
+     "docs/lexicon.json",
+diff --git a/src/adapters/Adapters.spec.md b/src/adapters/Adapters.spec.md
+index dc43554..85d25e0 100644
+--- a/src/adapters/Adapters.spec.md
++++ b/src/adapters/Adapters.spec.md
+@@ -33,14 +33,14 @@ The language adapter seam: how to ask a language's server for definitions, refer
+   crossing: project-source -> reading
+   refuted: made a configured test folder no longer mark a path as a test -> "a path is a test when a configured folder is a segment or the file is named .test or .spec" went red in adapter.test.ts; restored, green (2026-09-17)
+   kinds: none
+-- ladder is adapter-defined: The grade ladder is the adapter's to name, rung by rung, each rung a fact the adapter verifies and the name of who enforces it: TypeScript's compiler reaches visibility-choked; Python's interpreter reaches closure-choked, a checker the project runs checker-choked, Coherence's own check reference-choked, and a convention alone is enforced by nobody.
++- ladder is adapter-defined: The grade ladder is the adapter's to name, rung by rung, each rung a fact the adapter verifies and the name of who enforces it: TypeScript's compiler reaches visibility-choked and a linter the project runs checker-choked; Python's interpreter reaches closure-choked, a checker the project runs checker-choked, Coherence's own check reference-choked, and a convention alone is enforced by nobody.
+   protects: TYPESCRIPT_LADDER
+   chokepoint: TypeScriptAdapter
+   over: every adapter
+   via: the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not
+   because: visibility-choked means the language itself refuses a reference from outside the module; a language that enforces no visibility cannot earn it, and a ladder with one top for every language would grade a convention as a structural fact; naming the enforcer on every rung is what lets a human read how much the structure is doing and who would stop a bypass
+   crossing: instrument -> reading
+-  refuted: raised the second adapter's top rung to visibility-choked -> the adapter-defined ladder test went red in adapter.test.ts; restored, green (2026-09-17); left whenVacuous unset on the Python ladder -> the same test went red; restored, green (2026-09-17)
++  refuted: raised the second adapter's top rung to visibility-choked -> the adapter-defined ladder test went red in adapter.test.ts; restored, green (2026-09-17); left whenVacuous unset on the Python ladder -> the same test went red; restored, green (2026-09-17); dropped the checker-choked rung from the TypeScript ladder -> the same test went red; restored, green (2026-09-30)
+   kinds: none
+ - Python rungs verified: A Python chokepoint is graded closure-choked only when the protected thing is a function-local inside the chokepoint's body and no module attribute exposes it, checker-choked only when the name is underscore-prefixed and the project's Pyright configuration makes reportPrivateUsage an error (or an import-linter rule names the protected module), and reference-choked otherwise, with the underscore prefix and the __all__ list reported as evidence.
+   protects: PYTHON_LADDER
+@@ -51,6 +51,27 @@ The language adapter seam: how to ask a language's server for definitions, refer
+   crossing: instrument -> reading
+   refuted: made the closure rung never verified -> "Python grades: broken with a bypass; reference-choked when clean, with the convention as evidence; closure-choked for a function-local; checker-choked once Pyright's private-usage rule is an error; broken without a chokepoint; not chokeable for prose" went red in python.test.ts; restored, green (2026-09-17)
+   kinds: none
++- TypeScript checker rung verified: A TypeScript chokepoint over a module is graded checker-choked only when the coherence/chokepoint rule's own reading of the specs guards that protected module with that chokepoint's module, and an oxlint configuration whose folder holds the module loads Coherence's lint plugin, sets the rule to error in its top-level rules with its root at the project root, and is shadowed by no nested .oxlintrc.json without the rule; that configuration is named as the enforcer, and in every other case the adapter grades as it did before the rung.
++  over: every combination of rule level (error, warning, absent), where the rule is set (top-level rules, an override), how the plugin is named (the package's specifier, a path to the adapter's own lint module), how the configuration is named (.oxlintrc.json, .oxlintrc.*.json), which folder it governs, where its root option points, a nested configuration without the rule, and a chokepoint the rule cannot read (a bare symbol)
++  via: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
++  because: the rung names oxlint as the enforcer, so it is granted only where oxlint would fail the lint on a bypass: a warning fails nothing, an override or a nested configuration lints part of the workspace while a chokepoint covers all of it, a configuration in another folder never lints the module, a rule rooted anywhere but the project root reads no spec, and a bullet the rule cannot resolve is one it does not enforce; the adapter reads the configuration the project runs and asks the rule's own reader which guards exist, never the spec text alone, as it reads Pyright's and import-linter's configuration
++  crossing: instrument -> reading
++  refuted: made an override's rules count as top-level rules -> "a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise" went red in lint.test.ts; restored, green; credited a configuration whatever its rule's root option names -> the same test went red; restored, green; credited a chokepoint without asking whether the rule's reader holds a guard for it -> the same test went red; restored, green; ignored a nested .oxlintrc.json without the rule -> the same test went red; restored, green (2026-09-30)
++  kinds: none
++- the lint rule follows the import rulings: The coherence/chokepoint rule reads module-form chokepoint bullets through Coherence's own spec parser and reports an import, an import-equals require, a type import or a dynamic import of a protected module from any file but its chokepoint module, and a re-export of it from anywhere, the chokepoint module included; a file in a test folder is exempt.
++  over: every import, import-equals require, typeof import(), dynamic import, export-from and wildcard re-export of a protected module, through a relative specifier (with a .ts, a .js or no extension) or a path alias from the nearest tsconfig.json above the file, in another module, a test folder and the chokepoint's own module
++  via: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green
++  because: the rule is the enforcer the checker-choked rung credits, so it must refuse what Coherence's check calls a bypass (ruling d-7abd1ba8): an import reaches the thing only from the chokepoint's own module, and a re-export widens its reach with no call at all; it reads the spec itself, so the chokepoint is declared once, it resolves an alias through the tsconfig that governs the file, since a monorepo maps the same alias differently per package, and a test may reach the protected module to check it
++  crossing: project-source -> reading
++  refuted: read path aliases from the root tsconfig.json only, as the rule first did -> "coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green" went red in lint.test.ts; restored, green; made the rule pass over an import-equals require -> the same test went red; restored, green; stopped reading the configured test folders, so only a .test or .spec name exempts a file -> the same test went red; restored, green (2026-09-30)
++  kinds: none
++- the lint rule never drops a bullet in silence: A spec the coherence/chokepoint rule cannot read, a module-form bullet whose protected module or chokepoint it cannot resolve, and a configuration it cannot find or parse at its root are each reported at line 1 of every linted file under the component, and the lint goes on.
++  over: every spec under the project root the configuration does not ignore, every module-form chokepoint bullet in them, and coherence.config.json at the rule's root, including a root below the project's
++  via: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown
++  because: a JavaScript plugin that throws fails the whole lint, and a spec, a bullet or a root skipped in silence would drop invariants from the lint while the lint stayed green, which is how a rule run from a package folder would pass every bypass
++  crossing: project-source -> reading
++  refuted: dropped a bullet the rule cannot resolve without a word -> "coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown" went red in lint.test.ts; restored, green; read no spec in silence when the rule's root holds no coherence.config.json -> the same test went red; restored, green; made the rule read a spec with problems as if it had none -> the same test went red; restored, green (2026-09-30)
++  kinds: none
+ - package files are inside the package: A site in one of a protected package's own files is inside the package, and every other site Pyright reports, an import line or an __all__ entry included, is a reference classified by where it sits.
+   over: every reference site Pyright reports for a protected module or package
+   via: a Python module or package resolves, its members are the references' start, and the package's own files are inside it
+diff --git a/src/adapters/adapter.test.ts b/src/adapters/adapter.test.ts
+index 8902edb..9d01c0b 100644
+--- a/src/adapters/adapter.test.ts
++++ b/src/adapters/adapter.test.ts
+@@ -46,7 +46,8 @@ test("the grade ladder's top rung is adapter-defined: TypeScript enforces visibi
+   assert.equal(TYPESCRIPT_LADDER.top, "visibility-choked");
+   assert.equal(PYTHON_LADDER.top, "reference-choked");
+   assert.match(PYTHON_LADDER.because, /convention/);
+-  assert.deepEqual(TYPESCRIPT_LADDER.rungs.map((r) => r.grade), ["visibility-choked", "reference-choked"]);
++  assert.deepEqual(TYPESCRIPT_LADDER.rungs.map((r) => r.grade), ["visibility-choked", "checker-choked", "reference-choked"]);
++  assert.equal(TYPESCRIPT_LADDER.rungs.find((r) => r.grade === "checker-choked")!.enforcer, "a linter the project runs");
+   assert.deepEqual(PYTHON_LADDER.rungs.map((r) => r.grade), ["closure-choked", "checker-choked", "reference-choked", "convention"]);
+   assert.equal(PYTHON_LADDER.rungs.find((r) => r.grade === "closure-choked")!.enforcer, "the interpreter");
+   assert.equal(PYTHON_LADDER.rungs.find((r) => r.grade === "convention")!.enforcer, "nobody");
+diff --git a/src/adapters/lint-guards.ts b/src/adapters/lint-guards.ts
+new file mode 100644
+index 0000000..88ab50d
+--- /dev/null
++++ b/src/adapters/lint-guards.ts
+@@ -0,0 +1,167 @@
++import { existsSync, readFileSync, statSync } from "node:fs";
++import { isAbsolute, join, posix, relative, sep } from "node:path";
++import { parseSpec, type Enforcement, type ParsedSpec } from "../spec/grammar.ts";
++import { CONFIG_FILE, declaresAtTop, findSpecs, readConfig } from "../spec/model.ts";
++import { parseName } from "./adapter.ts";
++import { projectFiles } from "./project-files.ts";
++
++export interface LintGuard {
++  invariant: string;
++  spec: string;
++  protects: string;
++  chokepoint: string;
++  because: string;
++  protectedFile: string;
++  chokepointFile: string;
++}
++
++export interface LintProblem {
++  spec: string;
++  folder: string;
++  reason: string;
++}
++
++export interface LintGuards {
++  guards: LintGuard[];
++  problems: LintProblem[];
++  read: string[];
++}
++
++type ChokepointForm = Extract<Enforcement, { form: "chokepoint" }>;
++
++export function readLintGuards(root: string): LintGuards {
++  if (!existsSync(join(root, CONFIG_FILE))) {
++    return { guards: [], problems: [{ spec: CONFIG_FILE, folder: ".", reason: "no such file at the rule's root; set root to the folder that holds it" }], read: [] };
++  }
++  let specs: string[];
++  try {
++    specs = findSpecs(root, readConfig(root).ignore).map((path) => projectRelative(root, path) ?? path);
++  } catch (error) {
++    return { guards: [], problems: [{ spec: CONFIG_FILE, folder: ".", reason: withoutRoot(root, error) }], read: [CONFIG_FILE] };
++  }
++  const files = projectFiles(root).filter((file) => file.split("/").every((part) => !part.startsWith(".")));
++  const guards: LintGuard[] = [];
++  const problems: LintProblem[] = [];
++  for (const spec of specs) {
++    const folder = posix.dirname(spec);
++    const parsed = readSpec(root, spec);
++    if (typeof parsed === "string") {
++      problems.push({ spec, folder, reason: parsed });
++      continue;
++    }
++    for (const invariant of parsed.invariants) {
++      for (const enforcement of invariant.enforcements) {
++        if (enforcement.form !== "chokepoint") continue;
++        const guard = guardOf(root, files, folder, enforcement);
++        if (typeof guard === "string") problems.push({ spec, folder, reason: `the invariant "${invariant.name}" ${guard}` });
++        else if (guard !== undefined) guards.push({ invariant: invariant.name, spec, protects: enforcement.protects, chokepoint: enforcement.chokepoint, because: invariant.because ?? invariant.sentence, ...guard });
++      }
++    }
++  }
++  return { guards, problems, read: [CONFIG_FILE, ...specs] };
++}
++
++export function stampOf(root: string, read: readonly string[]): string {
++  return read.map((file) => modifiedAt(join(root, file))).join(",");
++}
++
++function readSpec(root: string, spec: string): ParsedSpec | string {
++  let parsed: ParsedSpec;
++  try {
++    parsed = parseSpec(readFileSync(join(root, spec), "utf8"), spec);
++  } catch (error) {
++    return withoutRoot(root, error);
++  }
++  const problem = parsed.problems[0];
++  return problem === undefined ? parsed : `line ${problem.line}: ${problem.message}`;
++}
++
++function guardOf(root: string, files: readonly string[], folder: string, enforcement: ChokepointForm): { protectedFile: string; chokepointFile: string } | string | undefined {
++  const protects = parseName(enforcement.protects);
++  if (protects.form !== "module") return undefined;
++  const protectedFile = protects.path;
++  if (!isFile(join(root, protectedFile))) return `protects ${protectedFile}, which is not a file under the rule's root`;
++  const chokepoint = parseName(enforcement.chokepoint);
++  if (chokepoint.form === "module") return isFile(join(root, chokepoint.path)) ? { protectedFile, chokepointFile: chokepoint.path } : `names the chokepoint ${chokepoint.path}, which is not a file under the rule's root`;
++  if (chokepoint.form !== "symbol" || chokepoint.fileHint === undefined) return undefined;
++  const hint = chokepoint.fileHint;
++  const declaring = files.filter((file) => (file === hint || file.endsWith("/" + hint)) && declaresAtTop(textOf(join(root, file)), chokepoint.name));
++  const chosen = declaring.length === 1 ? declaring : declaring.filter((file) => covers(folder, file));
++  if (chosen.length === 1) return { protectedFile, chokepointFile: chosen[0]! };
++  return `names the chokepoint ${enforcement.chokepoint}, which ${declaring.length === 0 ? "no file declares" : `${declaring.length} files declare`}; write the chokepoint's module path`;
++}
++
++export function covers(folder: string, file: string): boolean {
++  return folder === "." || file.startsWith(folder + "/");
++}
++
++export function isFile(path: string): boolean {
++  try {
++    return statSync(path).isFile();
++  } catch {
++    return false;
++  }
++}
++
++function textOf(path: string): string {
++  try {
++    return readFileSync(path, "utf8");
++  } catch {
++    return "";
++  }
++}
++
++function modifiedAt(path: string): number {
++  try {
++    return statSync(path).mtimeMs;
++  } catch {
++    return -1;
++  }
++}
++
++export function projectRelative(root: string, path: string): string | undefined {
++  const rel = relative(root, path).split(sep).join("/");
++  return rel === "" || rel === ".." || rel.startsWith("../") || isAbsolute(rel) ? undefined : rel;
++}
++
++function withoutRoot(root: string, error: unknown): string {
++  return (error as Error).message.split(join(root, "/")).join("");
++}
++
++export function readJsonc(text: string): unknown {
++  let plain = "";
++  let pendingComma = "";
++  const body = text.replace(/^﻿/, "");
++  for (let i = 0; i < body.length; i++) {
++    const char = body[i]!;
++    if (char === '"') {
++      const end = stringEnd(body, i);
++      plain += pendingComma + body.slice(i, end);
++      pendingComma = "";
++      i = end - 1;
++    } else if (char === "/" && body[i + 1] === "/") {
++      const end = body.indexOf("\n", i);
++      i = end === -1 ? body.length : end - 1;
++    } else if (char === "/" && body[i + 1] === "*") {
++      const end = body.indexOf("*/", i + 2);
++      i = end === -1 ? body.length : end + 1;
++    } else if (char === ",") {
++      plain += pendingComma;
++      pendingComma = ",";
++    } else if (/\s/.test(char)) {
++      plain += char;
++    } else {
++      plain += (char === "}" || char === "]" ? "" : pendingComma) + char;
++      pendingComma = "";
++    }
++  }
++  return JSON.parse(plain + pendingComma);
++}
++
++function stringEnd(text: string, start: number): number {
++  for (let i = start + 1; i < text.length; i++) {
++    if (text[i] === "\\") i++;
++    else if (text[i] === '"') return i + 1;
++  }
++  return text.length;
++}
+diff --git a/src/adapters/lint.test.ts b/src/adapters/lint.test.ts
+new file mode 100644
+index 0000000..0d00071
+--- /dev/null
++++ b/src/adapters/lint.test.ts
+@@ -0,0 +1,205 @@
++import assert from "node:assert/strict";
++import { spawnSync } from "node:child_process";
++import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { dirname, join } from "node:path";
++import { fileURLToPath } from "node:url";
++import { after, before, test } from "node:test";
++import { checkChokepoint } from "../enforcement/check.ts";
++import { readEnforcementConfig } from "../enforcement/config.ts";
++import { TypeScriptAdapter } from "./typescript.ts";
++
++const OXLINT = fileURLToPath(new URL("../../node_modules/.bin/oxlint", import.meta.url));
++const PLUGIN = fileURLToPath(new URL("./lint.ts", import.meta.url));
++
++const TSCONFIG = `{
++  // the project's alias points elsewhere; src/tsconfig.json is nearer to the code
++  "compilerOptions": { "strict": true, "noEmit": true, "allowImportingTsExtensions": true, "paths": { "~/*": ["./frontend/*"] } },
++  "include": ["src/**/*.ts"],
++}
++`;
++
++const SRC_TSCONFIG = `{ "extends": "../tsconfig.json", "compilerOptions": { "paths": { "~/*": ["./*"] } } }
++`;
++
++const STORE_SPEC = (chokepoint: string): string => `# Store
++
++The secret store, reached through its door.
++
++## invariants
++- one door: The secret store is reached only through its door.
++  protects: src/store/secrets.ts
++  chokepoint: ${chokepoint}
++  because: a caller that reads the store directly skips the sealing the door does
++  kinds: none
++`;
++
++const SECRETS = `export const SECRET_COLUMNS: Record<string, string[]> = { tokens: ["token"] };
++`;
++
++const DOOR = `import { SECRET_COLUMNS } from "./secrets.ts";
++
++export function seal(pattern: string, row: Record<string, unknown>): Record<string, unknown> {
++  const out = { ...row };
++  for (const column of SECRET_COLUMNS[pattern] ?? []) delete out[column];
++  return out;
++}
++`;
++
++const RENDER = `import { seal } from "../store/door.ts";
++
++export function render(row: Record<string, unknown>): string {
++  return JSON.stringify(seal("tokens", row));
++}
++`;
++
++const TEST_HELPER = `import { SECRET_COLUMNS } from "../store/secrets.ts";
++export const columns = SECRET_COLUMNS;
++`;
++
++const BYPASS = `src/store/secrets.ts is protected by the invariant "one door" in src/store/Store.spec.md: reach it through seal in door.ts. Because: a caller that reads the store directly skips the sealing the door does`;
++const RE_EXPORT = `Re-exporting src/store/secrets.ts widens its reach past seal in door.ts (invariant "one door" in src/store/Store.spec.md). Remove the re-export.`;
++
++let root: string;
++let adapter: TypeScriptAdapter;
++
++function write(path: string, text: string): void {
++  mkdirSync(dirname(join(root, path)), { recursive: true });
++  writeFileSync(join(root, path), text, "utf8");
++}
++
++function remove(path: string): void {
++  rmSync(join(root, path), { force: true });
++}
++
++function oxlintConfig(rules: Record<string, unknown>, extra: Record<string, unknown> = {}, plugin: string = PLUGIN): string {
++  return JSON.stringify({ jsPlugins: [plugin], categories: { correctness: "off" }, rules, ...extra }, null, 2);
++}
++
++function lint(from: string = "."): string[] {
++  const cwd = join(root, from);
++  const run = spawnSync(OXLINT, ["-c", join(root, ".oxlintrc.json"), "--format", "json", "."], { cwd, encoding: "utf8" });
++  assert.ok(run.stdout.trim().startsWith("{"), `oxlint gave no report: ${run.stderr}`);
++  const report = JSON.parse(run.stdout) as { diagnostics: { message: string; code: string; filename: string; labels: { span: { line: number } }[] }[] };
++  return report.diagnostics
++    .filter((d) => d.code === "coherence(chokepoint)")
++    .map((d) => `${d.filename}:${d.labels[0]?.span.line} ${d.message}`)
++    .sort();
++}
++
++before(() => {
++  root = mkdtempSync(join(tmpdir(), "coherence-lint-"));
++  write("tsconfig.json", TSCONFIG);
++  write("src/tsconfig.json", SRC_TSCONFIG);
++  write("coherence.config.json", JSON.stringify({ language: "typescript", testDir: "__tests__" }));
++  write("src/store/Store.spec.md", STORE_SPEC("seal in door.ts"));
++  write("src/store/secrets.ts", SECRETS);
++  write("src/store/door.ts", DOOR);
++  write("src/api/render.ts", RENDER);
++  write("src/__tests__/columns.ts", TEST_HELPER);
++  write(".oxlintrc.json", oxlintConfig({ "coherence/chokepoint": "error" }));
++  adapter = new TypeScriptAdapter(root);
++});
++
++after(async () => {
++  await adapter.close();
++  rmSync(root, { recursive: true, force: true });
++});
++
++test("coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green", () => {
++  assert.deepEqual(lint(), [], "the door imports the store, and a file in a test folder may too");
++
++  write("src/api/leak.ts", `import { SECRET_COLUMNS } from "../store/secrets.ts";\nexport const leaked = SECRET_COLUMNS;\n`);
++  write("src/api/lazy.ts", `export async function columns(): Promise<unknown> {\n  return (await import("~/store/secrets")).SECRET_COLUMNS;\n}\n`);
++  write("src/api/required.ts", `import store = require("../store/secrets");\nexport const columns = store.SECRET_COLUMNS;\n`);
++  write("src/api/typed.ts", `export type Store = typeof import("../store/secrets.js");\n`);
++  write("src/api/widen.ts", `export * from "../store/secrets.ts";\n`);
++  write("src/store/door.ts", `${DOOR}export { SECRET_COLUMNS } from "./secrets.ts";\n`);
++  assert.deepEqual(lint(), [
++    `src/api/lazy.ts:2 ${BYPASS}`,
++    `src/api/leak.ts:1 ${BYPASS}`,
++    `src/api/required.ts:1 ${BYPASS}`,
++    `src/api/typed.ts:1 ${BYPASS}`,
++    `src/api/widen.ts:1 ${RE_EXPORT}`,
++    `src/store/door.ts:8 ${RE_EXPORT}`,
++  ]);
++
++  for (const staged of ["leak", "lazy", "required", "typed", "widen"]) remove(`src/api/${staged}.ts`);
++  write("src/store/door.ts", DOOR);
++  assert.deepEqual(lint(), []);
++});
++
++test("coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown", () => {
++  write("src/api/Api.spec.md", "# Api\n\nThe api.\n\n## rules\n- x: y\n");
++  write("src/lib/Lib.spec.md", "# Lib\n\nThe library.\n\n## invariants\n- gone: A module that moved.\n  protects: src/lib/gone.ts\n  chokepoint: src/lib/door.ts\n  because: it moved\n  kinds: none\n");
++  write("src/lib/door.ts", "export const door = 1;\n");
++  write("src/api/leak.ts", `import { SECRET_COLUMNS } from "../store/secrets.ts";\nexport const leaked = SECRET_COLUMNS;\n`);
++  const unreadable = `Coherence could not read src/api/Api.spec.md: line 5: unknown section "rules": a spec holds ## trust levels (entry spec only), ## entrances and ## invariants`;
++  const unresolved = `Coherence could not read src/lib/Lib.spec.md: the invariant "gone" protects src/lib/gone.ts, which is not a file under the rule's root`;
++  assert.deepEqual(lint(), [
++    `src/api/leak.ts:1 ${unreadable}`,
++    `src/api/leak.ts:1 ${BYPASS}`,
++    `src/api/render.ts:1 ${unreadable}`,
++    `src/lib/door.ts:1 ${unresolved}`,
++  ]);
++
++  const missing = "Coherence could not read coherence.config.json: no such file at the rule's root; set root to the folder that holds it";
++  assert.deepEqual(lint("src/store"), [`door.ts:1 ${missing}`, `secrets.ts:1 ${missing}`], "linted from a folder below the project root, the rule says so instead of reading no spec");
++
++  write("coherence.config.json", "{ not json");
++  const reported = lint();
++  assert.deepEqual(reported.map((line) => line.split(" ")[0]), ["src/__tests__/columns.ts:1", "src/api/leak.ts:1", "src/api/render.ts:1", "src/lib/door.ts:1", "src/store/door.ts:1", "src/store/secrets.ts:1"]);
++  assert.ok(reported.every((line) => line.includes(" Coherence could not read coherence.config.json: coherence.config.json: not valid JSON")), reported.join("\n"));
++
++  write("coherence.config.json", JSON.stringify({ language: "typescript", testDir: "__tests__" }));
++  for (const path of ["src/api/Api.spec.md", "src/lib/Lib.spec.md", "src/lib/door.ts", "src/api/leak.ts"]) remove(path);
++  assert.deepEqual(lint(), []);
++});
++
++test("a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise", async () => {
++  const grade = async (chokepoint = "seal in door.ts"): Promise<{ grade: string; enforcer: string | undefined; reason: string }> => {
++    await adapter.forget();
++    const result = await checkChokepoint(adapter, { protects: "src/store/secrets.ts", chokepoint, component: "src/store", testFolders: readEnforcementConfig(root).testFolders, root });
++    return { grade: result.grade, enforcer: result.enforcer, reason: result.reason };
++  };
++
++  const credited = await grade();
++  assert.equal(credited.grade, "checker-choked", credited.reason);
++  assert.equal(credited.enforcer, "oxlint (.oxlintrc.json) rule coherence/chokepoint");
++
++  write(".oxlintrc.json", oxlintConfig({ "coherence/chokepoint": "error" }, {}, "@posthog/coherence/lint"));
++  assert.equal((await grade()).grade, "checker-choked", "the package's own specifier names the plugin too");
++
++  write(".oxlintrc.json", oxlintConfig({}));
++  assert.equal((await grade()).grade, "reference-choked", "the plugin loaded without the rule enforces nothing");
++
++  write(".oxlintrc.json", oxlintConfig({ "coherence/chokepoint": "warn" }));
++  assert.equal((await grade()).grade, "reference-choked", "a warning fails no lint");
++
++  write(".oxlintrc.json", oxlintConfig({}, { overrides: [{ files: ["src/api/**"], rules: { "coherence/chokepoint": "error" } }] }));
++  assert.equal((await grade()).grade, "reference-choked", "an override covers part of the workspace, and a chokepoint covers all of it");
++
++  write(".oxlintrc.json", oxlintConfig({}));
++  write(".oxlintrc.strict.json", oxlintConfig({ "coherence/chokepoint": "error" }));
++  assert.equal((await grade()).enforcer, "oxlint (.oxlintrc.strict.json) rule coherence/chokepoint", "a named configuration run with -c counts");
++  remove(".oxlintrc.strict.json");
++
++  write("src/.oxlintrc.json", oxlintConfig({ "coherence/chokepoint": "error" }));
++  assert.equal((await grade()).grade, "reference-choked", "run from src, the rule's root is src, which holds no coherence.config.json");
++  write("src/.oxlintrc.json", oxlintConfig({ "coherence/chokepoint": ["error", { root: ".." }] }));
++  assert.equal((await grade()).enforcer, "oxlint (src/.oxlintrc.json) rule coherence/chokepoint", "with root set to the project root it enforces");
++  remove("src/.oxlintrc.json");
++
++  write("src/api/.oxlintrc.json", oxlintConfig({ "coherence/chokepoint": ["error", { root: "../.." }] }));
++  assert.equal((await grade()).grade, "reference-choked", "a configuration whose folder does not hold the protected module does not lint it");
++
++  write(".oxlintrc.json", oxlintConfig({ "coherence/chokepoint": "error" }));
++  write("src/api/.oxlintrc.json", oxlintConfig({}));
++  assert.equal((await grade()).grade, "reference-choked", "a nested .oxlintrc.json without the rule shadows it for its folder");
++  remove("src/api/.oxlintrc.json");
++
++  write("src/store/Store.spec.md", STORE_SPEC("seal"));
++  assert.equal((await grade("seal")).grade, "reference-choked", "a bare-symbol chokepoint needs the language server, so the rule holds no guard for it");
++  write("src/store/Store.spec.md", STORE_SPEC("seal in door.ts"));
++  assert.equal((await grade()).grade, "checker-choked");
++});
+diff --git a/src/adapters/lint.ts b/src/adapters/lint.ts
+new file mode 100644
+index 0000000..2965d14
+--- /dev/null
++++ b/src/adapters/lint.ts
+@@ -0,0 +1,202 @@
++import { readFileSync, statSync } from "node:fs";
++import { join, posix, resolve } from "node:path";
++import { readEnforcementConfig } from "../enforcement/config.ts";
++import { isTestPath } from "./adapter.ts";
++import { covers, isFile, projectRelative, readJsonc, readLintGuards, stampOf, type LintGuards } from "./lint-guards.ts";
++
++interface Alias {
++  pattern: string;
++  targets: string[];
++}
++
++interface Aliases {
++  modified: number;
++  aliases: Alias[];
++}
++
++interface Read {
++  lint: LintGuards;
++  stamp: string;
++  testFolders: readonly string[];
++}
++
++interface SourceNode {
++  type: string;
++  value?: unknown;
++}
++
++interface ImportNode {
++  source?: SourceNode | null;
++  moduleReference?: { type: string; expression?: SourceNode };
++}
++
++type MessageId = "bypass" | "reExport" | "unreadableSpec";
++
++type Report =
++  | { node: SourceNode; messageId: MessageId; data: Record<string, string> }
++  | { loc: { line: number; column: number }; messageId: MessageId; data: Record<string, string> };
++
++interface RuleContext {
++  cwd: string;
++  filename: string;
++  options: readonly unknown[];
++  report(report: Report): void;
++}
++
++const SOURCE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
++const TSCONFIG = "tsconfig.json";
++
++const readAt = new Map<string, Read>();
++const aliasesAt = new Map<string, Aliases>();
++
++function specsAt(root: string): Read {
++  const cached = readAt.get(root);
++  if (cached !== undefined && cached.stamp === stampOf(root, cached.lint.read)) return cached;
++  const lint = readLintGuards(root);
++  const read = { lint, stamp: stampOf(root, lint.read), testFolders: testFoldersAt(root) };
++  readAt.set(root, read);
++  return read;
++}
++
++function testFoldersAt(root: string): readonly string[] {
++  try {
++    return readEnforcementConfig(root).testFolders;
++  } catch {
++    return [];
++  }
++}
++
++function aliasesFor(root: string, file: string): Alias[] {
++  for (let folder = posix.dirname(file); ; folder = posix.dirname(folder)) {
++    const tsconfig = folder === "." ? TSCONFIG : `${folder}/${TSCONFIG}`;
++    if (isFile(join(root, tsconfig))) return aliasesIn(root, tsconfig);
++    if (folder === ".") return [];
++  }
++}
++
++function aliasesIn(root: string, tsconfig: string): Alias[] {
++  const path = join(root, tsconfig);
++  const modified = statSync(path, { throwIfNoEntry: false })?.mtimeMs ?? -1;
++  const cached = aliasesAt.get(path);
++  if (cached !== undefined && cached.modified === modified) return cached.aliases;
++  const aliases = readAliases(path, posix.dirname(tsconfig));
++  aliasesAt.set(path, { modified, aliases });
++  return aliases;
++}
++
++function readAliases(path: string, folder: string): Alias[] {
++  let tsconfig: unknown;
++  try {
++    tsconfig = readJsonc(readFileSync(path, "utf8"));
++  } catch {
++    return [];
++  }
++  const options = recordAt(recordAt(tsconfig)?.["compilerOptions"]);
++  const paths = recordAt(options?.["paths"]);
++  if (paths === undefined) return [];
++  const baseUrl = posix.join(folder, typeof options?.["baseUrl"] === "string" ? options["baseUrl"] : ".");
++  const aliases: Alias[] = [];
++  for (const [pattern, targets] of Object.entries(paths)) {
++    if (!singleStar(pattern) || !Array.isArray(targets)) continue;
++    const rooted = targets.filter((t): t is string => typeof t === "string" && singleStar(t)).map((t) => posix.join(baseUrl, t));
++    aliases.push({ pattern, targets: rooted });
++  }
++  return aliases;
++}
++
++function recordAt(value: unknown): Record<string, unknown> | undefined {
++  return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : undefined;
++}
++
++function singleStar(pattern: string): boolean {
++  return pattern.split("*").length <= 2;
++}
++
++function aliased(alias: Alias, specifier: string): string[] {
++  const star = alias.pattern.indexOf("*");
++  if (star === -1) return alias.pattern === specifier ? alias.targets : [];
++  const prefix = alias.pattern.slice(0, star);
++  const suffix = alias.pattern.slice(star + 1);
++  if (specifier.length < prefix.length + suffix.length || !specifier.startsWith(prefix) || !specifier.endsWith(suffix)) return [];
++  const matched = specifier.slice(prefix.length, specifier.length - suffix.length);
++  return alias.targets.map((target) => target.replace("*", matched));
++}
++
++function importedModule(root: string, from: string, specifier: string): string | undefined {
++  const bases = specifier.startsWith(".") ? [posix.join(posix.dirname(from), specifier)] : aliasesFor(root, from).flatMap((alias) => aliased(alias, specifier));
++  for (const base of bases) {
++    const found = moduleAt(root, posix.normalize(base));
++    if (found !== undefined) return found;
++  }
++  return undefined;
++}
++
++function moduleAt(root: string, base: string): string | undefined {
++  if (base === ".." || base.startsWith("../")) return undefined;
++  const stripped = base.replace(/\.[mc]?jsx?$/, "");
++  const candidates = [base, ...SOURCE_EXTENSIONS.map((ext) => stripped + ext), ...SOURCE_EXTENSIONS.map((ext) => `${base}/index${ext}`)];
++  return candidates.find((candidate) => isFile(join(root, candidate)));
++}
++
++function rootOption(options: readonly unknown[]): string {
++  const root = recordAt(options[0])?.["root"];
++  return typeof root === "string" ? root : ".";
++}
++
++function specifierOf(node: SourceNode | null | undefined): { node: SourceNode; specifier: string } | undefined {
++  return node?.type === "Literal" && typeof node.value === "string" ? { node, specifier: node.value } : undefined;
++}
++
++function requiredSource(node: ImportNode): SourceNode | undefined {
++  return node.moduleReference?.type === "TSExternalModuleReference" ? node.moduleReference.expression : undefined;
++}
++
++function create(context: RuleContext): Record<string, (node: ImportNode) => void> {
++  const root = resolve(context.cwd, rootOption(context.options));
++  const file = projectRelative(root, context.filename);
++  if (file === undefined) return {};
++  const { lint, testFolders } = specsAt(root);
++  for (const { spec, folder, reason } of lint.problems) {
++    if (covers(folder, file)) context.report({ loc: { line: 1, column: 0 }, messageId: "unreadableSpec", data: { spec, reason } });
++  }
++  if (lint.guards.length === 0 || isTestPath(file, testFolders)) return {};
++
++  const check = (node: SourceNode | null | undefined, reExport: boolean): void => {
++    const source = specifierOf(node);
++    if (source === undefined) return;
++    const reached = importedModule(root, file, source.specifier);
++    for (const guard of lint.guards) {
++      if (guard.protectedFile !== reached) continue;
++      const data = { protected: guard.protects, invariant: guard.invariant, spec: guard.spec, chokepoint: guard.chokepoint, because: guard.because };
++      if (reExport) context.report({ node: source.node, messageId: "reExport", data });
++      else if (file !== guard.chokepointFile) context.report({ node: source.node, messageId: "bypass", data });
++    }
++  };
++  return {
++    ImportDeclaration: (node) => check(node.source, false),
++    ImportExpression: (node) => check(node.source, false),
++    TSImportEqualsDeclaration: (node) => check(requiredSource(node), false),
++    TSImportType: (node) => check(node.source, false),
++    ExportNamedDeclaration: (node) => check(node.source, true),
++    ExportAllDeclaration: (node) => check(node.source, true),
++  };
++}
++
++export const chokepoint = {
++  meta: {
++    type: "problem",
++    docs: { description: "Reach a module a Coherence spec protects only through its chokepoint" },
++    schema: [{ type: "object", properties: { root: { type: "string" } }, additionalProperties: false }],
++    messages: {
++      bypass: "{{protected}} is protected by the invariant \"{{invariant}}\" in {{spec}}: reach it through {{chokepoint}}. Because: {{because}}",
++      reExport: "Re-exporting {{protected}} widens its reach past {{chokepoint}} (invariant \"{{invariant}}\" in {{spec}}). Remove the re-export.",
++      unreadableSpec: "Coherence could not read {{spec}}: {{reason}}",
++    },
++  },
++  create,
++};
++
++export default {
++  meta: { name: "coherence" },
++  rules: { chokepoint },
++};
+diff --git a/src/adapters/typescript.ts b/src/adapters/typescript.ts
+index 2b037ca..6ab13ae 100644
+--- a/src/adapters/typescript.ts
++++ b/src/adapters/typescript.ts
+@@ -23,7 +23,7 @@
+  */
+ 
+ import { existsSync, readFileSync, statSync } from "node:fs";
+-import { dirname, join, relative, resolve, sep } from "node:path";
++import { dirname, extname, join, posix, relative, resolve, sep } from "node:path";
+ import { fileURLToPath, pathToFileURL } from "node:url";
+ import { randomBytes } from "node:crypto";
+ import {
+@@ -45,6 +45,7 @@ import {
+   type Visibility,
+ } from "./adapter.ts";
+ import { JsonRpcClient } from "./jsonrpc.ts";
++import { covers, readJsonc, readLintGuards, type LintGuard } from "./lint-guards.ts";
+ import { keepProjectFiles, projectFiles } from "./project-files.ts";
+ 
+ const here = dirname(fileURLToPath(import.meta.url));
+@@ -52,12 +53,17 @@ const COHERENCE_ROOT = resolve(here, "..", "..");
+ const SERVER_BIN = "typescript-language-server";
+ const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".cts"]);
+ const SKIPPED_FOLDERS = new Set(["node_modules", ".git", "dist", ".coherence", ".claude", ".codex", "public"]);
++const LINT_RULE = "coherence/chokepoint";
++const LINT_PLUGIN = "@posthog/coherence/lint";
++const LINT_MODULE = join(here, `lint${extname(fileURLToPath(import.meta.url))}`);
++const OXLINT_CONFIG = /^\.oxlintrc(?:\.[^/]+)?\.json$/;
+ 
+ export const TYPESCRIPT_LADDER: Ladder = {
+   top: "visibility-choked",
+   because: "a symbol not exported from its module cannot be referenced from another module; the compiler refuses it",
+   rungs: [
+     { grade: "visibility-choked", enforcer: "the compiler", fact: "the protected thing is not exported from its module, so no other module can reference it" },
++    { grade: "checker-choked", enforcer: "a linter the project runs", fact: "the project's oxlint configuration runs coherence/chokepoint at error, which fails the lint on any import of the protected module outside the chokepoint" },
+     { grade: "reference-choked", enforcer: "Coherence's check at the edit and in CI", fact: "the protected thing is exported, and every resolved reference in the project is inside the chokepoint" },
+   ],
+ };
+@@ -73,6 +79,59 @@ export function locateServer(root: string): { path: string; looked: string[] } |
+   return undefined;
+ }
+ 
++interface OxlintConfig {
++  file: string;
++  folder: string;
++  enforces: boolean;
++}
++
++function oxlintConfigs(root: string): OxlintConfig[] {
++  return projectFiles(root)
++    .filter((rel) => {
++      const folders = rel.split("/");
++      const name = folders.pop() ?? "";
++      return OXLINT_CONFIG.test(name) && folders.every((part) => !part.startsWith(".") && !SKIPPED_FOLDERS.has(part));
++    })
++    .sort()
++    .map((file) => ({ file, folder: posix.dirname(file), enforces: runsChokepointRule(root, file) }));
++}
++
++function runsChokepointRule(root: string, config: string): boolean {
++  let parsed: unknown;
++  try {
++    parsed = readJsonc(readFileSync(join(root, config), "utf8"));
++  } catch {
++    return false;
++  }
++  if (typeof parsed !== "object" || parsed === null) return false;
++  const { jsPlugins, rules } = parsed as { jsPlugins?: unknown; rules?: unknown };
++  const folder = dirname(join(root, config));
++  const loaded = Array.isArray(jsPlugins) && jsPlugins.some((entry) => namesLintPlugin(entry, folder));
++  const setting = typeof rules === "object" && rules !== null ? (rules as Record<string, unknown>)[LINT_RULE] : undefined;
++  const [level, options] = Array.isArray(setting) ? setting : [setting];
++  return loaded && isErrorLevel(level) && lintRootOf(folder, options) === resolve(root);
++}
++
++function lintRootOf(folder: string, options: unknown): string {
++  const root = typeof options === "object" && options !== null ? (options as { root?: unknown }).root : undefined;
++  return resolve(folder, typeof root === "string" ? root : ".");
++}
++
++function namesLintPlugin(entry: unknown, folder: string): boolean {
++  const specifier = typeof entry === "object" && entry !== null ? (entry as { specifier?: unknown }).specifier : entry;
++  return typeof specifier === "string" && (specifier === LINT_PLUGIN || resolve(folder, specifier) === LINT_MODULE);
++}
++
++function isErrorLevel(level: unknown): boolean {
++  return level === "error" || level === "deny" || level === 2;
++}
++
++function enforcingConfig(configs: readonly OxlintConfig[], file: string): string | undefined {
++  const shadowed = (config: OxlintConfig): boolean =>
++    configs.some((nested) => nested !== config && !nested.enforces && posix.basename(nested.file) === ".oxlintrc.json" && nested.folder !== config.folder && covers(config.folder, nested.folder));
++  return configs.find((config) => config.enforces && covers(config.folder, file) && !shadowed(config))?.file;
++}
++
+ /** The tsserver the server should drive: the adopter's typescript, else Coherence's optional one. */
+ function locateTsserver(root: string): string | undefined {
+   for (const base of [root, COHERENCE_ROOT]) {
+@@ -217,6 +276,7 @@ export class TypeScriptAdapter implements LanguageAdapter {
+   private readonly probes = new Set<string>();
+   /** Wildcard re-export sites by the file they re-export; the reference query never reports them. Scanned once per forget. */
+   private wildcards: Map<string, ReferenceSite[]> | undefined;
++  private lint: { guards: LintGuard[]; configs: OxlintConfig[] } | undefined;
+   /** The last diagnostics the server published, by project-relative file. */
+   private readonly diagnostics = new Map<string, Diagnostic[]>();
+   readonly root: string;
+@@ -369,6 +429,7 @@ export class TypeScriptAdapter implements LanguageAdapter {
+     this.symbolCache.clear();
+     this.lineCache.clear();
+     this.wildcards = undefined;
++    this.lint = undefined;
+     this.diagnostics.clear();
+     if (this.client === undefined) return;
+     // A named file that is not the project's (a nested checkout's copy, an ignored file) is never opened:
+@@ -576,15 +637,35 @@ export class TypeScriptAdapter implements LanguageAdapter {
+     return { enforced: true, visible: false, evidence: `${file}:${declarationLine + 1} declares ${name} without export and no export list names it` };
+   }
+ 
+-  async visibility(definition: Definition, _chokepoint?: Definition): Promise<Visibility> {
+-    if (definition.kind === "module") {
+-      return { enforced: true, visible: true, evidence: `${definition.file} is a module; any file may import it` };
+-    }
++  async visibility(definition: Definition, chokepoint?: Definition): Promise<Visibility> {
++    if (definition.kind === "module") return this.moduleVisibility(definition, chokepoint);
+     const name = await this.declaredName(definition);
+     if (name === undefined) return { enforced: true, visible: false, evidence: `no declaration at ${definition.file}:${definition.selection.line + 1}` };
+     return this.visibilityOf(definition.file, name, definition.range.start.line);
+   }
+ 
++  private moduleVisibility(definition: Definition, chokepoint: Definition | undefined): Visibility {
++    const evidence = `${definition.file} is a module; any file may import it`;
++    const config = chokepoint === undefined ? undefined : this.lintEnforcer(definition.file, chokepoint.file);
++    if (config === undefined || chokepoint === undefined) return { enforced: true, visible: true, evidence };
++    return {
++      enforced: true,
++      visible: true,
++      evidence: `${evidence}; ${config} runs ${LINT_RULE} at error`,
++      rung: {
++        grade: "checker-choked",
++        enforcer: `oxlint (${config}) rule ${LINT_RULE}`,
++        fact: `${config} runs ${LINT_RULE} at error over ${definition.file}, so an import of it outside ${chokepoint.file} fails the project's lint`,
++      },
++    };
++  }
++
++  private lintEnforcer(protectedFile: string, chokepointFile: string): string | undefined {
++    this.lint ??= { guards: readLintGuards(this.root).guards, configs: oxlintConfigs(this.root) };
++    const guarded = this.lint.guards.some((guard) => guard.protectedFile === protectedFile && guard.chokepointFile === chokepointFile);
++    return guarded ? enforcingConfig(this.lint.configs, protectedFile) : undefined;
++  }
++
+   /** The name as declared at the definition's selection, which the spec may have written with a file hint. */
+   private async declaredName(definition: Definition): Promise<string | undefined> {
+     const symbols = await this.documentSymbols(definition.file);
+diff --git a/src/spec/model.ts b/src/spec/model.ts
+index e715fe9..ec1db04 100644
+--- a/src/spec/model.ts
++++ b/src/spec/model.ts
+@@ -94,7 +94,7 @@ interface Config {
+   entryDir: string;
+ }
+ 
+-function readConfig(root: string): Config {
++export function readConfig(root: string): Config {
+   const path = resolve(root, CONFIG_FILE);
+   const config: Config = { ignore: [], entryDir: "." };
+   if (!existsSync(path)) return config;
+-- 
+2.43.0
+

@@ -79,6 +79,7 @@ export interface Session {
   hookSeconds: number[];
   sessionStartSeconds: number;
   stopSeconds: number;
+  proposedRoute: boolean;
 }
 
 const toolUse = z.object({ type: z.literal("tool_use"), name: z.string(), input: z.record(z.string(), z.unknown()) });
@@ -105,7 +106,22 @@ export function readSession(transcript: string, replay: ReplayCase): Session {
     hookSeconds: hookLatencies(ofEvent("PostToolUse")),
     sessionStartSeconds: total(hookLatencies(ofEvent("SessionStart"))),
     stopSeconds: total(hookLatencies(ofEvent("Stop"))),
+    proposedRoute: finalAnswer(records).includes(replay.reviewerRoute),
   };
+}
+
+const textBlock = z.object({ type: z.literal("text"), text: z.string() });
+
+function finalAnswer(records: unknown[]): string {
+  const texts = records.map((record) => {
+    const parsed = assistant.safeParse(record);
+    if (!parsed.success) return "";
+    return parsed.data.message.content.flatMap((block) => {
+      const text = textBlock.safeParse(block);
+      return text.success ? [text.data.text] : [];
+    }).join("\n");
+  });
+  return texts.findLast((text) => text !== "") ?? "";
 }
 
 function toolUsesIn(record: unknown): ToolUse[] {
@@ -224,6 +240,7 @@ function caseSection(replay: ReplayCase, runs: RunRecord[]): string {
     `3. Consistency: criterion 1 needs 2 of 3 control runs and criterion 2 needs 2 of 3 hooks runs.`,
     "",
     `In ${hooks.filter((run) => run.session.flagged && run.final.bypass).length} of ${hooks.length} hooks runs a hook named the invariant, and the session still ended with the bypass.`,
+    `In ${hooks.filter((run) => run.session.proposedRoute && run.final.bypass).length} of ${hooks.length} hooks runs the final answer named the reviewer's route, but the file kept the bypass. This is outside the criteria.`,
     "",
     `**Verdict: ${caseVerdict(control, hooks)}**`,
     "",

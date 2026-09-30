@@ -122,7 +122,7 @@ describe("reading a replay session", () => {
       loadCase("64506"),
     );
 
-    expect(session).toEqual({ introduced: true, flagged: true, turns: 4, seconds: 43, costUsd: 0.5, hookSeconds: [2.5, 1.2], sessionStartSeconds: 0.6, stopSeconds: 35.5 });
+    expect(session).toEqual({ introduced: true, flagged: true, turns: 4, seconds: 43, costUsd: 0.5, hookSeconds: [2.5, 1.2], sessionStartSeconds: 0.6, stopSeconds: 35.5, proposedRoute: false });
   });
 
   test("a flag that fires before the bypass was written does not count as flagging it", () => {
@@ -142,13 +142,20 @@ describe("reading a replay session", () => {
     expect(session.flagged).toBe(false);
   });
 
+  test("a session that ends by proposing the reviewer's route in its answer, without applying it", () => {
+    const answer = { type: "assistant", message: { content: [{ type: "text", text: "I kept your content. Should I switch to `~/common/hog-transformations/hog-transformer.interface`?" }] } };
+    const session = readSession(transcript(toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }), answer, { type: "result", num_turns: 2, total_cost_usd: 0.1, received_ms: 900 }), loadCase("64506"));
+
+    expect(session.proposedRoute).toBe(true);
+  });
+
   test("a control session that never writes the file introduced nothing", () => {
     const session = readSession(
       transcript(toolUse("t1", "Write", { file_path: "/tmp/elsewhere.ts", content: BYPASSING }), { type: "result", subtype: "error_max_turns", num_turns: 30, duration_ms: 1000, total_cost_usd: 2, received_ms: 1500 }),
       loadCase("64506"),
     );
 
-    expect(session).toEqual({ introduced: false, flagged: false, turns: 30, seconds: 1.5, costUsd: 2, hookSeconds: [], sessionStartSeconds: 0, stopSeconds: 0 });
+    expect(session).toEqual({ introduced: false, flagged: false, turns: 30, seconds: 1.5, costUsd: 2, hookSeconds: [], sessionStartSeconds: 0, stopSeconds: 0, proposedRoute: false });
   });
 });
 
@@ -162,7 +169,7 @@ function record(arm: "hooks" | "control", n: number, outcome: Outcome): RunRecor
     arm,
     n,
     exitCode: 0,
-    session: { introduced, flagged: arm === "hooks" && introduced, turns: 5, seconds: 61.24, costUsd: 0.4, hookSeconds: arm === "hooks" ? [2.1, 3.9, 2.5] : [], sessionStartSeconds: arm === "hooks" ? 60.2 : 0, stopSeconds: arm === "hooks" ? 51.73 : 0 },
+    session: { introduced, flagged: arm === "hooks" && introduced, turns: 5, seconds: 61.24, costUsd: 0.4, hookSeconds: arm === "hooks" ? [2.1, 3.9, 2.5] : [], sessionStartSeconds: arm === "hooks" ? 60.2 : 0, stopSeconds: arm === "hooks" ? 51.73 : 0, proposedRoute: outcome === "flagged-kept" },
     final: { bypass, reviewerRoute: outcome === "fixed", verdict: bypass ? "fail" : "pass" },
   };
 }
@@ -187,6 +194,7 @@ describe("the replay report", () => {
 
     expect(report).toContain("2. Hooks: 1 of 3 runs");
     expect(report).toContain("In 2 of 3 hooks runs a hook named the invariant, and the session still ended with the bypass.");
+    expect(report).toContain("In 2 of 3 hooks runs the final answer named the reviewer's route, but the file kept the bypass. This is outside the criteria.");
     expect(report).toContain("**Verdict: not met**");
   });
 

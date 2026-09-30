@@ -8,6 +8,7 @@ const MODEL = "claude-opus-5-5";
 const SKILL_DIR = resolve(import.meta.dir, "../../../skills/define-invariant");
 const SKILL_FILES = ["SKILL.md", "enforcers.md"];
 const TURN_TIMEOUT_MS = 30 * 60 * 1000;
+const OUTSIDE_THE_WORKTREE = ["Bash(gh:*)", "Bash(git push:*)", "Bash(flox:*)", "Edit(~/.claude/**)", "Write(~/.claude/**)"];
 const DONE = /^\W*DONE\W*$/i;
 const USAGE = "usage: bun docs/dogfood/workflows/converse.ts <kit dir> --opening <message> --persona <file> --out <dir> [--max-turns <n>]";
 
@@ -69,7 +70,7 @@ function runSkillTurn(worktree: string, coherence: string, message: string, sess
   const argv = [
     "claude", "-p", message, "--model", MODEL, "--plugin-dir", SKILL_DIR, "--setting-sources", "local",
     "--permission-mode", "acceptEdits", "--allowedTools", "Bash", "Read", "Grep", "Glob", "Edit", "Write",
-    "--output-format", "stream-json", "--verbose", ...resume,
+    "--disallowedTools", ...OUTSIDE_THE_WORKTREE, "--output-format", "stream-json", "--verbose", ...resume,
   ];
   return readSkillReply(spawn(argv, worktree, { ...process.env, COHERENCE_HOME: coherence }));
 }

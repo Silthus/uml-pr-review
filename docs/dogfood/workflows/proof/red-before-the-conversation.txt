@@ -14,7 +14,7 @@ no spec under /tmp/dogfood-119-py/posthog
 lacking: enforcement 0, refutation 0, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; no run yet: every enforcement is declared, unverified
 [exit 0]
 
-## A bypass of the later billing chokepoint passes the lint before the declaration
+## Before any declaration, an outside import of a hogflows module passes the lint
 staged nodejs/src/cdp/services/hogflows/redProbe.ts:
 import * as bypass from "./billing-utils";
 export { bypass };

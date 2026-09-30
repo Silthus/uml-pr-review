@@ -1,0 +1,29 @@
+# Why Coherence reads "exports nothing" for TypeScript modules in PostHog
+
+Probe, run in /tmp/dogfood-119-ts/posthog after the first TypeScript pass. It calls the TypeScript adapter's
+documentSymbols directly, which is what Coherence's module refutation reads before it filters to exported names:
+
+    import { TypeScriptAdapter } from "/tmp/dogfood-119-ts/coherence/src/adapters/typescript.ts";
+    const adapter = new TypeScriptAdapter("/tmp/dogfood-119-ts/posthog");
+    await adapter.ready();
+    await adapter.documentSymbols("nodejs/src/cdp/services/hogflows/billing-utils.ts");
+    await adapter.documentSymbols("frontend/src/lib/utils/requests.ts");
+
+$ node --disable-warning=ExperimentalWarning probe-symbols.ts
+{ ok: true }
+nodejs/src/cdp/services/hogflows/billing-utils.ts 33.314 s []
+frontend/src/lib/utils/requests.ts 0.001 s []
+
+The language server answers with no symbols at all, so the refutation never reaches its export filter.
+billing-utils.ts declares `export const trackHogFlowBillableInvocation` at line 14.
+
+A tsserver log of the same kind of run (COHERENCE_TSSERVER_LOG) shows:
+- one open, of the seed file, whose project graph took 18.2 s to build (the root tsconfig.json, the frontend);
+- nodejs/tsconfig.json still loading when the run gave up, about 30 s in.
+
+Where TypeScript comes from:
+- ~/posthog/node_modules/typescript: absent (PostHog installs it under nodejs/node_modules, 6.0.3)
+- so Coherence falls back to its own copy: 5.9.3
+
+Hypotheses, not settled: the project load outlasts the request, or Coherence's TypeScript 5.9.3 cannot load
+PostHog's configs that expect 6.0. Either way the fault is in the instrument, not the spec.

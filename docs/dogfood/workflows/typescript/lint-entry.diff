@@ -1,0 +1,30 @@
+--- a/nodejs/.oxlintrc.nodejs.json (as the kit wrote it)
++++ b/nodejs/.oxlintrc.nodejs.json (after the conversation)
+@@ -181,6 +181,27 @@
+           }
+         ]
+       }
++    },
++    {
++      "files": [
++        "src/cdp/**/*.ts"
++      ],
++      "excludeFiles": [
++        "src/cdp/services/hogflows/duration.ts"
++      ],
++      "rules": {
++        "eslint-js/no-restricted-syntax": [
++          "error",
++          {
++            "selector": "CallExpression[callee.object.name=\"JSON\"][callee.property.name=\"parse\"]",
++            "message": "Use parseJSON from src/common/utils/json-parse instead of JSON.parse for better performance"
++          },
++          {
++            "selector": "Literal[regex.pattern=/\\[[dhms]{4}\\]\\)?\\$$/]",
++            "message": "one-duration-grammar (nodejs/src/cdp/services/hogflows/Hogflows.spec.md): parse workflow durations with parseDuration or durationSeconds from ~/cdp/services/hogflows/duration, not a local [dhms] regex"
++          }
++        ]
++      }
+     }
+   ]
+ }

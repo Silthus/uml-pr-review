@@ -1,84 +1,29 @@
-# 1. The kit's witness.ts on the two ruff oracles: the kit cannot build their bypass
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-py "products/workflows/backend/server-compiles-all-bytecode"
-error: pyproject.toml bans no API matching "server-compiles-all-bytecode"
-[exit 1, 0.0 s]
+# 1. The kit's witness.ts: it reads banned-api from pyproject.toml only, so it cannot build this bypass
 $ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-py "products/workflows/backend/ses-only-through-provider"
 error: pyproject.toml bans no API matching "ses-only-through-provider"
-[exit 1, 0.0 s]
 
-# 2. The same protocol by hand for the two ruff oracles: stage, refute, remove, run
-staged products/workflows/backend/services/witness_bytecode.py: from posthog.hogql.compiler.bytecode import create_bytecode  # noqa: F401
-$ coherence refute "products/workflows/backend/server-compiles-all-bytecode" --broke "staged products/workflows/backend/services/witness_bytecode.py" --session manual-witness --agent implement-119
-refuted products/workflows/backend/server-compiles-all-bytecode (totality oracle): staged products/workflows/backend/services/witness_bytecode.py
-  the detector went red: 1 finding of ruff:TID251 matching "server-compiles-all-bytecode", the first at products/workflows/backend/services/witness_bytecode.py:1
-  recorded in .coherence/runs/manual-witness.jsonl at 2026-09-30T12:03:44.379Z
-now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
-[exit 0]
-removed products/workflows/backend/services/witness_bytecode.py
-$ coherence run --invariant "server-compiles-all-bytecode" --session manual-witness --agent implement-119
-products/workflows/backend/server-compiles-all-bytecode
-  totality oracle: pass (136 ms); refutation witnessed
-    /home/coder/.local/bin/uvx ruff@0.15.20 check --force-exclude --output-format json reported no finding of ruff:TID251 matching "server-compiles-all-bytecode"
-run recorded in .coherence/runs/manual-witness.jsonl: 1 enforcement, 1 pass, 0 fail, 0 not run; instrument python (none); 1.2 s
-[exit 0]
-
-staged products/workflows/backend/tasks/witness_boto3.py: import boto3  # noqa: F401
+# 2. The same protocol by hand: stage, refute, remove, run
+staged products/workflows/backend/tasks/witness_boto3.py: import boto3
 $ coherence refute "products/workflows/backend/ses-only-through-provider" --broke "staged products/workflows/backend/tasks/witness_boto3.py" --session manual-witness --agent implement-119
 refuted products/workflows/backend/ses-only-through-provider (totality oracle): staged products/workflows/backend/tasks/witness_boto3.py
   the detector went red: 1 finding of ruff:TID251 matching "ses-only-through-provider", the first at products/workflows/backend/tasks/witness_boto3.py:1
-  recorded in .coherence/runs/manual-witness.jsonl at 2026-09-30T12:03:48.208Z
+  recorded in .coherence/runs/manual-witness.jsonl at 2026-09-30T12:37:08.063Z
 now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
 [exit 0]
 removed products/workflows/backend/tasks/witness_boto3.py
 $ coherence run --invariant "ses-only-through-provider" --session manual-witness --agent implement-119
 products/workflows/backend/ses-only-through-provider
-  totality oracle: pass (113 ms); refutation witnessed
+  totality oracle: pass (119 ms); refutation witnessed
     /home/coder/.local/bin/uvx ruff@0.15.20 check --force-exclude --output-format json reported no finding of ruff:TID251 matching "ses-only-through-provider"
 run recorded in .coherence/runs/manual-witness.jsonl: 1 enforcement, 1 pass, 0 fail, 0 not run; instrument python (none); 1.1 s
 [exit 0]
 
-# 3. The kit's witness.ts on the Python chokepoint (JSON trimmed to verdict, grade, enforcer and bypasses)
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-py "products/workflows/backend/graph-validation-has-one-door"
-staged products/workflows/backend/kit_witness_bypass.py: import products.workflows.backend.presentation.views.graph_validation  # noqa: F401
-red: 204.1 s
-$ coherence run --invariant graph-validation-has-one-door --json --no-server --session kit-witness --agent kit
-      "grade": "checker-choked",
-      "verdict": "pass",
-      "enforcer": "import-linter (pyproject.toml [tool.importlinter])",
-      "refutation": "automatic",
-      "bypasses": [],
-[exit 0]
-green: 199.5 s
-$ coherence run --invariant graph-validation-has-one-door --json --no-server --session kit-witness --agent kit
-      "grade": "checker-choked",
-      "verdict": "pass",
-      "enforcer": "import-linter (pyproject.toml [tool.importlinter])",
-      "refutation": "automatic",
-      "bypasses": [],
-[exit 0]
-[exit 1, 404.3 s]
-
-# 4. A bypass that calls the protected module's function, staged by hand
-staged products/workflows/backend/services/witness_graph_bypass.py:
-from products.workflows.backend.presentation.views.graph_validation import validate_graph
-
-
-def bypass(actions: list[dict], edges: list[dict]) -> list[str]:
-    return validate_graph(actions, edges)
-$ coherence run --invariant graph-validation-has-one-door --no-server --session manual-witness --agent implement-119
-products/workflows/backend/graph-validation-has-one-door
-  chokepoint products/workflows/backend/presentation/views/hog_flow.py protects products/workflows/backend/presentation/views/graph_validation.py: broken — fail (195.7 s)
-    2 references to products/workflows/backend/presentation/views/graph_validation.py outside products/workflows/backend/presentation/views/hog_flow.py: products/workflows/backend/services/witness_graph_bypass.py:1 in module top level, products/workflows/backend/services/witness_graph_bypass.py:5 in bypass
-    references: 6 inside, 7 test, 2 bypass
-    refutation automatic: the instrument reported a re-export of _branch_slot_count through __all__ in the unsaved document products/workflows/backend/presentation/views/coherence_refutation_183948da.py, and the check classified each one a bypass
-run recorded in .coherence/runs/manual-witness.jsonl: 1 enforcement, 0 pass, 1 fail, 0 not run; instrument python (cold); 196.9 s
-[exit 1]
-removed products/workflows/backend/services/witness_graph_bypass.py
-$ coherence run --invariant graph-validation-has-one-door --no-server --session manual-witness --agent implement-119
-products/workflows/backend/graph-validation-has-one-door
-  chokepoint products/workflows/backend/presentation/views/hog_flow.py protects products/workflows/backend/presentation/views/graph_validation.py: checker-choked (enforced by import-linter (pyproject.toml [tool.importlinter])) — pass (205.0 s)
-    products/workflows/backend/presentation/views/graph_validation.py is checker-choked, enforced by import-linter (pyproject.toml [tool.importlinter]): rule "presentation must use facade", "routes must only import presentation", "webhook consumers must only import facade", "facade must not import presentation or DRF" names products.workflows.backend.presentation.views.graph_validation, so an import the rule forbids fails the project's lint; 7 test references
-    references: 6 inside, 7 test, 0 bypass
-    refutation automatic: the instrument reported a re-export of _branch_slot_count through __all__ in the unsaved document products/workflows/backend/presentation/views/coherence_refutation_1134dca5.py, and the check classified each one a bypass
-run recorded in .coherence/runs/manual-witness.jsonl: 1 enforcement, 1 pass, 0 fail, 0 not run; instrument python (cold); 206.2 s
-[exit 0]
+# 3. The listed residual is real: without its two ignore lines, ruff flags exactly those files
+$ ruff check --no-cache --select TID251 --output-format concise products/workflows/backend   # residual lines removed
+  products/workflows/backend/test/test_ses_account_reputation_task.py:4:1: TID251 `botocore` is banned: ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses
+  products/workflows/backend/test/test_ses_provider.py:11:8: TID251 `boto3` is banned: ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses
+  products/workflows/backend/test/test_ses_provider.py:14:1: TID251 `botocore` is banned: ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses
+  Found 3 errors.
+restored products/workflows/backend/ruff.toml
+$ ruff check --no-cache --select TID251 --output-format concise products/workflows/backend
+  All checks passed!

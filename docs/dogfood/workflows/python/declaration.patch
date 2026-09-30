@@ -1,57 +1,38 @@
 diff --git a/products/workflows/backend/Backend.spec.md b/products/workflows/backend/Backend.spec.md
 new file mode 100644
-index 00000000000..e6554bdacb8
+index 00000000000..6e4b782db11
 --- /dev/null
 +++ b/products/workflows/backend/Backend.spec.md
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,11 @@
 +# Backend
 +
-+The workflows product's Django backend: the HogFlow serializer and viewsets, the services, models, providers and tasks behind them, and the facade the rest of PostHog uses.
++Workflows backend: HogFlow models, services, providers and the facade other products reach it through
 +
 +## invariants
-+- graph-validation-has-one-door: Only presentation/views/hog_flow.py imports presentation/views/graph_validation.py.
-+  protects: products/workflows/backend/presentation/views/graph_validation.py
-+  chokepoint: products/workflows/backend/presentation/views/hog_flow.py
-+  because: every graph write goes through HogFlowSerializer, so the editor, the API and MCP share one validate_graph; a second importer is a second write path that can skip or fork the check. import-linter's "presentation must use facade" contract is credited, but it only limits what presentation imports: it does not stop services/ or facade/ from importing the validator, which this chokepoint does
-+  refuted: coherence run staged a sibling module re-exporting graph_validation's _branch_slot_count -> the check classified it a bypass; graded checker-choked by import-linter (2026-09-30)
-+  kinds: none
-+- server-compiles-all-bytecode: Under products/workflows/backend only presentation/views/hog_flow.py imports a bytecode compiler.
-+  over: every non-test Python file under products/workflows/backend; create_bytecode, compile_filters_expr and generate_template_bytecode are allowed only in presentation/views/hog_flow.py, the paved path
-+  via: lint ruff:TID251 matching "server-compiles-all-bytecode"
-+  because: client-supplied bytecode is discarded on every write path and the serializer recompiles it, so a compiler call anywhere else is a second compile path that can drift from the serializer or trust client input
-+  refuted: staged services/coherence_break_bytecode.py importing create_bytecode -> ruff TID251 went red at its line 1 with this invariant's message (2026-09-30)
-+  kinds: none
-+- ses-only-through-provider: Under products/workflows/backend only providers/ses.py imports boto3 or botocore; everything else calls SESProvider.
-+  over: every non-test Python file under products/workflows/backend; boto3 and botocore are allowed only in providers/ses.py, the paved path
++- ses-only-through-provider: Only providers/ses.py imports boto3 or botocore; services reach AWS SES through the provider
++  over: every Python file under products/workflows/backend, apart from the paved path providers/ses.py, except the listed residual: test/test_ses_provider.py, test/test_ses_account_reputation_task.py
 +  via: lint ruff:TID251 matching "ses-only-through-provider"
-+  because: SESProvider owns the client config (timeouts, retries), the typed stubs and the error mapping, as review asked in #89643; a raw boto3 client in a task or service bypasses all three, and facade/api.py keeps boto3 off the facade import path on purpose
-+  refuted: staged tasks/coherence_break_boto3.py importing boto3 -> ruff TID251 went red at its line 1 with this invariant's message (2026-09-30)
++  because: AWS/SES specifics (identity, region, retries) stay in the provider, so services use only the provider interface and never talk to AWS directly
++  refuted: staged services/_refute_ses_bypass.py importing boto3 and building an sesv2 client -> ruff TID251 went red at services/_refute_ses_bypass.py:1 naming ses-only-through-provider; clean again once removed (2026-09-30)
 +  kinds: none
 diff --git a/products/workflows/backend/ruff.toml b/products/workflows/backend/ruff.toml
 new file mode 100644
-index 00000000000..0647c8ab797
+index 00000000000..4139b6aa261
 --- /dev/null
 +++ b/products/workflows/backend/ruff.toml
-@@ -0,0 +1,22 @@
-+# Workflows-only bans on top of products/ruff.toml. The invariants they enforce live in
-+# Backend.spec.md next to this file.
+@@ -0,0 +1,15 @@
 +extend = "../../ruff.toml"
 +
 +[lint]
 +extend-select = ["TID251"]
 +
 +[lint.flake8-tidy-imports.banned-api]
-+"posthog.hogql.compiler.bytecode.create_bytecode".msg = "server-compiles-all-bytecode (products/workflows/backend/Backend.spec.md): compile bytecode only in HogFlowSerializer in presentation/views/hog_flow.py"
-+"posthog.cdp.filters.compile_filters_expr".msg = "server-compiles-all-bytecode (products/workflows/backend/Backend.spec.md): compile bytecode only in HogFlowSerializer in presentation/views/hog_flow.py"
-+"posthog.cdp.validation.generate_template_bytecode".msg = "server-compiles-all-bytecode (products/workflows/backend/Backend.spec.md): compile bytecode only in HogFlowSerializer in presentation/views/hog_flow.py"
-+"boto3".msg = "ses-only-through-provider (products/workflows/backend/Backend.spec.md): call SESProvider from providers/ses.py"
-+"botocore".msg = "ses-only-through-provider (products/workflows/backend/Backend.spec.md): call SESProvider from providers/ses.py"
++"boto3".msg = "ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses"
++"botocore".msg = "ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses"
 +
-+# extend-, not per-file-ignores: the plain table would replace products/ruff.toml's ignores.
 +[lint.extend-per-file-ignores]
-+# The paved paths: the serializer compiles bytecode, the provider wraps SES.
-+"presentation/views/hog_flow.py" = ["TID251"]
++# The paved path: the one module that talks to AWS.
 +"providers/ses.py" = ["TID251"]
-+"**/test/**" = ["TID251"]
-+"**/tests/**" = ["TID251"]
-+"**/test_*" = ["TID251"]
++# Listed residual: these test the provider's own AWS boundary (ClientError, the sesv2 service model).
++"test/test_ses_provider.py" = ["TID251"]
++"test/test_ses_account_reputation_task.py" = ["TID251"]

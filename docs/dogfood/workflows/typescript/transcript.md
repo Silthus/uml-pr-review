@@ -1,308 +1,438 @@
+Skill: `skills/define-invariant` (SKILL.md + enforcers.md), sha256 494ff331ed4f. Model: claude-opus-5-5.
+
 ## 1. Engineer (0 s)
 
 /define-invariant nodejs/src/cdp/services/hogflows
 
-## 2. Skill (73.4 s)
+## 2. Skill (72.6 s)
 
-## Scope: `nodejs/src/cdp/services/hogflows`
-
-This folder is the Node worker's workflow (HogFlow) runtime. `hogflow-executor.service.ts` runs a workflow step by step and hands each step to a handler in `actions/`. Around it sit the manager (loads flows), the batch person query, step-resume, quota limiting, the conversion watcher, and the `duration.ts` grammar.
+`nodejs/src/cdp/services/hogflows` is the Node worker's workflow engine. `hogflow-executor.service.ts` routes each step through the handlers in `actions/`. Around it sit the manager (loads flows), the functions service, the batch person query, step resume, quota limiting, the conversion watcher, the duplicate observer, and the `duration.ts` grammar.
 
 ```mermaid
 flowchart LR
-  subgraph outside["cdp/ (outside)"]
-    api[cdp-api.ts]; svc[cdp-services.ts]; cons[consumers/*]; pipe[hog-flow-invocation-pipeline.service]; rerun[rerun-paginator]; cyc[cyclotron-v2/*]; srv[server.ts]
+  subgraph callers["cdp (outside the folder)"]
+    CS[cdp-services.ts] 
+    API[cdp-api.ts]
+    CONS[consumers/*]
+    PIPE[hog-flow-invocation-pipeline]
+    RR[rerun-paginator]
+    CV2[cyclotron-v2/*]
   end
   subgraph hogflows
-    exec[hogflow-executor.service]; mgr[hogflow-manager.service]; utils[hogflow-utils]; sr[step-resume.service]; bpq[batch-person-query + batch-resolver.types]; ql[hogflow-quota-limiting]
-    cw[conversion-watcher]; dur[duration]
-    subgraph actions
-      h[conditional_branch · delay · hog_function · random_cohort_branch · wait_until_time_window · trigger · exit]
-    end
+    EX[hogflow-executor.service]
+    ACT[actions/*]
+    MGR[hogflow-manager.service]
+    UT[hogflow-utils]
+    SR[step-resume.service]
+    DUR[duration.ts]
+    CW[conversion-watcher]
+    DUP[duplicate-observer]
+    QL[quota-limiting]
+    BQ[batch-person-query + batch-resolver.types]
   end
-  api & svc & cons & pipe & rerun --> exec & mgr
-  cons & api & srv --> bpq & utils & sr
-  cyc --> sr
-  pipe -->|only importer| ql
-  exec -->|only importer| cw
-  exec -->|only importer, except delay| h
-  h -->|delay| dur
-  cw --> dur
-  exec & h --> schema["~/cdp/schema/hogflow, ~/cdp/types, ~/common/*"]
+  CS & API & CONS & PIPE & RR --> EX
+  CS & API & CONS & PIPE & RR --> MGR
+  API & CONS --> UT
+  API & CONS & CV2 --> SR
+  PIPE --> QL
+  CS --> CW & DUP
+  EX --> ACT
+  ACT -- delay.ts --> DUR
+  CW --> DUR
+  EX & ACT --> T["~/cdp/schema/hogflow, ~/cdp/types, ~/common/*"]
 ```
 
-**Enforcers that cover this folder**
-- **oxlint (nodejs)**, `nodejs/.oxlintrc.nodejs.json`: this is the only one. It owns TypeScript lint under `nodejs/`, the `fetch`/`node-fetch`/`undici` import bans, and the `JSON.parse` ban. In your working tree it already loads the `coherence` jsPlugin with `coherence/chokepoint: error`, so a chokepoint bullet here would grade `checker-choked`. No nested `.oxlintrc.json` sits between it and this folder.
-- tach, import-linter and ruff are Python-only, so none of them covers this folder.
+Only one enforcer covers this folder, and it's TypeScript only. tach, import-linter and ruff are all Python and don't reach it.
 
-⚠️ That working-tree edit to `.oxlintrc.nodejs.json` was there before I started. It also strips the comments, prefixes the `ignorePatterns` with `nodejs/`, and sets **`typeAware: false`**. That last change turns off the type-aware rules, including `no-floating-promises`, `await-thenable` and `require-await`. We should agree on this before any PR goes out. I'll get to it at the end.
+- **`nodejs/.oxlintrc.nodejs.json`** covers all of `nodejs/`. Here it owns:
+  - bans on `fetch` / `node-fetch` / `undici` (`no-restricted-imports` / `no-restricted-globals`)
+  - the `JSON.parse` ban (`eslint-js/no-restricted-syntax`)
+  - the usual TS hygiene rules
+  - `coherence/chokepoint`, already wired in as uncommitted setup. The one nested config, the sidecar's, has it too, so a TypeScript chokepoint would get `checker-choked` credit.
+- None of its overrides reaches `src/cdp`.
 
-**Evidence**
-- The labels file has nothing for this folder.
-- The corpus has four corrections here. One is backed by a fix: in PR #82953, a reviewer asked for the executor's helpers to move out of the executor, and `conversion-watcher.ts` was created in response.
-- The harvested `workflows` rules include `one-duration-grammar`. Its only importers today are `delay.ts` and `conversion-watcher.ts`, but `actions/hog_function.ts:46` has its own `AWAIT_DURATION_REGEX`. That regex breaks the rule, and it is the quadratic-backtracking form that `duration.ts` warns against. An import ban can't express this rule, so it falls outside the two forms. I'll list it as a finding rather than an invariant.
-- Code shape: several modules already have exactly one importer, so each already has a single door:
-  - `conversion-watcher` → the executor
-  - every step handler except `delay` → the executor
-  - `hogflow-quota-limiting` → the invocation pipeline
-  - `hogflow-variable-usage` and `billing-utils` → `actions/hog_function`
+Evidence: the four reviewer corrections on this folder ask about placement or reuse, not about a lintable rule. The harvested `workflows` rules give one strong lead. `one-duration-grammar` says: "Every workflow duration is parsed by one grammar." `actions/hog_function.ts:46` breaks it today. It has its own `AWAIT_DURATION_REGEX = /^(\d*\.?\d+)([dhms])$/`, which is the quadratic form that `duration.ts`'s header warns against, instead of calling `parseDuration`.
 
----
+**Q1: One duration grammar in the Node worker**
+Sentence: *"Every workflow duration under `nodejs/src/cdp` is parsed by `parseDuration`/`durationSeconds` in `hogflows/duration.ts`; no other module declares a `[dhms]` duration regex."*
+Because: `duration.ts` is the Node half of the grammar Django enforces, and it's written to match linearly. A second regex can drift from the API and backtrack.
+Form: **lint totality oracle**. An `eslint-js/no-restricted-syntax` entry bans regex literals containing `[dhms]` in `src/cdp/**`, excluding `duration.ts`. The bullet reads `via: lint oxlint:eslint-js/no-restricted-syntax matching "one-duration-grammar"`. This isn't an import ban, so `no-restricted-imports` can't express it. Coherence matches any oxlint rule id.
+Backing: the harvested rule `one-duration-grammar` (pr#81114, `graph-schema.md`).
+The one current violation is `hog_function.ts`. It can be fixed mechanically with `durationSeconds` plus the existing 24h ceiling.
 
-**Q1: Conversion watcher reached only through the executor**
-Proposed bullet: *"Only `hogflow-executor.service.ts` imports `conversion-watcher.ts`"*, **because** the watcher's construction and window clamping (`MAX_CONVERSION_WINDOW_MINUTES`) are the executor's decisions. Split out, they read as a general utility, and a second caller would pin goals under different rules.
-Form: chokepoint (`protects: conversion-watcher.ts`, `chokepoint: hogflow-executor.service.ts`), enforced by `coherence/chokepoint` in oxlint. Tests are exempt.
-Backing: correction gh:82953 (meikelmosby), whose fix commit `0fcf6f2` created this file. Today it has one importer, so there are 0 violations.
+**Recommendation:** Accept, and fix `hog_function.ts` now rather than listing it as a residual. It's one call site, and it's the exact drift the rule exists to stop.
 
-**Recommendation:** Accept. It has the strongest backing of any candidate here, and it locks in the reviewer's own fix without touching any code.
+<details><summary>13 tool calls</summary>
 
-<details><summary>10 commands</summary>
-
-```sh
-cat coherence.config.json; echo ---; ls nodejs/src/cdp/services/hogflows; echo ---; find nodejs/src/cdp -name '*.spec.md'; find nodejs/src -maxdepth 1 -name '*.spec.md'; find nodejs -maxdepth 1 -name '*.spec.md'; echo ---; ls /home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/skills/define-invariant; echo "COHERENCE_HOME=$COHERENCE_HOME"; which coherence
 ```
-```sh
-git diff; echo ---; cat nodejs/.oxlintrc.nodejs.json; echo; echo ---; find nodejs -name '.oxlintrc*.json' -not -path '*/node_modules/*'; ls nodejs/src/cdp/services/hogflows/actions
+Bash: cat coherence.config.json; echo ---; echo "COHERENCE_HOME=$COHERENCE_HOME"; ls nodejs/src/cdp/services/hogflows; echo ---; find nodejs/src/cdp nodejs/src nodejs -maxdepth 1 -name '*.spec.md' 2>/dev/null; find nodejs/src/cdp/services/hogflows -name '*.spec.md'; echo ---; git diff --stat; ls nodejs/.oxlintrc* nodejs/src/cdp/.oxlintrc* 2>/dev/null; ls /home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/skills/define-invariant
 ```
-```sh
-cd /tmp/dogfood-119-ts/posthog/nodejs/src && D=cdp/services/hogflows
-echo "== outbound (non-test) import targets, grouped"; grep -rhoE "from '[^']+'" $D --include='*.ts' --exclude='*.test.ts' | sed -E "s/from '//;s/'$//" | sort | uniq -c | sort -rn | head -60
-echo "== inbound: files outside folder importing it (non-test)"; grep -rlE "services/hogflows(/|')" . --include='*.ts' | grep -v "^./$D" | grep -v '\.test\.ts$' | sort
-echo "== inbound per module"; grep -rhoE "services/hogflows/[A-Za-z0-9_./-]+" . --include='*.ts' | grep -v '^\./cdp/services/hogflows' | sort | uniq -c | sort -rn
 ```
-```sh
-grep -rnE "from '[^']*hogflows/[^']+'" . --include='*.ts' | grep -v '^\./cdp/services/hogflows/' | sed -E "s/:[0-9]+:.*hogflows\// -> /;s/'.*//" | sort -u
-R=/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40
-echo "== labels"; jq -c 'select(.path | startswith("nodejs/src/cdp/services/hogflows"))' $R/docs/lintability/labels.jsonl | head -40
-echo "== corpus"; jq -c 'select(.path | startswith("nodejs/src/cdp/services/hogflows"))' $R/docs/corrections/corpus.jsonl | wc -l
-ls $R/docs/harvest/
+Bash: cat /home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/skills/define-invariant/enforcers.md; echo ----; git diff nodejs/.oxlintrc.nodejs.json | head -150; echo; git diff nodejs/src/ingestion/pipelines/sessionreplay/ml-mirror-image-scrub-sidecar/.oxlintrc.json
 ```
-```sh
-R=/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40
-jq -c 'select(.path | startswith("nodejs/src/cdp/services/hogflows"))' $R/docs/corrections/corpus.jsonl
-echo "== labels nodejs/src/cdp"; jq -c 'select(.path | startswith("nodejs/src/cdp")) | {path,catchable,ruleKind,ruleSketch,quote}' $R/docs/lintability/labels.jsonl | head -40
-echo "== harvest"; ls $R/docs/harvest/workflows; jq -r '.rules[] | "\(.id): \(.statement)"' $R/docs/harvest/workflows/rules.json
 ```
-```sh
-for m in duration conversion-watcher hogflow-duplicate-observer.service hogflow-functions.service hogflow-quota-limiting hogflow-variable-usage billing-utils step-resume.service actions/delay actions/conditional_branch actions/hog_function actions/random_cohort_branch actions/wait_until_time_window actions/trigger.handler actions/exit.handler actions/timezone actions/action.interface; do
-b=$(basename $m); echo "== $m"; grep -rlE "from '[^']*(/|\./)$b'" . --include='*.ts' | grep -v '\.test\.ts$' | grep -v "/$m.ts$" | sort | tr '\n' ' '; echo; done
-echo; echo "== duration.ts"; sed -n 1,200p cdp/services/hogflows/duration.ts | head -60
-echo "== other duration parsers in nodejs"; grep -rnE "parseDuration|DURATION_(RE|REGEX)|/\^\\\(\\\\d\+\)\(\[smhdw\]\)" . --include='*.ts' | grep -v '\.test\.ts' | head
+Bash: find . -name '*.spec.md' -not -path '*/node_modules/*' 2>/dev/null | head; ls tach.toml .importlinter nodejs/tach.toml 2>/dev/null; grep -n "cdp" tach.toml 2>/dev/null | head; find nodejs -name '.oxlintrc*' -not -path '*/node_modules/*'; grep -n "hogflow\|cdp" nodejs/.oxlintrc.nodejs.json | head -40
 ```
-```sh
-cd /tmp/dogfood-119-ts/posthog && C="node $COHERENCE_HOME/src/cli.ts"; $C scaffold invariant --help 2>&1 | head -40; echo ---; git show --stat 0fcf6f25b74c0d040e07abe34a91340d0f26a243 2>&1 | head -20; echo ---; grep -rnE "\[dhms\]|\[smhd\]|\[smhdw\]" nodejs/src --include='*.ts' | grep -v '\.test\.ts' | head
 ```
-```sh
-cd $COHERENCE_HOME && ls; ls src; grep -rn "chokepoint" src/cli.ts | head -20; grep -rln "protects" src | head
+Bash: python3 -c "
+import json;c=json.load(open('nodejs/.oxlintrc.nodejs.json'))
+print(json.dumps({k:v for k,v in c.items() if k!='rules'},indent=1)[:4000])
+print('coherence rule:',c['rules'].get('coherence/chokepoint'))
+print(json.dumps(c['rules'].get('eslint/no-restricted-imports'),indent=1))
+"
 ```
-```sh
-cd $COHERENCE_HOME && grep -n "protects\|chokepoint" src/spec/grammar.ts | head -30; grep -n "protects" -A3 src/adapters/lint.ts | head -40
 ```
-```sh
-cd $COHERENCE_HOME && sed -n 120,185p src/adapters/lint.ts; grep -n "test" src/adapters/lint-guards.ts | head
+Bash: cd /tmp/dogfood-119-ts/posthog/nodejs && ls src/cdp/services/hogflows/actions; echo "--- OUT (non-test) ---"; grep -rhoE "from '[^']+'" src/cdp/services/hogflows --include=*.ts | grep -v test | sort | uniq -c | sort -rn | head -60
+```
+```
+Bash: echo "--- IN (who imports hogflows/*, outside folder) ---"; grep -rnE "services/hogflows/|from '\./hogflows/|from '\.\./hogflows/" src --include=*.ts | grep -v "^src/cdp/services/hogflows/" | grep -v "\.test\.ts" | sed -E "s#:[0-9]+:.*(hogflows/[^'\"]+).*#  ->  \1#" | sort | uniq | awk '{print $3" <- "$1}' | sort
+```
+```
+Bash: R=/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40; cd /tmp/dogfood-119-ts/posthog/nodejs; for f in billing-utils conversion-watcher duration hogflow-variable-usage hogflow-duplicate-observer.service hogflow-quota-limiting actions/; do echo "== $f"; grep -rlE "hogflows/$f|['\"]\.{1,2}/.*$f" src --include=*.ts | grep -v test | grep -v "^src/cdp/services/hogflows/actions/" ; done 2>/dev/null; echo; ls $R/docs/lintability $R/docs/corrections $R/docs/harvest 2>&1; for p in nodejs/src/cdp/services/hogflows nodejs/src/cdp; do echo "== labels $p"; jq -c "select(.path | startswith(\"$p\"))" $R/docs/lintability/labels.jsonl | wc -l; echo "== corpus $p"; jq -c "select(.path | startswith(\"$p\"))" $R/docs/corrections/corpus.jsonl | wc -l; done
+```
+```
+Bash: R=/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40; echo "== corpus hogflows"; jq -c 'select(.path | startswith("nodejs/src/cdp/services/hogflows"))' $R/docs/corrections/corpus.jsonl | cut -c1-900; echo "== labels cdp"; jq -c 'select(.path | startswith("nodejs/src/cdp")) | {path,catchable,ruleKind,ruleSketch,quote}' $R/docs/lintability/labels.jsonl | cut -c1-700; ls $R/docs/harvest/workflows; jq -r '.rules[] | "\(.id): \(.statement)"' $R/docs/harvest/workflows/rules.json 2>/dev/null | head -60
+```
+```
+Bash: R=/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40; cd /tmp/dogfood-119-ts/posthog/nodejs; jq '.rules[] | select(.id=="one-duration-grammar" or .id=="test-runs-share-production-trigger-predicates" or .id=="closed-type-sets-have-one-home")' $R/docs/harvest/workflows/rules.json | head -80; echo ====; head -40 src/cdp/services/hogflows/duration.ts; grep -rn "duration'" src --include=*.ts | grep -v test
+```
+```
+Bash: R=/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40; cd /tmp/dogfood-119-ts/posthog/nodejs; jq '.rules[] | select(.id=="one-duration-grammar") | {currentLevel,currentLevelBasis,proposedLevel,howToEnforce,evidence:[.evidence[]|{origin,quote}]}' $R/docs/harvest/workflows/rules.json; grep -rnE "\[dhms\]|Duration\.from|from 'ms'|parse-duration|dhms" src/cdp --include=*.ts | grep -v test | head -20
+```
+```
+Bash: cd /tmp/dogfood-119-ts/posthog/nodejs; grep -rn "isOwnGithubEvent" src --include=*.ts | grep -v test; sed -n 40,75p src/cdp/services/hogflows/actions/hog_function.ts; git log --oneline -3 -- src/cdp/services/hogflows/actions/hog_function.ts src/cdp/services/hogflows/duration.ts
+```
+```
+Bash: cd $COHERENCE_HOME && grep -rn "no-restricted" src --include=*.ts | grep -v test | head -15
+```
+```
+Bash: cd $COHERENCE_HOME && sed -n 195,245p src/enforcement/lint.ts
 ```
 
 </details>
 
-## 3. Engineer (2.4 s)
+## 3. Engineer (2.9 s)
 
-Yes, accept it. The watcher's window clamping belongs to the executor, and this just locks in what Meikel asked for.
+Yes, go ahead with the lint rule, and fix `hog_function.ts` now with `durationSeconds` and the 24h ceiling. Keep the regex match narrow so it only catches duration-shaped literals and not every character class that happens to contain those letters.
 
-## 4. Skill (10.9 s)
+## 4. Skill (155.6 s)
 
-**Q2: Step handlers reached only through the executor**
-Proposed invariant: *"Only `hogflow-executor.service.ts` imports a step handler in `actions/`"*, **because** routing a step to its handler is the executor's job. A caller that imports a handler directly skips the executor's routing, including the harvested `unroutable-steps-fail-the-run-visibly` check.
-Form: a chokepoint takes one `protects:` per bullet, so this is **6 bullets**, one per handler: `conditional_branch`, `hog_function`, `random_cohort_branch`, `wait_until_time_window`, `trigger.handler`, `exit.handler`. Each has `chokepoint: hogflow-executor.service.ts`. Tests are exempt.
-The backing is the code's shape, which needs your confirmation: every one of these handlers has exactly one importer today, so there are 0 violations. `delay.ts` is the exception. `conditional_branch.ts:11` imports `calculatedScheduledAt` from it, so it has two doors.
+Q1 is done and it now reads as an **invariant**:
 
-**Recommendation:** Accept the 6 and leave `delay` out for now. You could move `calculatedScheduledAt` into a shared module to bring `delay` in, but that would be a refactor, not a mechanical fix.
+- **Fix:** `actions/hog_function.ts` now parses `max_wait` with `durationSeconds` and keeps the 24h ceiling. I dropped its local regex and unit table. Under flox Node, 18/18 await tests pass, including "clamps a wait past the ceiling" and the `'190min'` parse-failure log.
+- **Lint entry:** a new `src/cdp/**/*.ts` override in `nodejs/.oxlintrc.nodejs.json`, with `duration.ts` in `excludeFiles` as the paved path. It repeats the global `JSON.parse` ban because the override replaces the rule's options.
+- **Selector:** `Literal[regex.pattern=/\[[dhms]{4}\]\)?\$$/]` is narrow, as you asked. It only catches a regex literal ending in a four-letter d/h/m/s class followed by `$`. In the probe it fired on `([dhms])$` and `([smhd])$` and stayed quiet on `[a-z]+`, the unanchored `/[dhms]/g`, and `[dhmsz]`. The `because:` states the gap: `new RegExp(...)` and string splitting get past it.
+- **Refutation witnessed:** I staged the old regex, oxlint went red at the staged file, and after I removed it, 0 findings across 1674 files. `spec --check` reports 0 placeholders and 0 problems.
 
-<details><summary>1 commands</summary>
+**Q2: Only the executor imports the action handlers?**
+Right now `hogflow-executor.service.ts` is the only importer of each handler: `conditional_branch`, `delay`, `exit.handler`, `hog_function`, `random_cohort_branch`, `trigger.handler`, `wait_until_time_window`. There's one exception: `conditional_branch.ts` imports `calculatedScheduledAt` from `delay.ts`. That's a code-shape lead, not backing. No correction or harvested rule asks for it. The executor's `actionHandlers: Record<HogFlowAction['type'], ActionHandler>` already makes it the one registry of step types. As chokepoints this would be roughly seven module-form bullets, one per handler file. `delay.ts` would first need `calculatedScheduledAt` moved out.
+Is "only the executor reaches an action handler" a rule your team holds? If so, what's the reason (for example, `cdp-api` test runs must go through the same routing as production)?
 
-```sh
-cd /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows && grep -n "from './delay'\|from '../actions/delay'" -r . ; grep -n "import" actions/conditional_branch.ts | head; grep -n "^export" actions/delay.ts
+**Recommendation:** Drop it, unless you can state that reason. Without one, seven bullets would lock in today's shape rather than protect a rule.
+
+<details><summary>22 tool calls</summary>
+
 ```
-
-</details>
-
-## 5. Engineer (2.9 s)
-
-Yes, accept the 6 and leave `delay` out; handlers should only be reached through the executor's registry. We can bring `delay` in later if someone moves `calculatedScheduledAt` out, but not as part of this.
-
-## 6. Skill (9.9 s)
-
-**Q3: The quota check runs only in the invocation pipeline**
-Proposed bullet: *"Only `hog-flow-invocation-pipeline.service.ts` imports `hogflow-quota-limiting.ts`"*, **because** the quota check is one stage in the pipeline's ordered chain (load → filters → watcher → rate limit → **quota** → masking → metrics, `hog-flow-invocation-pipeline.service.ts:48`). A second caller would block or bill a workflow outside that order and bump `cdp_hog_flow_quota_limited` twice.
-Form: chokepoint (`protects: hogflows/hogflow-quota-limiting.ts`, `chokepoint: ../hog-flow-invocation-pipeline.service.ts`). The chokepoint sits in the parent folder, but the protected module, and so the bullet, belong to this folder.
-Backing: the code's shape, which needs your confirmation. It has one importer today (line 23), so 0 violations. No correction or harvested rule backs it.
-
-**Recommendation:** Accept, but only if you agree the ordering is a real rule. If the quota check being in the pipeline is just where it happens to be today, drop it.
-
-<details><summary>1 commands</summary>
-
-```sh
-cd /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services && head -30 hogflows/hogflow-quota-limiting.ts; grep -n "^export" hogflows/hogflow-quota-limiting.ts; grep -n "quota\|Quota" hog-flow-invocation-pipeline.service.ts | head; echo; grep -rn "quota-limit\|QuotaLimit" .. --include='*.ts' -l | grep -v test | head
+Bash: cd /tmp/dogfood-119-ts/posthog/nodejs && sed -n 40,80p src/cdp/services/hogflows/duration.ts; grep -n "SECONDS_PER_UNIT\|AWAIT_DURATION_REGEX\|^import" src/cdp/services/hogflows/actions/hog_function.ts; grep -rnE "/[^/]*\[[a-z]*d[a-z]*h[a-z]*m[a-z]*s[a-z]*\][^/]*/" src --include=*.ts | grep -v node_modules | head
 ```
-
-</details>
-
-## 7. Engineer (4.9 s)
-
-Yes, accept it. The quota check belongs in that pipeline stage order, since quota-limiting a workflow from anywhere else would double-count and skip the rate limit. I'm fairly sure the ordering is intentional rather than incidental.
-
-## 8. Skill (8.9 s)
-
-**Q4: Workflow billing is recorded only in the function step**
-Proposed bullet: *"Only `actions/hog_function.ts` imports `billing-utils.ts`"*, **because** workflows bill once per function invocation, or per message sent for email/SMS/push (`billing-utils.ts:9`). A second caller of `trackHogFlowBillableInvocation` would bill the same invocation twice.
-Form: chokepoint (`protects: billing-utils.ts`, `chokepoint: actions/hog_function.ts`).
-Backing: the code's shape, which needs your confirmation. It has one importer today (`hog_function.ts:23`), so 0 violations. The closest harvested rule is `dispatch-is-idempotent` ("never … counts … twice"), but that rule is about dispatch, not billing.
-
-**Recommendation:** Accept. Double-billing is the costliest thing a second importer could cause in this folder.
-
-<details><summary>1 commands</summary>
-
-```sh
-cd /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows && head -20 hogflow-variable-usage.ts; grep -n "^export" hogflow-variable-usage.ts billing-utils.ts; head -15 billing-utils.ts; grep -n "billing-utils\|variable-usage\|BillingUtils\|isBillable\|VariableUsage" actions/hog_function.ts | head
 ```
-
-</details>
-
-## 9. Engineer (2.9 s)
-
-Yes, accept it. Billing once per function invocation or send is exactly why it lives in `hog_function.ts`, and a second importer double-billing would be the worst outcome here.
-
-## 10. Skill (5.9 s)
-
-**Q5: The variable-usage scan stays in the function step**
-Candidate: *"Only `actions/hog_function.ts` imports `hogflow-variable-usage.ts`"*. It has one importer today (`hog_function.ts:26`).
-Against it: the file's own comment says the miss counter "sizes the publish-time lint work" (`hogflow-variable-usage.ts:10`). That means `findMissingVariableReferences` is expected to get a second, legitimate caller, and a chokepoint would block that reuse. Beyond the code's shape, nothing backs this rule.
-
-**Recommendation:** Drop it. A single importer here is a snapshot of today's code, not a rule.
-
-## 11. Engineer (2.7 s)
-
-Agreed, drop it. The publish-time lint will likely call `findMissingVariableReferences` too, and I don't want a chokepoint in the way when that happens.
-
-## 12. Skill (187 s)
-
-I declared 9 chokepoint invariants for `nodejs/src/cdp/services/hogflows`. oxlint's `coherence/chokepoint` rule enforces all of them, and I watched it fire on a staged bypass. But Coherence still grades every bullet a **requirement**, not an invariant: its automatic refutation failed on each one, so it hasn't recorded one.
-
-| Invariant | Protected module → only importer | Grade | Residual |
-|---|---|---|---|
-| conversion-watcher-through-executor | `conversion-watcher.ts` → `hogflow-executor.service.ts` | checker-choked | none |
-| conditional-branch-step-through-executor | `actions/conditional_branch.ts` → executor | checker-choked | none |
-| hog-function-step-through-executor | `actions/hog_function.ts` → executor | checker-choked | none |
-| random-cohort-branch-step-through-executor | `actions/random_cohort_branch.ts` → executor | checker-choked | none |
-| wait-until-time-window-step-through-executor | `actions/wait_until_time_window.ts` → executor | checker-choked | none |
-| trigger-step-through-executor | `actions/trigger.handler.ts` → executor | checker-choked | none |
-| exit-step-through-executor | `actions/exit.handler.ts` → executor | checker-choked | none |
-| quota-check-in-invocation-pipeline | `hogflow-quota-limiting.ts` → `../hog-flow-invocation-pipeline.service.ts` | checker-choked | none |
-| billing-in-function-step | `billing-utils.ts` → `actions/hog_function.ts` | checker-choked | none |
-
-**What I checked:**
-- None of the 9 has a violation today, so no code changed.
-- I staged one file in the folder that imported all 9 protected modules, one of them through the `~/` alias. oxlint reported 9 `coherence(chokepoint)` errors, each naming its invariant. After I deleted the file, all of `nodejs/` had 0 chokepoint findings. Each bullet's `refuted:` line records this.
-- `spec --check` reports 0 unfilled placeholders and 0 problems.
-
-**Why they stay requirements:** in the check's own words, every bullet says "refutation missing: `<module>` exports nothing, so no document can reference it". That's false: `billing-utils.ts` exports `trackHogFlowBillableInvocation`, for example. It also counts 0 references even from the chokepoints themselves, so its TypeScript instrument isn't resolving `nodejs/` files. The likely cause is that the language server starts at the repo root, which has no `typescript` package, so it falls back to Coherence's copy. That's a Coherence bug to fix there, not a spec problem. Rerunning `coherence run` after the fix should promote all 9.
-
-**Lint time:** 1.2 s for this folder and 2.3 s for all of `nodejs/`, measured with `typeAware: false` (see below).
-
-**Files to put in the PR:**
-- `nodejs/src/cdp/services/hogflows/Hogflows.spec.md` (new)
-- `nodejs/.oxlintrc.nodejs.json`, but not as it stands. This edit was in your working tree before I started. It does wire in the plugin and the rule, but it also:
-  - sets `typeAware: false`, which turns off `no-floating-promises`, `await-thenable` and `require-await`;
-  - strips all the comments;
-  - rewrites `ignorePatterns` with a `nodejs/` prefix;
-  - hardcodes `/tmp/dogfood-119-ts/...` paths for the plugin and `root`.
-
-  Before it ships, reduce it to only the `jsPlugins` entry and the `coherence/chokepoint` rule, with a repo-relative plugin path and `root`.
-- Leave out the sidecar `.oxlintrc.json` change, `.coherence/` and `coherence.config.json` unless you mean to adopt them.
-
-**Not declared:**
-- `delay` is left out as you decided.
-- `hogflow-variable-usage` is dropped.
-- Harvested rule `one-duration-grammar`: an import rule can't express it, but it is broken today. `actions/hog_function.ts:46` has its own `AWAIT_DURATION_REGEX`, which uses the backtracking form `duration.ts` warns against. That's worth a separate small fix.
-
-Open the PR with those files. I haven't committed anything.
-
-<details><summary>16 commands</summary>
-
-```sh
-C="node $COHERENCE_HOME/src/cli.ts"; $C scaffold component nodejs/src/cdp/services/hogflows "The Node worker's workflow runtime: the executor runs a workflow step by step through its step handlers, with billing, quota and conversion watching behind single doors" 2>&1; ls nodejs/src/cdp/services/hogflows/*.spec.md
+Read: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/actions/hog_function.ts
 ```
-```sh
-cat nodejs/src/cdp/services/hogflows/Hogflows.spec.md; C="node $COHERENCE_HOME/src/cli.ts"; $C scaffold invariant nodejs/src/cdp/services/hogflows "Only the executor builds conversion watchers" --name "conversion-watcher-through-executor" --kinds none --chokepoint 2>&1
 ```
-```sh
-cd $COHERENCE_HOME && grep -n "crossing\|checklist" src/spec/grammar.ts | head -20; grep -rn "crossing" Coherence.spec.md | head -5; grep -n "crossing" -m5 -r docs | head
+mcp__coder__coder_workspace_edit_file: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/actions/hog_function.ts
 ```
-```sh
-C="node $COHERENCE_HOME/src/cli.ts"; F=nodejs/src/cdp/services/hogflows
-w(){ $C scaffold invariant $F "$2" --name "$1" --kinds none --chokepoint --write 2>&1 | tail -3; }
-w conversion-watcher-through-executor "Only the executor builds conversion watchers"
-for h in conditional_branch hog_function random_cohort_branch wait_until_time_window trigger.handler exit.handler; do
-  n=$(echo $h | sed 's/\.handler//;s/_/-/g'); w "$n-step-through-executor" "Only the executor runs the $n step handler"; done
-w quota-check-in-invocation-pipeline "Only the invocation pipeline quota-limits a workflow"
-w billing-in-function-step "Only the function step records workflow billing"
-echo; cat $F/Hogflows.spec.md | head -30
 ```
-```sh
-cd $COHERENCE_HOME && grep -rn -B1 -A1 "^  chokepoint:" --include='*.spec.md' . | grep -v node_modules | head -20; grep -n "protectedFile\|chokepointFile" src/adapters/lint-guards.ts src/spec/*.ts | head
+Edit: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/actions/hog_function.ts
 ```
-```sh
-C="node $COHERENCE_HOME/src/cli.ts"; $C spec --check 2>&1 | grep -iA12 hogflows | head -40
 ```
-```sh
-C="node $COHERENCE_HOME/src/cli.ts"; for n in conversion-watcher-through-executor conditional-branch-step-through-executor hog-function-step-through-executor random-cohort-branch-step-through-executor wait-until-time-window-step-through-executor trigger-step-through-executor exit-step-through-executor quota-check-in-invocation-pipeline billing-in-function-step; do echo "=== $n"; timeout 600 $C run --invariant "$n" 2>&1 | tail -8; done
+Edit: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/actions/hog_function.ts
 ```
-```sh
-grep -hoE "export (class|function|const) \w+" nodejs/src/cdp/services/hogflows/actions/{conditional_branch,exit.handler,hog_function,random_cohort_branch,trigger.handler,wait_until_time_window}.ts nodejs/src/cdp/services/hogflows/conversion-watcher.ts | head -20
-/home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts 2>&1 | jq -r '.diagnostics[] | "\(.code) :: \(.message)"' | cut -c1-230
 ```
-```sh
-rm nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts && ls nodejs/src/cdp/services/hogflows/zz* 2>&1 | head -1
-OX=/home/coder/posthog/node_modules/.bin/oxlint
-/usr/bin/time -f "folder lint: %e s" $OX -c nodejs/.oxlintrc.nodejs.json --format json nodejs/src/cdp/services/hogflows 2>/tmp/t.txt | jq -r '[.diagnostics[] | select(.code|test("chokepoint"))] | "chokepoint findings: \(length)"'; cat /tmp/t.txt | tail -1
-/usr/bin/time -f "full nodejs lint: %e s" $OX -c nodejs/.oxlintrc.nodejs.json --format json nodejs 2>/tmp/t2.txt | jq -r '[.diagnostics[] | select(.code|test("chokepoint"))] | "chokepoint findings in nodejs/: \(length)", (.[]?|.filename)'; tail -1 /tmp/t2.txt
+Edit: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/actions/hog_function.ts
 ```
-```sh
-F=nodejs/src/cdp/services/hogflows/Hogflows.spec.md && python3 - "$F" <<'EOF'
-import re,sys
-p=sys.argv[1]; s=open(p).read()
-mods={}
-for m in re.finditer(r"^- ([\w-]+):.*\n  protects: (\S+)", s, re.M): mods[m.group(1)]=m.group(2).rsplit('/',1)[-1]
-def rep(m):
-    name=m.group(1)
-    return m.group(0)
-out=[];cur=None
-for line in s.split('\n'):
-    m=re.match(r"- ([\w-]+):",line)
-    if m: cur=m.group(1)
-    if line.startswith("  refuted: <"):
-        line=f"  refuted: staged nodejs/src/cdp/services/hogflows/zz-refute-bypass.ts importing {mods[cur]} -> oxlint -c nodejs/.oxlintrc.nodejs.json reported coherence(chokepoint) naming {cur}; clean after deleting it (2026-09-30)"
-    out.append(line)
-open(p,'w').write('\n'.join(out))
+```
+Bash: grep -n "max_wait" src/cdp/services/hogflows/actions/hog_function.test.ts | head; npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "hog_function|duration" | head; echo tsc-done
+```
+```
+Bash: timeout 500 npx jest src/cdp/services/hogflows/actions/hog_function.test.ts src/cdp/services/hogflows/duration.test.ts 2>&1 | tail -25
+```
+```
+Bash: cd /home/coder/posthog && flox activate -- bash -c 'cd /tmp/dogfood-119-ts/posthog/nodejs && node --version && timeout 500 npx jest src/cdp/services/hogflows/actions/hog_function.test.ts -t "wait|await" 2>&1 | tail -30'
+```
+```
+Bash: S=/home/coder/posthog/node_modules/oxlint/configuration_schema.json; ls -la /home/coder/posthog/node_modules/.bin/oxlint; /home/coder/posthog/node_modules/.bin/oxlint --version; jq '.definitions.OxlintOverride.properties | keys' $S 2>/dev/null || grep -o '"excludeFiles"' $S | head -2
+```
+```
+Bash: grep -n "" nodejs/.oxlintrc.nodejs.json | sed -n '/"overrides"/,$p' | tail -25
+```
+```
+Bash: node $COHERENCE_HOME/src/cli.ts scaffold --help 2>&1 | head -40
+```
+```
+Bash: node $COHERENCE_HOME/src/cli.ts scaffold component nodejs/src/cdp/services/hogflows "The Node worker's workflow engine: the executor routes each step of a HogFlow through its action handler, and the modules around it load flows, resume parked steps, limit quota and parse workflow durations." 2>&1 | tail -30; git status --short
+```
+```
+Edit: /tmp/dogfood-119-ts/posthog/nodejs/.oxlintrc.nodejs.json
+```
+```
+Bash: F=nodejs/src/cdp/services/hogflows/__probe_duration.ts; cat > $F <<'EOF'
+export const BAD = /^(\d*\.?\d+)([dhms])$/
+export const BAD_ORDER = /^(\d+)([smhd])$/
+export const NOT_DURATION_CLASS = /^[a-z]+$/
+export const UNANCHORED = /[dhms]/g
+export const OTHER_CLASS = /^x[dhmsz]$/
 EOF
-grep -c "refuted: staged" $F; C="node $COHERENCE_HOME/src/cli.ts"; $C spec --check 2>&1 | grep -A40 "^Hogflows" | grep -E "^  \w|lacking|bullets|unfilled|problem" ; $C spec --check 2>&1 | tail -3
+time (/home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs/src/cdp > /tmp/ox.json); jq -r '.diagnostics[] | select(.code|test("restricted-syntax")) | "\(.filename):\(.labels[0].span.line) \(.message)"' /tmp/ox.json | cut -c1-160; jq '.number_of_files' /tmp/ox.json
 ```
-```sh
-cd $COHERENCE_HOME && sed -n 1,40p src/cli.ts | grep -E "^ \*" ; grep -rn "exports nothing" src --include='*.ts' | grep -v test | head
 ```
-```sh
-cd $COHERENCE_HOME && sed -n 670,700p src/adapters/typescript.ts; grep -n "function exportedNames\|exportedNames\b" src/adapters/typescript.ts | head -5
+Bash: rm nodejs/src/cdp/services/hogflows/__probe_duration.ts && node $COHERENCE_HOME/src/cli.ts scaffold invariant nodejs/src/cdp/services/hogflows "Every workflow duration under nodejs/src/cdp is parsed by parseDuration or durationSeconds in hogflows/duration.ts; no other module declares a [dhms] duration regex." --name "one-duration-grammar" --kinds none --totality-oracle --write 2>&1; echo ====; cat nodejs/src/cdp/services/hogflows/Hogflows.spec.md
 ```
-```sh
-ls -d nodejs/node_modules node_modules 2>&1; ls nodejs/tsconfig*.json tsconfig*.json 2>&1; grep -n "documentSymbols\|rootUri\|tsserver" $COHERENCE_HOME/src/adapters/typescript.ts | head -12
 ```
-```sh
-ls -la node_modules nodejs/node_modules | head -5; ls node_modules/typescript/lib/tsserver.js nodejs/node_modules/typescript/lib/tsserver.js 2>&1; sed -n 394,412p $COHERENCE_HOME/src/adapters/typescript.ts; grep -n "exportedIn" -A8 $COHERENCE_HOME/src/adapters/typescript.ts | sed -n 1,14p
+Bash: cd $COHERENCE_HOME && grep -rln "via: lint" --include=*.md . | grep -v node_modules | head -5; grep -rn -B2 -A8 "via: lint oxlint" --include=*.md . | grep -v node_modules | head -40; grep -rn "crossing" docs/*.md 2>/dev/null | head -8
 ```
-```sh
-sed -n 133,150p $COHERENCE_HOME/src/adapters/typescript.ts; ls $COHERENCE_HOME/node_modules/typescript/lib/tsserver.js 2>&1; ls $COHERENCE_HOME/node_modules/.bin | grep -i typescript
 ```
-```sh
-C="node $COHERENCE_HOME/src/cli.ts"; $C run --status 2>&1 | grep -iE "hogflows|enforcement|pass|fail" | cut -c1-220 | head -20; git status --short
+Edit: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/Hogflows.spec.md
+```
+```
+Bash: C="node $COHERENCE_HOME/src/cli.ts"; F=nodejs/src/cdp/services/hogflows/actions/__probe_duration.ts; printf "export const AWAIT_DURATION_REGEX = /^(\\\\d*\\\\.?\\\\d+)([dhms])\$/\n" > $F; cat $F; $C refute "nodejs/src/cdp/services/hogflows/one-duration-grammar" --broke "staged actions/__probe_duration.ts declaring /^(\\d*\\.?\\d+)([dhms])\$/" 2>&1 | tail -15; rm $F; echo ==== run; $C run --invariant "one-duration-grammar" 2>&1 | tail -15
+```
+```
+Edit: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/Hogflows.spec.md
+```
+```
+Bash: C="node $COHERENCE_HOME/src/cli.ts"; $C spec --check 2>&1 | tail -15; echo ====; $C run --status 2>&1 | tail -15
+```
+```
+Bash: cd /tmp/dogfood-119-ts/posthog/nodejs && grep -rnE "from '\./(actions/)?[a-z_]+(\.handler)?'|from '\.\./actions|hogflows/actions" src --include=*.ts | grep -v "\.test\.ts" | grep -E "actions|conditional|delay|trigger|exit|random|wait_until|hog_function|timezone" | sed 's/:[0-9]*:/  /'
+```
+
+</details>
+
+## 5. Engineer (5.5 s)
+
+Yes, we hold that rule: step handlers are wired only through the executor's `actionHandlers` registry, and nothing else should call one directly. The reason is that the executor is the one place a step gets dispatched, with its result handling, logging and metrics, so any other caller, including a `cdp-api` test run, would skip that and drift from production. Go ahead with the bullets, and move `calculatedScheduledAt` out of `delay.ts` into a shared util first so `conditional_branch.ts` doesn't need an exception.
+
+## 6. Skill (220.6 s)
+
+`calculatedScheduledAt` is moved, and all seven handler chokepoints are written, graded, and witnessed at the enforcer. Coherence still refuses to call them invariants.
+
+- **Move:** `calculatedScheduledAt` and the per-unit clamp now live in the new `hogflows/scheduling.ts`, with their tests in `scheduling.test.ts`. `delay.ts` and `conditional_branch.ts` both import from it. 220/220 tests pass across the six affected suites, and tsc is clean for the folder.
+- **Seven chokepoint bullets:** `protects: …/actions/<handler>.ts`, `chokepoint: …/hogflow-executor.service.ts`, with your reason in `because:`. Each grades **`checker-choked`** through `coherence/chokepoint` in `nodejs/.oxlintrc.nodejs.json`.
+- **Enforcer witnessed:** I staged `nodejs/src/cdp/services/__probe_handler_bypass.ts` importing all seven handlers. oxlint went red 7/7 with `coherence(chokepoint)`, each naming its invariant, and gave 0 findings once the file was gone. Today's code has no violations. Every bullet's `refuted:` line records this.
+
+All seven are still **requirements**. Coherence's own refutation came back `not run`, for this reason:
+
+> `refutation missing: nodejs/src/cdp/services/hogflows/actions/exit.handler.ts exports nothing, so no document can reference it` (`references: 0 inside, 0 test, 0 bypass`)
+
+It's the same for every handler, and it's about the instrument, not the code. Each file has `export class …Handler`, and the executor imports all of them. The TypeScript language server returns no document symbols for these files, so Coherence can't see the exports. That held after I put Coherence's own `typescript-language-server` on PATH (`instrument typescript (warm)`). My best guess is how the server picks a project in this repo: the root `tsconfig.json` versus `nodejs/tsconfig.json`. I haven't confirmed that.
+
+**Q3: Keep the seven handler bullets as requirements?**
+The lint already blocks any outside import. That's proven above, and every PR's oxlint run enforces it. What's missing is only Coherence's own recorded refutation, and it's blocked by the language server bug.
+
+**Recommendation:** Keep all seven as requirements. The rule is real and the lint enforces it today. File the empty-symbols bug against Coherence's TypeScript adapter, and a later `coherence run` will promote them once it's fixed.
+
+<details><summary>17 tool calls</summary>
+
+```
+Bash: cd /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows && cat actions/delay.ts; echo ====; grep -rn "calculatedScheduledAt" /tmp/dogfood-119-ts/posthog/nodejs/src; echo ===; sed -n 1,20p actions/conditional_branch.ts
+```
+```
+Read: /tmp/dogfood-119-ts/posthog/nodejs/src/cdp/services/hogflows/actions/delay.test.ts
+```
+```
+Bash: python3 - <<'EOF'
+src = open('actions/delay.ts').read()
+tail_start = src.index("const LUXON_UNIT = ")
+tail = src[tail_start:]
+src = src[:tail_start].rstrip('\n') + '\n'
+clamp = '''/** The amount a fixed delay is allowed to wait for, held to this unit's ceiling. */
+function clampedAmount(parsed: ParsedDuration): number {
+    return Math.min(MAX_VALUE_FOR_DURATION_UNIT[parsed.unit], parsed.amount)
+}
+
+'''
+assert clamp in src
+src = src.replace(clamp, '')
+src = src.replace("import { DateTime, DurationLike } from 'luxon'", "import { DateTime } from 'luxon'")
+src = src.replace("import { ParsedDuration, SECONDS_PER_DURATION_UNIT, parseDuration } from '../duration'\nimport { findContinueAction } from '../hogflow-utils'\n",
+                  "import { SECONDS_PER_DURATION_UNIT, parseDuration } from '../duration'\nimport { findContinueAction } from '../hogflow-utils'\nimport { calculatedScheduledAt, clampedAmount } from '../scheduling'\n")
+open('actions/delay.ts','w').write(src)
+
+new = """import { DateTime, DurationLike } from 'luxon'
+
+import { ParsedDuration, parseDuration } from './duration'
+
+""" + tail.replace("const MAX_VALUE_FOR_DURATION_UNIT: Record<string, number> = {\n    d: 30,\n    h: 24,\n    m: 60,\n    s: 60,\n}\n",
+"const MAX_VALUE_FOR_DURATION_UNIT: Record<string, number> = {\n    d: 30,\n    h: 24,\n    m: 60,\n    s: 60,\n}\n\n" + clamp.replace("function clampedAmount", "export function clampedAmount").rstrip('\n') + "\n")
+open('scheduling.ts','w').write(new)
+
+t = open('actions/delay.test.ts').read()
+start = t.index("describe('calculatedScheduledAt'")
+end = t.index("describe('DelayHandler with delay_until'")
+block = t[start:end]
+t = t[:start] + t[end:]
+t = t.replace("import { DelayHandler, calculatedScheduledAt } from './delay'", "import { DelayHandler } from './delay'")
+open('actions/delay.test.ts','w').write(t)
+open('scheduling.test.ts','w').write("import { DateTime } from 'luxon'\n\nimport { calculatedScheduledAt } from './scheduling'\n\n" + block.rstrip('\n') + "\n")
+
+c = open('actions/conditional_branch.ts').read()
+c = c.replace("import { ActionHandler, ActionHandlerOptions, ActionHandlerResult } from './action.interface'\nimport { calculatedScheduledAt } from './delay'\n",
+              "import { calculatedScheduledAt } from '../scheduling'\nimport { ActionHandler, ActionHandlerOptions, ActionHandlerResult } from './action.interface'\n")
+assert "from '../scheduling'" in c
+open('actions/conditional_branch.ts','w').write(c)
+EOF
+head -30 scheduling.ts; grep -n "DateTime\b" actions/delay.test.ts | head -3; git diff --stat .
+```
+```
+Bash: cd /home/coder/posthog && flox activate -- bash -c 'cd /tmp/dogfood-119-ts/posthog/nodejs && H=src/cdp/services/hogflows && npx prettier --write $H/scheduling.ts $H/scheduling.test.ts $H/actions/delay.ts $H/actions/delay.test.ts $H/actions/conditional_branch.ts $H/actions/hog_function.ts >/dev/null && (npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "hogflows" ; echo "tsc exit done") && timeout 500 npx jest $H/scheduling.test.ts $H/actions/delay.test.ts $H/actions/conditional_branch.test.ts $H/actions/hog_function.test.ts $H/duration.test.ts $H/hogflow-executor.service.test.ts 2>&1 | grep -E "^(Tests|Test Suites):|✕|●" | head -30' 2>&1 | grep -v -E "FloxHub|✓|PostHog dev|Ready in|^\s*$|\.\.\."; cd /tmp/dogfood-119-ts/posthog && git diff --stat nodejs/src
+```
+```
+Bash: node $COHERENCE_HOME/src/cli.ts scaffold invariant nodejs/src/cdp/services/hogflows "Only hogflow-executor.service.ts imports the delay step handler." --name "delay-handler-only-through-executor" --kinds none --chokepoint --preview 2>&1; grep -n "test" $COHERENCE_HOME/src/adapters/lint.ts | head -20
+```
+```
+Bash: for pair in "conditional_branch:conditional-branch" "delay:delay" "exit.handler:exit" "hog_function:hog-function" "random_cohort_branch:random-cohort-branch" "trigger.handler:trigger" "wait_until_time_window:wait-until-time-window"; do f=${pair%%:*}; n=${pair##*:}; node $COHERENCE_HOME/src/cli.ts scaffold invariant nodejs/src/cdp/services/hogflows "Only hogflow-executor.service.ts imports the $n step handler in actions/$f.ts; every $n step is dispatched through the executor's actionHandlers registry." --name "$n-handler-only-through-executor" --kinds none --chokepoint --write 2>&1 | grep -v "^  " ; done; sed -n '/conditional-branch-handler/,/kinds/p' nodejs/src/cdp/services/hogflows/Hogflows.spec.md
+```
+```
+Bash: cd $COHERENCE_HOME && grep -n -B3 -A6 "^  protects:" docs/spec.md | head -50
+```
+```
+Bash: cd $COHERENCE_HOME && grep -rn -i "module form\|protects: .*\.ts\b\|protects: nodejs\|protects: src/" docs src --include=*.md --include=*.ts | grep -v node_modules | head -15
+```
+```
+Bash: python3 - <<'EOF'
+p='nodejs/src/cdp/services/hogflows/Hogflows.spec.md'
+s=open(p).read()
+H='nodejs/src/cdp/services/hogflows'
+files={'conditional-branch':'conditional_branch','delay':'delay','exit':'exit.handler','hog-function':'hog_function','random-cohort-branch':'random_cohort_branch','trigger':'trigger.handler','wait-until-time-window':'wait_until_time_window'}
+because=("the executor is the one place a step is dispatched, with its result handling, logging and metrics; any other caller, "
+         "a cdp-api test run included, would skip that and drift from production. coherence/chokepoint in nodejs/.oxlintrc.nodejs.json "
+         "stops a non-test import of the handler module from anywhere outside the executor; test files are exempt")
+ph=("  protects: <the symbol or module every reference reaches only through the chokepoint>\n"
+    "  chokepoint: <the one symbol every reference to the protected thing passes through>\n"
+    "  because: <why this exists; what it protects against>\n"
+    "  crossing: <trust level> -> <trust level>\n")
+for n,f in files.items():
+    head=f"- {n}-handler-only-through-executor:"
+    i=s.index(head); j=s.index(ph,i)
+    assert j < s.index('kinds: none', i)
+    s=s[:j]+f"  protects: {H}/actions/{f}.ts\n  chokepoint: {H}/hogflow-executor.service.ts\n  because: {because}\n"+s[j+len(ph):]
+open(p,'w').write(s)
+EOF
+node $COHERENCE_HOME/src/cli.ts spec --check 2>&1 | tail -6
+```
+```
+Bash: for n in conditional-branch delay exit hog-function random-cohort-branch trigger wait-until-time-window; do node $COHERENCE_HOME/src/cli.ts run --invariant "$n-handler-only-through-executor" 2>&1 | grep -v "^run recorded" ; done
+```
+```
+Bash: P=nodejs/src/cdp/services/__probe_handler_bypass.ts; cat > $P <<'EOF'
+import { ConditionalBranchHandler } from './hogflows/actions/conditional_branch'
+import { DelayHandler } from './hogflows/actions/delay'
+import { ExitHandler } from './hogflows/actions/exit.handler'
+import { HogFunctionHandler } from './hogflows/actions/hog_function'
+import { RandomCohortBranchHandler } from './hogflows/actions/random_cohort_branch'
+import { TriggerHandler } from './hogflows/actions/trigger.handler'
+import { WaitUntilTimeWindowHandler } from './hogflows/actions/wait_until_time_window'
+
+export const bypass = [ConditionalBranchHandler, DelayHandler, ExitHandler, HogFunctionHandler, RandomCohortBranchHandler, TriggerHandler, WaitUntilTimeWindowHandler]
+EOF
+O=/home/coder/posthog/node_modules/.bin/oxlint; time ($O -c nodejs/.oxlintrc.nodejs.json --format json nodejs > /tmp/ox1.json); jq -r '.diagnostics[] | select(.code|test("chokepoint")) | "\(.filename):\(.labels[0].span.line) \(.code) \(.message)"' /tmp/ox1.json | cut -c1-220; echo "total chokepoint findings: $(jq '[.diagnostics[]|select(.code|test("chokepoint"))]|length' /tmp/ox1.json)"; rm $P; $O -c nodejs/.oxlintrc.nodejs.json --format json nodejs > /tmp/ox2.json; echo "after removal: $(jq '[.diagnostics[]|select(.code|test("chokepoint"))]|length' /tmp/ox2.json) chokepoint findings, $(jq '.number_of_files' /tmp/ox2.json) files"; echo; grep -rn "instrument" $COHERENCE_HOME/docs/*.md 2>/dev/null | grep -i "none\|language server" | head -5
+```
+```
+Bash: cd $COHERENCE_HOME && grep -rn "exports nothing" src --include=*.ts | grep -v test | head -5; grep -rn "instrument typescript\|SERVER_BIN\s*=" src --include=*.ts | grep -v test | head -5
+```
+```
+Bash: cd $COHERENCE_HOME && sed -n 670,700p src/adapters/typescript.ts; which typescript-language-server; ls node_modules/.bin 2>/dev/null | grep -i "typescript-language\|tsserver"
+```
+```
+Bash: PATH=$COHERENCE_HOME/node_modules/.bin:$PATH timeout 580 node $COHERENCE_HOME/src/cli.ts run --invariant "exit-handler-only-through-executor" 2>&1 | tail -8
+```
+```
+Bash: cd $COHERENCE_HOME && grep -n "exportedIn\b" src/adapters/typescript.ts | head -3; sed -n "$(grep -n 'private exportedIn' src/adapters/typescript.ts | cut -d: -f1),+14p" src/adapters/typescript.ts; grep -n "rootUri\|rootPath\|workspaceFolders" src/adapters/typescript.ts | head -5
+```
+```
+Bash: ls tsconfig*.json nodejs/tsconfig*.json 2>&1; ls nodejs/node_modules 2>&1 | head -2; readlink -f nodejs/node_modules 2>/dev/null
+```
+```
+Bash: python3 - <<'EOF'
+p='nodejs/src/cdp/services/hogflows/Hogflows.spec.md'
+s=open(p).read()
+files={'conditional-branch':'conditional_branch','delay':'delay','exit':'exit.handler','hog-function':'hog_function','random-cohort-branch':'random_cohort_branch','trigger':'trigger.handler','wait-until-time-window':'wait_until_time_window'}
+ph="  refuted: <what was broken> -> <what was seen> (<date>)\n"
+for n,f in files.items():
+    i=s.index(f"- {n}-handler-only-through-executor:"); j=s.index(ph,i)
+    s=s[:j]+f"  refuted: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/{f}.ts -> oxlint coherence(chokepoint) went red on that import naming {n}-handler-only-through-executor; with the file removed, 0 chokepoint findings across 1676 files (2026-09-30)\n"+s[j+len(ph):]
+open(p,'w').write(s)
+EOF
+node $COHERENCE_HOME/src/cli.ts spec --check 2>&1 | grep -E "^\s+[a-z-]+  (invariant|requirement)|^[0-9]+ component|^lacking"
+```
+
+</details>
+
+## 7. Engineer (3.8 s)
+
+Yes, keep all seven as requirements. The lint is what actually protects us, so I'm fine with Coherence's promotion waiting. Go ahead and file the empty-symbols bug against the TypeScript adapter, and note the root vs `nodejs/tsconfig.json` guess in it, marked unconfirmed.
+
+## 8. Skill (63.7 s)
+
+I filed the bug as [PostHog/coherence#16](https://github.com/PostHog/coherence/issues/16), with the root vs `nodejs/tsconfig.json` guess marked unconfirmed. `nodejs/src/cdp/services/hogflows` now has one invariant and seven requirements. `coherence spec --check` reports 0 unfilled placeholders and 0 problems.
+
+## Invariants
+
+| Invariant | Form | Grade | Enforcer | Listed residual |
+|---|---|---|---|---|
+| `one-duration-grammar` | lint totality oracle, `via: lint oxlint:eslint-js/no-restricted-syntax matching "one-duration-grammar"` | verified. I staged the old regex and the lint went red; with it removed, 0 findings across 1674 files | new `src/cdp/**/*.ts` override in `nodejs/.oxlintrc.nodejs.json` | none; `duration.ts` is excluded as the permitted parser (`excludeFiles`) |
+
+## Requirements
+
+| Requirement (×7) | Form | Grade | Enforcer | Why it stays a requirement |
+|---|---|---|---|---|
+| `{conditional-branch, delay, exit, hog-function, random-cohort-branch, trigger, wait-until-time-window}-handler-only-through-executor` | module chokepoint, `chokepoint: hogflow-executor.service.ts` | `checker-choked`, not run | `coherence/chokepoint` in `nodejs/.oxlintrc.nodejs.json`. I staged an outside importer of all seven and got 7/7 red, then 0 once removed | Coherence reports "`<file> exports nothing, so no document can reference it`" because the language server returns no symbols. That's #16; you chose to keep them as requirements until it's fixed |
+
+## Files changed
+
+- `nodejs/src/cdp/services/hogflows/Hogflows.spec.md` (new): the eight bullets.
+- `nodejs/.oxlintrc.nodejs.json`: the `one-duration-grammar` override.
+- `actions/hog_function.ts`: uses `durationSeconds` plus the 24h ceiling; the local regex is gone.
+- `scheduling.ts` and `scheduling.test.ts` (new): `calculatedScheduledAt` and the per-unit clamp moved here from `delay.ts`.
+- `actions/delay.ts`, `actions/delay.test.ts`, `actions/conditional_branch.ts`: now import from `../scheduling`.
+
+220/220 tests pass across the six affected suites (run under flox Node), and tsc is clean for the folder.
+
+**Lint time:** 2.4 s for all of `nodejs/` (1676 files) with `oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs`.
+
+## Before you open the PR
+
+The two `.oxlintrc` diffs include local setup that was already in the worktree before this session and can't ship as-is:
+- **Local paths:** the plugin is loaded from `/tmp/dogfood-119-ts/coherence/src/adapters/lint.ts`, and `root` is a `/tmp` path. These need to become `@posthog/coherence/lint` once that package is a dependency.
+- **`typeAware` is `false` instead of `true`.** That turns off type-aware rules like `no-floating-promises`.
+- **Formatting:** the config lost its comments and 4-space indent.
+
+Leave out `coherence.config.json` and `.coherence/` too, unless you mean to adopt them. Open the PR with the source files above, plus only my new override hunk from `nodejs/.oxlintrc.nodejs.json`, applied to the original file. I haven't committed anything.
+
+I also saved a memory note about #16, so later sessions don't re-diagnose the "exports nothing" result.
+
+<details><summary>7 tool calls</summary>
+
+```
+Bash: cd $COHERENCE_HOME && git remote -v; git log --oneline -1; ls docs | head -30; ls docs/issues docs/bugs 2>/dev/null | head
+```
+```
+Bash: cd $COHERENCE_HOME && gh repo view PostHog/coherence --json name,hasIssuesEnabled,visibility 2>&1; gh issue list -R PostHog/coherence --search "exports nothing OR document symbols OR language server" --state all --limit 10 2>&1
+```
+```
+Write: /tmp/coherence-issue-empty-symbols.md
+```
+```
+Bash: gh issue create -R PostHog/coherence --title "TypeScript adapter: module-form chokepoint refutation reports 'exports nothing' because documentSymbols comes back empty" --body-file /tmp/coherence-issue-empty-symbols.md
+```
+```
+Bash: C="node $COHERENCE_HOME/src/cli.ts"; $C spec --check 2>&1 | grep -E "^[0-9]+ component|^lacking"; $C run --status 2>&1 | tail -10; echo; for i in 1 2 3; do /usr/bin/time -f "%e s" /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs 2>&1 >/dev/null | tail -1; done; git status --short
+```
+```
+Write: /home/coder/.claude/projects/-home-coder-posthog/memory/coherence-ts-empty-symbols.md
+```
+```
+Edit: /home/coder/.claude/projects/-home-coder-posthog/memory/MEMORY.md
 ```
 
 </details>

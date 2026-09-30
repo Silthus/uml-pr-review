@@ -5,8 +5,22 @@ settings.json: identical
 git status --porcelain: identical (0 lines)
 refs/uml-pr-review: identical (0 refs)
 worktrees under /tmp/dogfood-119-*: 0
-worktree list diff against the baseline (other sessions may add or remove their own):
-36a37
-> /tmp/replay-118-68756-hooks-3/posthog                          4a6a40136a8 (detached HEAD)
+worktree list diff against the baseline; every line belongs to another session, and none is /tmp/dogfood-119-*:
+9d8
+< /home/coder/.t3/worktrees/posthog/t3code-a2391061              01cf0e3597a [t3code/workflow-search-performance]
+32d30
+< /home/coder/posthog/.claude/worktrees/agent-a8ccdb19ae22b95ba  bc5d52812d9 [fix/170-round-2] locked
+34a33
+> /home/coder/posthog/.claude/worktrees/agent-aec1bd7e6961a0dc8  256c3ebcb8a [modernize-stack/l2] locked
+36a36
+> /tmp/replay-124-64506-draft-hooks-1/posthog                    645e1a78140 (detached HEAD)
 folders left under /tmp/dogfood-119-*: 0
-coherence serve processes rooted in /tmp/dogfood-119-*: 0
+coherence serve processes rooted in /tmp/dogfood-119-*: 0 (ps -eo pid,args after teardown)
+
+# Outside those checks
+During the TypeScript rerun, the skill session ran `cd /home/coder/posthog && flox activate -- …` to get PostHog's
+Node for jest and prettier (transcript turns 4 and 6). Flox's activation touched git-ignored state in ~/posthog:
+- new logs in ~/posthog/.flox/log (upgrade-check.*.log, executive.*.log), 12:37 to 12:40 UTC;
+- ~/posthog/node_modules/.modules.yaml and .pnpm-workspace-state-v1.json, rewritten at 12:40:04 UTC by the
+  activation's pnpm install against the unchanged lockfile.
+Nothing tracked changed, and the checks above hold. These ignored files were not restored.

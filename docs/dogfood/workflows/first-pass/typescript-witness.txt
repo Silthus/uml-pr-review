@@ -1,5 +1,17 @@
-# 1. The seven handler chokepoints, with the kit's witness.ts: oxlint's coherence/chokepoint red on a staged import, clean once it is removed
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/conditional-branch-handler-only-through-executor"
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/conversion-watcher-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./conversion-watcher";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/conditional-branch-step-through-executor"
 staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/conditional_branch";
 export { bypass };
 red: 2.3 s
@@ -10,99 +22,96 @@ green: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
 0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
-[exit 0, 4.7 s]
+[exit 0, 4.6 s]
 
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/delay-handler-only-through-executor"
-staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/delay";
-export { bypass };
-red: 2.4 s
-$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
-1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
-[exit 1]
-green: 2.4 s
-$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
-0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
-[exit 0]
-[exit 0, 4.8 s]
-
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/exit-handler-only-through-executor"
-staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/exit.handler";
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/hog-function-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/hog_function";
 export { bypass };
 red: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 [exit 1]
-green: 2.4 s
+green: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
 0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
-[exit 0, 4.7 s]
+[exit 0, 4.6 s]
 
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/hog-function-handler-only-through-executor"
-staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/hog_function";
-export { bypass };
-red: 2.4 s
-$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
-1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
-[exit 1]
-green: 2.4 s
-$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
-0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
-[exit 0]
-[exit 0, 4.8 s]
-
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/random-cohort-branch-handler-only-through-executor"
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/random-cohort-branch-step-through-executor"
 staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/random_cohort_branch";
 export { bypass };
-red: 2.4 s
+red: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 [exit 1]
-green: 2.4 s
+green: 2.2 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
 0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
-[exit 0, 4.8 s]
+[exit 0, 4.6 s]
 
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/trigger-handler-only-through-executor"
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/wait-until-time-window-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/wait_until_time_window";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/trigger-step-through-executor"
 staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/trigger.handler";
 export { bypass };
 red: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 [exit 1]
-green: 2.4 s
+green: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
 0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
-[exit 0, 4.7 s]
+[exit 0, 4.6 s]
 
-$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/wait-until-time-window-handler-only-through-executor"
-staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/wait_until_time_window";
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/exit-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/exit.handler";
 export { bypass };
-red: 2.4 s
+red: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
 [exit 1]
-green: 2.4 s
+green: 2.3 s
 $ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
 0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
-[exit 0, 4.8 s]
+[exit 0, 4.6 s]
 
-# 2. The one-duration-grammar lint totality oracle
-# The kit's witness.ts builds bypasses for no-restricted-imports only, so this oxlint oracle is witnessed by hand: stage, refute, remove, run
-staged nodejs/src/cdp/services/messaging/witnessDuration.ts: export const AWAIT_DURATION_REGEX = /^(\d*\.?\d+)([dhms])$/
-$ coherence refute "nodejs/src/cdp/services/hogflows/one-duration-grammar" --broke "staged nodejs/src/cdp/services/messaging/witnessDuration.ts" --session manual-witness --agent implement-119
-refuted nodejs/src/cdp/services/hogflows/one-duration-grammar (totality oracle): staged nodejs/src/cdp/services/messaging/witnessDuration.ts
-  the detector went red: 1 finding of oxlint:eslint-js/no-restricted-syntax matching "one-duration-grammar", the first at nodejs/src/cdp/services/messaging/witnessDuration.ts:1
-  recorded in .coherence/runs/manual-witness.jsonl at 2026-09-30T12:46:00.203Z
-now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/quota-check-in-invocation-pipeline"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./hogflow-quota-limiting";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
-removed nodejs/src/cdp/services/messaging/witnessDuration.ts
-$ coherence run --invariant "one-duration-grammar" --session manual-witness --agent implement-119
-nodejs/src/cdp/services/hogflows/one-duration-grammar
-  totality oracle: pass (2.4 s); refutation witnessed
-    /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs reported no finding of oxlint:eslint-js/no-restricted-syntax matching "one-duration-grammar" in 1676 files
-run recorded in .coherence/runs/manual-witness.jsonl: 1 enforcement, 1 pass, 0 fail, 0 not run; instrument typescript (none); 3.5 s
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/billing-in-function-step"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./billing-utils";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.2 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
 [exit 0]
+[exit 0, 4.5 s]
+

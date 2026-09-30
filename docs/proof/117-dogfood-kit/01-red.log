@@ -1,0 +1,14 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/kit/kit.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './kit.ts' from '/home/coder/dev/uml-pr-review/.claude/worktrees/agent-aa0be0c72a0913144/benchmark/replay/kit/kit.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [7.00ms]

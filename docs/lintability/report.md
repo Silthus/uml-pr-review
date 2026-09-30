@@ -91,13 +91,13 @@ Caught corrections grouped by the general rule that catches them, ranked by full
 
 ## Agreement
 
-Cohen's kappa on `catchable` is **0.79** over 30 rows (raw agreement 96.7%). The two labellers chose the same rule kind for 27 of 30 (90.0%).
+Cohen's kappa on `catchable` is **0.71** over 60 rows (raw agreement 95.0%). The two labellers chose the same rule kind for 53 of 60 (88.3%).
 
 | Primary \ second | yes | partial | no |
 | --- | --- | --- | --- |
-| yes | 1 | 0 | 0 |
-| partial | 0 | 1 | 1 |
-| no | 0 | 0 | 27 |
+| yes | 2 | 0 | 0 |
+| partial | 0 | 2 | 1 |
+| no | 1 | 1 | 53 |
 
 ## Replay candidates
 
@@ -129,7 +129,7 @@ Fully caught corrections, one per PR, preferring `products/workflows`, `nodejs/s
 2. **Rubric.** `benchmark/lintability/rubric.md` applies #107's decision order, twelve kinds, and tiers, and adds four honesty guards: `general` (a team would declare the rule up front, for the whole scope), `existed` (what the rule points to existed at `before`), `syntactic` (a linter decides it without judgment), and `firesAndClears` (the rule flags the `before` code at the commented site and not the corrected code). `catchable` is `yes` only when the kind is declarable and no guard fails; every failed guard is recorded in `failedGuards`.
 3. **Calibration.** One Opus labeller labelled a seeded 50-row sample with the draft rubric. Its eight reported ambiguities became eight sentences of the frozen rubric (listed in `benchmark/lintability/prompts.md`); the calibration labels were then discarded and those rows labelled again.
 4. **Labelling.** Fresh Opus sub-agents, 30 corrections per batch, each read the comment body, the fix commit's diff of the commented file, and checked `existed` against the code at `before` with read-only `git show`, `git grep`, and `git ls-tree` on the local PostHog object store. Batches are resumable: `bun benchmark/lintability/run.ts label` packs only the corrections that still lack a label.
-5. **Agreement.** A second, independent Opus labeller labelled a seeded 30-row sample with the same frozen rubric and prompt, without seeing the first labels.
+5. **Agreement.** A second, independent Opus labeller labelled a seeded 60-row sample with the same frozen rubric and prompt, without seeing the first labels.
 6. **Rule groups.** One Opus sub-agent gave every caught correction a canonical rule name so that corrections one declaration would catch share a name; the top rules are counted from those names.
 
 Limits: the fix locator is right about 68% of the time (#103), so labels are judged against the comment, not the located commit. Labels are single-pass model judgments; the agreement section measures how far a second labeller moves them. The rubric errs towards review, so the numbers are an upper bound only in the sense that each `yes` still needs its rule written and adopted.

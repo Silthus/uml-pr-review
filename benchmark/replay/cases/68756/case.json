@@ -1,0 +1,37 @@
+{
+  "pr": 68756,
+  "language": "python",
+  "ref": "4a6a40136a817169518c452c8fbf02171808e009",
+  "file": "posthog/admin/admins/team_admin.py",
+  "spec": "posthog/helpers/Helpers.spec.md",
+  "invariant": "posthog/helpers/impersonation read through is_impersonated",
+  "bypass": "model_activity import is_impersonated_session",
+  "reviewerRoute": "is_impersonated(request)",
+  "fixes": [
+    {
+      "file": "posthog/event_usage.py",
+      "replace": "from posthog.models.activity_logging.model_activity import is_impersonated_session",
+      "with": "from posthog.helpers.impersonation import is_impersonated"
+    },
+    { "file": "posthog/event_usage.py", "replace": "is_impersonated_session(request)", "with": "is_impersonated(request)" },
+    {
+      "file": "posthog/api/file_system/file_system_logging.py",
+      "replace": "from posthog.models.activity_logging.model_activity import is_impersonated_session",
+      "with": "from posthog.helpers.impersonation import is_impersonated"
+    },
+    { "file": "posthog/api/file_system/file_system_logging.py", "replace": "is_impersonated_session(request)", "with": "is_impersonated(request)" },
+    {
+      "file": "products/signals/backend/views.py",
+      "replace": "from posthog.models.activity_logging.model_activity import is_impersonated_session",
+      "with": "from posthog.helpers.impersonation import is_impersonated"
+    },
+    { "file": "products/signals/backend/views.py", "replace": "is_impersonated_session(request)", "with": "is_impersonated(request)" }
+  ],
+  "notes": [
+    "The case runs at the PR's merge base with master, `4a6a401`, as the spec says. The dictated content is `team_admin.py` at the correction's `before` commit, `1b52cff` (1,454 lines).",
+    "The chokepoint form resolved, so the ruff TID251 fallback was not needed. `coherence run` resolved both names and graded the bullet `reference-choked`, and the kit's witness went red on a staged import, then green. The hook that gives feedback during the build is Coherence's own `PostToolUse` check, unchanged from what ships upstream.",
+    "At this commit, `is_impersonated_session` in `model_activity.py` is a small wrapper function, not a re-export. Coherence protects it the same way.",
+    "Pre-declaration fixes: three files reached the protected function at the merge base, not the single file the spec expected. All three now call `is_impersonated`, identically in both arms: `posthog/event_usage.py`, `posthog/api/file_system/file_system_logging.py`, and `products/signals/backend/views.py`.",
+    "Direct imports from `loginas.utils` (about 15 files) are outside the chokepoint form, and this replay does not need them."
+  ]
+}

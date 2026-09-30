@@ -1,0 +1,27 @@
+{
+  "pr": 64506,
+  "language": "typescript",
+  "ref": "645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6",
+  "file": "nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts",
+  "spec": "nodejs/src/ingestion/Ingestion.spec.md",
+  "invariant": "nodejs/src/ingestion/ingestion never reaches cdp",
+  "bypass": "~/cdp/",
+  "reviewerRoute": "~/common/hog-transformations/hog-transformer.interface",
+  "fixes": [],
+  "lint": {
+    "config": "nodejs/.oxlintrc.nodejs.json",
+    "override": "src/ingestion/**/*.ts",
+    "pattern": {
+      "group": ["~/cdp", "~/cdp/**"],
+      "message": "ingestion never reaches cdp (nodejs/src/ingestion/Ingestion.spec.md): do not import ~/cdp from ingestion; depend on the contracts in ~/common."
+    },
+    "residual": ["src/ingestion/**/*.test.ts"]
+  },
+  "notes": [
+    "The case runs at PostHog master `645e1a78140`, the commit the kit was proven on in #117, not at the merge base. At the merge base, `37a8942` (2026-06-18), three things were missing. `nodejs/` still linted with ESLint (`nodejs/.oxlintrc.nodejs.json` arrived in PostHog #99329 on 2026-09-11). `nodejs/src/ingestion/common/` did not exist. And the reviewer's `~/common/hog-transformations/hog-transformer.interface.ts` did not exist either: #64506 created it on its own branch, and it reached master only with the squash merge `853f95f`. The spec's note that the interface existed at the merge base is wrong. At `645e1a78140` the enforcer, the folder, and the interface all exist, and the dictated file is new. Both arms use this ref.",
+    "The dictated content is the file at the correction's `before` commit, `874a5727`.",
+    "Enforcer: the `~/cdp` pattern is appended to the ingestion override's `eslint/no-restricted-imports` in the `/tmp` copy of `nodejs/.oxlintrc.nodejs.json`. Its message names the invariant and its spec, and says to depend on the contracts in `~/common`. It does not name the interface file.",
+    "Listed residual: two test files under `nodejs/src/ingestion` import `~/cdp` on master, so a second override for `src/ingestion/**/*.test.ts` keeps the original rule. The bullet's `over:` already says \"every non-test import\".",
+    "Pre-declaration fixes: none. No non-test file under `nodejs/src/ingestion` imports `~/cdp` at this ref."
+  ]
+}

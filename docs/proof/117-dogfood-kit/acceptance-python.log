@@ -1,0 +1,69 @@
+# python: kit acceptance on ~/posthog at 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6
+~/posthog/.claude/settings.json sha256 before: aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d
+$ bun benchmark/replay/kit/setup.ts /tmp/kit117-accept-python --ref master --language python --hooks   # 7.1 s, exit 0
+coherence built: 2.1 s
+worktree added: 4.5 s
+hooks installed: 0.3 s
+export COHERENCE_HOME=/tmp/kit117-accept-python/coherence
+fixed before declaring: products/signals/backend/views.py reads impersonation through is_impersonated
+fixed before declaring: products/experiments/backend/experiment_service.py reads impersonation through is_impersonated
+declared in the /tmp worktree: posthog/helpers/impersonation read through is_impersonated
+$ /home/coder/.local/bin/uvx ruff@0.15.20 check --force-exclude --output-format json posthog/helpers   # 0.1 s, exit 0
+0 findings: none; none names the invariant
+$ node --disable-warning=ExperimentalWarning /tmp/kit117-accept-python/coherence/src/cli.ts spec --check   # 0.8 s, exit 0
+Helpers  posthog/helpers/Helpers.spec.md
+  impersonation read through is_impersonated  requirement  lacks refutation
+      totality oracle "lint ruff:TID251 matching "is_impersonated_session"" over every Python file ruff lints except the listed residual: posthog/event_usage.py, posthog/api/file_system/file_system_logging.py: declared, unverified
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+1 component, 1 bullet: 0 invariants, 1 requirement
+lacking: enforcement 0, refutation 1, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; no run yet: every enforcement is declared, unverified
+$ bun benchmark/replay/kit/witness.ts /tmp/kit117-accept-python posthog/helpers/impersonation read through is_impersonated   # 5.5 s, exit 0
+staged posthog/helpers/kit_witness_bypass.py: from posthog.models.activity_logging.model_activity import is_impersonated_session  # noqa: F401
+red: 4.1 s
+$ coherence refute posthog/helpers/impersonation read through is_impersonated --broke the kit staged a bypass --session kit-witness --agent kit
+refuted posthog/helpers/impersonation read through is_impersonated (totality oracle): the kit staged a bypass
+  the detector went red: 1 finding of ruff:TID251 matching "is_impersonated_session", the first at posthog/helpers/kit_witness_bypass.py:1
+  recorded in .coherence/runs/kit-witness.jsonl at 2026-09-30T11:41:40.822Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+green: 1.4 s
+$ coherence run --invariant impersonation read through is_impersonated --json --no-server --session kit-witness --agent kit
+{
+  "at": "2026-09-30T11:41:42.197Z",
+  "session": "kit-witness",
+  "agent": "kit",
+  "binding": "none: this session owns no active work order",
+  "commit": "645e1a78140",
+  "dirty": true,
+  "instrument": {
+    "language": "python",
+    "server": "cold"
+  },
+  "latency": 1114,
+  "invariants": [
+    {
+      "component": "posthog/helpers",
+      "name": "impersonation read through is_impersonated",
+      "form": "totality oracle",
+      "verdict": "pass",
+      "refutation": "witnessed",
+      "bypasses": [],
+      "testReferences": 0,
+      "files": [],
+      "latency": 121,
+      "reason": "/home/coder/.local/bin/uvx ruff@0.15.20 check --force-exclude --output-format json reported no finding of ruff:TID251 matching \"is_impersonated_session\""
+    }
+  ],
+  "file": "/tmp/kit117-accept-python/posthog/.coherence/runs/kit-witness.jsonl",
+  "instrumentReason": null,
+  "instrumentDied": false
+}
+[exit 0]
+$ bun benchmark/replay/kit/teardown.ts /tmp/kit117-accept-python   # 1.0 s, exit 0
+removed /tmp/kit117-accept-python
+refs/uml-pr-review in ~/posthog: unchanged (none)
+~/posthog/.claude/settings.json sha256 after:  aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d (identical)
+~/posthog git status: unchanged (clean)
+~/posthog worktrees under /tmp/kit117-accept-python: 0 (before setup: 0); entries added or removed meanwhile by other sessions: 0
+timings: setup 7.1 s, one ruff run 0.1 s, witness "posthog/helpers/impersonation read through is_impersonated" 5.5 s, teardown 1.0 s
+witness "posthog/helpers/impersonation read through is_impersonated": red, then green

@@ -8,13 +8,13 @@ Received NaN for the `x` attribute. If this is expected, cast the value to a str
 Received NaN for the `y` attribute. If this is expected, cast the value to a string.
 
 test/architecture/model/lift-performance.test.ts:
-lift, one product opened: 6737 modules, 170000 imports, median 2.31 ms
-lift, every top-level module opened: 6737 modules, 170000 imports, median 21.38 ms
+lift, one product opened: 6737 modules, 170000 imports, median 2.32 ms
+lift, every top-level module opened: 6737 modules, 170000 imports, median 21.71 ms
 
 test/architecture/conformance/performance.test.ts:
-checkConformance: 38400 files, 170250 imports, 50 changed files, median 23.94 ms
+checkConformance: 38400 files, 170250 imports, 50 changed files, median 22.82 ms
 
- 559 pass
+ 563 pass
  0 fail
- 1363 expect() calls
-Ran 559 tests across 59 files. [37.59s]
+ 1368 expect() calls
+Ran 563 tests across 59 files. [37.69s]

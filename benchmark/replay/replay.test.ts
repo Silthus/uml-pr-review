@@ -126,7 +126,60 @@ describe("reading a replay session", () => {
       loadCase("64506"),
     );
 
-    expect(session).toEqual({ introduced: true, flagged: true, turns: 4, seconds: 43, costUsd: 0.5, hookSeconds: [2.5, 1.2], sessionStartSeconds: 0.6, stopSeconds: 35.5, proposedRoute: false });
+    expect(session).toEqual({
+      introduced: true,
+      flagged: true,
+      turns: 4,
+      seconds: 43,
+      costUsd: 0.5,
+      hookSeconds: [2.5, 1.2],
+      sessionStartSeconds: 0.6,
+      stopSeconds: 35.5,
+      cancelledHooks: [],
+      ending: "success",
+      proposedRoute: false,
+      closingQuestion: "",
+    });
+  });
+
+  test("a Python session whose edit adds the protected import is flagged by Coherence's chokepoint check", () => {
+    const edited = "/tmp/replay-118-68756-hooks-1/posthog/posthog/admin/admins/team_admin.py";
+    const chokepoint = { hookSpecificOutput: { additionalContext: "✕ posthog/helpers/impersonation read through is_impersonated — chokepoint is_impersonated in posthog/helpers/impersonation.py: broken" } };
+    const session = readSession(
+      transcript(
+        toolUse("t1", "Edit", { file_path: edited, old_string: "import log_activity\n", new_string: "import log_activity\nfrom posthog.models.activity_logging.model_activity import is_impersonated_session\n" }),
+        hook("hook_started", "h1", 1000, "", "PostToolUse:Edit"),
+        hook("hook_response", "h1", 16000, JSON.stringify(chokepoint), "PostToolUse:Edit"),
+        { type: "result", subtype: "success", num_turns: 3, total_cost_usd: 0.2, received_ms: 20000 },
+      ),
+      loadCase("68756"),
+    );
+
+    expect(session).toMatchObject({ introduced: true, flagged: true, hookSeconds: [15] });
+  });
+
+  test("only an edit hook counts as flagging, and only when it names the whole invariant", () => {
+    const shortName = { hookSpecificOutput: { additionalContext: "ingestion never reaches cdp (nodejs/src/ingestion/Ingestion.spec.md): do not import ~/cdp" } };
+    const session = readSession(
+      transcript(
+        toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }),
+        hook("hook_started", "h1", 1000),
+        hook("hook_response", "h1", 2000, JSON.stringify(shortName)),
+        hook("hook_started", "e", 3000, "", "Stop"),
+        hook("hook_response", "e", 4000, JSON.stringify(FLAG), "Stop"),
+        { type: "result", subtype: "success", num_turns: 2, total_cost_usd: 0.1, received_ms: 4500 },
+      ),
+      loadCase("64506"),
+    );
+
+    expect(session.flagged).toBe(false);
+  });
+
+  test("hooks cancelled at their timeout are named, and a session without a result says so", () => {
+    const cancelled = { type: "system", subtype: "hook_response", hook_id: "s", hook_name: "SessionStart:startup", hook_event: "SessionStart", output: "", outcome: "cancelled", received_ms: 60000 };
+    const session = readSession(transcript(hook("hook_started", "s", 0, "", "SessionStart:startup"), cancelled), loadCase("64506"));
+
+    expect(session).toMatchObject({ cancelledHooks: ["SessionStart:startup"], ending: "no result", sessionStartSeconds: 60 });
   });
 
   test("a flag that fires before the bypass was written does not count as flagging it", () => {
@@ -146,11 +199,11 @@ describe("reading a replay session", () => {
     expect(session.flagged).toBe(false);
   });
 
-  test("a session that ends by proposing the reviewer's route in its answer, without applying it", () => {
-    const answer = { type: "assistant", message: { content: [{ type: "text", text: "I kept your content. Should I switch to `~/common/hog-transformations/hog-transformer.interface`?" }] } };
-    const session = readSession(transcript(toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }), answer, { type: "result", num_turns: 2, total_cost_usd: 0.1, received_ms: 900 }), loadCase("64506"));
+  test("a session that ends by proposing the reviewer's route in its answer, and asking whether to apply it", () => {
+    const answer = { type: "assistant", message: { content: [{ type: "text", text: "I kept your content.\n\nI left the file as you specified. Should I switch to `~/common/hog-transformations/hog-transformer.interface`?\n" }] } };
+    const session = readSession(transcript(toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }), answer, { type: "result", subtype: "success", num_turns: 2, total_cost_usd: 0.1, received_ms: 900 }), loadCase("64506"));
 
-    expect(session.proposedRoute).toBe(true);
+    expect(session).toMatchObject({ proposedRoute: true, closingQuestion: "Should I switch to `~/common/hog-transformations/hog-transformer.interface`?" });
   });
 
   test("a control session that never writes the file introduced nothing", () => {
@@ -159,7 +212,7 @@ describe("reading a replay session", () => {
       loadCase("64506"),
     );
 
-    expect(session).toEqual({ introduced: false, flagged: false, turns: 30, seconds: 1.5, costUsd: 2, hookSeconds: [], sessionStartSeconds: 0, stopSeconds: 0, proposedRoute: false });
+    expect(session).toMatchObject({ introduced: false, flagged: false, turns: 30, seconds: 1.5, ending: "error_max_turns" });
   });
 });
 
@@ -173,7 +226,20 @@ function record(arm: "hooks" | "control", n: number, outcome: Outcome): RunRecor
     arm,
     n,
     exitCode: 0,
-    session: { introduced, flagged: arm === "hooks" && introduced, turns: 5, seconds: 61.24, costUsd: 0.4, hookSeconds: arm === "hooks" ? [2.1, 3.9, 2.5] : [], sessionStartSeconds: arm === "hooks" ? 60.2 : 0, stopSeconds: arm === "hooks" ? 51.73 : 0, proposedRoute: outcome === "flagged-kept" },
+    session: {
+      introduced,
+      flagged: arm === "hooks" && introduced,
+      turns: 5,
+      seconds: 61.24,
+      costUsd: 0.4,
+      hookSeconds: arm === "hooks" ? [2.1, 3.9, 2.5] : [],
+      sessionStartSeconds: arm === "hooks" ? 60.2 : 0,
+      stopSeconds: arm === "hooks" ? 51.73 : 0,
+      cancelledHooks: arm === "hooks" ? ["SessionStart:startup"] : [],
+      ending: "success",
+      proposedRoute: outcome === "flagged-kept",
+      closingQuestion: outcome === "flagged-kept" ? "Do you want me to switch the file to the interface version?" : "",
+    },
     final: { bypass, reviewerRoute: outcome === "fixed", verdict: bypass ? "fail" : "pass" },
   };
 }
@@ -190,7 +256,7 @@ describe("the replay report", () => {
     expect(report).toContain("2. Hooks: 2 of 3 runs");
     expect(report).toContain("**Verdict: met**");
     expect(report).toContain("- The case runs at PostHog master");
-    expect(report).toContain("| [hooks 1](64506/hooks-1/) | yes | yes | yes | pass | yes | 5 | 61 s | 2.5 s (max 3.9 s) | 60.2 s / 51.7 s | [transcript](64506/hooks-1/transcript.jsonl), [hooks](64506/hooks-1/hooks.jsonl), [diff](64506/hooks-1/final.diff), [run --status](64506/hooks-1/run-status.txt), [lint](64506/hooks-1/lint.txt), [witness](64506/hooks-1/witness.txt) |");
+    expect(report).toContain("| [hooks 1](64506/hooks-1/) | yes | yes | yes | pass | yes | 5 | 61 s | success, exit 0 | 2.5 s (max 3.9 s) | 60.2 s (cancelled) / 51.7 s | [transcript](64506/hooks-1/transcript.jsonl), [hooks](64506/hooks-1/hooks.jsonl), [diff](64506/hooks-1/final.diff), [run --status](64506/hooks-1/run-status.txt), [lint](64506/hooks-1/lint.txt), [witness](64506/hooks-1/witness.txt) |");
   });
 
   test("hooks runs that are flagged but keep the bypass do not meet the criteria", () => {
@@ -199,7 +265,14 @@ describe("the replay report", () => {
     expect(report).toContain("2. Hooks: 1 of 3 runs");
     expect(report).toContain("In 2 of 3 hooks runs a hook named the invariant, and the session still ended with the bypass.");
     expect(report).toContain("In 2 of 3 hooks runs the final answer named the reviewer's route, but the file kept the bypass. This is outside the criteria.");
+    expect(report).toContain("- hooks 1 ended by asking: “Do you want me to switch the file to the interface version?”");
     expect(report).toContain("**Verdict: not met**");
+  });
+
+  test("a case with fewer than three runs in an arm is incomplete", () => {
+    const report = reportFor(["bypassed", "bypassed"], ["fixed", "fixed", "fixed"]);
+
+    expect(report).toContain("**Verdict: incomplete**");
   });
 
   test("a control arm that avoids the bypass unaided makes the case inconclusive", () => {

@@ -79,37 +79,65 @@ export interface Session {
   hookSeconds: number[];
   sessionStartSeconds: number;
   stopSeconds: number;
+  cancelledHooks: string[];
+  ending: string;
   proposedRoute: boolean;
+  closingQuestion: string;
 }
 
 const toolUse = z.object({ type: z.literal("tool_use"), name: z.string(), input: z.record(z.string(), z.unknown()) });
 const assistant = z.object({ type: z.literal("assistant"), message: z.object({ content: z.array(z.unknown()) }) });
-const hookRecord = z.object({ type: z.literal("system"), subtype: z.enum(["hook_started", "hook_response"]), hook_id: z.string(), hook_name: z.string(), hook_event: z.string(), output: z.string().optional(), received_ms: z.number() });
-const result = z.object({ type: z.literal("result"), num_turns: z.number(), total_cost_usd: z.number(), received_ms: z.number() });
+const hookRecord = z.object({
+  type: z.literal("system"),
+  subtype: z.enum(["hook_started", "hook_response"]),
+  hook_id: z.string(),
+  hook_name: z.string(),
+  hook_event: z.string(),
+  output: z.string().optional(),
+  outcome: z.string().optional(),
+  received_ms: z.number(),
+});
+const result = z.object({ type: z.literal("result"), subtype: z.string().default("unknown"), num_turns: z.number(), total_cost_usd: z.number(), received_ms: z.number() });
 
 const EDIT_HOOKS = /^PostToolUse:(Write|Edit|MultiEdit)$/;
 
 type ToolUse = z.infer<typeof toolUse>;
 type HookRecord = z.infer<typeof hookRecord>;
 
+function total(values: number[]): number {
+  return Number(values.reduce((sum, value) => sum + value, 0).toFixed(3));
+}
+
 export function readSession(transcript: string, replay: ReplayCase): Session {
   const records = transcript.split("\n").filter((line) => line.trim() !== "").map((line): unknown => JSON.parse(line));
   const introducedAt = records.findIndex((record) => toolUsesIn(record).some((use) => introducesBypass(use, replay)));
   const hooks = records.map((record) => hookRecord.safeParse(record)).map((parsed) => (parsed.success ? parsed.data : undefined));
+  const known = hooks.filter((hook): hook is HookRecord => hook !== undefined);
   const final = records.map((record) => result.safeParse(record)).find((parsed) => parsed.success)?.data;
-  const ofEvent = (event: string) => hooks.filter((hook): hook is HookRecord => hook?.hook_event === event);
-  const total = (values: number[]) => Number(values.reduce((sum, value) => sum + value, 0).toFixed(3));
+  const answer = finalAnswer(records);
   return {
     introduced: introducedAt !== -1,
-    flagged: introducedAt !== -1 && hooks.slice(introducedAt).some((hook) => hook?.hook_event === "PostToolUse" && hook.subtype === "hook_response" && (hook.output ?? "").includes(invariantName(replay))),
+    flagged: introducedAt !== -1 && hooks.slice(introducedAt).some((hook) => hook !== undefined && flags(hook, replay)),
     turns: final?.num_turns ?? 0,
     seconds: (final?.received_ms ?? 0) / 1000,
     costUsd: final?.total_cost_usd ?? 0,
-    hookSeconds: hookLatencies(hooks.filter((hook): hook is HookRecord => hook !== undefined && EDIT_HOOKS.test(hook.hook_name))),
-    sessionStartSeconds: total(hookLatencies(ofEvent("SessionStart"))),
-    stopSeconds: total(hookLatencies(ofEvent("Stop"))),
-    proposedRoute: finalAnswer(records).includes(replay.reviewerRoute),
+    hookSeconds: hookLatencies(known.filter((hook) => EDIT_HOOKS.test(hook.hook_name))),
+    sessionStartSeconds: total(hookLatencies(known.filter((hook) => hook.hook_event === "SessionStart"))),
+    stopSeconds: total(hookLatencies(known.filter((hook) => hook.hook_event === "Stop"))),
+    cancelledHooks: known.filter((hook) => hook.outcome === "cancelled").map((hook) => hook.hook_name),
+    ending: final?.subtype ?? "no result",
+    proposedRoute: answer.includes(replay.reviewerRoute),
+    closingQuestion: closingQuestion(answer),
   };
+}
+
+function flags(hook: HookRecord, replay: ReplayCase): boolean {
+  return EDIT_HOOKS.test(hook.hook_name) && hook.subtype === "hook_response" && (hook.output ?? "").includes(replay.invariant);
+}
+
+function closingQuestion(answer: string): string {
+  const last = answer.trim().split(/\n|(?<=[.!?])\s+/).at(-1)?.trim() ?? "";
+  return last.endsWith("?") ? last : "";
 }
 
 const textBlock = z.object({ type: z.literal("text"), text: z.string() });
@@ -166,7 +194,7 @@ export interface RunRecord {
   final: { bypass: boolean; reviewerRoute: boolean; verdict: string };
 }
 
-const EVIDENCE_FILES = [
+export const EVIDENCE_FILES = [
   ["transcript", "transcript.jsonl"],
   ["hooks", "hooks.jsonl"],
   ["diff", "final.diff"],
@@ -175,7 +203,7 @@ const EVIDENCE_FILES = [
   ["witness", "witness.txt"],
 ] as const;
 
-const TABLE_HEADER = ["Run", "Violation introduced", "Hook named the invariant after it", "Fixed in session", "Final `run` verdict", "Reviewer's route", "Turns", "Wall time", "Edit hook latency (median, max)", "SessionStart / Stop hooks", "Evidence"];
+const TABLE_HEADER = ["Run", "Violation introduced", "Hook named the invariant after it", "Fixed in session", "Final `run` verdict", "Reviewer's route", "Turns", "Wall time", "Ended", "Edit hook latency (median, max)", "SessionStart / Stop hooks", "Evidence"];
 
 function meetsControl(run: RunRecord): boolean {
   return run.final.bypass && run.final.verdict === "fail";
@@ -199,6 +227,11 @@ function latency(values: number[]): string {
   return `${seconds(sorted[Math.floor((sorted.length - 1) / 2)]!)} (max ${seconds(sorted.at(-1)!)})`;
 }
 
+function hookTime(run: RunRecord, event: string, value: number): string {
+  const cancelled = run.session.cancelledHooks.some((name) => name.split(":")[0] === event);
+  return `${seconds(value)}${cancelled ? " (cancelled)" : ""}`;
+}
+
 function row(run: RunRecord): string {
   const folder = `${run.pr}/${run.arm}-${run.n}/`;
   const cells = [
@@ -210,18 +243,33 @@ function row(run: RunRecord): string {
     yesNo(run.final.reviewerRoute),
     String(run.session.turns),
     `${Math.round(run.session.seconds)} s`,
+    `${run.session.ending}, exit ${run.exitCode}`,
     latency(run.session.hookSeconds),
-    run.arm === "hooks" ? `${seconds(run.session.sessionStartSeconds)} / ${seconds(run.session.stopSeconds)}` : "n/a",
+    run.arm === "hooks" ? `${hookTime(run, "SessionStart", run.session.sessionStartSeconds)} / ${hookTime(run, "Stop", run.session.stopSeconds)}` : "n/a",
     EVIDENCE_FILES.map(([label, file]) => `[${label}](${folder}${file})`).join(", "),
   ];
   return `| ${cells.join(" | ")} |`;
 }
 
+const RUNS_PER_ARM = 3;
+
 function caseVerdict(control: RunRecord[], hooks: RunRecord[]): string {
+  if (control.length < RUNS_PER_ARM || hooks.length < RUNS_PER_ARM) return "incomplete";
   const avoided = control.filter((run) => !run.final.bypass).length;
   if (avoided * 2 > control.length) return "inconclusive";
   const majority = (runs: RunRecord[], meets: (run: RunRecord) => boolean) => runs.filter(meets).length >= 2;
   return majority(control, meetsControl) && majority(hooks, meetsHooks) ? "met" : "not met";
+}
+
+function closingQuestions(hooks: RunRecord[]): string[] {
+  const asked = hooks.filter((run) => run.final.bypass && run.session.closingQuestion !== "");
+  if (asked.length === 0) return [];
+  return [
+    "",
+    `In ${asked.length} of ${hooks.length} hooks runs the session kept the dictated content and ended with a question to the user. A headless \`-p\` run has nobody to answer it:`,
+    "",
+    ...asked.map((run) => `- ${run.arm} ${run.n} ended by asking: “${run.session.closingQuestion}”`),
+  ];
 }
 
 function caseSection(replay: ReplayCase, runs: RunRecord[]): string {
@@ -243,6 +291,7 @@ function caseSection(replay: ReplayCase, runs: RunRecord[]): string {
     "",
     `In ${hooks.filter((run) => run.session.flagged && run.final.bypass).length} of ${hooks.length} hooks runs a hook named the invariant, and the session still ended with the bypass.`,
     `In ${hooks.filter((run) => run.session.proposedRoute && run.final.bypass).length} of ${hooks.length} hooks runs the final answer named the reviewer's route, but the file kept the bypass. This is outside the criteria.`,
+    ...closingQuestions(hooks),
     "",
     `**Verdict: ${caseVerdict(control, hooks)}**`,
     "",
@@ -266,9 +315,10 @@ const METHOD = [
   "What each column reads:",
   "",
   "- **Violation introduced**: a `Write` or `Edit` to the dictated file whose text contains the case's bypass.",
-  "- **Hook named the invariant after it**: a `PostToolUse` `hook_response` after that edit whose output contains the invariant's name.",
+  "- **Hook named the invariant after it**: a `PostToolUse` `hook_response` on a `Write`, `Edit`, or `MultiEdit` after that edit, whose output contains the invariant's full `<component>/<name>`. Only Coherence prints that full name. The lint message the case adds carries only the short name.",
   "- **Final `run` verdict**: `coherence run --invariant <name> --json` on the final tree.",
   "- **Wall time**: from spawning `claude` to its `result` record.",
+  "- **Ended**: the `result` record's subtype, such as `success` or `error_max_turns` (`no result` if none arrived), and the exit code of `claude`.",
   "- **Hook times**: stream-json carries no timestamps, so the harness stamps each line on arrival (`received_ms`). A hook's time runs from its `hook_started` line to its `hook_response` line.",
   "- **Edit hook latency**: counts only the `PostToolUse` hooks on `Write`, `Edit`, and `MultiEdit`, which are the ones that check the edited file.",
   "- **SessionStart and Stop**: Coherence installs its hooks with a 60 s timeout. A time near 60 s means the hook was cancelled at that timeout, and its record in `hooks.jsonl` reads `\"outcome\":\"cancelled\"`.",
@@ -281,7 +331,14 @@ const METHOD = [
   "",
   "Coherence's own hooks stay, in the hooks arm only. `acceptEdits` allows edits inside the worktree and read-only commands. Headless, every other command is denied.",
   "",
-  "Three runs per arm is a small sample. A verdict here describes these runs; it is not a rate.",
+  "Threats to validity:",
+  "",
+  "- **The task asks for no fix.** It dictates the file (\"contains exactly this\") and keeps the change to that one file. Criterion 2 asks for a fix the task never asks for, so a hooks run can meet it only by departing from the task. A headless `-p` run also has nobody to answer a question.",
+  "- **SessionStart never ran as shipped.** A SessionStart marked `(cancelled)` hit the 60 s timeout, so Coherence's session context never reached the agent. The edit hooks ran normally.",
+  "- **Evidence is re-scored, not re-run.** The runs used `run.ts` as committed in `69aa009`. Later commits changed only how sessions are read and reported, not how runs are made. `report` re-scores every session from its recorded transcript, stops if introduced or flagged disagree with what the run recorded, and writes the re-scored session back into `run.json`.",
+  "- **The four arm processes ran at the same time.** The runs inside each arm ran one after another. Each `~/posthog` check covers only its own kit folder and ref.",
+  "- **The `~/posthog` check has blind spots.** It cannot see writes through the `node_modules` symlinks, because `node_modules` is gitignored.",
+  "- **The sample is small.** Three runs per arm describe these runs. They do not give a rate.",
   "",
 ];
 

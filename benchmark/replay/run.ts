@@ -1,9 +1,10 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 import { defaultEnvironment, setUp, tearDown, witness } from "./kit/kit.ts";
-import { declareCase, invariantName, loadCase, readSession, renderReport, type Arm, type ReplayCase, type RunRecord } from "./replay.ts";
+import { declareCase, EVIDENCE_FILES, invariantName, loadCase, readSession, renderReport, type Arm, type ReplayCase, type RunRecord } from "./replay.ts";
 
 const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>]\n       bun benchmark/replay/run.ts report";
 const KIT_PREFIX = "/tmp/replay-118";
@@ -61,17 +62,30 @@ function stopCoherenceServers(dir: string) {
   sh(["pkill", "-f", `${dir}/coherence/`], "/");
 }
 
+const PRIVATE_KEYS = new Set(["signature"]);
+
 function trimmed(value: unknown): unknown {
   if (typeof value === "string") return value.length > TRIM_AT ? `${value.slice(0, TRIM_AT)}…[trimmed ${value.length - TRIM_AT} chars]` : value;
   if (Array.isArray(value)) return value.map(trimmed);
-  if (value !== null && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, trimmed(inner)]));
+  if (value !== null && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([key]) => !PRIVATE_KEYS.has(key)).map(([key, inner]) => [key, trimmed(inner)]));
   return value;
 }
 
-function publicRecord(record: Record<string, unknown>): Record<string, unknown> {
+function publicRecord(line: string): Record<string, unknown> {
+  let record: Record<string, unknown>;
+  try {
+    record = z.record(z.string(), z.unknown()).parse(JSON.parse(line));
+  } catch {
+    return { type: "unparsed", text: line };
+  }
   if (record["type"] !== "system" || record["subtype"] !== "init") return record;
   const { type, subtype, model, permissionMode, claude_code_version } = record;
   return { type, subtype, model, permissionMode, claude_code_version };
+}
+
+function stamped(lines: string[], started: number): string[] {
+  const received = Math.round(performance.now() - started);
+  return lines.filter((line) => line.trim() !== "").map((line) => JSON.stringify({ ...publicRecord(line), received_ms: received }));
 }
 
 async function runSession(dir: string, task: string): Promise<{ lines: string[]; exitCode: number }> {
@@ -85,13 +99,17 @@ async function runSession(dir: string, task: string): Promise<{ lines: string[];
   const reader = child.stdout.getReader();
   const decoder = new TextDecoder();
   let pending = "";
-  for (let read = await reader.read(); !read.done; read = await reader.read()) {
-    const received = Math.round(performance.now() - started);
-    const parts = `${pending}${decoder.decode(read.value, { stream: true })}`.split("\n");
-    pending = parts.pop() ?? "";
-    for (const line of parts.filter((part) => part.trim() !== "")) lines.push(JSON.stringify({ ...publicRecord(JSON.parse(line)), received_ms: received }));
+  try {
+    for (let read = await reader.read(); !read.done; read = await reader.read()) {
+      const parts = `${pending}${decoder.decode(read.value, { stream: true })}`.split("\n");
+      pending = parts.pop() ?? "";
+      lines.push(...stamped(parts, started));
+    }
+    lines.push(...stamped([pending], started));
+  } finally {
+    clearTimeout(timer);
+    child.kill();
   }
-  clearTimeout(timer);
   return { lines, exitCode: await child.exited };
 }
 
@@ -102,26 +120,47 @@ function finalDiff(worktree: string, file: string): string {
   return sh(["git", "diff", "--no-index", "--", "/dev/null", file], worktree).stdout;
 }
 
+const KIT_LINT_TARGET = "nodejs";
+const coherenceConfig = z.object({ lint: z.record(z.string(), z.object({ command: z.array(z.string()) })) });
+
 function lintFinal(worktree: string, replay: ReplayCase): string {
-  const config = JSON.parse(readFileSync(join(worktree, "coherence.config.json"), "utf8")) as { lint: Record<string, { command: string[] }> };
+  const config = coherenceConfig.parse(JSON.parse(readFileSync(join(worktree, "coherence.config.json"), "utf8")));
   const command = Object.values(config.lint)[0]?.command ?? [];
-  const argv = [...command.filter((arg) => arg !== "nodejs"), replay.file];
+  const argv = [...command.filter((arg) => arg !== KIT_LINT_TARGET), replay.file];
   const result = sh(argv, worktree);
   return `$ ${argv.join(" ")}\n${result.stdout}${result.stderr}[exit ${result.code}]\n`;
 }
 
+const runReport = z.object({ invariants: z.array(z.object({ name: z.string(), verdict: z.string() })) });
+
 function runVerdict(stdout: string, name: string): string {
   try {
-    const record = JSON.parse(stdout.slice(stdout.indexOf("{"))) as { invariants: { name: string; verdict: string }[] };
+    const record = runReport.parse(JSON.parse(stdout.slice(stdout.indexOf("{"))));
     return record.invariants.find((entry) => entry.name === name)?.verdict ?? "missing";
   } catch {
     return "unreadable";
   }
 }
 
+async function cleanUp(dir: string, baseline: PostHogState, ref: string) {
+  const failures: unknown[] = [];
+  const attempt = async (step: () => unknown) => {
+    try {
+      await step();
+    } catch (error) {
+      failures.push(error);
+    }
+  };
+  await attempt(() => stopCoherenceServers(dir));
+  await attempt(() => tearDown(dir, () => undefined));
+  await attempt(() => assertIntact(baseline, ref, dir));
+  if (failures.length > 0) throw new AggregateError(failures, `cleaning up ${dir} failed`);
+}
+
 async function replayOnce(replay: ReplayCase, arm: Arm, n: number, baseline: PostHogState): Promise<RunRecord> {
   const dir = `${KIT_PREFIX}-${replay.pr}-${arm}-${n}`;
   const evidence = join(EVIDENCE, String(replay.pr), `${arm}-${n}`);
+  rmSync(evidence, { recursive: true, force: true });
   mkdirSync(evidence, { recursive: true });
   const kitLog: string[] = [];
   await setUp({ dir, ref: replay.ref, language: replay.language, hooks: arm === "hooks" }, defaultEnvironment(), (line) => kitLog.push(line));
@@ -153,24 +192,37 @@ async function replayOnce(replay: ReplayCase, arm: Arm, n: number, baseline: Pos
     writeFileSync(join(evidence, "run.json"), `${JSON.stringify(record, null, 2)}\n`);
     return record;
   } finally {
-    stopCoherenceServers(dir);
-    await tearDown(dir, () => undefined);
-    assertIntact(baseline, replay.ref, dir);
+    await cleanUp(dir, baseline, replay.ref);
   }
 }
 
+const recordedRun = z.object({
+  pr: z.number(),
+  arm: z.enum(["hooks", "control"]),
+  n: z.number(),
+  exitCode: z.number(),
+  session: z.looseObject({ introduced: z.boolean(), flagged: z.boolean() }),
+  final: z.object({ bypass: z.boolean(), reviewerRoute: z.boolean(), verdict: z.string() }),
+});
+
 function rescored(folder: string): RunRecord {
-  const recorded = JSON.parse(readFileSync(join(folder, "run.json"), "utf8")) as RunRecord;
+  const recorded = recordedRun.parse(JSON.parse(readFileSync(join(folder, "run.json"), "utf8")));
   const session = readSession(readFileSync(join(folder, "transcript.jsonl"), "utf8"), loadCase(String(recorded.pr)));
   if (session.introduced !== recorded.session.introduced || session.flagged !== recorded.session.flagged) throw new Error(`${folder}: the trimmed transcript no longer reads as the session run.json recorded`);
-  return { ...recorded, session };
+  const record: RunRecord = { ...recorded, session };
+  writeFileSync(join(folder, "run.json"), `${JSON.stringify(record, null, 2)}\n`);
+  return record;
+}
+
+function isComplete(folder: string): boolean {
+  return ["run.json", ...EVIDENCE_FILES.map(([, file]) => file)].every((file) => existsSync(join(folder, file)));
 }
 
 function recordedRuns(): RunRecord[] {
   return readdirSync(EVIDENCE, { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && /^\d+$/.test(entry.name))
     .flatMap((pr) => readdirSync(join(EVIDENCE, pr.name)).map((run) => join(EVIDENCE, pr.name, run)))
-    .filter((folder) => existsSync(join(folder, "run.json")))
+    .filter(isComplete)
     .map(rescored);
 }
 
@@ -180,14 +232,15 @@ async function main() {
     writeFileSync(join(EVIDENCE, "report.md"), renderReport(recordedRuns(), ["64506", "68756"].map(loadCase)));
     return;
   }
-  if (command === undefined || !isArm(values.arm)) {
+  const runs = Number(values.runs);
+  const first = Number(values.first);
+  if (command === undefined || !isArm(values.arm) || !Number.isInteger(runs) || runs < 1 || !Number.isInteger(first) || first < 1) {
     console.error(USAGE);
     process.exit(64);
   }
   const replay = loadCase(command);
   const baseline = posthogState(replay.ref);
-  const first = Number(values.first);
-  for (let n = first; n < first + Number(values.runs); n++) {
+  for (let n = first; n < first + runs; n++) {
     const record = await replayOnce(replay, values.arm, n, baseline);
     console.log(JSON.stringify(record));
   }

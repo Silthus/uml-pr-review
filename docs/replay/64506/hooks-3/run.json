@@ -10,11 +10,16 @@
     "seconds": 122.029,
     "costUsd": 0.2732458,
     "hookSeconds": [
-      0.274,
-      4.021,
-      0.274,
-      0.267
-    ]
+      4.021
+    ],
+    "sessionStartSeconds": 60.203,
+    "stopSeconds": 38.997,
+    "cancelledHooks": [
+      "SessionStart:startup"
+    ],
+    "ending": "success",
+    "proposedRoute": true,
+    "closingQuestion": ""
   },
   "final": {
     "bypass": true,

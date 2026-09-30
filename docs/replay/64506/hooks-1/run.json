@@ -10,11 +10,16 @@
     "seconds": 134.93,
     "costUsd": 0.4027952,
     "hookSeconds": [
-      0.282,
-      3.949,
-      0.273,
-      0.279
-    ]
+      3.949
+    ],
+    "sessionStartSeconds": 60.165,
+    "stopSeconds": 51.718,
+    "cancelledHooks": [
+      "SessionStart:startup"
+    ],
+    "ending": "success",
+    "proposedRoute": true,
+    "closingQuestion": "Do you want me to switch the file to the interface version?"
   },
   "final": {
     "bypass": true,

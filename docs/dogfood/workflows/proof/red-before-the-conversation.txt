@@ -1,0 +1,23 @@
+# Captured in the fresh kit worktrees, before the recorded conversations started
+
+## /tmp/dogfood-119-ts/posthog
+$ coherence spec --check
+no spec under /tmp/dogfood-119-ts/posthog
+0 components, 0 bullets: 0 invariants, 0 requirements
+lacking: enforcement 0, refutation 0, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; no run yet: every enforcement is declared, unverified
+[exit 0]
+
+## /tmp/dogfood-119-py/posthog
+$ coherence spec --check
+no spec under /tmp/dogfood-119-py/posthog
+0 components, 0 bullets: 0 invariants, 0 requirements
+lacking: enforcement 0, refutation 0, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; no run yet: every enforcement is declared, unverified
+[exit 0]
+
+## Before any declaration, an outside import of a hogflows module passes the lint
+staged nodejs/src/cdp/services/hogflows/redProbe.ts:
+import * as bypass from "./billing-utils";
+export { bypass };
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs/src/cdp/services/hogflows/redProbe.ts | jq '[.diagnostics[] | select(.code == "coherence(chokepoint)")] | length'
+0
+removed nodejs/src/cdp/services/hogflows/redProbe.ts

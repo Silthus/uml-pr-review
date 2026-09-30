@@ -1,0 +1,9 @@
+$ coherence spec --check
+Backend  products/workflows/backend/Backend.spec.md
+  ses-only-through-provider  invariant
+      totality oracle "lint ruff:TID251 matching "ses-only-through-provider"" over every Python file under products/workflows/backend, apart from the paved path providers/ses.py, except the listed residual: test/test_ses_provider.py, test/test_ses_account_reputation_task.py: verified 2026-09-30
+      refuted 2026-09-30: staged services/_refute_ses_bypass.py importing boto3 and building an sesv2 client
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+1 component, 1 bullet: 1 invariant, 0 requirements
+lacking: enforcement 0, refutation 0, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; latest run 2026-09-30T12:37:09.468Z (4 runs)
+[exit 0]

@@ -1,0 +1,117 @@
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/conversion-watcher-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./conversion-watcher";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/conditional-branch-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/conditional_branch";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/hog-function-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/hog_function";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/random-cohort-branch-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/random_cohort_branch";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.2 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/wait-until-time-window-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/wait_until_time_window";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/trigger-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/trigger.handler";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/exit-step-through-executor"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./actions/exit.handler";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/quota-check-in-invocation-pipeline"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./hogflow-quota-limiting";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.6 s]
+
+$ bun benchmark/replay/kit/witness.ts /tmp/dogfood-119-ts "nodejs/src/cdp/services/hogflows/billing-in-function-step"
+staged nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: import * as bypass from "./billing-utils";
+export { bypass };
+red: 2.3 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+1 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts: nodejs/src/cdp/services/hogflows/kitWitnessBypass.ts
+[exit 1]
+green: 2.2 s
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs nodejs/src/cdp/services/hogflows
+0 coherence(chokepoint) finding(s) under nodejs/src/cdp/services/hogflows: 
+[exit 0]
+[exit 0, 4.5 s]
+

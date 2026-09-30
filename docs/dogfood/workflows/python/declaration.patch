@@ -1,0 +1,38 @@
+diff --git a/products/workflows/backend/Backend.spec.md b/products/workflows/backend/Backend.spec.md
+new file mode 100644
+index 00000000000..6e4b782db11
+--- /dev/null
++++ b/products/workflows/backend/Backend.spec.md
+@@ -0,0 +1,11 @@
++# Backend
++
++Workflows backend: HogFlow models, services, providers and the facade other products reach it through
++
++## invariants
++- ses-only-through-provider: Only providers/ses.py imports boto3 or botocore; services reach AWS SES through the provider
++  over: every Python file under products/workflows/backend, apart from the paved path providers/ses.py, except the listed residual: test/test_ses_provider.py, test/test_ses_account_reputation_task.py
++  via: lint ruff:TID251 matching "ses-only-through-provider"
++  because: AWS/SES specifics (identity, region, retries) stay in the provider, so services use only the provider interface and never talk to AWS directly
++  refuted: staged services/_refute_ses_bypass.py importing boto3 and building an sesv2 client -> ruff TID251 went red at services/_refute_ses_bypass.py:1 naming ses-only-through-provider; clean again once removed (2026-09-30)
++  kinds: none
+diff --git a/products/workflows/backend/ruff.toml b/products/workflows/backend/ruff.toml
+new file mode 100644
+index 00000000000..4139b6aa261
+--- /dev/null
++++ b/products/workflows/backend/ruff.toml
+@@ -0,0 +1,15 @@
++extend = "../../ruff.toml"
++
++[lint]
++extend-select = ["TID251"]
++
++[lint.flake8-tidy-imports.banned-api]
++"boto3".msg = "ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses"
++"botocore".msg = "ses-only-through-provider (products/workflows/backend/Backend.spec.md): reach SES through products.workflows.backend.providers.ses"
++
++[lint.extend-per-file-ignores]
++# The paved path: the one module that talks to AWS.
++"providers/ses.py" = ["TID251"]
++# Listed residual: these test the provider's own AWS boundary (ClientError, the sesv2 service model).
++"test/test_ses_provider.py" = ["TID251"]
++"test/test_ses_account_reputation_task.py" = ["TID251"]

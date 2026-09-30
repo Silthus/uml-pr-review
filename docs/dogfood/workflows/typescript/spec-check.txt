@@ -1,0 +1,37 @@
+$ coherence spec --check
+Hogflows  nodejs/src/cdp/services/hogflows/Hogflows.spec.md
+  one-duration-grammar  invariant
+      totality oracle "lint oxlint:eslint-js/no-restricted-syntax matching "one-duration-grammar"" over every regex literal in a .ts file under nodejs/src/cdp except the paved path: nodejs/src/cdp/services/hogflows/duration.ts: verified 2026-09-30
+      refuted 2026-09-30: staged actions/__probe_duration.ts declaring /^(\d*\.?\d+)([dhms])$/, the regex hog_function.ts carried
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  conditional-branch-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/conditional_branch.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/conditional_branch.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/conditional_branch.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/conditional_branch.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/conditional_branch.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  delay-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/delay.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/delay.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/delay.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/delay.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/delay.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  exit-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/exit.handler.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/exit.handler.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/exit.handler.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/exit.handler.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/exit.handler.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  hog-function-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/hog_function.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/hog_function.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/hog_function.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/hog_function.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/hog_function.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  random-cohort-branch-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/random_cohort_branch.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/random_cohort_branch.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/random_cohort_branch.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/random_cohort_branch.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/random_cohort_branch.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  trigger-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/trigger.handler.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/trigger.handler.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/trigger.handler.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/trigger.handler.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/trigger.handler.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+  wait-until-time-window-handler-only-through-executor  requirement  lacks refutation
+      chokepoint nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts protects nodejs/src/cdp/services/hogflows/actions/wait_until_time_window.ts: not run 2026-09-30 checker-choked: nodejs/src/cdp/services/hogflows/actions/wait_until_time_window.ts is checker-choked, enforced by oxlint (nodejs/.oxlintrc.nodejs.json) rule coherence/chokepoint: nodejs/.oxlintrc.nodejs.json runs coherence/chokepoint at error over nodejs/src/cdp/services/hogflows/actions/wait_until_time_window.ts, so an import of it outside nodejs/src/cdp/services/hogflows/hogflow-executor.service.ts fails the project's lint; refutation missing: nodejs/src/cdp/services/hogflows/actions/wait_until_time_window.ts exports nothing, so no document can reference it
+      refuted 2026-09-30: staged nodejs/src/cdp/services/__probe_handler_bypass.ts importing actions/wait_until_time_window.ts
+      kinds none: 0 shapes apply, 0 declared, 0 dismissed
+1 component, 8 bullets: 1 invariant, 7 requirements
+lacking: enforcement 0, refutation 7, kinds 0, checklist 0, because 0; unfilled placeholders 0; 0 problems; latest run 2026-09-30T12:46:03.933Z (12 runs)
+[exit 0]

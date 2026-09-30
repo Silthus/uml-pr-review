@@ -5,7 +5,7 @@ argument-hint: <component folder>
 disable-model-invocation: true
 ---
 
-You and the engineer declare the **invariants** of one component folder, once. The result is a `<Name>.spec.md` bullet per invariant, the lint entry that enforces it, and a witnessed **refutation**. Later changes go through PR review, never through this skill again.
+You **grill** the engineer, once, until the **invariants** of one component folder are declared. The result is a `<Name>.spec.md` bullet per invariant, the lint entry that enforces it, and a witnessed **refutation**. Later changes go through PR review, never through this skill again.
 
 Speak Coherence's lexicon: **invariant**, **chokepoint** (`protects:` + `chokepoint:`), **totality oracle** (`over:` + `via:`), **enforcement**, **enforcer**, **refutation**, **listed residual**.
 
@@ -47,9 +47,11 @@ jq -c 'select(.path | startswith("<folder>"))' <repo>/docs/corrections/corpus.js
 jq -r '.rules[] | "\(.id): \(.statement)"' <repo>/docs/harvest/<product>/rules.json        # when present
 ```
 
-Widen `<folder>` to the product when the folder itself has none. Add the code's own evidence: a module that exactly one other module imports is a door already in place.
+Widen `<folder>` to the product when the folder itself has none. A correction backs a rule only when it asks for that rule, not merely for a nearby change.
 
-Done when each candidate is backed by a correction, a harvested rule, or the code's shape that the engineer confirms. A rule with no backing is not a candidate.
+The code's shape is a **lead**, never backing: a module that exactly one other module imports today may be a door or an accident. Ask the engineer whether that is a rule and why; it becomes a candidate only when the engineer states the rule and its reason.
+
+Done when each candidate is backed by a correction, a harvested rule, or the engineer's own statement of the rule.
 
 ## 3. Candidates
 
@@ -62,11 +64,11 @@ Put each candidate to the engineer as its own question: the sentence, its `becau
 
 A rule an enforcer already owns (a tach dependency or interface, an import-linter layer) is out: a bullet that restates it is a second declaration. A Python chokepoint that an existing import-linter or Pyright rule credits is in: the bullet adds the reason and the refutation, and the enforcer stays as it is.
 
-Done when every candidate is accepted, edited, or dropped, and at least one is accepted.
+Done when every candidate is accepted, edited, or dropped. Zero accepted is a valid outcome; go to the close.
 
 ## 4. Current violations
 
-For each accepted candidate, find the code that breaks it today: the importers of a protected module other than its chokepoint, or the linter's findings once the lint entry is in place. List them. Recommend:
+For each accepted candidate, find the code that breaks it today: for a chokepoint, the importers of the protected module other than its chokepoint; for a totality oracle, the linter's findings with a draft of its lint entry in place. List them. Recommend:
 
 - **fix now** when the list is short and each fix is mechanical; make the fixes in the worktree;
 - otherwise, for a totality oracle, a **listed residual**: the files go in the lint config's exclusion, and `over:` names the same files. A chokepoint has no residual; fix the importers or drop the candidate.
@@ -86,15 +88,17 @@ Done when `coherence spec --check` lists each bullet with 0 unfilled placeholder
 
 ## 6. Prove
 
-- **Chokepoint:** `coherence run --invariant "<name>"`. It refutes automatically and prints the grade, `checker-choked` where an enforcer is credited. For TypeScript, also witness the enforcer yourself: stage a file in the folder that imports the protected module, run the oxlint command from `coherence.config.json` on it and see `coherence(chokepoint)` fire, then delete the file and see it clean.
+- **Chokepoint:** `coherence run --invariant "<name>"`. It refutes automatically and prints the grade, `checker-choked` where an enforcer is credited. Then witness the credited enforcer itself: stage a file outside the chokepoint that imports the protected module, and see the enforcer fire on it (for TypeScript, `coherence(chokepoint)` from the oxlint command in `coherence.config.json`); delete the file and see it clean. When the credited enforcer stays silent, say so in the bullet's `because`: the grade overstates, and Coherence's own check is what enforces it.
 - **Lint totality oracle:** stage a file that breaks the rule, run `coherence refute "<folder>/<name>" --broke "<what you staged>"`, delete the file, then run `coherence run --invariant "<name>"`.
 
 Write what you broke and what you saw into the bullet's `refuted:` line, then run `coherence spec --check` and `coherence run --status`.
 
-Done when each bullet reads as an **invariant**, or you quote the check's own reason it stays a requirement.
+When a bullet stays a **requirement** because Coherence could not run its refutation (`not run`, a reason about the instrument rather than the code), quote the reason to the engineer and ask one question: keep the bullet as a requirement, or drop it.
+
+Done when each bullet reads as an **invariant**, or the engineer has decided on each requirement.
 
 ## 7. Close
 
-Send one summary: a table of each invariant with its form, grade, enforcer, and listed residual; the files you changed; the time one lint run takes. Tell the engineer to open a PR with those files. Do not commit.
+Send one summary: a table of each invariant with its form, grade, enforcer, and listed residual; each requirement and the reason it stays one; the files you changed; the time one lint run over the folder takes, with the command from `coherence.config.json`. Tell the engineer to open a PR with those files. Do not commit.
 
 Done when the summary is sent.

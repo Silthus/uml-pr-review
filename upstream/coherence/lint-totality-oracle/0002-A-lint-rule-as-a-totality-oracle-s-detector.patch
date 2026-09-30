@@ -1,0 +1,1237 @@
+From a87308d31ee31dd72585aa8578e70b46942f64ee Mon Sep 17 00:00:00 2001
+From: "Reichenbach, Michael" <755327+Silthus@users.noreply.github.com>
+Date: Wed, 30 Sep 2026 11:02:06 +0000
+Subject: [PATCH 2/3] A lint rule as a totality oracle's detector
+
+A scoped ban or a paved path over an external API is a rule the project's
+linter already states as data, and no chokepoint can express it. This makes
+such a rule the detector of a totality oracle, so it is total over a named
+set and refuted red, then green, like any other detector. There is no count
+and no stored list of known findings: what the lint config excludes is the
+listed residual, and the bullet's over: names the same files.
+
+- config: a `lint` key names each tool once, an argv array and the format
+  of its report, `oxlint-json` or `ruff-json`.
+- lintTotalityOracles (src/enforcement/lint.ts) runs each tool once, reads
+  its report, and keeps the findings of each named rule by any id the tool
+  gives it. Any finding fails. It is not run, never a pass, when the tool
+  is not configured, cannot start, or writes a report that is not its
+  format; when the tool says it linted no file of the whole project; and
+  when a file did not parse, since a linter checks no rule there.
+- run: the totality pass runs it over the whole project, and a lint via
+  never reaches the batched test invocation; refute asks the same pass,
+  unchanged.
+- PostToolUse: each tool runs once, on the written files it lints, within
+  20 s, and a finding is printed with the invariant, the site, and the two
+  honest options. It appends no run, since the written files are not the
+  named set.
+
+The two format readers are tested on output recorded from oxlint 1.72.0
+and ruff 0.16.9 (src/enforcement/lint-recordings), which the fixture's
+lint command replays for the paths it is handed.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ README.md                                     |   3 +-
+ docs/enforcement.md                           |  48 +++-
+ src/enforcement/Enforcement.spec.md           |  28 ++
+ src/enforcement/config.ts                     |  39 ++-
+ .../lint-recordings/oxlint-1.72.0-clean.json  |   7 +
+ .../oxlint-1.72.0-no-files.json               |   8 +
+ .../oxlint-1.72.0-parse-failure.json          |   7 +
+ .../oxlint-1.72.0-project-bypass.json         |   9 +
+ .../oxlint-1.72.0-project-clean.json          |   7 +
+ .../oxlint-1.72.0-transform.json              |   9 +
+ .../lint-recordings/ruff-0.16.9-no-files.json |   1 +
+ .../ruff-0.16.9-no-files.stderr               |   1 +
+ .../ruff-0.16.9-parse-failure.json            |  40 +++
+ .../lint-recordings/ruff-0.16.9-project.json  |  75 +++++
+ src/enforcement/lint.test.ts                  | 253 +++++++++++++++++
+ src/enforcement/lint.ts                       | 259 ++++++++++++++++++
+ src/enforcement/run.ts                        |  40 ++-
+ src/lifecycle/Lifecycle.spec.md               |  12 +
+ src/lifecycle/hook.ts                         |  51 +++-
+ 19 files changed, 880 insertions(+), 17 deletions(-)
+ create mode 100644 src/enforcement/lint-recordings/oxlint-1.72.0-clean.json
+ create mode 100644 src/enforcement/lint-recordings/oxlint-1.72.0-no-files.json
+ create mode 100644 src/enforcement/lint-recordings/oxlint-1.72.0-parse-failure.json
+ create mode 100644 src/enforcement/lint-recordings/oxlint-1.72.0-project-bypass.json
+ create mode 100644 src/enforcement/lint-recordings/oxlint-1.72.0-project-clean.json
+ create mode 100644 src/enforcement/lint-recordings/oxlint-1.72.0-transform.json
+ create mode 100644 src/enforcement/lint-recordings/ruff-0.16.9-no-files.json
+ create mode 100644 src/enforcement/lint-recordings/ruff-0.16.9-no-files.stderr
+ create mode 100644 src/enforcement/lint-recordings/ruff-0.16.9-parse-failure.json
+ create mode 100644 src/enforcement/lint-recordings/ruff-0.16.9-project.json
+ create mode 100644 src/enforcement/lint.test.ts
+ create mode 100644 src/enforcement/lint.ts
+
+diff --git a/README.md b/README.md
+index 295ed1a..8535e1e 100644
+--- a/README.md
++++ b/README.md
+@@ -48,7 +48,8 @@ report what each one found.
+    project's code or prose: vendored code, generated output, fixtures, promo
+    material); and, where the project has them, "typecheck" and "test" (an argv
+    array the test-name filter is appended to, or a string containing
+-   {filter}), "testMatch" and "testJson". Read the usage that any unknown
++   {filter}), "testMatch" and "testJson"; and "lint" when a totality oracle's
++   detector is a lint rule (docs/enforcement.md). Read the usage that any unknown
+    `coherence` command prints for the full surface.
+ 
+ 3. Hooks. Run `coherence hooks install --host claude` (or `--host codex`).
+diff --git a/docs/enforcement.md b/docs/enforcement.md
+index 5d83249..459da7a 100644
+--- a/docs/enforcement.md
++++ b/docs/enforcement.md
+@@ -194,6 +194,44 @@ Not configured is reported, never assumed passing. node:test ships no JSON
+ reporter, so `src/enforcement/node-test-reporter.ts` writes the jest-shaped
+ report from its events; Coherence's own config names it.
+ 
++## A lint rule as the detector
++
++A totality oracle whose `via` reads `lint <tool>:<rule>` (with an optional
++`matching "<text>"`) runs a linter instead of a test. The config names each
++tool once, as an argv array and the format of its report:
++
++```json
++"lint": {
++  "oxlint": { "command": ["pnpm", "exec", "oxlint", "-c", "nodejs/.oxlintrc.nodejs.json", "--format", "json"], "format": "oxlint-json" },
++  "ruff": { "command": ["ruff", "check", "--force-exclude", "--output-format", "json"], "format": "ruff-json" }
++}
++```
++
++The run's totality pass runs each tool once over the whole project, however
++many bullets name it; `refute` asks the same pass. A finding is a diagnostic
++of that rule, known by any id the tool gives it
++(`eslint(no-restricted-imports)`, `no-restricted-imports`,
++`eslint/no-restricted-imports`; `TID251`, `banned-api`), whose message
++carries the matching text: oxlint's message and its help, ruff's message.
++Any finding is a fail. Otherwise it is not run, never a pass, when:
++
++- the tool is not configured, cannot start, or writes a report that is not
++  its format;
++- the tool says it linted no file of the whole project. oxlint always says
++  how many files it linted; ruff reports no count and warns only sometimes
++  that it found no Python file, so a ruff command aimed at the wrong folder
++  can still read as a pass;
++- a file did not parse (oxlint's diagnostic without a rule, ruff's
++  `invalid-syntax`). A linter checks no rule in a file it cannot parse.
++
++The set it is total over is the lint config's own. Its exclusion is the
++listed residual the bullet's `over:` names, and a scoped check hands the
++tool the files to check, so the command must honour that exclusion for a
++file it is handed: oxlint does, ruff does only with `--force-exclude`.
++Nothing is counted and nothing is stored beside the rule, so a new finding
++and an old one read the same: a fail, until it is fixed or the residual is
++named in both places.
++
+ ## Revelation at the edit
+ 
+ The warm server holds the language server open across hook invocations:
+@@ -205,6 +243,14 @@ On PostToolUse for a file-writing tool, the hook re-checks only the
+ chokepoint invariants the file may involve (a prior run touched the file, or
+ a protected or chokepoint name appears in it) and appends the pass as a run. A bypass is printed as additionalContext in the same turn: the
+ invariant, the bypass site, and the two honest options, route the reference
+-through the chokepoint or escalate a retirement for a human. At Stop the
++through the chokepoint or escalate a retirement for a human. Each tool a
++lint totality oracle names runs once, on the written files it lints (oxlint
++the JavaScript and TypeScript kinds, ruff Python), within 20 s so a slow one
++never outlasts the host's hook timeout. A finding is printed the same way:
++the invariant, the site with the tool's message, and the two honest options,
++change the site so the rule no longer reports it or escalate a retirement. A
++clean file, a file in the listed residual, and a file no linter reads say
++nothing. That check appends no run, because the written files are not the
++set the totality oracle is total over; `run` records its verdict. At Stop the
+ regulation message carries the structural defects the latest run left; at
+ SubagentStop one refuses the stop.
+diff --git a/src/enforcement/Enforcement.spec.md b/src/enforcement/Enforcement.spec.md
+index cba9597..3c83771 100644
+--- a/src/enforcement/Enforcement.spec.md
++++ b/src/enforcement/Enforcement.spec.md
+@@ -98,6 +98,34 @@ Enforcement by detection: the chokepoint check with its grade ladder and automat
+   crossing: harness -> instrument
+   refuted: removed the heartbeat that holds the warm server's idle timer open across the test pass -> the totality oracle went red, then green once restored (2026-09-18)
+   kinds: none
++- a lint rule is a totality oracle's detector: A totality oracle whose via names a lint rule runs the configured linter over the whole project in the run's totality pass and in refute, each tool once, and fails on any finding of that rule whose message carries the matching text; what the lint config excludes is the listed residual its over: names, and nothing is counted or stored beside it.
++  over: every totality oracle whose via names a lint rule
++  via: a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed
++  because: a scoped ban or a paved path over an external API is a rule the project's linter already states as data, and no chokepoint can express it; run as the detector of a totality oracle it is total over the set the lint config names, and refuted red, then green, like any other detector, where a count of known findings would bring back a lint-sink
++  crossing: instrument -> record
++  refuted: sent a lint via to the test runner as a test title again -> the totality oracle went red, then green once restored (2026-09-30)
++  kinds: none
++- a lint tool not configured never passes: A lint totality oracle whose tool is not configured, cannot start, or writes a report that is not its format, whose tool says it linted no file of the whole project, or that finds nothing while a file did not parse, is not run, never a pass.
++  over: every lint totality oracle the run, refute, or the edit checks
++  via: a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass
++  because: a linter that never ran, looked at nothing, or could not parse a file checked no rule there, and a pass would say the rule holds over a set nobody checked; a run that proved nothing must never read like a clean one
++  crossing: instrument -> record
++  refuted: made an unconfigured lint tool report pass -> the totality oracle went red, then green once restored (2026-09-30)
++  kinds: none
++- each lint format reads its tool's own report: oxlint-json and ruff-json read the report the tool writes: a finding is a diagnostic of the named rule, by any id the tool knows it by, at its project-relative file and line, kept only when its message carries the matching text.
++  over: every diagnostic in an oxlint --format json report and a ruff --output-format json report
++  via: each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line
++  because: the verdict is only as good as the reading of the report: a rule known by one id alone misses the others the tool prints, and oxlint puts the config's own message in its help, so a matching text read from the message alone misses the pattern the config names
++  crossing: instrument -> record
++  refuted: made the oxlint format read the message without its help -> the totality oracle went red, then green once restored (2026-09-30)
++  kinds: none
++- a lint via never reaches the test runner: The batched test invocation carries the test titles the bullets name and never a lint via, and a lint entry in the run records no test mode.
++  over: every totality oracle the run checks
++  via: the batched test invocation carries the test titles alone: a lint via never reaches the test runner
++  because: a lint via handed to the test runner as a name pattern selects no test, or the wrong one, and an entry that says a test mode ran would misstate what detected it
++  crossing: instrument -> record
++  refuted: sent every totality oracle's via to the batched test invocation, lint vias included -> the totality oracle went red, then green once restored (2026-09-30)
++  kinds: none
+ - warm server the only path: From a hook or a reading, the language server is reached only through the warm server: one door connects over the socket, spawns the server detached when none listens, and hands the adapter to the run or to the reading that asked.
+   protects: connectAdapter
+   chokepoint: withWarmAdapter
+diff --git a/src/enforcement/config.ts b/src/enforcement/config.ts
+index ca7a679..8ff4277 100644
+--- a/src/enforcement/config.ts
++++ b/src/enforcement/config.ts
+@@ -22,15 +22,29 @@
+  *              pass tells them apart by their content
+  *   testDir    a folder name (or testDirs, a list) whose files are tests,
+  *              beside the built-in __tests__, test, tests
++ *   lint       the linters a `via: lint <tool>:<rule>` names, by tool: each
++ *              an argv array `command` (the files to check are appended when
++ *              the check is scoped, so the command must honour the lint
++ *              config's own exclusions for files it is handed) and the
++ *              `format` its output is read in: "oxlint-json" or "ruff-json"
+  */
+ 
+ import { existsSync, readFileSync } from "node:fs";
+ import { resolve } from "node:path";
+ import { isLanguage, type Language } from "../adapters/index.ts";
++import { LINT_TOOL_NAME } from "../spec/grammar.ts";
+ 
+ export const CONFIG_FILE = "coherence.config.json";
+ export const DEFAULT_TEST_FOLDERS: readonly string[] = ["__tests__", "test", "tests"];
+ 
++export const LINT_FORMATS = ["oxlint-json", "ruff-json"] as const;
++export type LintFormat = (typeof LINT_FORMATS)[number];
++
++export interface LintTool {
++  command: string[];
++  format: LintFormat;
++}
++
+ export interface EnforcementConfig {
+   language: Language;
+   /** Undefined when no test command is configured. */
+@@ -41,6 +55,8 @@ export interface EnforcementConfig {
+   /** How a name filter is written for the runner: an escaped regex (jest, vitest, node:test) or a pytest -k expression. */
+   testFilterForm: "regex" | "pytest";
+   testFolders: string[];
++  /** The linters a lint via may name, by tool; a tool absent here is not configured. */
++  lint: Record<string, LintTool>;
+ }
+ 
+ function commandValue(value: unknown): string[] | string | undefined {
+@@ -50,7 +66,7 @@ function commandValue(value: unknown): string[] | string | undefined {
+ }
+ 
+ export function readEnforcementConfig(root: string): EnforcementConfig {
+-  const config: EnforcementConfig = { language: "typescript", test: undefined, testMatch: undefined, testJson: undefined, testFilterForm: "regex", testFolders: [...DEFAULT_TEST_FOLDERS] };
++  const config: EnforcementConfig = { language: "typescript", test: undefined, testMatch: undefined, testJson: undefined, testFilterForm: "regex", testFolders: [...DEFAULT_TEST_FOLDERS], lint: {} };
+   const path = resolve(root, CONFIG_FILE);
+   if (!existsSync(path)) return config;
+   let parsed: unknown;
+@@ -78,5 +94,26 @@ export function readEnforcementConfig(root: string): EnforcementConfig {
+   if (typeof record["testDir"] === "string") folders.add(record["testDir"]);
+   if (Array.isArray(record["testDirs"])) for (const dir of record["testDirs"]) if (typeof dir === "string") folders.add(dir);
+   config.testFolders = [...folders];
++  config.lint = lintTools(record["lint"], path);
+   return config;
+ }
++
++function lintTools(value: unknown, path: string): Record<string, LintTool> {
++  if (value === undefined) return {};
++  if (typeof value !== "object" || value === null || Array.isArray(value)) throw new Error(`${path}: lint maps a tool name to its command and format`);
++  return Object.fromEntries(Object.entries(value).map(([tool, entry]) => [tool, lintTool(tool, entry, path)]));
++}
++
++function lintTool(tool: string, entry: unknown, path: string): LintTool {
++  if (!LINT_TOOL_NAME.test(tool)) throw new Error(`${path}: lint tool ${JSON.stringify(tool)} is not a name a via can write: letters, digits, _ . and -`);
++  const record = typeof entry === "object" && entry !== null ? (entry as Record<string, unknown>) : {};
++  const command = commandValue(record["command"]);
++  const format = record["format"];
++  if (!Array.isArray(command)) throw new Error(`${path}: lint.${tool}.command is an argv array the files to check are appended to`);
++  if (!isLintFormat(format)) throw new Error(`${path}: lint.${tool}.format is ${LINT_FORMATS.join(" or ")}, not ${JSON.stringify(format)}`);
++  return { command, format };
++}
++
++function isLintFormat(value: unknown): value is LintFormat {
++  return LINT_FORMATS.some((known) => known === value);
++}
+diff --git a/src/enforcement/lint-recordings/oxlint-1.72.0-clean.json b/src/enforcement/lint-recordings/oxlint-1.72.0-clean.json
+new file mode 100644
+index 0000000..49f3219
+--- /dev/null
++++ b/src/enforcement/lint-recordings/oxlint-1.72.0-clean.json
+@@ -0,0 +1,7 @@
++{ "diagnostics": [],
++              "number_of_files": 1,
++              "number_of_rules": 96,
++              "threads_count": 16,
++              "start_time": 0.017171345
++            }
++            
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/oxlint-1.72.0-no-files.json b/src/enforcement/lint-recordings/oxlint-1.72.0-no-files.json
+new file mode 100644
+index 0000000..19e2801
+--- /dev/null
++++ b/src/enforcement/lint-recordings/oxlint-1.72.0-no-files.json
+@@ -0,0 +1,8 @@
++No files found to lint. Please check your paths and ignore patterns.
++{ "diagnostics": [],
++              "number_of_files": 0,
++              "number_of_rules": 96,
++              "threads_count": 16,
++              "start_time": 0.003802121
++            }
++            
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/oxlint-1.72.0-parse-failure.json b/src/enforcement/lint-recordings/oxlint-1.72.0-parse-failure.json
+new file mode 100644
+index 0000000..ccc4d70
+--- /dev/null
++++ b/src/enforcement/lint-recordings/oxlint-1.72.0-parse-failure.json
+@@ -0,0 +1,7 @@
++{ "diagnostics": [{"message": "Expected `,` or `)` but found `;`","severity": "error","causes": [],"filename": "src/ingestion/half-written.ts","labels": [{"label": "`,` or `)` expected","span": {"offset": 138,"length": 1,"line": 2,"column": 48}},{"label": "Opened here","span": {"offset": 116,"length": 1,"line": 2,"column": 26}}],"related": []}],
++              "number_of_files": 1,
++              "number_of_rules": 96,
++              "threads_count": 16,
++              "start_time": 0.013921528
++            }
++            
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/oxlint-1.72.0-project-bypass.json b/src/enforcement/lint-recordings/oxlint-1.72.0-project-bypass.json
+new file mode 100644
+index 0000000..67f8f7f
+--- /dev/null
++++ b/src/enforcement/lint-recordings/oxlint-1.72.0-project-bypass.json
+@@ -0,0 +1,9 @@
++{ "diagnostics": [{"message": "'~/cdp/hog-transformations/hog-transformer.service' import is restricted from being used by a pattern.","code": "eslint(no-restricted-imports)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports.html","help": "ingestion never reaches cdp (Ingestion.spec.md): depend on the interfaces in ~/common","filename": "src/ingestion/transform.ts","labels": [{"span": {"offset": 0,"length": 90,"line": 1,"column": 1}}],"related": []},
++{"message": "'lodash' import is restricted from being used.","code": "eslint(no-restricted-imports)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports.html","help": "use the standard library","filename": "src/ingestion/transform.ts","labels": [{"span": {"offset": 91,"length": 34,"line": 2,"column": 1}}],"related": []},
++{"message": "`debugger` statement is not allowed","code": "eslint(no-debugger)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html","help": "Remove the debugger statement","filename": "src/ingestion/transform.ts","labels": [{"span": {"offset": 182,"length": 9,"line": 5,"column": 3}}],"related": []}],
++              "number_of_files": 2,
++              "number_of_rules": 96,
++              "threads_count": 16,
++              "start_time": 0.012045823
++            }
++            
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/oxlint-1.72.0-project-clean.json b/src/enforcement/lint-recordings/oxlint-1.72.0-project-clean.json
+new file mode 100644
+index 0000000..fa8153f
+--- /dev/null
++++ b/src/enforcement/lint-recordings/oxlint-1.72.0-project-clean.json
+@@ -0,0 +1,7 @@
++{ "diagnostics": [],
++              "number_of_files": 1,
++              "number_of_rules": 96,
++              "threads_count": 16,
++              "start_time": 0.010113682
++            }
++            
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/oxlint-1.72.0-transform.json b/src/enforcement/lint-recordings/oxlint-1.72.0-transform.json
+new file mode 100644
+index 0000000..650f7f4
+--- /dev/null
++++ b/src/enforcement/lint-recordings/oxlint-1.72.0-transform.json
+@@ -0,0 +1,9 @@
++{ "diagnostics": [{"message": "'~/cdp/hog-transformations/hog-transformer.service' import is restricted from being used by a pattern.","code": "eslint(no-restricted-imports)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports.html","help": "ingestion never reaches cdp (Ingestion.spec.md): depend on the interfaces in ~/common","filename": "src/ingestion/transform.ts","labels": [{"span": {"offset": 0,"length": 90,"line": 1,"column": 1}}],"related": []},
++{"message": "'lodash' import is restricted from being used.","code": "eslint(no-restricted-imports)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports.html","help": "use the standard library","filename": "src/ingestion/transform.ts","labels": [{"span": {"offset": 91,"length": 34,"line": 2,"column": 1}}],"related": []},
++{"message": "`debugger` statement is not allowed","code": "eslint(no-debugger)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html","help": "Remove the debugger statement","filename": "src/ingestion/transform.ts","labels": [{"span": {"offset": 182,"length": 9,"line": 5,"column": 3}}],"related": []}],
++              "number_of_files": 1,
++              "number_of_rules": 96,
++              "threads_count": 16,
++              "start_time": 0.012463592
++            }
++            
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/ruff-0.16.9-no-files.json b/src/enforcement/lint-recordings/ruff-0.16.9-no-files.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/src/enforcement/lint-recordings/ruff-0.16.9-no-files.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/ruff-0.16.9-no-files.stderr b/src/enforcement/lint-recordings/ruff-0.16.9-no-files.stderr
+new file mode 100644
+index 0000000..03720ad
+--- /dev/null
++++ b/src/enforcement/lint-recordings/ruff-0.16.9-no-files.stderr
+@@ -0,0 +1 @@
++warning: No Python files found under the given path(s)
+diff --git a/src/enforcement/lint-recordings/ruff-0.16.9-parse-failure.json b/src/enforcement/lint-recordings/ruff-0.16.9-parse-failure.json
+new file mode 100644
+index 0000000..da60232
+--- /dev/null
++++ b/src/enforcement/lint-recordings/ruff-0.16.9-parse-failure.json
+@@ -0,0 +1,40 @@
++[
++  {
++    "cell": null,
++    "code": "invalid-syntax",
++    "end_location": {
++      "column": 1,
++      "row": 5
++    },
++    "filename": "/tmp/lint-record-116/broken-py/posthog/admin/half_written.py",
++    "fix": null,
++    "location": {
++      "column": 22,
++      "row": 4
++    },
++    "message": "Expected `)`, found newline",
++    "name": "invalid-syntax",
++    "noqa_row": null,
++    "severity": "error",
++    "url": null
++  },
++  {
++    "cell": null,
++    "code": "invalid-syntax",
++    "end_location": {
++      "column": 11,
++      "row": 5
++    },
++    "filename": "/tmp/lint-record-116/broken-py/posthog/admin/half_written.py",
++    "fix": null,
++    "location": {
++      "column": 5,
++      "row": 5
++    },
++    "message": "Expected an expression",
++    "name": "invalid-syntax",
++    "noqa_row": null,
++    "severity": "error",
++    "url": null
++  }
++]
+\ No newline at end of file
+diff --git a/src/enforcement/lint-recordings/ruff-0.16.9-project.json b/src/enforcement/lint-recordings/ruff-0.16.9-project.json
+new file mode 100644
+index 0000000..c4e7d22
+--- /dev/null
++++ b/src/enforcement/lint-recordings/ruff-0.16.9-project.json
+@@ -0,0 +1,75 @@
++[
++  {
++    "cell": null,
++    "code": "TID251",
++    "end_location": {
++      "column": 50,
++      "row": 3
++    },
++    "filename": "/tmp/lint-record-116/py/posthog/admin/team_admin.py",
++    "fix": null,
++    "location": {
++      "column": 27,
++      "row": 3
++    },
++    "message": "`loginas.utils.is_impersonated_session` is banned: impersonation is read through is_impersonated (Admin.spec.md): use posthog.helpers.impersonation.is_impersonated",
++    "name": "banned-api",
++    "noqa_row": 3,
++    "severity": "error",
++    "url": "https://docs.astral.sh/ruff/rules/banned-api"
++  },
++  {
++    "cell": null,
++    "code": "T201",
++    "end_location": {
++      "column": 10,
++      "row": 7
++    },
++    "filename": "/tmp/lint-record-116/py/posthog/admin/team_admin.py",
++    "fix": {
++      "applicability": "unsafe",
++      "edits": [
++        {
++          "content": "",
++          "end_location": {
++            "column": 1,
++            "row": 8
++          },
++          "location": {
++            "column": 1,
++            "row": 7
++          }
++        }
++      ],
++      "message": "Remove `print`"
++    },
++    "location": {
++      "column": 5,
++      "row": 7
++    },
++    "message": "`print` found",
++    "name": "print",
++    "noqa_row": 7,
++    "severity": "error",
++    "url": "https://docs.astral.sh/ruff/rules/print"
++  },
++  {
++    "cell": null,
++    "code": "TID251",
++    "end_location": {
++      "column": 21,
++      "row": 7
++    },
++    "filename": "/tmp/lint-record-116/py/posthog/admin/team_admin.py",
++    "fix": null,
++    "location": {
++      "column": 11,
++      "row": 7
++    },
++    "message": "`os.environ` is banned: settings are read through django.conf.settings",
++    "name": "banned-api",
++    "noqa_row": 7,
++    "severity": "error",
++    "url": "https://docs.astral.sh/ruff/rules/banned-api"
++  }
++]
+\ No newline at end of file
+diff --git a/src/enforcement/lint.test.ts b/src/enforcement/lint.test.ts
+new file mode 100644
+index 0000000..4f2865a
+--- /dev/null
++++ b/src/enforcement/lint.test.ts
+@@ -0,0 +1,253 @@
++/**
++ * A lint rule as a totality oracle's detector, over a small project written
++ * into a temporary folder. The linter's output is real: the files under
++ * lint-recordings are what oxlint 1.72.0 (`oxlint -c .oxlintrc.json --format
++ * json <paths>`) and ruff 0.16.9 (`ruff check --force-exclude --output-format
++ * json <paths>`) printed for a scratch project holding the same files this
++ * fixture writes, with one import of ~/cdp, one of lodash, a debugger
++ * statement, two banned Python APIs, and, for the parse failures, a file cut
++ * off mid-edit. The project's configured lint command replays the recording
++ * for the paths it is handed, and a test that changes the tree swaps the
++ * recording with it, so the pass, refute, and the edit hook read exactly what
++ * the tool wrote for that tree.
++ */
++
++import assert from "node:assert/strict";
++import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { dirname, join } from "node:path";
++import { fileURLToPath } from "node:url";
++import { after, before, test } from "node:test";
++import { runHook } from "../lifecycle/hook.ts";
++import { loadSpecModel } from "../spec/model.ts";
++import { refuteCommand } from "./cli.ts";
++import { readEnforcementConfig, type EnforcementConfig } from "./config.ts";
++import { lintTotalityOracle } from "./lint.ts";
++import { loadRuns } from "./record.ts";
++import { performRun } from "./run.ts";
++
++const RECORDINGS = join(dirname(fileURLToPath(import.meta.url)), "lint-recordings");
++const RUFF_RECORDED_AT = /\/tmp\/lint-record-116\/[a-z-]+/g;
++
++const INGESTION_SPEC = `# Ingestion
++
++Events in, one pipeline.
++
++## invariants
++- ingestion never reaches cdp: Ingestion code depends on CDP only through the interfaces in ~/common.
++  over: every import under src/ingestion except the listed residual: src/ingestion/legacy/replay.ts
++  via: lint oxlint:no-restricted-imports matching "~/cdp"
++  because: ingestion and CDP deploy apart, and a direct import couples their releases
++  kinds: none
++`;
++
++const PIPELINE_SPEC = `# Pipeline
++
++The steps an event passes through.
++
++## invariants
++- events keep their order: Every step hands events on in the order it received them.
++  over: every step in the pipeline
++  via: events keep their order
++  because: a reordered event reads as a later one
++  kinds: none
++`;
++
++const TRANSFORM_WITH_BYPASS = `import { HogTransformerService } from "~/cdp/hog-transformations/hog-transformer.service";
++import { debounce } from "lodash";
++
++export function transform(event: unknown): unknown {
++  debugger;
++  return new HogTransformerService(debounce).transform(event);
++}
++`;
++
++const CLEAN = `import type { HogTransformer } from "~/common/hog-transformations/hog-transformer.interface";
++
++export function clean(transformer: HogTransformer, event: unknown): unknown {
++  return transformer.transform(event);
++}
++`;
++
++const REPLAY = ["sh", "-c", 'cat "lint/$0/${1:-project}.json"; cat "lint/$0/${1:-project}.stderr" >&2 2>/dev/null'];
++
++const CONFIG = {
++  language: "typescript",
++  testJson: ["sh", "-c", 'printf "%s" "$0" > lint/batched-filter.txt', "{filter}"],
++  lint: {
++    oxlint: { command: [...REPLAY, "oxlint"], format: "oxlint-json" },
++    ruff: { command: [...REPLAY, "ruff"], format: "ruff-json" },
++  },
++};
++
++let root: string;
++
++function write(path: string, text: string): void {
++  mkdirSync(dirname(join(root, path)), { recursive: true });
++  writeFileSync(join(root, path), text, "utf8");
++}
++
++function replay(tool: string, paths: string, recording: string): void {
++  write(`lint/${tool}/${paths}.json`, readFileSync(join(RECORDINGS, recording), "utf8").replace(RUFF_RECORDED_AT, root));
++}
++
++function replaying(config: EnforcementConfig, tool: "oxlint" | "ruff", recording: string): EnforcementConfig {
++  replay(tool, "project", recording);
++  return config;
++}
++
++before(() => {
++  root = mkdtempSync(join(tmpdir(), "coherence-lint-"));
++  write("coherence.config.json", JSON.stringify(CONFIG));
++  write("src/ingestion/Ingestion.spec.md", INGESTION_SPEC);
++  write("src/pipeline/Pipeline.spec.md", PIPELINE_SPEC);
++  write("src/ingestion/transform.ts", TRANSFORM_WITH_BYPASS);
++  write("src/ingestion/clean.ts", CLEAN);
++  replay("oxlint", "project", "oxlint-1.72.0-project-bypass.json");
++  replay("oxlint", "src/ingestion/transform.ts", "oxlint-1.72.0-transform.json");
++  replay("oxlint", "src/ingestion/clean.ts", "oxlint-1.72.0-clean.json");
++  replay("oxlint", "src/ingestion/legacy/replay.ts", "oxlint-1.72.0-no-files.json");
++  replay("ruff", "project", "ruff-0.16.9-project.json");
++});
++
++after(() => {
++  rmSync(root, { recursive: true, force: true });
++});
++
++test("each lint format reads its tool's own JSON report: the findings of the named rule, kept by the matching text, at their file and line", async () => {
++  const config = readEnforcementConfig(root);
++  const cdp = await lintTotalityOracle(root, config, { tool: "oxlint", rule: "no-restricted-imports", matching: "~/cdp" });
++  assert.equal(cdp.verdict, "fail", cdp.reason);
++  assert.deepEqual(cdp.findings, [
++    {
++      file: "src/ingestion/transform.ts",
++      line: 1,
++      message: "'~/cdp/hog-transformations/hog-transformer.service' import is restricted from being used by a pattern. ingestion never reaches cdp (Ingestion.spec.md): depend on the interfaces in ~/common",
++    },
++  ]);
++  const everyRestriction = await lintTotalityOracle(root, config, { tool: "oxlint", rule: "eslint/no-restricted-imports", matching: undefined });
++  assert.deepEqual(everyRestriction.findings.map((f) => `${f.file}:${f.line}`), ["src/ingestion/transform.ts:1", "src/ingestion/transform.ts:2"]);
++
++  const banned = await lintTotalityOracle(root, config, { tool: "ruff", rule: "TID251", matching: "is_impersonated_session" });
++  assert.equal(banned.verdict, "fail", banned.reason);
++  assert.deepEqual(banned.findings, [
++    {
++      file: "posthog/admin/team_admin.py",
++      line: 3,
++      message: "`loginas.utils.is_impersonated_session` is banned: impersonation is read through is_impersonated (Admin.spec.md): use posthog.helpers.impersonation.is_impersonated",
++    },
++  ]);
++  const byName = await lintTotalityOracle(root, config, { tool: "ruff", rule: "banned-api", matching: undefined });
++  assert.deepEqual(byName.findings.map((f) => `${f.file}:${f.line}`), ["posthog/admin/team_admin.py:3", "posthog/admin/team_admin.py:7"]);
++
++  const otherText = await lintTotalityOracle(root, config, { tool: "oxlint", rule: "no-restricted-imports", matching: "~/scenes" });
++  assert.equal(otherText.verdict, "pass", otherText.reason);
++  assert.deepEqual(otherText.findings, []);
++});
++
++test("a lint tool that is not configured, whose output is not its format, that linted no file, or that could not parse a file is not run, never a pass", async (t) => {
++  t.after(() => {
++    replay("oxlint", "project", "oxlint-1.72.0-project-bypass.json");
++    replay("ruff", "project", "ruff-0.16.9-project.json");
++    rmSync(join(root, "lint/ruff/project.stderr"), { force: true });
++  });
++  const config = readEnforcementConfig(root);
++  const cdp = { tool: "oxlint", rule: "no-restricted-imports", matching: "~/cdp" };
++  const banned = { tool: "ruff", rule: "TID251", matching: "is_impersonated_session" };
++  const verdictOf = async (checked: EnforcementConfig, via: typeof cdp): Promise<[string, string]> => {
++    const result = await lintTotalityOracle(root, checked, via);
++    return [result.verdict, result.reason];
++  };
++
++  const [unconfigured, unconfiguredReason] = await verdictOf(config, { tool: "semgrep", rule: "no-env", matching: "environ" });
++  assert.equal(unconfigured, "not run");
++  assert.match(unconfiguredReason, /no lint tool "semgrep" is configured/);
++
++  write("lint/oxlint/project.json", "Error: failed to parse .oxlintrc.json\n");
++  const [garbled, garbledReason] = await verdictOf(config, cdp);
++  assert.equal(garbled, "not run");
++  assert.match(garbledReason, /is not oxlint-json/);
++
++  const [noFile, noFileReason] = await verdictOf(replaying(config, "oxlint", "oxlint-1.72.0-no-files.json"), cdp);
++  assert.equal(noFile, "not run");
++  assert.match(noFileReason, /linted no file/);
++
++  write("lint/ruff/project.stderr", readFileSync(join(RECORDINGS, "ruff-0.16.9-no-files.stderr"), "utf8"));
++  const [noPython, noPythonReason] = await verdictOf(replaying(config, "ruff", "ruff-0.16.9-no-files.json"), banned);
++  assert.equal(noPython, "not run");
++  assert.match(noPythonReason, /linted no file/);
++  rmSync(join(root, "lint/ruff/project.stderr"));
++
++  const [halfWritten, halfWrittenReason] = await verdictOf(replaying(config, "oxlint", "oxlint-1.72.0-parse-failure.json"), cdp);
++  assert.equal(halfWritten, "not run");
++  assert.match(halfWrittenReason, /1 file did not parse, so oxlint:no-restricted-imports matching "~\/cdp" was not checked there: src\/ingestion\/half-written\.ts/);
++
++  const [halfWrittenPython, halfWrittenPythonReason] = await verdictOf(replaying(config, "ruff", "ruff-0.16.9-parse-failure.json"), banned);
++  assert.equal(halfWrittenPython, "not run");
++  assert.match(halfWrittenPythonReason, /1 file did not parse, .* posthog\/admin\/half_written\.py/);
++});
++
++test("a lint totality oracle is refuted red with the break staged, and a later run finds it green: the refutation is witnessed", async (t) => {
++  t.after(() => {
++    write("src/ingestion/transform.ts", TRANSFORM_WITH_BYPASS);
++    replay("oxlint", "project", "oxlint-1.72.0-project-bypass.json");
++    rmSync(join(root, ".coherence"), { recursive: true, force: true });
++  });
++  const lines: string[] = [];
++  const errors: string[] = [];
++  const io = { cwd: root, out: (line: string) => lines.push(line), err: (line: string) => errors.push(line) };
++  const bullet = "src/ingestion/ingestion never reaches cdp";
++  const state = (): string => loadSpecModel(root).components.find((c) => c.folder === "src/ingestion")!.invariants[0]!.state;
++
++  const refuted = await refuteCommand([bullet, "--broke", "imported the hog transformer service from ~/cdp in transform.ts", "--session", "l1", "--agent", "lint"], io);
++  assert.equal(refuted, 0, errors.join("\n"));
++  assert.match(lines.join("\n"), /the detector went red: 1 finding of oxlint:no-restricted-imports matching "~\/cdp", the first at src\/ingestion\/transform\.ts:1/);
++  assert.deepEqual(loadRuns(root).refutations.map((r) => [r.component, r.name, r.verdict]), [["src/ingestion", "ingestion never reaches cdp", "fail"]]);
++  assert.equal(state(), "requirement", "the red detector alone is not a witnessed refutation");
++
++  rmSync(join(root, "src/ingestion/transform.ts"));
++  replay("oxlint", "project", "oxlint-1.72.0-project-clean.json");
++  const green = await performRun(root, { session: "l1", agent: "lint", server: false });
++  const entry = green.record.invariants.find((e) => e.component === "src/ingestion")!;
++  assert.deepEqual([entry.verdict, entry.refutation, entry.mode], ["pass", "witnessed", undefined]);
++  assert.match(entry.reason, /reported no finding of oxlint:no-restricted-imports matching "~\/cdp" in 1 file/);
++  assert.equal(state(), "invariant");
++});
++
++test("the batched test invocation carries the test titles alone: a lint via never reaches the test runner", async (t) => {
++  t.after(() => rmSync(join(root, ".coherence"), { recursive: true, force: true }));
++  const outcome = await performRun(root, { session: "b1", agent: "lint", server: false, form: "totality oracle" });
++  assert.equal(readFileSync(join(root, "lint/batched-filter.txt"), "utf8"), "events keep their order");
++  assert.deepEqual(outcome.record.invariants.map((e) => [e.name, e.mode]), [
++    ["ingestion never reaches cdp", undefined],
++    ["events keep their order", "batched"],
++  ]);
++});
++
++test("PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing", async () => {
++  const edit = (file: string, text: string) => {
++    write(file, text);
++    return runHook("PostToolUse", { cwd: root, session_id: "h1", tool_name: "Write", tool_input: { file_path: join(root, file) } }, root);
++  };
++
++  const dirty = await edit("src/ingestion/transform.ts", TRANSFORM_WITH_BYPASS);
++  assert.equal(dirty.exit, 0, dirty.stderr);
++  const context = (JSON.parse(dirty.stdout) as { hookSpecificOutput: { additionalContext: string } }).hookSpecificOutput.additionalContext;
++  assert.equal(
++    context.split("\n").slice(0, 3).join("\n"),
++    [
++      "Structural defect revealed at this edit (src/ingestion/transform.ts):",
++      `✕ src/ingestion/ingestion never reaches cdp — totality oracle lint oxlint:no-restricted-imports matching "~/cdp" over every import under src/ingestion except the listed residual: src/ingestion/legacy/replay.ts`,
++      "    src/ingestion/transform.ts:1 '~/cdp/hog-transformations/hog-transformer.service' import is restricted from being used by a pattern. ingestion never reaches cdp (Ingestion.spec.md): depend on the interfaces in ~/common",
++    ].join("\n"),
++  );
++  assert.match(context, /Two honest options: change the site so the rule no longer reports it, or escalate a retirement for a human, who must acknowledge it/);
++  assert.match(context, /escalate "retire <invariant>" .* --session h1 --agent main/);
++  assert.doesNotMatch(context, /lodash/, "a finding of the rule that does not carry the matching text is not this invariant's");
++  assert.equal(loadRuns(root).records.length, 0, "one file is not the named set, so the edit check appends no run");
++
++  const silent = { stdout: "", stderr: "", exit: 0 };
++  assert.deepEqual(await edit("src/ingestion/clean.ts", CLEAN), silent);
++  assert.deepEqual(await edit("src/ingestion/legacy/replay.ts", TRANSFORM_WITH_BYPASS), silent, "the lint config excludes the listed residual, so oxlint linted no file");
++  assert.deepEqual(await edit("src/ingestion/NOTES.md", "Notes.\n"), silent, "no linter is handed a file it does not lint, so no replay was asked for");
++});
+diff --git a/src/enforcement/lint.ts b/src/enforcement/lint.ts
+new file mode 100644
+index 0000000..67c3f98
+--- /dev/null
++++ b/src/enforcement/lint.ts
+@@ -0,0 +1,259 @@
++/**
++ * A lint rule as a totality oracle's detector: `via: lint <tool>:<rule>` runs
++ * the command the config names for the tool, reads its report in the tool's
++ * format, and keeps the findings of that rule whose message carries the
++ * matching text. The verdict is fail with any finding and pass with none. It
++ * is not run when the tool is not configured, cannot start, or writes a
++ * report that is not its format; when the tool says it linted no file; and
++ * when a file did not parse, since a linter checks no rule in a file it
++ * cannot parse. A detector that looked at nothing is never a pass. The set
++ * it is total over is the lint config's own: what the config excludes is the
++ * listed residual the bullet's `over:` names, and there is no count and no
++ * stored list of known findings.
++ *
++ * One module, three callers: the run's totality pass over the whole project,
++ * `refute` through that same pass, and the edit hook on the written files
++ * only, which the command is handed as trailing arguments. Each tool runs
++ * once per call, however many totality oracles name it, and a scoped call
++ * hands a tool only the files it lints.
++ */
++
++import { spawn } from "node:child_process";
++import { extname, relative, resolve, sep } from "node:path";
++import type { LintDetector } from "../spec/grammar.ts";
++import { LINT_FORMATS, type EnforcementConfig, type LintFormat } from "./config.ts";
++import { TOTALITY_TIMEOUT_MS, killTree, type TotalityResult } from "./totality.ts";
++
++export interface LintFinding {
++  /** Project-relative, with forward slashes. */
++  file: string;
++  line: number;
++  message: string;
++}
++
++export interface LintResult extends TotalityResult {
++  findings: LintFinding[];
++}
++
++interface Diagnostic {
++  /** Every id the tool knows the rule by. */
++  rules: string[];
++  file: string;
++  line: number;
++  message: string;
++  /** The tool could not parse the file, so it checked no rule there. */
++  unparsed: boolean;
++}
++
++interface LintReport {
++  diagnostics: Diagnostic[];
++  /** How many files the tool linted, where it says. */
++  linted: number | undefined;
++}
++
++type ToolOutcome =
++  | { kind: "not run"; reason: string; command: string | undefined; tail: string }
++  | { kind: "unfinished"; reason: string; command: string; tail: string }
++  | { kind: "outside"; handed: number }
++  | { kind: "report"; report: LintReport; command: string };
++
++type Heard =
++  | { kind: "exited"; code: number | null; stdout: string; stderr: string }
++  | { kind: "unstarted"; reason: string }
++  | { kind: "unfinished"; stdout: string; stderr: string };
++
++interface Format {
++  /** The file extensions the tool lints; a scoped call hands it no other file. */
++  extensions: readonly string[];
++  read(stdout: string, stderr: string): LintReport;
++}
++
++const FORMATS: Record<LintFormat, Format> = {
++  "oxlint-json": { extensions: [".js", ".mjs", ".cjs", ".jsx", ".ts", ".mts", ".cts", ".tsx", ".vue", ".svelte", ".astro"], read: readOxlintJson },
++  "ruff-json": { extensions: [".py", ".pyi", ".ipynb"], read: readRuffJson },
++};
++
++export async function lintTotalityOracle(root: string, config: EnforcementConfig, via: LintDetector, files?: readonly string[], timeoutMs = TOTALITY_TIMEOUT_MS): Promise<LintResult> {
++  const [result] = await lintTotalityOracles(root, config, [via], files, timeoutMs);
++  return result!;
++}
++
++/** Every lint totality oracle named, in order, with each tool run once. */
++export async function lintTotalityOracles(root: string, config: EnforcementConfig, vias: readonly LintDetector[], files?: readonly string[], timeoutMs = TOTALITY_TIMEOUT_MS): Promise<LintResult[]> {
++  const tools = [...new Set(vias.map((via) => via.tool))];
++  const outcomes = new Map(await Promise.all(tools.map(async (tool) => [tool, await runTool(root, config, tool, files, timeoutMs)] as const)));
++  return vias.map((via) => judge(root, via, outcomes.get(via.tool)!, files === undefined));
++}
++
++async function runTool(root: string, config: EnforcementConfig, name: string, files: readonly string[] | undefined, timeoutMs: number): Promise<ToolOutcome> {
++  const tool = config.lint[name];
++  if (tool === undefined) {
++    return { kind: "not run", reason: `no lint tool "${name}" is configured; add lint.${name} to coherence.config.json with its command and its format (${LINT_FORMATS.join(" or ")})`, command: undefined, tail: "" };
++  }
++  const format = FORMATS[tool.format];
++  const handed = files?.filter((file) => format.extensions.includes(extname(file).toLowerCase()));
++  if (files !== undefined && handed!.length === 0) return { kind: "outside", handed: files.length };
++  const [command, ...args] = tool.command;
++  const shown = [command!, ...args].map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ");
++  const heard = await capture(root, command!, [...args, ...(handed ?? [])], timeoutMs);
++  if (heard.kind === "unstarted") return { kind: "not run", reason: `lint command could not start: ${heard.reason}`, command: shown, tail: "" };
++  if (heard.kind === "unfinished") {
++    return { kind: "unfinished", reason: `the detector did not finish in ${Math.round(timeoutMs / 1000)} s; its lint process and every process it started were killed`, command: shown, tail: lastLines(heard.stdout + heard.stderr) };
++  }
++  try {
++    return { kind: "report", report: format.read(heard.stdout, heard.stderr), command: shown };
++  } catch (error) {
++    return { kind: "not run", reason: `${shown} exited ${heard.code} and its output is not ${tool.format} (${error instanceof Error ? error.message : String(error)})`, command: shown, tail: lastLines(heard.stdout + heard.stderr) };
++  }
++}
++
++function judge(root: string, via: LintDetector, outcome: ToolOutcome, whole: boolean): LintResult {
++  if (outcome.kind === "not run") return { verdict: "not run", reason: outcome.reason, command: outcome.command, tail: outcome.tail, findings: [] };
++  if (outcome.kind === "unfinished") return { verdict: "fail", reason: outcome.reason, command: outcome.command, tail: outcome.tail, findings: [], unfinished: true };
++  if (outcome.kind === "outside") return { verdict: "pass", reason: `none of the ${outcome.handed} files handed to it is a file ${via.tool} lints`, command: undefined, tail: "", findings: [] };
++  const { report, command } = outcome;
++  if (report.linted === 0 && whole) return { verdict: "not run", reason: `${command} linted no file, so ${named(via)} was checked over nothing`, command, tail: "", findings: [] };
++  const found = (d: Diagnostic): LintFinding => ({ file: projectPath(root, d.file), line: d.line, message: d.message });
++  const findings = report.diagnostics.filter((d) => d.rules.includes(via.rule) && (via.matching === undefined || d.message.includes(via.matching))).map(found);
++  if (findings.length > 0) {
++    const first = findings[0]!;
++    return {
++      verdict: "fail",
++      reason: `${findings.length} finding${findings.length === 1 ? "" : "s"} of ${named(via)}, the first at ${first.file}:${first.line}`,
++      command,
++      tail: firstLines(findings.map((f) => `${f.file}:${f.line} ${f.message}`)),
++      findings,
++    };
++  }
++  const unparsed = report.diagnostics.filter((d) => d.unparsed).map(found);
++  if (unparsed.length > 0) {
++    const files = [...new Set(unparsed.map((u) => u.file))];
++    return {
++      verdict: "not run",
++      reason: `${files.length} file${files.length === 1 ? "" : "s"} did not parse, so ${named(via)} was not checked there: ${files.slice(0, 3).join(", ")}`,
++      command,
++      tail: firstLines(unparsed.map((u) => `${u.file}:${u.line} ${u.message}`)),
++      findings: [],
++    };
++  }
++  return { verdict: "pass", reason: `${command} reported no finding of ${named(via)}${lintedText(report.linted)}`, command, tail: "", findings: [] };
++}
++
++/** The detector as the bullet wrote it, for a reason. */
++function named(via: LintDetector): string {
++  return `${via.tool}:${via.rule}${via.matching === undefined ? "" : ` matching "${via.matching}"`}`;
++}
++
++function lintedText(linted: number | undefined): string {
++  if (linted === undefined) return "";
++  if (linted === 0) return ": none of the files handed to it is in its set";
++  return ` in ${linted} file${linted === 1 ? "" : "s"}`;
++}
++
++function projectPath(root: string, file: string): string {
++  return relative(resolve(root), resolve(root, file)).split(sep).join("/");
++}
++
++function firstLines(lines: string[], count = 12): string {
++  return lines.slice(0, count).join("\n");
++}
++
++function lastLines(output: string, count = 12): string {
++  return output.split("\n").filter((l) => l.trim() !== "").slice(-count).join("\n");
++}
++
++function capture(root: string, command: string, args: string[], timeoutMs: number): Promise<Heard> {
++  return new Promise((resolveHeard) => {
++    let stdout = "";
++    let stderr = "";
++    let settled = false;
++    let timer: NodeJS.Timeout | undefined;
++    const finish = (heard: Heard): void => {
++      if (settled) return;
++      settled = true;
++      clearTimeout(timer);
++      resolveHeard(heard);
++    };
++    let child;
++    try {
++      child = spawn(command, args, { cwd: root, stdio: ["ignore", "pipe", "pipe"] });
++    } catch (error) {
++      finish({ kind: "unstarted", reason: error instanceof Error ? error.message : String(error) });
++      return;
++    }
++    timer = setTimeout(() => {
++      killTree(child.pid);
++      finish({ kind: "unfinished", stdout, stderr });
++    }, timeoutMs);
++    child.stdout.on("data", (chunk: Buffer) => (stdout += chunk.toString("utf8")));
++    child.stderr.on("data", (chunk: Buffer) => (stderr += chunk.toString("utf8")));
++    child.on("error", (error) => finish({ kind: "unstarted", reason: error.message }));
++    child.on("close", (code) => finish({ kind: "exited", code, stdout, stderr }));
++  });
++}
++
++/* ------------------------------------------------------------- formats */
++
++interface OxlintDiagnostic {
++  message?: string;
++  code?: string;
++  help?: string;
++  filename?: string;
++  labels?: { span?: { line?: number } }[];
++}
++
++/**
++ * oxlint's `--format json`: one object with `diagnostics` and
++ * `number_of_files`. A run that found no file prints a sentence before the
++ * object, so the report starts at the first brace. A rule is known by its
++ * code as printed, `eslint(no-restricted-imports)`, by its bare name, and by
++ * the `plugin/rule` name a config writes. A diagnostic with no code is the
++ * parser's: the file did not parse.
++ */
++function readOxlintJson(stdout: string): LintReport {
++  const start = stdout.indexOf("{");
++  if (start < 0) throw new Error("no JSON object in its output");
++  const parsed = JSON.parse(stdout.slice(start)) as { diagnostics?: unknown; number_of_files?: unknown };
++  if (!Array.isArray(parsed.diagnostics)) throw new Error("no diagnostics array");
++  const diagnostics = (parsed.diagnostics as OxlintDiagnostic[]).map((d) => ({
++    rules: oxlintRuleIds(d.code ?? ""),
++    file: d.filename ?? "",
++    line: d.labels?.[0]?.span?.line ?? 1,
++    message: d.help === undefined || d.help === "" ? (d.message ?? "") : `${d.message ?? ""} ${d.help}`,
++    unparsed: d.code === undefined || d.code === "",
++  }));
++  return { diagnostics, linted: typeof parsed.number_of_files === "number" ? parsed.number_of_files : undefined };
++}
++
++function oxlintRuleIds(code: string): string[] {
++  const scoped = /^(.+)\((.+)\)$/.exec(code);
++  return scoped === null ? [code] : [code, scoped[2]!, `${scoped[1]}/${scoped[2]}`];
++}
++
++interface RuffDiagnostic {
++  code?: string | null;
++  name?: string;
++  filename?: string;
++  location?: { row?: number };
++  message?: string;
++}
++
++/**
++ * ruff's `--output-format json`: an array of diagnostics with an absolute
++ * `filename`. A rule is known by its code and by its name; `invalid-syntax`,
++ * like any diagnostic without a code, is the parser's. ruff reports no file
++ * count; it says it linted none only when it warns that it found no Python
++ * file, and it does not always warn.
++ */
++function readRuffJson(stdout: string, stderr: string): LintReport {
++  const parsed = JSON.parse(stdout) as unknown;
++  if (!Array.isArray(parsed)) throw new Error("not a JSON array of diagnostics");
++  const diagnostics = (parsed as RuffDiagnostic[]).map((d) => ({
++    rules: [d.code, d.name].filter((id): id is string => typeof id === "string" && id !== ""),
++    file: d.filename ?? "",
++    line: d.location?.row ?? 1,
++    message: d.message ?? "",
++    unparsed: d.code === null || d.code === undefined || d.code === "invalid-syntax",
++  }));
++  return { diagnostics, linted: /No Python files found/.test(stderr) ? 0 : undefined };
++}
+diff --git a/src/enforcement/run.ts b/src/enforcement/run.ts
+index d57bad7..3ee30cc 100644
+--- a/src/enforcement/run.ts
++++ b/src/enforcement/run.ts
+@@ -1,9 +1,11 @@
+ /**
+  * The run: the chokepoint check for every chokepoint-form enforcement and
+  * the totality oracle pass for every totality-oracle-form enforcement in
+- * the spec model, appended as one record. A selection (one form, some
+- * invariants) still appends one record; the enforcements it skipped keep
+- * their prior dated verdict in the status view.
++ * the spec model, appended as one record. A totality oracle whose via is a
++ * lint rule runs its linter over the whole project (lint.ts), each tool
++ * once, instead of a test. A selection (one form, some invariants) still
++ * appends one record; the enforcements it skipped keep their prior dated
++ * verdict in the status view.
+  *
+  * The totality pass runs the project's whole test suite before the first
+  * question the instrument is asked, and the warm server's idle timer only
+@@ -17,9 +19,11 @@
+ import type { LanguageAdapter } from "../adapters/adapter.ts";
+ import { gitState } from "../journal/store.ts";
+ import { workBinding } from "../journal/work.ts";
++import type { LintDetector } from "../spec/grammar.ts";
+ import { loadSpecModel, type ModelInvariant, type SpecModel } from "../spec/model.ts";
+ import { checkChokepoint, type ChokepointResult } from "./check.ts";
+ import { readEnforcementConfig, type EnforcementConfig } from "./config.ts";
++import { lintTotalityOracles, type LintResult } from "./lint.ts";
+ import { appendRun, entryKey, loadRuns, type Form, type RunEntry, type RunRecord } from "./record.ts";
+ import { connectAdapter, type RemoteAdapter } from "./server.ts";
+ import { runTotalityBatch, runTotalityOracle, type TotalityResult } from "./totality.ts";
+@@ -77,8 +81,12 @@ function chokepointEnforcements(invariant: ModelInvariant): { protects: string;
+   return invariant.enforcements.flatMap((e) => (e.form === "chokepoint" ? [{ protects: e.protects, chokepoint: e.chokepoint }] : []));
+ }
+ 
+-function totalityEnforcements(invariant: ModelInvariant): { over: string; via: string }[] {
+-  return invariant.enforcements.flatMap((e) => (e.form === "totality oracle" ? [{ over: e.over, via: e.via }] : []));
++function totalityEnforcements(invariant: ModelInvariant): { over: string; via: string; lint: LintDetector | undefined }[] {
++  return invariant.enforcements.flatMap((e) => (e.form === "totality oracle" ? [{ over: e.over, via: e.via, lint: e.lint }] : []));
++}
++
++function testedEnforcements(invariant: ModelInvariant): { over: string; via: string }[] {
++  return totalityEnforcements(invariant).filter((e) => e.lint === undefined);
+ }
+ 
+ /** Whether a chokepoint invariant may involve a file: its latest run touched it, or the file's text carries one of its names. */
+@@ -127,7 +135,7 @@ export async function performRun(root: string, options: RunOptions): Promise<Run
+   let batchLatency = 0;
+   // An observed run rides the same one invocation: the observer only adds coverage to it.
+   const observing = options.observe === true && wantTotality && config.testJson !== undefined ? createObserver(root, config) : undefined;
+-  const vias: TotalityVia[] = selected.flatMap(({ component, invariant }) => totalityEnforcements(invariant).map(({ via }) => ({ component, name: invariant.name, filter: adapter?.testFilter(via) ?? via })));
++  const vias: TotalityVia[] = selected.flatMap(({ component, invariant }) => testedEnforcements(invariant).map(({ via }) => ({ component, name: invariant.name, filter: adapter?.testFilter(via) ?? via })));
+   if (wantTotality) {
+     const filters = vias.map((o) => o.filter);
+     const t0 = Date.now();
+@@ -152,6 +160,16 @@ export async function performRun(root: string, options: RunOptions): Promise<Run
+     }
+   }
+ 
++  const linted = new Map<LintDetector, LintResult>();
++  let lintLatency = 0;
++  if (wantTotality) {
++    const detectors = selected.flatMap(({ invariant }) => totalityEnforcements(invariant).flatMap(({ lint }) => (lint === undefined ? [] : [lint])));
++    const t0 = Date.now();
++    const results = detectors.length === 0 ? [] : await lintTotalityOracles(root, config, detectors, undefined, options.timeoutMs);
++    lintLatency = Date.now() - t0;
++    detectors.forEach((detector, i) => linted.set(detector, results[i]!));
++  }
++
+   for (const { component, invariant } of selected) {
+     if (wantChokepoints) {
+       for (const { protects, chokepoint } of chokepointEnforcements(invariant)) {
+@@ -216,11 +234,11 @@ export async function performRun(root: string, options: RunOptions): Promise<Run
+       }
+     }
+     if (wantTotality) {
+-      for (const { via } of totalityEnforcements(invariant)) {
++      for (const { via, lint } of totalityEnforcements(invariant)) {
+         const t0 = Date.now();
+         const filter = adapter?.testFilter(via) ?? via;
+-        const fromBatch = batched?.get(filter);
+-        const result = fromBatch ?? (await runTotalityOracle(root, config, filter, options.timeoutMs));
++        const fromBatch = lint === undefined ? batched?.get(filter) : undefined;
++        const result = lint !== undefined ? linted.get(lint)! : (fromBatch ?? (await runTotalityOracle(root, config, filter, options.timeoutMs)));
+         details.push({
+           entry: {
+             ...entryOf(component, invariant.name, "totality oracle", {
+@@ -230,10 +248,10 @@ export async function performRun(root: string, options: RunOptions): Promise<Run
+               bypasses: [],
+               testReferences: 0,
+               files: [],
+-              latency: fromBatch === undefined ? Date.now() - t0 : batchLatency,
++              latency: lint !== undefined ? lintLatency : fromBatch === undefined ? Date.now() - t0 : batchLatency,
+               reason: result.reason,
+             }),
+-            mode: fromBatch === undefined ? "one-at-a-time" : "batched",
++            ...(lint === undefined ? { mode: fromBatch === undefined ? "one-at-a-time" : "batched" } : {}),
+           },
+           totality: result,
+         });
+diff --git a/src/lifecycle/Lifecycle.spec.md b/src/lifecycle/Lifecycle.spec.md
+index a17eaa8..7ad5c4a 100644
+--- a/src/lifecycle/Lifecycle.spec.md
++++ b/src/lifecycle/Lifecycle.spec.md
+@@ -206,6 +206,18 @@ The gyroscope delivered through harness events: orient at start, regulate at sto
+   checklist: commit-ordered-effects dismissed: the run is appended before the text is printed, and printing is not irreversible
+   checklist: circuit-breaker-policy dismissed: an unavailable instrument is reported as such, never routed around
+   checklist: declared-target-coverage dismissed: one file per event, not a registry of targets
++- lint revelation at the edit: After a file-writing tool, each linter a lint totality oracle names runs once, on the written files it lints and inside a budget under the hook's timeout; a finding is shown in the same turn with the invariant, the site, and the two honest options, a clean file, the listed residual, and a file no linter reads say nothing, and no run is appended.
++  over: every lint totality oracle, at every file-writing tool event
++  via: PostToolUse lints the written file only: a finding prints the invariant, the site, and the two honest options; a clean file, the listed residual, and a file no linter reads say nothing
++  because: a lint finding shown at the next run is already buried under the work that followed; linting only the written files, each tool once and only on the files it reads, keeps the edit cheap and inside the host's timeout, and since those files are not the set the totality oracle is total over, their verdict is shown and never recorded as the run's
++  crossing: harness -> reading
++  refuted: made the edit hook skip the lint totality oracles -> the totality oracle went red, then green once restored (2026-09-30)
++  kinds: output
++  checklist: destination-confinement dismissed: one destination, the host's additionalContext, and no redirect
++  checklist: redaction dismissed: a finding is shown whole with its file, line, and the tool's message
++  checklist: commit-ordered-effects dismissed: nothing is written; printing is the only effect
++  checklist: circuit-breaker-policy dismissed: a linter that cannot run is reported as such, never routed around
++  checklist: declared-target-coverage dismissed: the written files of one event, not a registry of targets
+ - install keeps other hooks: Installing the hook merges one Coherence entry per event into the host's settings, keeps every hook that is not ours, owns only a command that names this tool's binary or its own cli path, and replaces that command on a second pass.
+   protects: mergeHooks
+   chokepoint: install
+diff --git a/src/lifecycle/hook.ts b/src/lifecycle/hook.ts
+index b5777cd..83fbd39 100644
+--- a/src/lifecycle/hook.ts
++++ b/src/lifecycle/hook.ts
+@@ -25,8 +25,11 @@
+  * chokepoint invariants that may involve the written file are re-checked
+  * through the warm server, and a bypass is printed as additionalContext so
+  * the agent sees the structural defect in the same turn, with the two
+- * honest options. Stop and SubagentStop also carry the structural defects
+- * the latest run left; one refuses a subagent stop.
++ * honest options. Every lint totality oracle runs its linter on the written
++ * files only, inside a budget well under the host's hook timeout, and a
++ * finding is printed the same way, never appended as a run. Stop and
++ * SubagentStop also carry the structural defects the latest run left; one
++ * refuses a subagent stop.
+  * The session's work order rides with orient and regulate: the start prints
+  * the active order the session owns (objective, success, boundary) and the
+  * rule that maintenance outside the boundary is not this session's to do;
+@@ -70,6 +73,8 @@ import { promisify } from "node:util";
+ import { failingRejected, formatReport, hasFindings, runCheck, type CheckReport } from "./check.ts";
+ import type { LanguageAdapter } from "../adapters/adapter.ts";
+ import { mayTouch, performRun, withWarmAdapter } from "../enforcement/run.ts";
++import { readEnforcementConfig } from "../enforcement/config.ts";
++import { lintTotalityOracles } from "../enforcement/lint.ts";
+ import { keepProjectFiles } from "../adapters/project-files.ts";
+ import { returnFeed, leaveReturn, markChildStart, openFeed, peerFeed } from "../journal/feed.ts";
+ import { namedLine, openEscalations } from "../journal/read.ts";
+@@ -491,7 +496,8 @@ export function writtenFile(root: string, input: HookInput): string | undefined
+ 
+ /**
+  * Revelation at the edit: re-check the chokepoint invariants the written file
+- * may involve and describe any structural defect, or nothing.
++ * may involve, run every lint totality oracle's linter on the written files,
++ * and describe any structural defect, or nothing.
+  */
+ export async function editContext(root: string, input: HookInput, options: HookOptions = {}): Promise<string> {
+   // Only the project's own files are evidence: an edit in a nested checkout (an agent's worktree under the root) or to an
+@@ -502,6 +508,11 @@ export async function editContext(root: string, input: HookInput, options: HookO
+   if (files.length === 0) return "";
+   const model = specModelOrNull(root);
+   if ("error" in model || model.components.length === 0) return "";
++  const blocks = [await chokepointsAtEdit(root, input, files, model, options), await lintAtEdit(root, input, files, model)];
++  return blocks.filter((block) => block !== "").join("\n");
++}
++
++async function chokepointsAtEdit(root: string, input: HookInput, files: string[], model: SpecModel, options: HookOptions): Promise<string> {
+   const touched = model.components.flatMap((c) => c.invariants.filter((i) => i.enforcements.some((e) => e.form === "chokepoint") && files.some(file=> {
+     const absolute=resolve(root,file);
+     return mayTouch(i,file,existsSync(absolute) ? readFileSync(absolute,"utf8") : undefined);
+@@ -530,6 +541,40 @@ export async function editContext(root: string, input: HookInput, options: HookO
+   return lines.join("\n") + "\n";
+ }
+ 
++/** How long the linters may take at an edit: well under the host's hook timeout, so a slow one never takes the chokepoint re-check down with it. */
++const EDIT_LINT_TIMEOUT_MS = 20_000;
++
++/**
++ * The lint totality oracles at the edit: each runs its linter on the written
++ * files only, and a finding is shown with the invariant, the site, and the two
++ * honest options. Nothing is appended as a run: the written files are not the
++ * set the totality oracle is total over, so only `run` records its verdict.
++ */
++async function lintAtEdit(root: string, input: HookInput, files: string[], model: SpecModel): Promise<string> {
++  const detectors = model.components.flatMap((c) =>
++    c.invariants.flatMap((i) => i.enforcements.flatMap((e) => (e.form === "totality oracle" && e.lint !== undefined ? [{ component: c.folder, name: i.name, over: e.over, via: e.via, lint: e.lint }] : []))),
++  );
++  if (detectors.length === 0) return "";
++  const config = readEnforcementConfig(root);
++  const results = await lintTotalityOracles(root, config, detectors.map((d) => d.lint), files, EDIT_LINT_TIMEOUT_MS);
++  const checked = detectors.map((detector, i) => ({ ...detector, result: results[i]! }));
++  const lines = checked.filter((c) => c.result.verdict === "not run").map((c) => `Coherence could not check the lint totality oracle ${c.component}/${c.name} at this edit: ${c.result.reason}`);
++  const failed = checked.filter((c) => c.result.verdict === "fail");
++  if (failed.length > 0) {
++    const session = sessionOf(input) ?? "unknown-session";
++    lines.push(`Structural defect revealed at this edit (${files.join(", ")}):`);
++    for (const f of failed) {
++      lines.push(`✕ ${f.component}/${f.name} — totality oracle ${f.via} over ${f.over}`);
++      for (const finding of f.result.findings) lines.push(`    ${finding.file}:${finding.line} ${finding.message}`);
++      if (f.result.findings.length === 0) lines.push(`    ${f.result.reason}`);
++    }
++    lines.push("Two honest options: change the site so the rule no longer reports it, or escalate a retirement for a human, who must acknowledge it:");
++    lines.push(`  ${await cliName(root)} escalate "retire <invariant>" --because "<what changed and why the rule no longer holds>" --session ${session} --agent ${agentOf(input)}`);
++    lines.push("The invariant stays in force, and alarming, until a person acknowledges.");
++  }
++  return lines.length === 0 ? "" : lines.join("\n") + "\n";
++}
++
+ /**
+  * What orient knows of the spec gaps: the gaps now, when the recorded reading
+  * still describes the tree, and the fingerprint it was checked against; when
+-- 
+2.43.0
+

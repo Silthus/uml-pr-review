@@ -1,0 +1,23 @@
+$ git am *.patch   (on BASE d7fc3482fc10941a8dc30db3588eb0ee605cd0d6)
+warning: squelched 1 whitespace error
+warning: 6 lines add whitespace errors.
+Applying: A totality oracle's via may name a lint rule
+Applying: A lint rule as a totality oracle's detector
+Applying: Witness the lint totality oracles red, then green
+applied tree: 9abaea1e06488a2e3b5ce1d16091aeffe6bf3b48
+source tree:  9abaea1e06488a2e3b5ce1d16091aeffe6bf3b48
+PR 1 head: aa2f8fb TypeScript checker-choked rung: the linter refuses the bypass
+PR 1 touches:
+ .../5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl     |  23 ++
+ docs/enforcement.md                                |  58 ++-
+ package-lock.json                                  | 397 +++++++++++++++++++++
+ package.json                                       |   5 +
+ src/adapters/Adapters.spec.md                      |  25 +-
+ src/adapters/adapter.test.ts                       |   3 +-
+ src/adapters/lint-guards.ts                        | 167 +++++++++
+ src/adapters/lint.test.ts                          | 205 +++++++++++
+ src/adapters/lint.ts                               | 202 +++++++++++
+ src/adapters/typescript.ts                         |  91 ++++-
+ src/spec/model.ts                                  |   2 +-
+ 11 files changed, 1167 insertions(+), 11 deletions(-)
+PR 2 applies cleanly on top of PR 1

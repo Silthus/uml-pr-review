@@ -1,0 +1,37 @@
+# Each review fix removed in turn: the tests that own it fail
+
+## hooks run on worktree add (review 1)
+exit 1
+(fail) the dogfood kit > sets up a patched Coherence and a one-language worktree, and tears it down without a trace [41.82ms]
+(fail) the dogfood kit > a Python worktree lints with ruff, leaves the oxlint config alone, and installs no hooks unasked [34.06ms]
+(fail) the dogfood kit > fetches a ref PostHog lacks into refs/uml-pr-review, and teardown deletes it [46.98ms]
+(fail) the dogfood kit > a setup that fails after fetching removes its worktree, its fetched ref, and its folder [46.52ms]
+(fail) the dogfood kit > witnessing an invariant's enforcer > (unnamed) [34.86ms]
+(fail) the dogfood kit > witnessing an invariant's enforcer > (unnamed) [0.20ms]
+ 3 pass
+ 6 fail
+
+## no teardown when setup fails (review 2)
+exit 1
+(fail) the dogfood kit > a setup that fails after fetching removes its worktree, its fetched ref, and its folder [94.70ms]
+(fail) the dogfood kit > a setup whose series disagree on BASE fails before touching PostHog [27.41ms]
+ 11 pass
+ 2 fail
+
+## chokepoint red read from Coherence's run instead of oxlint (review 3)
+exit 1
+(fail) the dogfood kit > witnessing an invariant's enforcer > a TypeScript chokepoint goes red when oxlint's coherence/chokepoint flags the staged import, then green [81.97ms]
+ 12 pass
+ 1 fail
+
+## target split at the last slash (review 4)
+exit 1
+(fail) the dogfood kit > witnessing an invariant's enforcer > a lint totality oracle whose name holds a slash is refuted with the matching import staged, then passes [0.51ms]
+ 12 pass
+ 1 fail
+
+## banned top-level module read as module.name (review 5)
+exit 1
+(fail) the dogfood kit > witnessing an invariant's enforcer > a ruff banned-api oracle over a top-level module stages an import of that module [115.65ms]
+ 12 pass
+ 1 fail

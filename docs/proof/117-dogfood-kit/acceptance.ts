@@ -42,6 +42,7 @@ function posthogState() {
   return {
     worktrees: quiet(["git", "worktree", "list", "--porcelain"]).split("\n").filter((line) => line.startsWith("worktree ")),
     status: quiet(["git", "status", "--porcelain"]),
+    kitRefs: quiet(["git", "for-each-ref", "refs/uml-pr-review"]),
     settings: new Bun.CryptoHasher("sha256").update(readFileSync(join(posthog, ".claude/settings.json"))).digest("hex"),
   };
 }
@@ -73,7 +74,21 @@ The ingestion pipelines: how events move from the consumer to their outputs.
   const cdp = { group: ["~/cdp", "~/cdp/**"], message: "pipelines never reach cdp (nodejs/src/ingestion/pipelines/Pipelines.spec.md): depend on the contracts in ~/common" };
   config.overrides.push({ files: ["src/ingestion/pipelines/**/*.ts"], rules: { "eslint/no-restricted-imports": [level, { ...options, patterns: [...options.patterns, cdp] }] } });
   writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
-  return "nodejs/src/ingestion/pipelines/pipelines never reach cdp";
+  write(
+    "nodejs/src/ingestion/common/groups/Groups.spec.md",
+    `# Groups
+
+Group writes: batching group updates and logging what they skipped.
+
+## invariants
+- group logging through the store: The group logging helpers are reached only through the batch-writing group store.
+  protects: nodejs/src/ingestion/common/groups/group-logging.ts
+  chokepoint: nodejs/src/ingestion/common/groups/batch-writing-group-store.ts
+  because: the store decides when a version mismatch or a missing row is worth a log line
+  kinds: none
+`,
+  );
+  return ["nodejs/src/ingestion/pipelines/pipelines never reach cdp", "nodejs/src/ingestion/common/groups/group logging through the store"];
 }
 
 const RESIDUAL = ["posthog/event_usage.py", "posthog/api/file_system/file_system_logging.py"];
@@ -85,7 +100,7 @@ function fixBeforeDeclaring(file: string) {
   say(`fixed before declaring: ${file} reads impersonation through is_impersonated`);
 }
 
-function declarePython(): string {
+function declarePython(): string[] {
   FIXED_BEFORE_DECLARING.forEach(fixBeforeDeclaring);
   write(
     "posthog/helpers/Helpers.spec.md",
@@ -109,28 +124,31 @@ Shared request helpers, impersonation among them.
     .replace("[tool.ruff.lint.per-file-ignores]\n", `[tool.ruff.lint.per-file-ignores]\n${residual}\n`)
     .replace("[tool.ruff.lint]\n", `[tool.ruff.lint]\nextend-select = ["TID251"]\n`);
   writeFileSync(path, pyproject);
-  return "posthog/helpers/impersonation read through is_impersonated";
+  return ["posthog/helpers/impersonation read through is_impersonated"];
 }
 
 const before = posthogState();
 say(`# ${language}: kit acceptance on ~/posthog at ${Bun.spawnSync(["git", "rev-parse", "HEAD"], { cwd: posthog }).stdout.toString().trim()}`);
 say(`~/posthog/.claude/settings.json sha256 before: ${before.settings}`);
 const setup = sh(["bun", "benchmark/replay/kit/setup.ts", dir, "--ref", "master", "--language", language, "--hooks"], repo);
-const target = language === "typescript" ? declareTypeScript() : declarePython();
-say(`declared ${target} in the /tmp worktree`);
+const targets = language === "typescript" ? declareTypeScript() : declarePython();
+say(`declared in the /tmp worktree: ${targets.join("; ")}`);
 const lint =
   language === "typescript"
     ? sh([join(worktree, "node_modules/.bin/oxlint"), "-c", "nodejs/.oxlintrc.nodejs.json", "--format", "json", "nodejs/src/ingestion/pipelines"], worktree, true, findingsByRule)
     : sh(JSON.parse(readFileSync(join(worktree, "coherence.config.json"), "utf8")).lint.ruff.command.concat(["posthog/helpers"]), worktree, true, findingsByRule);
 sh(["node", "--disable-warning=ExperimentalWarning", join(dir, "coherence/src/cli.ts"), "spec", "--check"], worktree, true);
-const witnessed = sh(["bun", "benchmark/replay/kit/witness.ts", dir, target], repo, true);
+const witnesses = targets.map((target) => ({ target, ...sh(["bun", "benchmark/replay/kit/witness.ts", dir, target], repo, true) }));
+if (language === "typescript") sh(["node", "--disable-warning=ExperimentalWarning", join(dir, "coherence/src/cli.ts"), "run", "--invariant", "group logging through the store", "--no-server", "--session", "kit-grade", "--agent", "kit"], worktree, true);
 const teardown = sh(["bun", "benchmark/replay/kit/teardown.ts", dir], repo);
 const after = posthogState();
 const leftover = after.worktrees.filter((line) => line.includes(dir));
+const witnessedAll = witnesses.every((w) => w.code === 0);
+say(`refs/uml-pr-review in ~/posthog: ${after.kitRefs === before.kitRefs ? "unchanged" : "CHANGED"} (${after.kitRefs === "" ? "none" : after.kitRefs})`);
 say(`~/posthog/.claude/settings.json sha256 after:  ${after.settings} (${after.settings === before.settings ? "identical" : "CHANGED"})`);
 say(`~/posthog git status: ${after.status === before.status ? "unchanged" : "CHANGED"} (${after.status === "" ? "clean" : after.status})`);
 say(`~/posthog worktrees under ${dir}: ${leftover.length} (before setup: ${before.worktrees.filter((line) => line.includes(dir)).length}); entries added or removed meanwhile by other sessions: ${after.worktrees.filter((line) => !before.worktrees.includes(line)).length + before.worktrees.filter((line) => !after.worktrees.includes(line)).length}`);
-say(`timings: setup ${setup.seconds.toFixed(1)} s, one ${language === "typescript" ? "oxlint" : "ruff"} run ${lint.seconds.toFixed(1)} s, witness ${witnessed.seconds.toFixed(1)} s, teardown ${teardown.seconds.toFixed(1)} s`);
-say(`witness: ${witnessed.code === 0 ? "red, then green" : "FAILED"}`);
+say(`timings: setup ${setup.seconds.toFixed(1)} s, one ${language === "typescript" ? "oxlint" : "ruff"} run ${lint.seconds.toFixed(1)} s, ${witnesses.map((w) => `witness "${w.target}" ${w.seconds.toFixed(1)} s`).join(", ")}, teardown ${teardown.seconds.toFixed(1)} s`);
+for (const w of witnesses) say(`witness "${w.target}": ${w.code === 0 ? "red, then green" : "FAILED"}`);
 writeFileSync(join(import.meta.dir, `acceptance-${language}.log`), `${log.join("\n")}\n`);
-process.exit(witnessed.code === 0 && leftover.length === 0 && after.settings === before.settings && after.status === before.status ? 0 : 1);
+process.exit(witnessedAll && leftover.length === 0 && after.settings === before.settings && after.status === before.status && after.kitRefs === before.kitRefs ? 0 : 1);

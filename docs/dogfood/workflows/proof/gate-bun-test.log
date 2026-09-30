@@ -6,52 +6,17 @@ Received NaN for the `cy` attribute. If this is expected, cast the value to a st
 Received NaN for the `r` attribute. If this is expected, cast the value to a string.
 Received NaN for the `x` attribute. If this is expected, cast the value to a string.
 Received NaN for the `y` attribute. If this is expected, cast the value to a string.
-killed 1 dangling process
-
-test/benchmark/grader.test.ts:
-(fail) cycles > an import that closes a cycle is introduced, and the edit that opens it again removes it [5722.64ms]
-  ^ this test timed out after 5000ms.
-
-# Unhandled error between tests
--------------------------------
-66 |     await Promise.all(versions.map(async (version, index) => {
-67 |       await mkdir(dirname(join(directory, names[index]!)), { recursive: true });
-68 |       await writeFile(join(directory, names[index]!), version.text);
-69 |     }));
-70 |     const result = await execute(directory, [...lizard, "--csv", ...names]);
-71 |     if (result.code !== 0) throw new Error(`lizard failed (${result.code}): ${result.stderr.slice(0, 300)}`);
-                                          ^
-error: lizard failed (143): 
-      at runLizard (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/benchmark/grader/detectors/complexity.ts:71:38)
-      at async resolve (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/coherence/blob-cache.ts:30:28)
-      at async measure (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/benchmark/grader/detectors/complexity.ts:57:45)
-      at async <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/benchmark/grader/detectors/complexity.ts:18:23)
-      at async grade (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/benchmark/grader/grade.ts:50:76)
-      at async grade (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/test/benchmark/grader.test.ts:29:25)
-      at async <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a3625518b9e8e6f40/test/benchmark/grader.test.ts:50:27)
--------------------------------
-
-(fail) facade bypasses > importing another product's internals is introduced; importing its facade is not [6141.69ms]
-  ^ this test timed out after 5000ms.
 
 test/architecture/model/lift-performance.test.ts:
-lift, one product opened: 6737 modules, 170000 imports, median 2.60 ms
-lift, every top-level module opened: 6737 modules, 170000 imports, median 22.03 ms
+lift, one product opened: 6737 modules, 170000 imports, median 2.32 ms
+lift, every top-level module opened: 6737 modules, 170000 imports, median 22.10 ms
 
 test/architecture/conformance/performance.test.ts:
-checkConformance: 38400 files, 170250 imports, 50 changed files, median 23.15 ms
+checkConformance: 38400 files, 170250 imports, 50 changed files, median 23.54 ms
 
- 546 pass
- 2 fail
- 1 error
- 1340 expect() calls
-Ran 548 tests across 58 files. [139.32s]
-[exit 1]
-# The full run above hit two 5 s timeouts at load average 27 (other lanes running). The same file, alone:
- 12:51:23 up  9:16,  0 user,  load average: 25.37, 16.76, 9.89
-bun test v1.4.2 (744846f84)
-
- 15 pass
+ 548 pass
  0 fail
- 25 expect() calls
-Ran 15 tests across 1 file. [7.09s]
+ 1343 expect() calls
+Ran 548 tests across 58 files. [80.91s]
+[exit 0]
+ 12:53:04 up  9:18,  0 user,  load average: 18.57, 17.32, 10.82

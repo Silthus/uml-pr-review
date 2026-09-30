@@ -1,0 +1,27 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/replay.test.ts:
+124 |         { type: "result", subtype: "success", num_turns: 4, duration_ms: 42000, total_cost_usd: 0.5, received_ms: 43000 },
+125 |       ),
+126 |       loadCase("64506"),
+127 |     );
+128 | 
+129 |     expect(session).toEqual({ introduced: true, flagged: true, turns: 4, seconds: 43, costUsd: 0.5, hookSeconds: [2.5, 1.2], sessionStartSeconds: 0.6, stopSeconds: 35.5, proposedRoute: false });
+                          ^
+error: expect(received).toEqual(expected)
+
+@@ -5,2 +5,3 @@
+      2.5,
++     0.3,
+      1.2,
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a24869910da29d541/benchmark/replay/replay.test.ts:129:21)
+(fail) reading a replay session > a hooks session that writes the bypass, is flagged by name, and edits it away [3.32ms]
+
+ 10 pass
+ 1 fail
+ 21 expect() calls
+Ran 11 tests across 1 file. [41.00ms]

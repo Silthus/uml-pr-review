@@ -1,0 +1,22 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/replay.test.ts:
+144 | 
+145 |   test("a session that ends by proposing the reviewer's route in its answer, without applying it", () => {
+146 |     const answer = { type: "assistant", message: { content: [{ type: "text", text: "I kept your content. Should I switch to `~/common/hog-transformations/hog-transformer.interface`?" }] } };
+147 |     const session = readSession(transcript(toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }), answer, { type: "result", num_turns: 2, total_cost_usd: 0.1, received_ms: 900 }), loadCase("64506"));
+148 | 
+149 |     expect(session.proposedRoute).toBe(true);
+                                        ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: undefined
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a24869910da29d541/benchmark/replay/replay.test.ts:149:35)
+(fail) reading a replay session > a session that ends by proposing the reviewer's route in its answer, without applying it [0.49ms]
+
+ 10 pass
+ 1 fail
+ 20 expect() calls
+Ran 11 tests across 1 file. [39.00ms]

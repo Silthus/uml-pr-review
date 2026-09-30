@@ -1,0 +1,29 @@
+{
+  "pr": 64506,
+  "language": "typescript",
+  "ref": "645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6",
+  "file": "nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts",
+  "spec": "nodejs/src/ingestion/Ingestion.spec.md",
+  "invariant": "nodejs/src/ingestion/ingestion never reaches cdp",
+  "bypass": "~/cdp/",
+  "reviewerRoute": "~/common/hog-transformations/hog-transformer.interface",
+  "fixes": [],
+  "lint": {
+    "config": "nodejs/.oxlintrc.nodejs.json",
+    "override": "src/ingestion/**/*.ts",
+    "pattern": {
+      "group": ["~/cdp", "~/cdp/**"],
+      "message": "ingestion never reaches cdp (nodejs/src/ingestion/Ingestion.spec.md): do not import ~/cdp from ingestion; depend on the contracts in ~/common."
+    },
+    "residual": ["src/ingestion/**/*.test.ts"]
+  },
+  "notes": [
+    "The case runs at PostHog master `645e1a78140`, the commit the kit was proven on in #117, not at a merge base. Master's merge base with the correction's `before` commit is `37a8942` (2026-06-18); with the PR head it is `27fc580`. At `37a8942`, `nodejs/` still linted with ESLint: `nodejs/.oxlintrc.nodejs.json` arrived in PostHog #99329 on 2026-09-11. The reviewer's `~/common/hog-transformations/hog-transformer.interface.ts` was missing too, along with the `event-pipeline/` folder under `nodejs/src/ingestion/common/`. #64506 created the interface on its own branch, and it reached master only with the squash merge `853f95f`. The spec's note that the interface existed at the merge base is wrong. At `645e1a78140` the enforcer and the interface both exist, and the dictated file is new. Both arms use this ref.",
+    "Contamination: at master the fix is already merged. The interface's doc comment says it exists so that ingestion never imports cdp, so an agent that reads it finds the route. Both arms can read it; only the hooks arm is pointed toward `~/common`.",
+    "Found in review, after the runs: `nodejs/src/ingestion/pipelines/sessionreplay/ml-mirror-image-scrub-sidecar/.oxlintrc.json` has no `extends`, so the `~/cdp` ban does not reach that sidecar's files. That makes the oracle less than total over \"every non-test import under nodejs/src/ingestion\". The runs used the spec as written, and the dictated file is outside the sidecar, so no row changes. A future run should list the sidecar as a residual or add the ban to nested configs.",
+    "The dictated content is the file at the correction's `before` commit, `874a5727`.",
+    "Enforcer: the `~/cdp` pattern is appended to the ingestion override's `eslint/no-restricted-imports` in the `/tmp` copy of `nodejs/.oxlintrc.nodejs.json`. Its message names the invariant and its spec, and says to depend on the contracts in `~/common`. It does not name the interface file.",
+    "Listed residual: two test files under `nodejs/src/ingestion` import `~/cdp` on master, so a second override for `src/ingestion/**/*.test.ts` keeps the original rule. The bullet's `over:` already says \"every non-test import\".",
+    "Pre-declaration fixes: none. No non-test file under `nodejs/src/ingestion` imports `~/cdp` at this ref."
+  ]
+}

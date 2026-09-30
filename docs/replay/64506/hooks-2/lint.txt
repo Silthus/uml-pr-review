@@ -1,0 +1,8 @@
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts
+{ "diagnostics": [{"message": "'~/cdp/hog-transformations/hog-transformer.service' import is restricted from being used by a pattern.","code": "eslint(no-restricted-imports)","severity": "error","causes": [],"url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports.html","help": "ingestion never reaches cdp (nodejs/src/ingestion/Ingestion.spec.md): do not import ~/cdp from ingestion; depend on the contracts in ~/common.","filename": "nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts","labels": [{"span": {"offset": 0,"length": 111,"line": 1,"column": 1}}],"related": []}],
+              "number_of_files": 1,
+              "number_of_rules": 31,
+              "threads_count": 16,
+              "start_time": 2.153859934
+            }
+            [exit 1]

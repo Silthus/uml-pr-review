@@ -1,0 +1,48 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/replay.test.ts:
+120 |         { type: "result", subtype: "success", num_turns: 4, duration_ms: 42000, total_cost_usd: 0.5, received_ms: 43000 },
+121 |       ),
+122 |       loadCase("64506"),
+123 |     );
+124 | 
+125 |     expect(session).toEqual({ introduced: true, flagged: true, turns: 4, seconds: 43, costUsd: 0.5, hookSeconds: [2.5, 1.2], sessionStartSeconds: 0.6, stopSeconds: 35.5 });
+                          ^
+error: expect(received).toEqual(expected)
+
+@@ -9,4 +9,2 @@
+    "seconds": 43,
+-   "sessionStartSeconds": 0.6,
+-   "stopSeconds": 35.5,
+    "turns": 4,
+
+- Expected  - 2
++ Received  + 0
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a24869910da29d541/benchmark/replay/replay.test.ts:125:21)
+(fail) reading a replay session > a hooks session that writes the bypass, is flagged by name, and edits it away [2.67ms]
+146 |     const session = readSession(
+147 |       transcript(toolUse("t1", "Write", { file_path: "/tmp/elsewhere.ts", content: BYPASSING }), { type: "result", subtype: "error_max_turns", num_turns: 30, duration_ms: 1000, total_cost_usd: 2, received_ms: 1500 }),
+148 |       loadCase("64506"),
+149 |     );
+150 | 
+151 |     expect(session).toEqual({ introduced: false, flagged: false, turns: 30, seconds: 1.5, costUsd: 2, hookSeconds: [], sessionStartSeconds: 0, stopSeconds: 0 });
+                          ^
+error: expect(received).toEqual(expected)
+
+@@ -6,4 +6,2 @@
+    "seconds": 1.5,
+-   "sessionStartSeconds": 0,
+-   "stopSeconds": 0,
+    "turns": 30,
+
+- Expected  - 2
++ Received  + 0
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a24869910da29d541/benchmark/replay/replay.test.ts:151:21)
+(fail) reading a replay session > a control session that never writes the file introduced nothing [0.33ms]
+
+ 8 pass
+ 2 fail
+ 19 expect() calls
+Ran 10 tests across 1 file. [43.00ms]

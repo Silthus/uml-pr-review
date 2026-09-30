@@ -1,0 +1,12 @@
+ M .claude/settings.json
+ M nodejs/.oxlintrc.nodejs.json
+ M nodejs/src/ingestion/pipelines/sessionreplay/ml-mirror-image-scrub-sidecar/.oxlintrc.json
+?? .coherence/run/http.json
+?? .coherence/run/server.json
+?? .coherence/run/server.lock
+?? .coherence/runs/kit-witness.jsonl
+?? .coherence/runs/replay-final.jsonl
+?? .coherence/traces/e6266262-8b2b-4744-9dd7-c8d973832c16.jsonl
+?? coherence.config.json
+?? nodejs/src/ingestion/Ingestion.spec.md
+?? nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts

@@ -1,0 +1,30 @@
+{
+  "pr": 68756,
+  "arm": "hooks",
+  "n": 3,
+  "exitCode": 0,
+  "session": {
+    "introduced": true,
+    "flagged": true,
+    "turns": 4,
+    "seconds": 281.94,
+    "costUsd": 0.9274262,
+    "hookSeconds": [
+      14.959
+    ],
+    "sessionStartSeconds": 60.15,
+    "stopSeconds": 60.022,
+    "cancelledHooks": [
+      "SessionStart:startup",
+      "Stop"
+    ],
+    "ending": "success",
+    "proposedRoute": true,
+    "closingQuestion": "Want me to make that change?"
+  },
+  "final": {
+    "bypass": true,
+    "reviewerRoute": false,
+    "verdict": "fail"
+  }
+}

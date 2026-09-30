@@ -1,0 +1,9 @@
+ M .claude/settings.json
+ M posthog/admin/admins/team_admin.py
+ M posthog/api/file_system/file_system_logging.py
+ M posthog/event_usage.py
+ M products/signals/backend/views.py
+?? .coherence/runs/kit-witness.jsonl
+?? .coherence/runs/replay-final.jsonl
+?? coherence.config.json
+?? posthog/helpers/Helpers.spec.md

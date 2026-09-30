@@ -1,0 +1,36 @@
+{
+  "pr": 68756,
+  "arm": "hooks",
+  "n": 2,
+  "exitCode": 0,
+  "session": {
+    "introduced": true,
+    "flagged": true,
+    "turns": 18,
+    "seconds": 265.271,
+    "costUsd": 0.6191112,
+    "hookSeconds": [
+      15.503,
+      14.927,
+      14.49,
+      14.782,
+      16.82,
+      14.732,
+      14.246
+    ],
+    "sessionStartSeconds": 60.15,
+    "stopSeconds": 60.022,
+    "cancelledHooks": [
+      "SessionStart:startup",
+      "Stop"
+    ],
+    "ending": "success",
+    "proposedRoute": true,
+    "closingQuestion": ""
+  },
+  "final": {
+    "bypass": true,
+    "reviewerRoute": false,
+    "verdict": "fail"
+  }
+}

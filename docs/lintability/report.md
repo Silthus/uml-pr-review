@@ -4,16 +4,18 @@ Ticket [#110](https://github.com/Silthus/uml-pr-review/issues/110), part of map 
 
 ## Headline
 
-**25 of 534 development corrections (4.7%)** are catchable at write time, and 22 more (4.1%) partly. Counting partial catches, the ceiling is 47 of 534 (8.8%). Every other correction failed an honesty guard or is a judgment kind, and stays in review. #107's 56-row pilot, labelled from quotes only, guessed about 14%.
+**24 of 534 development corrections (4.5%)** are catchable at write time, and 10 more (1.9%) partly. Counting partial catches, the ceiling is 34 of 534 (6.4%). Every other correction failed an honesty guard or is a judgment kind, and stays in review.
 
-Through the tools of the first slice (TypeScript through oxlint `jsPlugins`, Python through `tach`, import-linter, ruff, and semgrep), the first slice catches **23 of 534 (4.3%)**, which is 23 of the 441 TypeScript and Python corrections (5.2%); 22 more are partly caught.
+45 of 534 (8.4%) land in a declarable kind at all; #107's 56-row pilot, labelled from quotes only, put about 14% there. The gap between that share and the catch rate is the honesty guards at work.
+
+Through the tools of the first slice (TypeScript through oxlint `jsPlugins`, Python through `tach`, import-linter, ruff, and semgrep), the first slice catches **22 of 534 (4.1%)**, which is 22 of the 441 TypeScript and Python corrections (5.0%); 10 more are partly caught.
 
 ## Coverage by language
 
 | Language | Corrections | Yes | Partial | Yes share |
 | --- | --- | --- | --- | --- |
-| TypeScript/JavaScript | 178 | 10 | 9 | 5.6% |
-| Python | 263 | 13 | 13 | 4.9% |
+| TypeScript/JavaScript | 178 | 8 | 6 | 4.5% |
+| Python | 263 | 14 | 4 | 5.3% |
 | Rust | 57 | 1 | 0 | 1.8% |
 | other | 36 | 1 | 0 | 2.8% |
 
@@ -21,14 +23,14 @@ Through the tools of the first slice (TypeScript through oxlint `jsPlugins`, Pyt
 
 | Sub-type | Corrections | Yes | Partial | Yes share |
 | --- | --- | --- | --- | --- |
-| reuse | 140 | 15 | 9 | 10.7% |
-| layer | 98 | 2 | 4 | 2.0% |
-| facade-boundary | 10 | 5 | 2 | 50.0% |
+| reuse | 140 | 11 | 6 | 7.9% |
+| layer | 98 | 2 | 0 | 2.0% |
+| facade-boundary | 10 | 5 | 0 | 50.0% |
 | dependency | 9 | 3 | 1 | 33.3% |
 | duplication | 115 | 0 | 0 | 0.0% |
-| split-merge | 46 | 0 | 1 | 0.0% |
-| naming | 45 | 0 | 1 | 0.0% |
-| other | 71 | 0 | 4 | 0.0% |
+| split-merge | 46 | 1 | 0 | 2.2% |
+| naming | 45 | 1 | 0 | 2.2% |
+| other | 71 | 1 | 3 | 1.4% |
 
 ## Coverage by rule kind
 
@@ -37,99 +39,99 @@ Every correction gets exactly one kind. The six judgment kinds are never caught 
 | Kind | Corrections | Yes | Partial | Yes share |
 | --- | --- | --- | --- | --- |
 | import-boundary | 4 | 3 | 1 | 75.0% |
-| public-entry | 5 | 4 | 1 | 80.0% |
-| banned-api | 4 | 0 | 4 | 0.0% |
-| paved-path | 35 | 18 | 15 | 51.4% |
+| public-entry | 4 | 4 | 0 | 100.0% |
+| banned-api | 1 | 1 | 0 | 100.0% |
+| paved-path | 28 | 15 | 9 | 53.6% |
 | file-placement | 3 | 0 | 0 | 0.0% |
-| vocabulary | 5 | 0 | 1 | 0.0% |
-| reuse-unnamed | 88 | 0 | 0 | 0.0% |
-| duplication | 121 | 0 | 0 | 0.0% |
-| logic-placement | 82 | 0 | 0 | 0.0% |
+| vocabulary | 5 | 1 | 0 | 20.0% |
+| reuse-unnamed | 91 | 0 | 0 | 0.0% |
+| duplication | 123 | 0 | 0 | 0.0% |
+| logic-placement | 87 | 0 | 0 | 0.0% |
 | decomposition | 46 | 0 | 0 | 0.0% |
 | concept-naming | 44 | 0 | 0 | 0.0% |
-| design-other | 97 | 0 | 0 | 0.0% |
+| design-other | 98 | 0 | 0 | 0.0% |
 
 ## Coverage by tool
 
 | Tool | Corrections | Yes | Partial | Yes share |
 | --- | --- | --- | --- | --- |
-| oxlint | 19 | 10 | 9 | 52.6% |
-| tach | 1 | 0 | 1 | 0.0% |
-| import-linter | 1 | 1 | 0 | 100.0% |
-| ruff | 8 | 4 | 4 | 50.0% |
-| semgrep | 17 | 9 | 8 | 52.9% |
+| oxlint | 14 | 8 | 6 | 57.1% |
+| tach | 2 | 1 | 1 | 50.0% |
+| ruff | 6 | 5 | 1 | 83.3% |
+| semgrep | 11 | 9 | 2 | 81.8% |
 | clippy | 1 | 1 | 0 | 100.0% |
-| review-only | 487 | 0 | 0 | 0.0% |
+| review-only | 500 | 0 | 0 | 0.0% |
 
 ## Which honesty guard failed
 
-Of the 487 corrections that stay in review, this is how often each guard failed (a correction can fail several). 0 failed no guard but are a judgment kind with no candidate rule.
+Of the 500 corrections that stay in review, 332 had no candidate rule at all: they are a judgment kind by the decision order, and their guards are `fail` by convention, so they are not counted below. For the 168 where a candidate rule was tried, this is how often each guard failed (a rule can fail several).
 
 | Guard | Failed |
 | --- | --- |
-| general | 469 |
-| existed | 46 |
-| syntactic | 361 |
+| general | 147 |
+| existed | 39 |
+| syntactic | 29 |
 | firesAndClears | 15 |
 
 ## Top generalisable rules
 
-Caught corrections grouped by the general rule that catches them, ranked by full catches.
+Caught corrections grouped by the general rule that catches them, ranked by the corrections each rule catches fully or partly, then by full catches.
 
-| # | Rule | Yes | Partial | Tools |
-| --- | --- | --- | --- | --- |
-| 1 | Do not use <Model>.all_teams outside models.py; use <Model>.objects.for_team(team_id) | 3 | 0 | semgrep |
-| 2 | Use LemonButton, not raw <button>, in frontend code | 3 | 0 | oxlint |
-| 3 | No importing underscore-private names from another module (ruff PLC2701) | 2 | 1 | ruff, semgrep |
-| 4 | Frontend must not call api.get/api.create/etc.; use the generated product API client | 2 | 0 | oxlint |
-| 5 | nodejs ingestion may not import ~/cdp; shared code goes through ~/common | 2 | 0 | oxlint |
-| 6 | Call addDashboard only in dashboardTemplateCreationFlows.ts; elsewhere use the dashboard flow helpers | 1 | 0 | oxlint |
-| 7 | CLI must not call utils::auth::get_token outside invocation_context.rs; read credentials from InvocationContext | 1 | 0 | clippy |
-| 8 | Components that use a kea Logic must not use React useState/useEffect; keep state in the logic | 1 | 0 | oxlint |
-| 9 | Do not use is_impersonated_session outside posthog/helpers/impersonation.py; use is_impersonated | 1 | 0 | ruff |
-| 10 | DRF viewset actions must not read request.data.get; validate with @validated_request | 1 | 0 | semgrep |
+| # | Rule | Yes | Partial | PRs | Tools |
+| --- | --- | --- | --- | --- | --- |
+| 1 | No importing underscore-private names from another module (ruff PLC2701) | 3 | 0 | 3 | ruff, semgrep |
+| 2 | Use LemonButton, not raw <button>, in frontend code | 3 | 0 | 3 | oxlint |
+| 3 | Do not use <Model>.all_teams outside models.py; use <Model>.objects.for_team(team_id) | 3 | 0 | 2 | semgrep |
+| 4 | Frontend must not inject scripts via document.createElement('script'); add third-party JS as a pnpm dependency | 1 | 2 | 2 | oxlint |
+| 5 | nodejs ingestion may not import ~/cdp; shared code goes through ~/common | 2 | 0 | 1 | oxlint |
+| 6 | Data imports read ExternalDataSource.job_inputs only via SourceRegistry.get_source(t).parse_config | 0 | 2 | 1 | semgrep |
+| 7 | CLI must not call utils::auth::get_token outside invocation_context.rs; read credentials from InvocationContext | 1 | 0 | 1 | clippy |
+| 8 | Do not use is_impersonated_session outside posthog/helpers/impersonation.py; use is_impersonated | 1 | 0 | 1 | ruff |
+| 9 | Frontend must not call api.get/api.create/etc.; use the generated product API client | 1 | 0 | 1 | oxlint |
+| 10 | In kea logics, do not assign timers to cache.X; register them with cache.disposables.add | 1 | 0 | 1 | oxlint |
 
 ## Agreement
 
-Cohen's kappa on `catchable` is **0.71** over 60 rows (raw agreement 95.0%). The two labellers chose the same rule kind for 53 of 60 (88.3%).
+Cohen's kappa on `catchable` is **0.68** over 60 rows (raw agreement 95.0%). The two labellers chose the same rule kind for 54 of 60 (90.0%).
 
 | Primary \ second | yes | partial | no |
 | --- | --- | --- | --- |
-| yes | 2 | 0 | 0 |
-| partial | 0 | 2 | 1 |
-| no | 1 | 1 | 53 |
+| yes | 2 | 1 | 0 |
+| partial | 0 | 1 | 0 |
+| no | 1 | 1 | 54 |
 
 ## Replay candidates
 
-Fully caught corrections, one per PR, preferring `products/workflows`, `nodejs/src/cdp`, and the hog-functions and workflows scenes, then the smallest fix commit, which is the most self-contained replay. 0 of the 23 fully caught TypeScript and Python corrections lie in a preferred area.
+Fully caught corrections, one per PR, preferring `products/workflows`, `nodejs/src/cdp`, and the hog-functions and workflows scenes, then the smallest fix commit, which is the most self-contained replay. 0 of the 22 fully caught TypeScript and Python corrections lie in a preferred area.
 
 ### TypeScript/JavaScript
 
-| PR | File | Correction | `before` | Rule sketch | Fix size |
-| --- | --- | --- | --- | --- | --- |
-| [#53044](https://github.com/PostHog/posthog/pull/53044) | `frontend/src/scenes/notebooks/Notebook/TableMenu.tsx` | [Any reason this isn't a lemon button with custom styling?](https://github.com/PostHog/posthog/pull/53044#discussion_r3023804339) | `99df399bdd32dfd8ebea54da51144fedc94e8da9` | react/forbid-elements: <button> in frontend/src/**; use LemonButton | 1 file, +2/−2 |
-| [#54435](https://github.com/PostHog/posthog/pull/54435) | `frontend/src/scenes/session-recordings/playlist/SessionRecordingPreview.tsx` | [The rest of the codebase uses `LemonButton` for interactive elements](https://github.com/PostHog/posthog/pull/54435#discussion_r3092021170) | `03cb700ec7995a41ddb26272651cc97734fe0a0f` | react/forbid-elements in frontend/src/**/*.tsx and products/*/frontend/**: forbid <button>; use LemonButton from lib/lemon-ui/LemonButton | 1 file, +2/−2 |
-| [#64506](https://github.com/PostHog/posthog/pull/64506) | `nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts` | [We're importing from CDP here.](https://github.com/PostHog/posthog/pull/64506#discussion_r3441771076) | `874a5727dc50c421627c321cccd5dc3d09513541` | nodejs/src/ingestion/** may not import ~/cdp/**; use contracts in ~/common (e.g. common/hog-transformations) | 1 file, +3/−3 |
-| [#55298](https://github.com/PostHog/posthog/pull/55298) | `frontend/src/scenes/feature-flags/FeatureFlagTestingTab.tsx` | [a `includeTime` reducer in `featureFlagTestingLogic` is one more line and keeps the component a presentational shell.](https://github.com/PostHog/posthog/pull/55298#discussion_r3268718646) | `0b356844534370603b296df0dd962572cfa55b4d` | in frontend/src/**/*.tsx that import a *Logic, ban React useState/useEffect; put state in the kea logic's reducers | 2 files, +8/−2 |
-| [#58357](https://github.com/PostHog/posthog/pull/58357) | `products/llm_analytics/frontend/llmAnalyticsSessionDataLogic.ts` | [maybe we could take this opportunity to replace this by `llmAnalyticsSummarizationBatchCheckCreate`](https://github.com/PostHog/posthog/pull/58357#discussion_r3282258713) | `f4d15eec7d9c10a955ad58414cbb05e63497903f` | no-restricted-properties api.get/api.create/api.post etc. in products/*/frontend/** (not generated/); use products/<p>/frontend/generated/api | 2 files, +6/−9 |
+| PR | File | Correction | `before` | Rule sketch | Fix size | Replay |
+| --- | --- | --- | --- | --- | --- | --- |
+| [#53044](https://github.com/PostHog/posthog/pull/53044) | `frontend/src/scenes/notebooks/Notebook/TableMenu.tsx` | [Any reason this isn't a lemon button with custom styling?](https://github.com/PostHog/posthog/pull/53044#discussion_r3023804339) | `99df399bdd32dfd8ebea54da51144fedc94e8da9` | react/forbid-elements in frontend/src/**: forbid <button>, use <LemonButton> instead | 1 file, +2/−2 | self-contained: the fix is one file |
+| [#54435](https://github.com/PostHog/posthog/pull/54435) | `frontend/src/scenes/session-recordings/playlist/SessionRecordingPreview.tsx` | [The rest of the codebase uses `LemonButton` for interactive elements](https://github.com/PostHog/posthog/pull/54435#discussion_r3092021170) | `03cb700ec7995a41ddb26272651cc97734fe0a0f` | react/forbid-elements in frontend/src/**: forbid <button>, use <LemonButton> instead | 1 file, +2/−2 | self-contained: the fix is one file |
+| [#64506](https://github.com/PostHog/posthog/pull/64506) | `nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts` | [We're importing from CDP here.](https://github.com/PostHog/posthog/pull/64506#discussion_r3441771076) | `874a5727dc50c421627c321cccd5dc3d09513541` | nodejs/src/ingestion/** may not import from ~/cdp/** (no-restricted-imports pattern ~/cdp/*) | 1 file, +3/−3 | self-contained: the fix is one file |
+| [#58357](https://github.com/PostHog/posthog/pull/58357) | `products/llm_analytics/frontend/llmAnalyticsSessionDataLogic.ts` | [maybe we could take this opportunity to replace this by `llmAnalyticsSummarizationBatchCheckCreate`](https://github.com/PostHog/posthog/pull/58357#discussion_r3282258713) | `f4d15eec7d9c10a955ad58414cbb05e63497903f` | ban api.get/create/update(...) with a literal 'api/environments/...' URL in products/*/frontend/**; use the generated client in ./generated/api | 2 files, +6/−9 | small: the fix spans a few files |
+| [#55298](https://github.com/PostHog/posthog/pull/55298) | `frontend/src/scenes/feature-flags/FeatureFlagTestingTab.tsx` | [Worth switching to `LemonButton` for consistency.](https://github.com/PostHog/posthog/pull/55298#discussion_r3165581674) | `49277e87befbd35d14e5b8165630edb38907ed98` | react/forbid-elements in frontend/src/**: <button> forbidden; use LemonButton | 2 files, +138/−116 | small: the fix spans a few files |
 
 ### Python
 
-| PR | File | Correction | `before` | Rule sketch | Fix size |
-| --- | --- | --- | --- | --- | --- |
-| [#68756](https://github.com/PostHog/posthog/pull/68756) | `posthog/admin/admins/team_admin.py` | [is there a reason not to use is_impersonated from posthog/helpers/impersonation.py here?](https://github.com/PostHog/posthog/pull/68756#discussion_r3537159755) | `1b52cff10e347002aeb80cbf2f689adf8d4b6f03` | ruff TID251: ban is_impersonated_session (loginas.utils, model_activity) outside posthog/helpers/impersonation.py; use posthog.helpers.impersonation.is_impersonated | 2 files, +14/−4 |
-| [#61643](https://github.com/PostHog/posthog/pull/61643) | `products/slack_app/backend/services/integration_resolver.py` | [Private functions imported. They should be public.](https://github.com/PostHog/posthog/pull/61643#discussion_r3387466421) | `dd111506270352e1a51eec84ea909b0863a87507` | products/**: no import of underscore-prefixed names from another module (ruff PLC2701); expose a public name instead | 4 files, +12/−12 |
-| [#68659](https://github.com/PostHog/posthog/pull/68659) | `products/customer_analytics/backend/models/event_stream.py` | [other products must not reference models _inside_ this product. Use `related_name='+'` to disable reverse relations.](https://github.com/PostHog/posthog/pull/68659#discussion_r3616694613) | `861564132f448f807b8aca703f15c52bed3b7623` | in products/*/backend/models/**, ForeignKey to posthog.* core models must set related_name='+' | 9 files, +26/−41 |
-| [#62860](https://github.com/PostHog/posthog/pull/62860) | `products/signals/backend/scout_harness/config_registry.py` | [existing = set(SignalScoutConfig.for_team(team_id).values_list("skill_name", flat=True))](https://github.com/PostHog/posthog/pull/62860#discussion_r3394877218) | `db7925fd12498425806ce43b1538bc2ed39c1b7b` | products/signals/backend/** except models.py: ban <Model>.all_teams in explicit code (framework-internal manager); use <Model>.objects.for_team(team_id) | 12 files, +34/−40 |
-| [#55620](https://github.com/PostHog/posthog/pull/55620) | `ee/api/agentic_provisioning/authentication.py` | [Consider promoting to a public name or exposing a higher-level `ensure_cimd_provisioning_app(client_id) -> OAuthApplication \| None`](https://github.com/PostHog/posthog/pull/55620#discussion_r3124095499) | `6520d24c63c3f6da7a29d61650ccd41f508e485c` | ruff PLC2701: no importing underscore-private names from another module (ee/** from posthog.api.oauth.cimd) | 4 files, +75/−11 |
+| PR | File | Correction | `before` | Rule sketch | Fix size | Replay |
+| --- | --- | --- | --- | --- | --- | --- |
+| [#50564](https://github.com/PostHog/posthog/pull/50564) | `services/llm-gateway/src/llm_gateway/api/anthropic.py` | [we should do any default we need here in settings](https://github.com/PostHog/posthog/pull/50564#discussion_r3021764734) | `a81faddedf14303aa9eaab8c07a5d4e49f5a32ec` | TID251 ban os.environ/os.getenv in services/llm-gateway/src/llm_gateway/** except config.py and main.py; read config via settings | 1 file, +1/−2 | self-contained: the fix is one file |
+| [#68756](https://github.com/PostHog/posthog/pull/68756) | `posthog/admin/admins/team_admin.py` | [is there a reason not to use is_impersonated from posthog/helpers/impersonation.py here?](https://github.com/PostHog/posthog/pull/68756#discussion_r3537159755) | `1b52cff10e347002aeb80cbf2f689adf8d4b6f03` | ban is_impersonated_session (loginas.utils and model_activity re-export) outside posthog/helpers/impersonation.py; use posthog.helpers.impersonation.is_impersonated | 2 files, +14/−4 | small: the fix spans a few files |
+| [#61643](https://github.com/PostHog/posthog/pull/61643) | `products/slack_app/backend/services/integration_resolver.py` | [Private functions imported. They should be public.](https://github.com/PostHog/posthog/pull/61643#discussion_r3387466421) | `dd111506270352e1a51eec84ea909b0863a87507` | products/**: no `from <module> import _name` of an underscore-prefixed name defined in another module; make it public | 4 files, +12/−12 | wide: replay only the commented file's change |
+| [#68020](https://github.com/PostHog/posthog/pull/68020) | `products/replay_vision/backend/observation_formatting.py` | [are imported by three modules (facade, max_tools, synthesis), they should lose the leading underscore.](https://github.com/PostHog/posthog/pull/68020#discussion_r3516289680) | `e19f5529fcd300f0c8d2f475d6a3a57da9870c15` | PLC2701: no module may import an underscore-prefixed name from another module; make shared names public | 8 files, +38/−23 | wide: replay only the commented file's change |
+| [#68659](https://github.com/PostHog/posthog/pull/68659) | `products/customer_analytics/backend/models/event_stream.py` | [other products must not reference models _inside_ this product. Use `related_name='+'` to disable reverse relations.](https://github.com/PostHog/posthog/pull/68659#discussion_r3616694613) | `861564132f448f807b8aca703f15c52bed3b7623` | products/*/backend/models/**: ForeignKey/OneToOneField to a model outside the product must set related_name="+" | 9 files, +26/−41 | wide: replay only the commented file's change |
 
 ## Method
 
 1. **Population.** The 534 development corrections in `docs/corrections/corpus.jsonl` that have an isolable fix commit (#103). Held-out rows are not read.
-2. **Rubric.** `benchmark/lintability/rubric.md` applies #107's decision order, twelve kinds, and tiers, and adds four honesty guards: `general` (a team would declare the rule up front, for the whole scope), `existed` (what the rule points to existed at `before`), `syntactic` (a linter decides it without judgment), and `firesAndClears` (the rule flags the `before` code at the commented site and not the corrected code). `catchable` is `yes` only when the kind is declarable and no guard fails; every failed guard is recorded in `failedGuards`.
+2. **Rubric.** `benchmark/lintability/rubric.md` applies #107's decision order, twelve kinds, and tiers, and adds four honesty guards: `general` (a team would declare the rule up front, for the whole scope), `existed` (what the rule points to existed where the PR branched from master), `syntactic` (a linter decides it without judgment), and `firesAndClears` (the rule flags the `before` code at the commented site and not the corrected code). The ticket names the first three; `firesAndClears` is #107's second gate, and `tier` is #107's tier, both added here. `catchable` is `yes` only when the kind is declarable and no guard fails; every failed guard is recorded in `failedGuards`.
 3. **Calibration.** One Opus labeller labelled a seeded 50-row sample with the draft rubric. Its eight reported ambiguities became eight sentences of the frozen rubric (listed in `benchmark/lintability/prompts.md`); the calibration labels were then discarded and those rows labelled again.
-4. **Labelling.** Fresh Opus sub-agents, 30 corrections per batch, each read the comment body, the fix commit's diff of the commented file, and checked `existed` against the code at `before` with read-only `git show`, `git grep`, and `git ls-tree` on the local PostHog object store. Batches are resumable: `bun benchmark/lintability/run.ts label` packs only the corrections that still lack a label.
-5. **Agreement.** A second, independent Opus labeller labelled a seeded 60-row sample with the same frozen rubric and prompt, without seeing the first labels.
-6. **Rule groups.** One Opus sub-agent gave every caught correction a canonical rule name so that corrections one declaration would catch share a name; the top rules are counted from those names.
+4. **Labelling.** Fresh Opus sub-agents, 30 corrections per batch, each read the comment body, the fix commit's diff of the commented file, and checked `existed` in the code with read-only `git show`, `git grep`, and `git ls-tree` on the local PostHog object store. Batches are resumable: `bun benchmark/lintability/run.ts label` packs only the corrections that still lack a label.
+5. **Recheck.** The adversarial review showed that the first round checked `existed` at `before`, which already holds the PR's own earlier commits, and that one hindsight rule passed `general`. The rubric now checks `existed` at the PR's merge base with master and fails rules that would flag many correct uses. Fresh Opus sub-agents relabelled every correction the first round caught with the revised rubric; their labels replace the first ones. A stricter guard can only turn a catch into a miss, so the other rows were not relabelled.
+6. **Agreement.** A second, independent Opus labeller labelled a seeded 60-row sample with the frozen rubric and prompt of the first round, without seeing the first labels. Kappa compares it with the final labels, recheck included.
+7. **Rule groups.** One Opus sub-agent gave every caught correction a canonical rule name so that corrections one declaration would catch share a name; the top rules are counted from those names.
 
-Limits: the fix locator is right about 68% of the time (#103), so labels are judged against the comment, not the located commit. Labels are single-pass model judgments; the agreement section measures how far a second labeller moves them. The rubric errs towards review, so the numbers are an upper bound only in the sense that each `yes` still needs its rule written and adopted.
+Limits: the fix locator is right about 68% of the time (#103), so labels are judged against the comment, not the located commit. Labels are single-pass model judgments; the agreement section measures how far a second labeller moves them. The rubric errs towards review when a label is unsure, so the numbers lean low; every `yes` still needs its rule written, adopted, and baselined before it catches anything.

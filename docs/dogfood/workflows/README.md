@@ -136,7 +136,7 @@ What I ran, and what I didn't:
   - `--hooks`;
   - an interactive session with project settings;
   - `nodejs/src/ingestion` as the folder;
-  - `bun benchmark/replay/run.ts`, which is #118's and not on `main` yet.
+  - `bun benchmark/replay/run.ts`: #118's replay. It landed on `main` while this was in review, and this dogfood doesn't exercise it.
 
 ## The first pass
 

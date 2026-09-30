@@ -1,0 +1,82 @@
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/TypeScript checker rung verified" --broke "made an override's rules count as top-level rules" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/TypeScript checker rung verified (totality oracle): made an override's rules count as top-level rules
+  the detector went red: 1 of 1 tests under "a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:00:26.670Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/TypeScript checker rung verified" --broke "credited a configuration whatever its rule's root option names" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/TypeScript checker rung verified (totality oracle): credited a configuration whatever its rule's root option names
+  the detector went red: 1 of 1 tests under "a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:00:34.503Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/TypeScript checker rung verified" --broke "credited a chokepoint without asking whether the rule's reader holds a guard for it" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/TypeScript checker rung verified (totality oracle): credited a chokepoint without asking whether the rule's reader holds a guard for it
+  the detector went red: 1 of 1 tests under "a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:00:42.391Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/TypeScript checker rung verified" --broke "ignored a nested .oxlintrc.json without the rule" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/TypeScript checker rung verified (totality oracle): ignored a nested .oxlintrc.json without the rule
+  the detector went red: 1 of 1 tests under "a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise" failed: a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:00:50.186Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/the lint rule follows the import rulings" --broke "read path aliases from the root tsconfig.json only, as the rule first did" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/the lint rule follows the import rulings (totality oracle): read path aliases from the root tsconfig.json only, as the rule first did
+  the detector went red: 1 of 1 tests under "coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:00:57.091Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/the lint rule follows the import rulings" --broke "made the rule pass over an import-equals require" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/the lint rule follows the import rulings (totality oracle): made the rule pass over an import-equals require
+  the detector went red: 1 of 1 tests under "coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:01:04.010Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/the lint rule follows the import rulings" --broke "stopped reading the configured test folders, so only a .test or .spec name exempts a file" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/the lint rule follows the import rulings (totality oracle): stopped reading the configured test folders, so only a .test or .spec name exempts a file
+  the detector went red: 1 of 1 tests under "coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green" failed: coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:01:10.747Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/the lint rule never drops a bullet in silence" --broke "dropped a bullet the rule cannot resolve without a word" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/the lint rule never drops a bullet in silence (totality oracle): dropped a bullet the rule cannot resolve without a word
+  the detector went red: 1 of 1 tests under "coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:01:17.509Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/the lint rule never drops a bullet in silence" --broke "read no spec in silence when the rule's root holds no coherence.config.json" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/the lint rule never drops a bullet in silence (totality oracle): read no spec in silence when the rule's root holds no coherence.config.json
+  the detector went red: 1 of 1 tests under "coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:01:24.481Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/the lint rule never drops a bullet in silence" --broke "made the rule read a spec with problems as if it had none" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/the lint rule never drops a bullet in silence (totality oracle): made the rule read a spec with problems as if it had none
+  the detector went red: 1 of 1 tests under "coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown" failed: coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:01:31.242Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts refute "src/adapters/ladder is adapter-defined" --broke "dropped the checker-choked rung from the TypeScript ladder" --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main
+refuted src/adapters/ladder is adapter-defined (totality oracle): dropped the checker-choked rung from the TypeScript ladder
+  the detector went red: 1 of 1 tests under "the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not" failed: the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not
+  recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl at 2026-09-30T11:01:37.815Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+$ node --disable-warning=ExperimentalWarning src/cli.ts run --form totality-oracle --session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115 --agent main --invariant "TypeScript checker rung verified" --invariant "the lint rule follows the import rulings" --invariant "the lint rule never drops a bullet in silence" --invariant "ladder is adapter-defined"
+src/adapters/ladder is adapter-defined
+  totality oracle: pass (8.9 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "the grade ladder's top rung is adapter-defined: TypeScript enforces visibility, Python does not" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts
+src/adapters/TypeScript checker rung verified
+  totality oracle: pass (8.9 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "a module chokepoint is checker-choked when an oxlint configuration over it runs coherence/chokepoint at error in its top-level rules, and reference-choked otherwise" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts
+src/adapters/the lint rule follows the import rulings
+  totality oracle: pass (8.9 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "coherence/chokepoint under oxlint: an import or a re-export outside the chokepoint goes red, a test is exempt, and removing the bypass goes green" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts
+src/adapters/the lint rule never drops a bullet in silence
+  totality oracle: pass (8.9 s, one invocation for every test the bullets name); refutation witnessed
+    1 test under "coherence/chokepoint under oxlint: a spec, a bullet or a configuration Coherence cannot read is reported at line 1 of each file under its component, never thrown" passed in one invocation of node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-reporter=./src/enforcement/node-test-reporter.ts --test-reporter-destination=<report> --test-name-pattern=<4 names> src/**/*.test.ts
+run recorded in .coherence/runs/5f0e2a41-7c1b-4e0c-9a55-115c0c0de115.jsonl: 4 enforcements, 4 pass, 0 fail, 0 not run; instrument typescript (none); 9.1 s
+[exit 0]
+session 5f0e2a41-7c1b-4e0c-9a55-115c0c0de115

@@ -1,0 +1,11 @@
+Expected to contain: "base: base1"
+(fail) labelling packets > cover only development corrections with an isolable fix that still lack a label, so a stopped run resumes where it left off [5.31ms]
+Expected to contain: "<entry id=\"gh:1:11\">"
+(fail) labelling packets > let a recheck of the caught corrections override their first label [1.73ms]
+Expected to contain: "| 1 | Frontend logics call the API only through api.* | 2 | 0 | 2 | oxlint |"
+(fail) results > report the coverage overall, for the first slice, and the agreement between labellers [2.66ms]
+Expected to contain: "Of the 2 corrections that stay in review, 1 had no candidate rule at all"
+(fail) results > count failed guards only for corrections where a candidate rule was tried [2.48ms]
+ 3 pass
+ 4 fail
+Ran 7 tests across 1 file. [70.00ms]

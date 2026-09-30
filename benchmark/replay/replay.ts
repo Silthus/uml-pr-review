@@ -84,8 +84,10 @@ export interface Session {
 
 const toolUse = z.object({ type: z.literal("tool_use"), name: z.string(), input: z.record(z.string(), z.unknown()) });
 const assistant = z.object({ type: z.literal("assistant"), message: z.object({ content: z.array(z.unknown()) }) });
-const hookRecord = z.object({ type: z.literal("system"), subtype: z.enum(["hook_started", "hook_response"]), hook_id: z.string(), hook_event: z.string(), output: z.string().optional(), received_ms: z.number() });
+const hookRecord = z.object({ type: z.literal("system"), subtype: z.enum(["hook_started", "hook_response"]), hook_id: z.string(), hook_name: z.string(), hook_event: z.string(), output: z.string().optional(), received_ms: z.number() });
 const result = z.object({ type: z.literal("result"), num_turns: z.number(), total_cost_usd: z.number(), received_ms: z.number() });
+
+const EDIT_HOOKS = /^PostToolUse:(Write|Edit|MultiEdit)$/;
 
 type ToolUse = z.infer<typeof toolUse>;
 type HookRecord = z.infer<typeof hookRecord>;
@@ -103,7 +105,7 @@ export function readSession(transcript: string, replay: ReplayCase): Session {
     turns: final?.num_turns ?? 0,
     seconds: (final?.received_ms ?? 0) / 1000,
     costUsd: final?.total_cost_usd ?? 0,
-    hookSeconds: hookLatencies(ofEvent("PostToolUse")),
+    hookSeconds: hookLatencies(hooks.filter((hook): hook is HookRecord => hook !== undefined && EDIT_HOOKS.test(hook.hook_name))),
     sessionStartSeconds: total(hookLatencies(ofEvent("SessionStart"))),
     stopSeconds: total(hookLatencies(ofEvent("Stop"))),
     proposedRoute: finalAnswer(records).includes(replay.reviewerRoute),
@@ -173,7 +175,7 @@ const EVIDENCE_FILES = [
   ["witness", "witness.txt"],
 ] as const;
 
-const TABLE_HEADER = ["Run", "Violation introduced", "Hook named the invariant after it", "Fixed in session", "Final `run` verdict", "Reviewer's route", "Turns", "Wall time", "PostToolUse hook latency (median, max)", "SessionStart / Stop hooks", "Evidence"];
+const TABLE_HEADER = ["Run", "Violation introduced", "Hook named the invariant after it", "Fixed in session", "Final `run` verdict", "Reviewer's route", "Turns", "Wall time", "Edit hook latency (median, max)", "SessionStart / Stop hooks", "Evidence"];
 
 function meetsControl(run: RunRecord): boolean {
   return run.final.bypass && run.final.verdict === "fail";
@@ -268,6 +270,8 @@ const METHOD = [
   "- **Final `run` verdict**: `coherence run --invariant <name> --json` on the final tree.",
   "- **Wall time**: from spawning `claude` to its `result` record.",
   "- **Hook times**: stream-json carries no timestamps, so the harness stamps each line on arrival (`received_ms`). A hook's time runs from its `hook_started` line to its `hook_response` line.",
+  "- **Edit hook latency**: counts only the `PostToolUse` hooks on `Write`, `Edit`, and `MultiEdit`, which are the ones that check the edited file.",
+  "- **SessionStart and Stop**: Coherence installs its hooks with a 60 s timeout. A time near 60 s means the hook was cancelled at that timeout, and its record in `hooks.jsonl` reads `\"outcome\":\"cancelled\"`.",
   "",
   "PostHog's own SessionStart scripts are removed from the `/tmp` copy of `.claude/settings.json`, identically in both arms.",
   "",

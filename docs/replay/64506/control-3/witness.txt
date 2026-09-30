@@ -1,0 +1,44 @@
+coherence built: 2.9 s
+worktree added: 5.0 s
+export COHERENCE_HOME=/tmp/replay-118-64506-control-3/coherence
+staged nodejs/src/ingestion/kitWitnessBypass.ts: import "~/cdp";
+red: 5.2 s
+$ coherence refute nodejs/src/ingestion/ingestion never reaches cdp --broke the kit staged a bypass --session kit-witness --agent kit
+refuted nodejs/src/ingestion/ingestion never reaches cdp (totality oracle): the kit staged a bypass
+  the detector went red: 1 finding of oxlint:no-restricted-imports matching "~/cdp", the first at nodejs/src/ingestion/kitWitnessBypass.ts:1
+  recorded in .coherence/runs/kit-witness.jsonl at 2026-09-30T12:07:34.163Z
+now restore the code and run: run — the refutation counts as witnessed once a later run finds the same totality oracle passing
+[exit 0]
+green: 3.3 s
+$ coherence run --invariant ingestion never reaches cdp --json --no-server --session kit-witness --agent kit
+{
+  "at": "2026-09-30T12:07:37.476Z",
+  "session": "kit-witness",
+  "agent": "kit",
+  "binding": "none: this session owns no active work order",
+  "commit": "645e1a78140",
+  "dirty": true,
+  "instrument": {
+    "language": "typescript",
+    "server": "cold"
+  },
+  "latency": 3052,
+  "invariants": [
+    {
+      "component": "nodejs/src/ingestion",
+      "name": "ingestion never reaches cdp",
+      "form": "totality oracle",
+      "verdict": "pass",
+      "refutation": "witnessed",
+      "bypasses": [],
+      "testReferences": 0,
+      "files": [],
+      "latency": 2025,
+      "reason": "/home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs reported no finding of oxlint:no-restricted-imports matching \"~/cdp\" in 1674 files"
+    }
+  ],
+  "file": "/tmp/replay-118-64506-control-3/posthog/.coherence/runs/kit-witness.jsonl",
+  "instrumentReason": null,
+  "instrumentDied": false
+}
+[exit 0]

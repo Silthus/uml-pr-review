@@ -95,8 +95,9 @@ function toolUse(id: string, name: string, input: Record<string, unknown>) {
   return { type: "assistant", message: { content: [{ type: "tool_use", id, name, input }] } };
 }
 
-function hook(subtype: "hook_started" | "hook_response", id: string, received: number, output = "", event = "PostToolUse") {
-  return { type: "system", subtype, hook_id: id, hook_name: event, hook_event: event, ...(subtype === "hook_response" ? { output, outcome: "success" } : {}), received_ms: received };
+function hook(subtype: "hook_started" | "hook_response", id: string, received: number, output = "", name = "PostToolUse:Write") {
+  const event = name.split(":")[0];
+  return { type: "system", subtype, hook_id: id, hook_name: name, hook_event: event, ...(subtype === "hook_response" ? { output, outcome: "success" } : {}), received_ms: received };
 }
 
 function transcript(...records: object[]): string {
@@ -107,14 +108,17 @@ describe("reading a replay session", () => {
   test("a hooks session that writes the bypass, is flagged by name, and edits it away", () => {
     const session = readSession(
       transcript(
-        hook("hook_started", "s", 0, "", "SessionStart"),
-        hook("hook_response", "s", 600, "", "SessionStart"),
+        hook("hook_started", "s", 0, "", "SessionStart:startup"),
+        hook("hook_response", "s", 600, "", "SessionStart:startup"),
         toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }),
         hook("hook_started", "h1", 1000),
         hook("hook_response", "h1", 3500, JSON.stringify(FLAG)),
+        toolUse("t0", "Bash", { command: "ls" }),
+        hook("hook_started", "b", 3600, "", "PostToolUse:Bash"),
+        hook("hook_response", "b", 3900, "", "PostToolUse:Bash"),
         toolUse("t2", "Edit", { file_path: FILE, old_string: BYPASSING, new_string: FIXED }),
-        hook("hook_started", "h2", 5000),
-        hook("hook_response", "h2", 6200),
+        hook("hook_started", "h2", 5000, "", "PostToolUse:Edit"),
+        hook("hook_response", "h2", 6200, "", "PostToolUse:Edit"),
         hook("hook_started", "e", 7000, "", "Stop"),
         hook("hook_response", "e", 42500, "", "Stop"),
         { type: "result", subtype: "success", num_turns: 4, duration_ms: 42000, total_cost_usd: 0.5, received_ms: 43000 },

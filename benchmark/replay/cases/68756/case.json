@@ -32,6 +32,7 @@
     "The chokepoint form resolved, so the ruff TID251 fallback was not needed. `coherence run` resolved both names and graded the bullet `reference-choked`, and the kit's witness went red on a staged import, then green. The hook that gives feedback during the build is Coherence's own `PostToolUse` check, unchanged from what ships upstream.",
     "At this commit, `is_impersonated_session` in `model_activity.py` is a small wrapper function, not a re-export. Coherence protects it the same way.",
     "Pre-declaration fixes: three files reached the protected function at the merge base, not the single file the spec expected. All three now call `is_impersonated`, identically in both arms: `posthog/event_usage.py`, `posthog/api/file_system/file_system_logging.py`, and `products/signals/backend/views.py`.",
-    "Direct imports from `loginas.utils` (about 15 files) are outside the chokepoint form, and this replay does not need them."
+    "Direct imports from `loginas.utils` (about 15 files) are outside the chokepoint form, and this replay does not need them.",
+    "The enforcer is Coherence's reference check, not a linter. Each run's `lint.txt` is plain ruff on the final file, recorded only for completeness, so it is clean even when the bypass is present."
   ]
 }

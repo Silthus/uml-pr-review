@@ -1,0 +1,23 @@
+{
+  "pr": 68756,
+  "arm": "hooks",
+  "n": 3,
+  "exitCode": 0,
+  "session": {
+    "introduced": true,
+    "flagged": true,
+    "turns": 4,
+    "seconds": 281.94,
+    "costUsd": 0.9274262,
+    "hookSeconds": [
+      0.283,
+      14.959,
+      0.268
+    ]
+  },
+  "final": {
+    "bypass": true,
+    "reviewerRoute": false,
+    "verdict": "fail"
+  }
+}

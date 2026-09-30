@@ -1,0 +1,26 @@
+{
+  "pr": 53044,
+  "variant": "draft",
+  "arm": "control",
+  "n": 1,
+  "exitCode": 0,
+  "session": {
+    "introduced": true,
+    "flagged": false,
+    "turns": 17,
+    "seconds": 109.556,
+    "costUsd": 0.6902608000000001,
+    "hookSeconds": [],
+    "sessionStartSeconds": 0,
+    "stopSeconds": 0,
+    "cancelledHooks": [],
+    "ending": "success",
+    "proposedRoute": false,
+    "closingQuestion": ""
+  },
+  "final": {
+    "bypass": true,
+    "reviewerRoute": true,
+    "verdict": "fail"
+  }
+}

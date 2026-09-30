@@ -1,0 +1,8 @@
+ M .claude/settings.json
+ M .oxlintrc.json
+ M frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
+?? .coherence/runs/kit-witness.jsonl
+?? .coherence/runs/replay-final.jsonl
+?? .coherence/traces/3cfe782e-2b1f-40be-97b4-58f8faa7c4d6.jsonl
+?? coherence.config.json
+?? frontend/src/scenes/notebooks/Notebooks.spec.md

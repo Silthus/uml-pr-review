@@ -4,7 +4,7 @@ import { basename, dirname, join, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { defaultEnvironment, setUp, tearDown, witness } from "./kit/kit.ts";
-import { declareCase, EVIDENCE_FILES, invariantName, isVariant, lintTarget, loadCase, readSession, renderReport, VARIANTS, type Arm, type ReplayCase, type RunRecord, type Variant } from "./replay.ts";
+import { declareCase, EVIDENCE_FILES, invariantName, isVariant, lintTarget, loadCase, readSession, renderReport, rereadSession, TRIMMED_MARK, VARIANTS, type Arm, type ReplayCase, type RunRecord, type Session, type Variant } from "./replay.ts";
 import { auditTranscript, keepOnlyEditHook, renderV2, renderV3, type CommandAudit } from "./v2.ts";
 
 const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>] [--variant draft|intent] [--kits /tmp/replay-<ticket>]\n       bun benchmark/replay/run.ts report";
@@ -12,6 +12,7 @@ const EVIDENCE = resolve(import.meta.dir, "../../docs/replay");
 const POSTHOG = join(homedir(), "posthog");
 const SESSION_TIMEOUT_MS = 20 * 60 * 1000;
 const TRIM_AT = 4000;
+const KITS_ROOT = "/tmp/replay-";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -78,7 +79,7 @@ function stopCoherenceServers(dir: string) {
 const PRIVATE_KEYS = new Set(["signature"]);
 
 function trimmed(value: unknown): unknown {
-  if (typeof value === "string") return value.length > TRIM_AT ? `${value.slice(0, TRIM_AT)}…[trimmed ${value.length - TRIM_AT} chars]` : value;
+  if (typeof value === "string") return value.length > TRIM_AT ? `${value.slice(0, TRIM_AT)}${TRIMMED_MARK}${value.length - TRIM_AT} chars]` : value;
   if (Array.isArray(value)) return value.map(trimmed);
   if (value !== null && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([key]) => !PRIVATE_KEYS.has(key)).map(([key, inner]) => [key, trimmed(inner)]));
   return value;
@@ -223,8 +224,13 @@ const recordedRun = z.object({
 
 function rescored(folder: string): RunRecord {
   const recorded = recordedRun.parse(JSON.parse(readFileSync(join(folder, "run.json"), "utf8")));
-  const session = readSession(readFileSync(join(folder, "transcript.jsonl"), "utf8"), loadCase(String(recorded.pr)));
-  if (session.introduced !== recorded.session.introduced || session.flagged !== recorded.session.flagged) throw new Error(`${folder}: the trimmed transcript no longer reads as the session run.json recorded`);
+  const evidence = (file: string) => readFileSync(join(folder, file), "utf8");
+  let session: Session;
+  try {
+    session = rereadSession(evidence("transcript.jsonl"), evidence("hooks.jsonl"), recorded, loadCase(String(recorded.pr)));
+  } catch (error) {
+    throw new Error(`${folder}: ${error instanceof Error ? error.message : String(error)}`);
+  }
   const record: RunRecord = { ...recorded, session };
   writeFileSync(join(folder, "run.json"), `${JSON.stringify(record, null, 2)}\n`);
   return record;
@@ -291,7 +297,7 @@ async function main() {
     process.exit(64);
   }
   const variant = values.variant;
-  if (variant !== undefined && !isVariant(variant)) {
+  if ((variant !== undefined && !isVariant(variant)) || !values.kits.startsWith(KITS_ROOT)) {
     console.error(USAGE);
     process.exit(64);
   }

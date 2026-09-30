@@ -1,0 +1,3 @@
+$ coherence run --status
+✕ frontend/src/scenes/notebooks/buttons are LemonButtons  totality oracle "lint oxlint:react/forbid-elements matching "<button>"": structural defect 2026-09-30: 1 finding of oxlint:react/forbid-elements matching "<button>", the first at frontend/src/scenes/notebooks/Notebook/TableMenu.tsx:115
+latest run 2026-09-30T13:43:01.834Z by replay (replay-final) at 781a8ca5877, dirty; 3 runs; 1 structural defect

@@ -2,7 +2,7 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { declareCase, loadCase, readSession, renderReport, type RunRecord } from "./replay.ts";
+import { declareCase, loadCase, readSession, renderReport, rereadSession, TRIMMED_MARK, type RunRecord } from "./replay.ts";
 
 const scratch = mkdtempSync(join(tmpdir(), "replay-test-"));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
@@ -241,6 +241,37 @@ describe("reading a replay session", () => {
     const session = readSession(transcript(toolUse("t1", "Write", { file_path: FILE, content: BYPASSING }), answer, { type: "result", subtype: "success", num_turns: 2, total_cost_usd: 0.1, received_ms: 900 }), loadCase("64506"));
 
     expect(session).toMatchObject({ proposedRoute: true, closingQuestion: "Should I switch to `~/common/hog-transformations/hog-transformer.interface`?" });
+  });
+
+  describe("re-reading a recorded run", () => {
+    const trimmedWrite = toolUse("t1", "Write", { file_path: FILE, content: `import x from 'y'\n${TRIMMED_MARK}9000 chars]` });
+    const namingHook = transcript(hook("hook_started", "h1", 1000), hook("hook_response", "h1", 2000, JSON.stringify(FLAG)));
+
+    function recorded(introduced: boolean, flagged: boolean, bypass: boolean) {
+      return { session: { introduced, flagged }, final: { bypass } };
+    }
+
+    test("keeps the recorded reading when the bypassing edit was trimmed and the uncut hook log names the invariant", () => {
+      const session = rereadSession(transcript(trimmedWrite), namingHook, recorded(true, true, false), loadCase("64506"));
+
+      expect(session).toMatchObject({ introduced: true, flagged: true });
+    });
+
+    test("keeps a recorded bypass the trimmed edit hides when the final file still holds it", () => {
+      const session = rereadSession(transcript(trimmedWrite), "", recorded(true, false, true), loadCase("64506"));
+
+      expect(session).toMatchObject({ introduced: true, flagged: false });
+    });
+
+    test("stops when a trimmed edit hides a recorded flag that no uncut evidence backs", () => {
+      expect(() => rereadSession(transcript(trimmedWrite), "", recorded(true, true, false), loadCase("64506"))).toThrow("no uncut evidence backs");
+    });
+
+    test("stops when the transcript reads differently and no edit to the file was trimmed", () => {
+      const intact = transcript(toolUse("t1", "Write", { file_path: FILE, content: FIXED }));
+
+      expect(() => rereadSession(intact, namingHook, recorded(true, true, false), loadCase("64506"))).toThrow("no longer reads as the session run.json recorded");
+    });
   });
 
   test("a control session that never writes the file introduced nothing", () => {

@@ -1,0 +1,12 @@
+$ sha256sum ~/posthog/.claude/settings.json
+aa977c06716e5ec6abbb1156209b33c9267d18a98b18ce38070cc2e9700a082d  /home/coder/posthog/.claude/settings.json
+$ git -C ~/posthog status --porcelain | wc -l
+0
+$ git -C ~/posthog for-each-ref refs/uml-pr-review | wc -l
+0
+$ git -C ~/posthog worktree list | grep -c replay-127
+0
+$ ls -d /tmp/replay-127-53044-* 2>/dev/null | wc -l
+0
+$ pgrep -f 'replay-127-53044' | wc -l
+0

@@ -195,10 +195,48 @@ function toolUsesIn(record: unknown): ToolUse[] {
   });
 }
 
-function introducesBypass(use: ToolUse, replay: ReplayCase): boolean {
+export const TRIMMED_MARK = "…[trimmed ";
+
+function editsCaseFile(use: ToolUse, replay: ReplayCase): boolean {
   const path = use.input["file_path"];
-  if (typeof path !== "string" || !path.endsWith(`/${replay.file}`)) return false;
-  return writtenText(use).includes(replay.bypass);
+  return typeof path === "string" && path.endsWith(`/${replay.file}`);
+}
+
+function introducesBypass(use: ToolUse, replay: ReplayCase): boolean {
+  return editsCaseFile(use, replay) && writtenText(use).includes(replay.bypass);
+}
+
+function jsonLines(text: string): unknown[] {
+  return text.split("\n").filter((line) => line.trim() !== "").map((line): unknown => JSON.parse(line));
+}
+
+function hasTrimmedEdit(transcript: string, replay: ReplayCase): boolean {
+  return jsonLines(transcript).flatMap(toolUsesIn).some((use) => editsCaseFile(use, replay) && writtenText(use).includes(TRIMMED_MARK));
+}
+
+function hookLogNamesInvariant(hooks: string, replay: ReplayCase): boolean {
+  return jsonLines(hooks).some((record) => {
+    const hook = hookRecord.safeParse(record);
+    return hook.success && flags(hook.data, replay);
+  });
+}
+
+export interface RecordedReading {
+  session: Pick<Session, "introduced" | "flagged">;
+  final: Pick<RunRecord["final"], "bypass">;
+}
+
+function backedByUncutEvidence(recorded: RecordedReading, hooks: string, replay: ReplayCase): boolean {
+  const named = hookLogNamesInvariant(hooks, replay);
+  return (!recorded.session.flagged || named) && (!recorded.session.introduced || recorded.final.bypass || named);
+}
+
+export function rereadSession(transcript: string, hooks: string, recorded: RecordedReading, replay: ReplayCase): Session {
+  const reread = readSession(transcript, replay);
+  if (reread.introduced === recorded.session.introduced && reread.flagged === recorded.session.flagged) return reread;
+  if (!hasTrimmedEdit(transcript, replay)) throw new Error("the trimmed transcript no longer reads as the session run.json recorded");
+  if (!backedByUncutEvidence(recorded, hooks, replay)) throw new Error("the transcript trimmed the bypassing edit, and no uncut evidence backs the session run.json recorded");
+  return { ...reread, introduced: recorded.session.introduced, flagged: recorded.session.flagged };
 }
 
 function writtenText(use: ToolUse): string {
@@ -424,12 +462,12 @@ function forbidInOxlint(worktree: string, ban: ForbiddenElement) {
   writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
 }
 
-const coherenceOxlint = z.looseObject({ lint: z.looseObject({ oxlint: z.looseObject({ command: z.array(z.string()).min(1) }) }) });
+const coherenceOxlint = z.looseObject({ lint: z.looseObject({ oxlint: z.looseObject({ command: z.tuple([z.string()]).rest(z.string()) }) }) });
 
 function pointCoherenceAt(worktree: string, lint: ForbiddenElement) {
   const path = join(worktree, "coherence.config.json");
   const config = coherenceOxlint.parse(JSON.parse(readFileSync(path, "utf8")));
   const [oxlint] = config.lint.oxlint.command;
-  config.lint.oxlint.command = [oxlint!, "-c", lint.config, "--format", "json", lint.target];
+  config.lint.oxlint.command = [oxlint, "-c", lint.config, "--format", "json", lint.target];
   writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
 }

@@ -23,5 +23,11 @@
     "target": "frontend/src/scenes/notebooks"
   },
   "notes": [],
-  "v2Notes": []
+  "v2Notes": [
+    "Draft: every run wrote the draft's raw `<button>` grip. In 3 of 3 hooks runs the edit hook then printed `✕ frontend/src/scenes/notebooks/buttons are LemonButtons` with the lint message, and the agent rewrote the grip as a `LemonButton` with `size=\"xsmall\"` in the same session, which is the shape of the reviewer's fix `b43aacf` ([hooks 2's diff](v2/53044/draft/hooks-2/final.diff)). All 3 control runs kept it ([control 1's diff](v2/53044/draft/control-1/final.diff)).",
+    "Draft overhead: +2 s median wall time and +0 turns, with the TypeScript edit hook at about 1 s per edit. v2's Python edit hook took about 15 s.",
+    "Intent: the violation arose in 1 of 3 control runs and 1 of 3 hooks runs. Hooks 2 wrote a raw `<button>`, was flagged, and switched to `LemonButton`. By v2's rule, 2 of 3 control runs avoiding it unaided makes the variant inconclusive. Control 2 and 3 read the uncommitted `Notebooks.spec.md` before they wrote the file ([control 2](v2/53044/intent/control-2/transcript.jsonl)), so the declaration, not the hook, reached them. This is v2's \"visible in both arms\" threat, observed here.",
+    "In 6 of 12 runs the first `Write` of `TableMenu.tsx` is longer than the transcript's 4,000-character cut, and its raw `<button` falls past it: draft control 1 and 3, draft hooks 1 and 3, intent control 1, and intent hooks 2. Their trimmed transcripts cannot show the bypassing edit, so for them the Violation introduced and Hook named columns are the reading `run.json` took from the untrimmed stream when the run ended. `report` keeps that reading only when uncut evidence backs it: `hooks.jsonl` names the full invariant for each flagged run, and the final file still holds the raw `<button` for each unflagged one. On any other disagreement it stops. A future replay should keep edit inputs whole in the transcript.",
+    "Agents tried `npx oxlint`, `npx oxfmt`, `npx tsc`, and `pnpm … typescript:check` in 11 of 12 runs. Headless, each was denied and never ran; the command audit above counts only calls that ran."
+  ]
 }

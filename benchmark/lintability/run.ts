@@ -6,9 +6,11 @@ import { liveSources } from "./sources.ts";
 
 const usage = `Usage: bun benchmark/lintability/run.ts <stage> [options]
 
-Stages (each one is resumable: it only packs corrections that still lack a label):
+Stages (each one is resumable: it only packs corrections that still lack a label,
+so run a stage again only after the labels for its previous packets have landed):
   calibration  write the packet for the 50-row calibration sample
   label        write packets for every development correction without a label
+  recheck      write packets that relabel every correction the label stage caught
   agreement    write packets for the 60-row sample the second labeller labels
   rules        write the packet that groups caught corrections by general rule
   status       show how many corrections each stage has labelled
@@ -32,6 +34,7 @@ const labelling = (stage: LabellingStage) => () => preparePackets(workspace, sta
 const stages: Record<string, () => Promise<string>> = {
   calibration: labelling("calibration"),
   label: labelling("label"),
+  recheck: labelling("recheck"),
   agreement: labelling("agreement"),
   rules: () => prepareRulePackets(workspace),
   status: () => status(workspace),

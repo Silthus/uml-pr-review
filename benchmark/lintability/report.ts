@@ -1,6 +1,6 @@
 import type { Subtype } from "../corrections/labels.ts";
 import { subtypes } from "../corrections/labels.ts";
-import { type Catchable, catchables, type GuardName, guardNames, judgmentKinds, type LintabilityLabel, ruleKinds, type Tool, tools } from "./labels.ts";
+import { type Catchable, catchables, declarableKinds, type GuardName, guardNames, type LintabilityLabel, ruleKinds, type Tool, tools } from "./labels.ts";
 import type { FixStat } from "./sources.ts";
 
 export const languages = ["TypeScript/JavaScript", "Python", "Rust", "other"] as const;
@@ -107,13 +107,14 @@ export function report(rows: LabelledRow[], twice: LabelledTwice[]): string {
 function method(rows: LabelledRow[], twice: LabelledTwice[]): string[] {
   return [
     `1. **Population.** The ${rows.length} development corrections in \`docs/corrections/corpus.jsonl\` that have an isolable fix commit (#103). Held-out rows are not read.`,
-    "2. **Rubric.** `benchmark/lintability/rubric.md` applies #107's decision order, twelve kinds, and tiers, and adds four honesty guards: `general` (a team would declare the rule up front, for the whole scope), `existed` (what the rule points to existed at `before`), `syntactic` (a linter decides it without judgment), and `firesAndClears` (the rule flags the `before` code at the commented site and not the corrected code). `catchable` is `yes` only when the kind is declarable and no guard fails; every failed guard is recorded in `failedGuards`.",
+    "2. **Rubric.** `benchmark/lintability/rubric.md` applies #107's decision order, twelve kinds, and tiers, and adds four honesty guards: `general` (a team would declare the rule up front, for the whole scope), `existed` (what the rule points to existed where the PR branched from master), `syntactic` (a linter decides it without judgment), and `firesAndClears` (the rule flags the `before` code at the commented site and not the corrected code). The ticket names the first three; `firesAndClears` is #107's second gate, and `tier` is #107's tier, both added here. `catchable` is `yes` only when the kind is declarable and no guard fails; every failed guard is recorded in `failedGuards`.",
     "3. **Calibration.** One Opus labeller labelled a seeded 50-row sample with the draft rubric. Its eight reported ambiguities became eight sentences of the frozen rubric (listed in `benchmark/lintability/prompts.md`); the calibration labels were then discarded and those rows labelled again.",
-    "4. **Labelling.** Fresh Opus sub-agents, 30 corrections per batch, each read the comment body, the fix commit's diff of the commented file, and checked `existed` against the code at `before` with read-only `git show`, `git grep`, and `git ls-tree` on the local PostHog object store. Batches are resumable: `bun benchmark/lintability/run.ts label` packs only the corrections that still lack a label.",
-    `5. **Agreement.** A second, independent Opus labeller labelled a seeded ${twice.length}-row sample with the same frozen rubric and prompt, without seeing the first labels.`,
-    "6. **Rule groups.** One Opus sub-agent gave every caught correction a canonical rule name so that corrections one declaration would catch share a name; the top rules are counted from those names.",
+    "4. **Labelling.** Fresh Opus sub-agents, 30 corrections per batch, each read the comment body, the fix commit's diff of the commented file, and checked `existed` in the code with read-only `git show`, `git grep`, and `git ls-tree` on the local PostHog object store. Batches are resumable: `bun benchmark/lintability/run.ts label` packs only the corrections that still lack a label.",
+    "5. **Recheck.** The adversarial review showed that the first round checked `existed` at `before`, which already holds the PR's own earlier commits, and that one hindsight rule passed `general`. The rubric now checks `existed` at the PR's merge base with master and fails rules that would flag many correct uses. Fresh Opus sub-agents relabelled every correction the first round caught with the revised rubric; their labels replace the first ones. A stricter guard can only turn a catch into a miss, so the other rows were not relabelled.",
+    `6. **Agreement.** A second, independent Opus labeller labelled a seeded ${twice.length}-row sample with the frozen rubric and prompt of the first round, without seeing the first labels. Kappa compares it with the final labels, recheck included.`,
+    "7. **Rule groups.** One Opus sub-agent gave every caught correction a canonical rule name so that corrections one declaration would catch share a name; the top rules are counted from those names.",
     "",
-    "Limits: the fix locator is right about 68% of the time (#103), so labels are judged against the comment, not the located commit. Labels are single-pass model judgments; the agreement section measures how far a second labeller moves them. The rubric errs towards review, so the numbers are an upper bound only in the sense that each `yes` still needs its rule written and adopted.",
+    "Limits: the fix locator is right about 68% of the time (#103), so labels are judged against the comment, not the located commit. Labels are single-pass model judgments; the agreement section measures how far a second labeller moves them. The rubric errs towards review when a label is unsure, so the numbers lean low; every `yes` still needs its rule written, adopted, and baselined before it catches anything.",
   ];
 }
 
@@ -123,8 +124,11 @@ function headline(rows: LabelledRow[]): string[] {
   const sliceLanguages = rows.filter(({ language }) => language === "TypeScript/JavaScript" || language === "Python");
   const slice = yes.filter(inFirstSlice);
   const slicePartial = partial.filter(inFirstSlice);
+  const declarable = rows.filter(({ ruleKind }) => (declarableKinds as readonly string[]).includes(ruleKind));
   return [
-    `**${yes.length} of ${rows.length} development corrections (${percent(yes.length, rows.length)})** are catchable at write time, and ${partial.length} more (${percent(partial.length, rows.length)}) partly. Counting partial catches, the ceiling is ${yes.length + partial.length} of ${rows.length} (${percent(yes.length + partial.length, rows.length)}). Every other correction failed an honesty guard or is a judgment kind, and stays in review. #107's 56-row pilot, labelled from quotes only, guessed about 14%.`,
+    `**${yes.length} of ${rows.length} development corrections (${percent(yes.length, rows.length)})** are catchable at write time, and ${partial.length} more (${percent(partial.length, rows.length)}) partly. Counting partial catches, the ceiling is ${yes.length + partial.length} of ${rows.length} (${percent(yes.length + partial.length, rows.length)}). Every other correction failed an honesty guard or is a judgment kind, and stays in review.`,
+    "",
+    `${declarable.length} of ${rows.length} (${percent(declarable.length, rows.length)}) land in a declarable kind at all; #107's 56-row pilot, labelled from quotes only, put about 14% there. The gap between that share and the catch rate is the honesty guards at work.`,
     "",
     `Through the tools of the first slice (TypeScript through oxlint \`jsPlugins\`, Python through \`tach\`, import-linter, ruff, and semgrep), the first slice catches **${slice.length} of ${rows.length} (${percent(slice.length, rows.length)})**, which is ${slice.length} of the ${sliceLanguages.length} TypeScript and Python corrections (${percent(slice.length, sliceLanguages.length)}); ${slicePartial.length} more are partly caught.`,
   ];
@@ -143,13 +147,13 @@ function coverageTable<K extends string>(title: string, keys: readonly K[], rows
 
 function guardSection(rows: LabelledRow[]): string[] {
   const rejected = rows.filter(({ catchable }) => catchable === "no");
-  const judgmentOnly = rejected.filter(({ failedGuards, ruleKind }) => failedGuards.length === 0 && (judgmentKinds as readonly string[]).includes(ruleKind));
+  const tried = rejected.filter(({ ruleSketch }) => ruleSketch !== "");
   return [
-    `Of the ${rejected.length} corrections that stay in review, this is how often each guard failed (a correction can fail several). ${judgmentOnly.length} failed no guard but are a judgment kind with no candidate rule.`,
+    `Of the ${rejected.length} corrections that stay in review, ${rejected.length - tried.length} had no candidate rule at all: they are a judgment kind by the decision order, and their guards are \`fail\` by convention, so they are not counted below. For the ${tried.length} where a candidate rule was tried, this is how often each guard failed (a rule can fail several).`,
     "",
     "| Guard | Failed |",
     "| --- | --- |",
-    ...guardNames.map((name) => `| ${name} | ${rejected.filter(({ failedGuards }) => failedGuards.includes(name)).length} |`),
+    ...guardNames.map((name) => `| ${name} | ${tried.filter(({ failedGuards }) => failedGuards.includes(name)).length} |`),
   ];
 }
 
@@ -159,10 +163,22 @@ function topRules(rows: LabelledRow[]): string[] {
     (row) => row.rule!,
   );
   const ranked = [...groups.entries()]
-    .map(([rule, members]) => ({ rule, yes: members.filter(({ catchable }) => catchable === "yes").length, partial: members.filter(({ catchable }) => catchable === "partial").length, tools: [...new Set(members.map(({ tool }) => tool))].sort().join(", ") }))
-    .sort((a, b) => b.yes - a.yes || b.partial - a.partial || a.rule.localeCompare(b.rule))
+    .map(([rule, members]) => ({
+      rule,
+      yes: members.filter(({ catchable }) => catchable === "yes").length,
+      partial: members.filter(({ catchable }) => catchable === "partial").length,
+      pullRequests: new Set(members.map(({ pr }) => pr)).size,
+      tools: [...new Set(members.map(({ tool }) => tool))].sort().join(", "),
+    }))
+    .sort((a, b) => b.yes + b.partial - (a.yes + a.partial) || b.yes - a.yes || b.pullRequests - a.pullRequests || a.rule.localeCompare(b.rule))
     .slice(0, topRuleCount);
-  return ["Caught corrections grouped by the general rule that catches them, ranked by full catches.", "", "| # | Rule | Yes | Partial | Tools |", "| --- | --- | --- | --- | --- |", ...ranked.map(({ rule, yes, partial, tools }, index) => `| ${index + 1} | ${rule} | ${yes} | ${partial} | ${tools} |`)];
+  return [
+    "Caught corrections grouped by the general rule that catches them, ranked by the corrections each rule catches fully or partly, then by full catches.",
+    "",
+    "| # | Rule | Yes | Partial | PRs | Tools |",
+    "| --- | --- | --- | --- | --- | --- |",
+    ...ranked.map(({ rule, yes, partial, pullRequests, tools }, index) => `| ${index + 1} | ${rule} | ${yes} | ${partial} | ${pullRequests} | ${tools} |`),
+  ];
 }
 
 function agreementSection(twice: LabelledTwice[]): string[] {
@@ -188,9 +204,9 @@ function replayCandidates(rows: LabelledRow[]): string[] {
     return [
       `### ${language}`,
       "",
-      "| PR | File | Correction | `before` | Rule sketch | Fix size |",
-      "| --- | --- | --- | --- | --- | --- |",
-      ...picked.map((row) => `| [#${row.pr}](${row.prUrl}) | \`${row.path}\` | [${cell(row.quote)}](${row.commentUrl}) | \`${row.before}\` | ${cell(row.ruleSketch)} | ${row.fixStat.files} ${row.fixStat.files === 1 ? "file" : "files"}, +${row.fixStat.added}/−${row.fixStat.removed} |`),
+      "| PR | File | Correction | `before` | Rule sketch | Fix size | Replay |",
+      "| --- | --- | --- | --- | --- | --- | --- |",
+      ...picked.map((row) => `| [#${row.pr}](${row.prUrl}) | \`${row.path}\` | [${cell(row.quote)}](${row.commentUrl}) | \`${row.before}\` | ${cell(row.ruleSketch)} | ${row.fixStat.files} ${row.fixStat.files === 1 ? "file" : "files"}, +${row.fixStat.added}/−${row.fixStat.removed} | ${selfContainment(row.fixStat)} |`),
     ];
   };
   return [
@@ -200,6 +216,12 @@ function replayCandidates(rows: LabelledRow[]): string[] {
     "",
     ...section("Python"),
   ];
+}
+
+function selfContainment({ files }: FixStat): string {
+  if (files === 1) return "self-contained: the fix is one file";
+  if (files <= 3) return "small: the fix spans a few files";
+  return "wide: replay only the commented file's change";
 }
 
 function preference(path: string): number {

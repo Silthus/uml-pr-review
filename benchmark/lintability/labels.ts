@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
 import { readJsonFiles } from "../../coherence/validation/corrections.ts";
@@ -44,6 +44,7 @@ function inconsistencies(label: z.infer<typeof labelFieldsSchema>): string[] {
   const declarable = (declarableKinds as readonly string[]).includes(label.ruleKind);
   return [
     caught && failed.length > 0 ? `catchable "${label.catchable}" but guards failed: ${failed.join(", ")}` : null,
+    caught && guardNames.some((name) => name !== "existed" && label.guards[name] !== "pass") ? `catchable "${label.catchable}" needs general, syntactic, and firesAndClears to pass` : null,
     caught && !declarable ? `catchable "${label.catchable}" needs a declarable kind, not ${label.ruleKind}` : null,
     caught && (label.tool === "review-only" || label.tier === "not-lintable") ? `catchable "${label.catchable}" needs a linting tool and tier` : null,
     !caught && (label.tool !== "review-only" || label.tier !== "not-lintable") ? `catchable "no" must be review-only and not-lintable` : null,
@@ -56,10 +57,21 @@ export function failedGuards(label: Pick<LintabilityLabel, "guards">): GuardName
 }
 
 export async function readStage<T extends { id: string }>(directory: string, schema: z.ZodType<T>): Promise<Map<string, T>> {
-  await mkdir(directory, { recursive: true });
   const labels = new Map<string, T>();
-  for (const label of await readJsonFiles(directory, schema)) labels.set(label.id, label);
+  if (!(await exists(directory))) return labels;
+  for (const label of await readJsonFiles(directory, schema)) {
+    const kept = labels.get(label.id);
+    if (kept !== undefined && JSON.stringify(kept) !== JSON.stringify(label)) throw new Error(`${label.id} is labelled twice in ${directory}; delete one of the batch files`);
+    labels.set(label.id, label);
+  }
   return labels;
+}
+
+async function exists(directory: string): Promise<boolean> {
+  return readdir(directory).then(
+    () => true,
+    () => false,
+  );
 }
 
 export function stageDirectory(work: string, stage: string): string {

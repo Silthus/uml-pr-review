@@ -7,10 +7,10 @@ import { type LabelledRow, languageOf, report } from "./report.ts";
 import type { Evidence, Sources } from "./sources.ts";
 
 export type LintabilityWorkspace = { corpus: string; work: string; docs: string };
-export type LabellingStage = "calibration" | "label" | "agreement";
+export type LabellingStage = "calibration" | "label" | "recheck" | "agreement";
 type Stage = LabellingStage | "rules";
 
-const batchSizes: Record<Stage, number> = { calibration: 50, label: 30, agreement: 30, rules: 250 };
+const batchSizes: Record<Stage, number> = { calibration: 50, label: 30, recheck: 8, agreement: 30, rules: 250 };
 export const sampleSizes = { calibration: 50, agreement: 60 };
 const bodyLimit = 1500;
 const diffLineLimit = 300;
@@ -31,7 +31,7 @@ export async function prepareRulePackets(workspace: LintabilityWorkspace): Promi
 }
 
 export async function status(workspace: LintabilityWorkspace): Promise<string> {
-  const stages: LabellingStage[] = ["calibration", "label", "agreement"];
+  const stages: LabellingStage[] = ["calibration", "label", "recheck", "agreement"];
   const lines = await Promise.all(
     stages.map(async (stage) => {
       const items = await stageRows(workspace, stage);
@@ -77,10 +77,15 @@ export async function writeResults(workspace: LintabilityWorkspace, sources: Sou
 }
 
 async function completeLabels(workspace: LintabilityWorkspace): Promise<Map<string, LintabilityLabel>> {
-  const labels = await readStage(stageDirectory(workspace.work, "label"), lintabilityLabelSchema);
+  const labels = await firstLabels(workspace);
+  const rechecked = await readStage(stageDirectory(workspace.work, "recheck"), lintabilityLabelSchema);
   const missing = (await developmentRows(workspace)).filter(({ id }) => !labels.has(id));
   if (missing.length > 0) throw new Error(`${missing.length} corrections have no label yet: ${abbreviated(missing.map(({ id }) => id))}`);
-  return labels;
+  return new Map([...labels, ...rechecked]);
+}
+
+async function firstLabels(workspace: LintabilityWorkspace): Promise<Map<string, LintabilityLabel>> {
+  return readStage(stageDirectory(workspace.work, "label"), lintabilityLabelSchema);
 }
 
 async function unlabelled(workspace: LintabilityWorkspace, stage: LabellingStage): Promise<CorpusRow[]> {
@@ -90,7 +95,12 @@ async function unlabelled(workspace: LintabilityWorkspace, stage: LabellingStage
 
 async function stageRows(workspace: LintabilityWorkspace, stage: LabellingStage): Promise<CorpusRow[]> {
   const rows = await developmentRows(workspace);
-  return stage === "label" ? rows : seededSample(rows, sampleSizes[stage], `110:${stage}`);
+  if (stage === "label") return rows;
+  if (stage === "recheck") {
+    const labels = await firstLabels(workspace);
+    return rows.filter(({ id }) => (labels.get(id)?.catchable ?? "no") !== "no");
+  }
+  return seededSample(rows, sampleSizes[stage], `110:${stage}`);
 }
 
 async function developmentRows(workspace: LintabilityWorkspace): Promise<CorpusRow[]> {
@@ -123,12 +133,13 @@ async function freshRound(directory: string, stage: Stage): Promise<number> {
   return round;
 }
 
-function entryOf(row: CorpusRow, { body, diff, stat }: Evidence): string {
+function entryOf(row: CorpusRow, { body, diff, stat, base }: Evidence): string {
   const diffLines = diff.split("\n");
   return [
     `<entry id="${row.id}">`,
     `PR #${row.pr} (${row.prUrl}), file ${row.path}${row.line === null ? "" : `, line ${row.line}`}, corpus sub-type ${row.subtype}`,
     `before: ${row.before}  fix: ${row.fix} (the fix commit touches ${stat.files} files, +${stat.added}/-${stat.removed})`,
+    `base: ${base} (where the PR branched from master; check \`existed\` here)`,
     "",
     body.length > bodyLimit ? `${body.slice(0, bodyLimit)} [...]` : body,
     "",

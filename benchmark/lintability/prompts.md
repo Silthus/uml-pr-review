@@ -1,13 +1,13 @@
 # Labeller prompts, exactly as sent
 
-Each prompt goes to one fresh Opus sub-agent through Claude Code's Agent tool. `<repo>` is this repository's checkout, `<work>` is the working directory of `bun benchmark/lintability/run.ts` (default `benchmark/.cache/lintability`, not committed because it holds comment bodies and diffs), and `<packet>` is the packet name, for example `label-r1-007`. `<stage>` is `calibration`, `label`, or `agreement`: the three use the same prompt.
+Each prompt goes to one fresh Opus sub-agent through Claude Code's Agent tool. `<repo>` is this repository's checkout, `<work>` is the working directory of `bun benchmark/lintability/run.ts` (default `benchmark/.cache/lintability`, not committed because it holds comment bodies and diffs), and `<packet>` is the packet name, for example `label-r1-007`. `<stage>` is `calibration`, `label`, `recheck`, or `agreement`: all four use the same prompt.
 
 ## Labelling (calibration, label, agreement)
 
 ```text
 You are an independent labeller. Work alone. Read the rubric at <repo>/benchmark/lintability/rubric.md, then read the corrections at <work>/packets/<packet>.md (all of it, in chunks if needed). Do not read any other file, do not search this repository, and do not use the web.
 
-To check the `existed` guard against the code at a correction's `before` commit, you may run only these read-only commands: `cd /home/coder/posthog && git show <before>:<path>`, `cd /home/coder/posthog && git grep -n '<token>' <before> -- '<pathspec>'`, and `cd /home/coder/posthog && git ls-tree -r --name-only <before> -- '<dir>'`. Never run any other command in that repository and never write to it.
+To check the `existed` guard against the code at a correction's `base` commit (the `before` commit in the first labelling round), you may run only these read-only commands: `cd /home/coder/posthog && git show <base>:<path>`, `cd /home/coder/posthog && git grep -n '<token>' <base> -- '<pathspec>'`, and `cd /home/coder/posthog && git ls-tree -r --name-only <base> -- '<dir>'`. Never run any other command in that repository and never write to it.
 
 Label every correction in the order given, following the rubric exactly. Before writing, check each label against the rubric's step 3: `yes` and `partial` need a declarable kind, no failed guard, a tier other than not-lintable, and a tool other than review-only; `no` needs tier not-lintable and tool review-only; a `no` with a declarable kind must mark the guard that failed.
 
@@ -38,3 +38,7 @@ The calibration labeller labelled the 50 rows 2 `yes`, 2 `partial`, 46 `no`, and
 6. When the replacement existed but had to be extended for this case, `existed` passes and the correction is at most `partial`.
 7. When no judgment kind fits a failed rule, `design-other`.
 8. oxlint's native `no-restricted-imports` and `no-restricted-properties` are `lintable-now`; code shapes are custom. YAML, SQL, and other files use `semgrep`.
+
+## Recheck after review
+
+The adversarial review found that `existed` had been checked at `before`, which already holds the PR's own earlier commits, so a helper the PR itself added counted as existing. It also found one hindsight rule labelled `yes`. The rubric now checks `existed` at `base` (the PR's merge base with master, printed in every packet) and fails `general` for rules that would flag many correct uses. Only caught corrections can change under a stricter `existed` and `general`, so the `recheck` stage relabels every correction the `label` stage caught (`yes` or `partial`) with the revised rubric and the same prompt; its labels replace the first ones. The agreement sample was labelled before this revision.

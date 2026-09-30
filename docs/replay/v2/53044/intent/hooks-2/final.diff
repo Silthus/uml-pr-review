@@ -1,0 +1,236 @@
+diff --git a/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx b/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
+index 410b9bab92d..d3adb57320a 100644
+--- a/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
++++ b/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
+@@ -1,56 +1,192 @@
+-import { BubbleMenu } from '@tiptap/react/menus'
++import { TextSelection } from '@tiptap/pm/state'
+ import { useValues } from 'kea'
++import { CSSProperties, useEffect, useState } from 'react'
++import { createPortal } from 'react-dom'
+ 
+-import { IconTrash } from '@posthog/icons'
+-import { LemonButton, LemonDivider } from '@posthog/lemon-ui'
++import { LemonButton, LemonMenu, LemonMenuItems } from '@posthog/lemon-ui'
+ 
+ import { richContentEditorLogic } from 'lib/components/RichContentEditor/richContentEditorLogic'
++import { TTEditor } from 'lib/components/RichContentEditor/types'
++import { IconDragHandle } from 'lib/lemon-ui/icons'
++
++// Width of the invisible wrapper between a handle and the table - the handle sits inside it,
++// so moving the mouse from a cell to its handle never leaves a hover target
++const HANDLE_GUTTER = 20
++
++type TableMenuKind = 'row' | 'column'
++
++const HANDLE_WRAPPER_CLASS = 'NotebookTableMenu__handle'
++
++function isInsideHandle(target: EventTarget | null): boolean {
++    return target instanceof Element && !!target.closest(`.${HANDLE_WRAPPER_CLASS}`)
++}
++
++function runOnCell(editor: TTEditor, cell: HTMLElement, command: (chain: ReturnType<TTEditor['chain']>) => void): void {
++    // The table commands act on the cell containing the selection, so move it into the hovered cell first
++    const pos = editor.view.posAtDOM(cell, 0)
++    const chain = editor
++        .chain()
++        .focus()
++        .command(({ tr }) => {
++            tr.setSelection(TextSelection.near(tr.doc.resolve(pos)))
++            return true
++        })
++    command(chain)
++    chain.run()
++}
+ 
+ export function TableMenu(): JSX.Element | null {
+     const { ttEditor } = useValues(richContentEditorLogic)
++    const [hoveredCell, setHoveredCell] = useState<HTMLElement | null>(null)
++    const [openMenu, setOpenMenu] = useState<TableMenuKind | null>(null)
++
++    useEffect(() => {
++        if (!ttEditor) {
++            return
++        }
++        const dom = ttEditor.view.dom
++
++        const onMouseMove = (e: MouseEvent): void => {
++            if (openMenu || !ttEditor.isEditable) {
++                return
++            }
++            const cell = e.target instanceof Element ? e.target.closest<HTMLElement>('td, th') : null
++            if (cell) {
++                setHoveredCell(cell)
++            } else if (!isInsideHandle(e.target)) {
++                setHoveredCell(null)
++            }
++        }
++
++        const onMouseLeave = (e: MouseEvent): void => {
++            if (!openMenu && !isInsideHandle(e.relatedTarget)) {
++                setHoveredCell(null)
++            }
++        }
++
++        // Handles are positioned from a snapshot of the cell's rect, so drop them when anything scrolls
++        const onScroll = (): void => {
++            setHoveredCell(null)
++            setOpenMenu(null)
++        }
++
++        dom.addEventListener('mousemove', onMouseMove)
++        dom.addEventListener('mouseleave', onMouseLeave)
++        window.addEventListener('scroll', onScroll, true)
++        return () => {
++            dom.removeEventListener('mousemove', onMouseMove)
++            dom.removeEventListener('mouseleave', onMouseLeave)
++            window.removeEventListener('scroll', onScroll, true)
++        }
++    }, [ttEditor, openMenu])
+ 
+-    if (!ttEditor) {
++    if (!ttEditor || !hoveredCell || !hoveredCell.isConnected) {
+         return null
+     }
+ 
+-    return (
+-        <BubbleMenu
+-            editor={ttEditor}
+-            shouldShow={({ editor }) => {
+-                return editor.isEditable && editor.isActive('table')
++    const table = hoveredCell.closest('table')
++    const row = hoveredCell.closest('tr')
++    if (!table || !row) {
++        return null
++    }
++
++    const tableRect = table.getBoundingClientRect()
++    const rowRect = row.getBoundingClientRect()
++    const cellRect = hoveredCell.getBoundingClientRect()
++
++    const run = (command: (chain: ReturnType<TTEditor['chain']>) => void): void => {
++        runOnCell(ttEditor, hoveredCell, command)
++        // The hovered cell may have been removed or moved by the command
++        setHoveredCell(null)
++        setOpenMenu(null)
++    }
++
++    const deleteTableItem = {
++        label: 'Delete table',
++        status: 'danger' as const,
++        onClick: () => run((chain) => chain.deleteTable()),
++    }
++
++    const rowItems: LemonMenuItems = [
++        {
++            items: [
++                { label: 'Insert row above', onClick: () => run((chain) => chain.addRowBefore()) },
++                { label: 'Insert row below', onClick: () => run((chain) => chain.addRowAfter()) },
++            ],
++        },
++        {
++            items: [
++                { label: 'Delete row', status: 'danger', onClick: () => run((chain) => chain.deleteRow()) },
++                deleteTableItem,
++            ],
++        },
++    ]
++
++    const columnItems: LemonMenuItems = [
++        {
++            items: [
++                { label: 'Insert column left', onClick: () => run((chain) => chain.addColumnBefore()) },
++                { label: 'Insert column right', onClick: () => run((chain) => chain.addColumnAfter()) },
++            ],
++        },
++        {
++            items: [
++                { label: 'Delete column', status: 'danger', onClick: () => run((chain) => chain.deleteColumn()) },
++                deleteTableItem,
++            ],
++        },
++    ]
++
++    const renderHandle = (kind: TableMenuKind, style: CSSProperties): JSX.Element => (
++        <div
++            className={`${HANDLE_WRAPPER_CLASS} fixed z-[var(--z-popover)] flex items-center justify-center`}
++            style={style}
++            onMouseLeave={(e) => {
++                if (!openMenu && !(e.relatedTarget instanceof Node && table.contains(e.relatedTarget))) {
++                    setHoveredCell(null)
++                }
+             }}
+-            options={{ placement: 'top-start' }}
+         >
+-            <div className="NotebookTableMenu flex bg-surface-primary rounded border items-center text-secondary p-1 gap-x-0.5 text-xs">
+-                <LemonButton onClick={() => ttEditor.chain().focus().addRowBefore().run()} size="small">
+-                    Add row above
+-                </LemonButton>
+-                <LemonButton onClick={() => ttEditor.chain().focus().addRowAfter().run()} size="small">
+-                    Add row below
+-                </LemonButton>
+-                <LemonDivider vertical />
+-                <LemonButton onClick={() => ttEditor.chain().focus().addColumnBefore().run()} size="small">
+-                    Add column left
+-                </LemonButton>
+-                <LemonButton onClick={() => ttEditor.chain().focus().addColumnAfter().run()} size="small">
+-                    Add column right
+-                </LemonButton>
+-                <LemonDivider vertical />
+-                <LemonButton onClick={() => ttEditor.chain().focus().deleteRow().run()} size="small" status="danger">
+-                    Delete row
+-                </LemonButton>
+-                <LemonButton onClick={() => ttEditor.chain().focus().deleteColumn().run()} size="small" status="danger">
+-                    Delete column
+-                </LemonButton>
+-                <LemonDivider vertical />
++            <LemonMenu
++                items={kind === 'row' ? rowItems : columnItems}
++                placement={kind === 'row' ? 'right-start' : 'bottom-start'}
++                visible={openMenu === kind}
++                onVisibilityChange={(visible) => {
++                    setOpenMenu(visible ? kind : null)
++                    if (!visible) {
++                        setHoveredCell(null)
++                    }
++                }}
++            >
+                 <LemonButton
+-                    onClick={() => ttEditor.chain().focus().deleteTable().run()}
+-                    icon={<IconTrash />}
+-                    status="danger"
+-                    size="small"
+-                    tooltip="Delete entire table"
++                    size="xxsmall"
++                    type="secondary"
++                    noPadding
++                    className="bg-surface-primary"
++                    aria-label={kind === 'row' ? 'Row actions' : 'Column actions'}
++                    icon={<IconDragHandle className={kind === 'column' ? 'rotate-90' : undefined} />}
++                    // Keep the editor selection and focus where they are until an action is picked
++                    onMouseDown={(e) => e.preventDefault()}
+                 />
+-            </div>
+-        </BubbleMenu>
++            </LemonMenu>
++        </div>
++    )
++
++    return createPortal(
++        <>
++            {renderHandle('row', {
++                left: tableRect.left - HANDLE_GUTTER,
++                top: rowRect.top,
++                width: HANDLE_GUTTER,
++                height: rowRect.height,
++            })}
++            {renderHandle('column', {
++                left: cellRect.left,
++                top: tableRect.top - HANDLE_GUTTER,
++                width: cellRect.width,
++                height: HANDLE_GUTTER,
++            })}
++        </>,
++        document.body
+     )
+ }

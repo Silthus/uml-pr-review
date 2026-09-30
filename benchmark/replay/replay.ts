@@ -23,6 +23,16 @@ const oxlintBan = z.object({
   residual: z.array(z.string()),
 });
 
+const forbiddenElement = z.object({
+  config: z.string(),
+  override: z.string(),
+  forbid: z.object({ element: z.string(), message: z.string() }),
+  residual: z.array(z.string()),
+  target: z.string(),
+});
+
+export type ForbiddenElement = z.infer<typeof forbiddenElement>;
+
 const replayCase = z.object({
   pr: z.number(),
   language: z.enum(["typescript", "python"]),
@@ -33,7 +43,7 @@ const replayCase = z.object({
   bypass: z.string(),
   reviewerRoute: z.string(),
   fixes: z.array(fix),
-  lint: oxlintBan.optional(),
+  lint: z.union([oxlintBan, forbiddenElement]).optional(),
   notes: z.array(z.string()).default([]),
   v2Notes: z.array(z.string()).default([]),
 });
@@ -49,8 +59,22 @@ export function declareCase(replay: ReplayCase, worktree: string) {
   for (const change of replay.fixes) applyFix(worktree, change);
   mkdirSync(dirname(join(worktree, replay.spec)), { recursive: true });
   copyFileSync(join(replay.dir, basename(replay.spec)), join(worktree, replay.spec));
-  if (replay.lint !== undefined) banInOxlint(worktree, replay.lint);
+  if (replay.lint !== undefined) declareLint(worktree, replay.lint);
   dropPostHogSessionStart(worktree);
+}
+
+function isForbiddenElement(lint: NonNullable<ReplayCase["lint"]>): lint is ForbiddenElement {
+  return "forbid" in lint;
+}
+
+function declareLint(worktree: string, lint: NonNullable<ReplayCase["lint"]>) {
+  if (!isForbiddenElement(lint)) return banInOxlint(worktree, lint);
+  forbidInOxlint(worktree, lint);
+  pointCoherenceAt(worktree, lint);
+}
+
+export function lintTarget(replay: ReplayCase): string | undefined {
+  return replay.lint !== undefined && isForbiddenElement(replay.lint) ? replay.lint.target : undefined;
 }
 
 const POSTHOG_SESSION_SCRIPTS = ".claude/hooks/setup-";
@@ -171,10 +195,48 @@ function toolUsesIn(record: unknown): ToolUse[] {
   });
 }
 
-function introducesBypass(use: ToolUse, replay: ReplayCase): boolean {
+export const TRIMMED_MARK = "…[trimmed ";
+
+function editsCaseFile(use: ToolUse, replay: ReplayCase): boolean {
   const path = use.input["file_path"];
-  if (typeof path !== "string" || !path.endsWith(`/${replay.file}`)) return false;
-  return writtenText(use).includes(replay.bypass);
+  return typeof path === "string" && path.endsWith(`/${replay.file}`);
+}
+
+function introducesBypass(use: ToolUse, replay: ReplayCase): boolean {
+  return editsCaseFile(use, replay) && writtenText(use).includes(replay.bypass);
+}
+
+function jsonLines(text: string): unknown[] {
+  return text.split("\n").filter((line) => line.trim() !== "").map((line): unknown => JSON.parse(line));
+}
+
+function hasTrimmedEdit(transcript: string, replay: ReplayCase): boolean {
+  return jsonLines(transcript).flatMap(toolUsesIn).some((use) => editsCaseFile(use, replay) && writtenText(use).includes(TRIMMED_MARK));
+}
+
+function hookLogNamesInvariant(hooks: string, replay: ReplayCase): boolean {
+  return jsonLines(hooks).some((record) => {
+    const hook = hookRecord.safeParse(record);
+    return hook.success && flags(hook.data, replay);
+  });
+}
+
+export interface RecordedReading {
+  session: Pick<Session, "introduced" | "flagged">;
+  final: Pick<RunRecord["final"], "bypass">;
+}
+
+function backedByUncutEvidence(recorded: RecordedReading, hooks: string, replay: ReplayCase): boolean {
+  const named = hookLogNamesInvariant(hooks, replay);
+  return (!recorded.session.flagged || named) && (!recorded.session.introduced || recorded.final.bypass || named);
+}
+
+export function rereadSession(transcript: string, hooks: string, recorded: RecordedReading, replay: ReplayCase): Session {
+  const reread = readSession(transcript, replay);
+  if (reread.introduced === recorded.session.introduced && reread.flagged === recorded.session.flagged) return reread;
+  if (!hasTrimmedEdit(transcript, replay)) throw new Error("the trimmed transcript no longer reads as the session run.json recorded");
+  if (!backedByUncutEvidence(recorded, hooks, replay)) throw new Error("the transcript trimmed the bypassing edit, and no uncut evidence backs the session run.json recorded");
+  return { ...reread, introduced: recorded.session.introduced, flagged: recorded.session.flagged };
 }
 
 function writtenText(use: ToolUse): string {
@@ -381,5 +443,31 @@ function banInOxlint(worktree: string, ban: z.infer<typeof oxlintBan>) {
   const [level, options] = restrictedImportsRule.parse(original);
   target.rules[RESTRICTED_IMPORTS] = [level, { ...options, patterns: [...options.patterns, ban.pattern] }];
   config.overrides.push({ files: ban.residual, rules: { [RESTRICTED_IMPORTS]: original } });
+  writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
+}
+
+const FORBID_ELEMENTS = "react/forbid-elements";
+const rootOxlintConfig = z.looseObject({ rules: z.record(z.string(), z.unknown()), overrides: z.array(override).default([]) });
+const forbidElementsRule = z.tuple([z.string(), z.looseObject({ forbid: z.array(z.unknown()).default([]) })]);
+
+function forbidInOxlint(worktree: string, ban: ForbiddenElement) {
+  const path = join(worktree, ban.config);
+  const config = rootOxlintConfig.parse(Bun.JSONC.parse(readFileSync(path, "utf8")));
+  const original = config.rules[FORBID_ELEMENTS];
+  const [level, options] = forbidElementsRule.parse(original);
+  config.overrides.push(
+    { files: [ban.override], rules: { [FORBID_ELEMENTS]: [level, { ...options, forbid: [...options.forbid, ban.forbid] }] } },
+    { files: ban.residual, rules: { [FORBID_ELEMENTS]: original } },
+  );
+  writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
+}
+
+const coherenceOxlint = z.looseObject({ lint: z.looseObject({ oxlint: z.looseObject({ command: z.tuple([z.string()]).rest(z.string()) }) }) });
+
+function pointCoherenceAt(worktree: string, lint: ForbiddenElement) {
+  const path = join(worktree, "coherence.config.json");
+  const config = coherenceOxlint.parse(JSON.parse(readFileSync(path, "utf8")));
+  const [oxlint] = config.lint.oxlint.command;
+  config.lint.oxlint.command = [oxlint, "-c", lint.config, "--format", "json", lint.target];
   writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
 }

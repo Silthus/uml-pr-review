@@ -43,6 +43,7 @@ const detectors = {
   "one impersonation check": ["posthog/helpers", "model_activity import is_impersonated_session", "posthog/helpers/impersonation.py"],
   "never reaches ~/cdp": ["src/store", 'import "~/cdp"', ""],
   "no requests": ["posthog/helpers", "import requests", ""],
+  "no raw buttons": ["src/store", "<button", ""],
 };
 if (command === "hooks") {
   if (process.env.FAKE_HOOKS_FAIL === "1") process.exit(3);
@@ -85,6 +86,11 @@ The store.
   over: every import under src/store
   via: lint oxlint:no-restricted-imports matching "~/cdp"
   because: they deploy apart
+
+- no raw buttons: The store renders buttons through LemonButton.
+  over: every TSX file under src/store
+  via: lint oxlint:react/forbid-elements matching "<button>"
+  because: LemonButton carries the disabled states
 `;
 
 const PYTHON_SPEC = `# Helpers
@@ -107,6 +113,8 @@ const PYPROJECT = `[tool.ruff.lint.flake8-tidy-imports.banned-api]
 "requests".msg = "use the request util"
 "loginas.utils.is_impersonated_session".msg = "use is_impersonated"
 `;
+
+const BEFORE_NODEJS_OXLINT = "before-nodejs-oxlint";
 
 function git(cwd: string, ...args: string[]): string {
   const result = Bun.spawnSync(["git", "-c", "user.name=kit-test", "-c", "user.email=kit@test", "-c", "commit.gpgsign=false", ...args], { cwd, stderr: "pipe" });
@@ -165,6 +173,10 @@ function makePostHog() {
   write(posthog, ".hooks/post-checkout", "#!/bin/sh\nmkdir -p node_modules/installed-by-the-hook\n");
   chmodSync(join(posthog, ".hooks/post-checkout"), 0o755);
   commitAll(posthog, "master");
+  git(posthog, "checkout", "-q", "-b", BEFORE_NODEJS_OXLINT);
+  rmSync(join(posthog, "nodejs/.oxlintrc.nodejs.json"));
+  commitAll(posthog, "nodejs still lints with ESLint");
+  git(posthog, "checkout", "-q", "master");
   git(posthog, "config", "core.hooksPath", ".hooks");
   write(posthog, "node_modules/.bin/oxlint", FAKE_OXLINT);
   chmodSync(join(posthog, "node_modules/.bin/oxlint"), 0o755);
@@ -257,6 +269,17 @@ describe("the dogfood kit", () => {
     await tearDown(dir, () => {});
   });
 
+  test("a TypeScript worktree at a ref from before nodejs linted with oxlint sets up without the chokepoint rule, and says so", async () => {
+    const dir = join(scratch, "kit-ts-before-oxlint");
+
+    const { output } = await captured((print) => setUp({ dir, ref: BEFORE_NODEJS_OXLINT, language: "typescript", hooks: false }, environment, print));
+
+    expect(existsSync(join(dir, "posthog/nodejs/.oxlintrc.nodejs.json"))).toBe(false);
+    expect(output).toContain("nodejs/.oxlintrc.nodejs.json does not exist at this ref, so the coherence/chokepoint rule is not loaded");
+
+    await tearDown(dir, () => {});
+  });
+
   test("fetches a ref PostHog lacks into refs/uml-pr-review, and teardown deletes it", async () => {
     const before = posthogState();
     const dir = join(scratch, "kit-pull");
@@ -342,6 +365,14 @@ describe("the dogfood kit", () => {
       expect(result).toBe(true);
       expect(output).toContain('staged src/store/kitWitnessBypass.ts: import "~/cdp";');
       expect(output).toMatch(/red[^]*refute src\/store\/never reaches ~\/cdp[^]*\[exit 0\][^]*green[^]*"verdict":"pass"/);
+    });
+
+    test("a forbidden-element oracle is refuted with the element rendered in a staged TSX file, then passes", async () => {
+      const { result, output } = await captured((print) => witness(typescript, "src/store/no raw buttons", print));
+
+      expect(result).toBe(true);
+      expect(output).toContain("staged src/store/kitWitnessBypass.tsx: export const KitWitnessBypass = () => <button />;");
+      expect(output).toMatch(/red[^]*refute src\/store\/no raw buttons[^]*\[exit 0\][^]*green[^]*"verdict":"pass"/);
     });
 
     test("a ruff banned-api oracle over a top-level module stages an import of that module", async () => {

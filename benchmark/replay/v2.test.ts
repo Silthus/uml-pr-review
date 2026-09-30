@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadCase, type RunRecord, type Variant } from "./replay.ts";
-import { auditTranscript, keepOnlyEditHook, renderV2 } from "./v2.ts";
+import { auditTranscript, keepOnlyEditHook, renderV2, renderV3 } from "./v2.ts";
 
 const scratch = mkdtempSync(join(tmpdir(), "replay-v2-test-"));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
@@ -117,6 +117,20 @@ describe("the v2 report", () => {
 
     expect(report).toContain("Command audit: the 24 transcripts made 301 Bash calls, and 198 of them ran. 1 of those that ran is not on the read-only allowlist:");
     expect(report).toContain("- v2/64506/draft/hooks-1: `sed -i s/a/b/ f.ts`");
+  });
+});
+
+describe("the v3 report", () => {
+  test("is its own section on v2's protocol, with the TypeScript case's verdicts and an audit of its own transcripts", () => {
+    const runs = [record("draft", "control", 1, "bypassed", 30, 5), record("draft", "hooks", 1, "fixed", 50, 8)].map((run) => ({ ...run, pr: 53044 }));
+
+    const report = renderV3(runs, [loadCase("53044")], { transcripts: 2, calls: 9, ran: 4, notReadOnly: [] });
+
+    expect(report).toStartWith("## v3: a TypeScript case that can fire, at its merge base");
+    expect(report).toContain("### #53044: `frontend/src/scenes/notebooks/Notebook/TableMenu.tsx`");
+    expect(report).toContain("| [hooks 1](v2/53044/draft/hooks-1/) | yes | yes | yes | pass |");
+    expect(report).toContain("Command audit: the 2 transcripts made 9 Bash calls, and 4 of them ran. 0 of those that ran are not on the read-only allowlist.");
+    expect(report).not.toContain("## v2: protocol without the confound");
   });
 });
 

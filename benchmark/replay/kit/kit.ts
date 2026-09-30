@@ -183,6 +183,11 @@ function enableChokepointRule(worktree: string, coherence: string) {
   for (const nested of nestedOxlintConfigs(worktree)) writeJson(nested, withChokepointRule(readOxlintConfig(nested), worktree, coherence));
 }
 
+function loadChokepointRule(worktree: string, coherence: string, print: Print) {
+  if (existsSync(join(worktree, OXLINT_CONFIG))) return enableChokepointRule(worktree, coherence);
+  print(`${OXLINT_CONFIG} does not exist at this ref, so the coherence/chokepoint rule is not loaded`);
+}
+
 function coherenceCli(coherence: string, args: string[], cwd: string) {
   return Bun.spawnSync(["node", "--disable-warning=ExperimentalWarning", join(coherence, "src/cli.ts"), ...args], { cwd, stdout: "pipe", stderr: "pipe", env: process.env });
 }
@@ -229,7 +234,7 @@ async function prepare(dir: string, options: SetUpOptions, environment: KitEnvir
   await timed("worktree added", print, () => addWorktree(environment.posthog, worktree, missing === undefined ? options.ref : `${FETCHED_PREFIX}${missing}`));
   linkNodeModules(worktree, environment.posthog);
   writeJson(join(worktree, "coherence.config.json"), coherenceConfig(options.language, environment));
-  if (options.language === "typescript") enableChokepointRule(worktree, coherence);
+  if (options.language === "typescript") loadChokepointRule(worktree, coherence, print);
   if (options.hooks) await timed("hooks installed", print, () => installHooks(worktree, coherence));
   print(`export COHERENCE_HOME=${coherence}`);
 }

@@ -1,21 +1,22 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { basename, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { defaultEnvironment, setUp, tearDown, witness } from "./kit/kit.ts";
-import { declareCase, EVIDENCE_FILES, invariantName, isVariant, loadCase, readSession, renderReport, VARIANTS, type Arm, type ReplayCase, type RunRecord, type Variant } from "./replay.ts";
-import { auditTranscript, keepOnlyEditHook, renderV2, type CommandAudit } from "./v2.ts";
+import { declareCase, EVIDENCE_FILES, invariantName, isVariant, lintTarget, loadCase, readSession, renderReport, rereadSession, TRIMMED_MARK, VARIANTS, type Arm, type ReplayCase, type RunRecord, type Session, type Variant } from "./replay.ts";
+import { auditTranscript, keepOnlyEditHook, renderV2, renderV3, type CommandAudit } from "./v2.ts";
 
-const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>] [--variant draft|intent]\n       bun benchmark/replay/run.ts report";
+const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>] [--variant draft|intent] [--kits /tmp/replay-<ticket>]\n       bun benchmark/replay/run.ts report";
 const EVIDENCE = resolve(import.meta.dir, "../../docs/replay");
 const POSTHOG = join(homedir(), "posthog");
 const SESSION_TIMEOUT_MS = 20 * 60 * 1000;
 const TRIM_AT = 4000;
+const KITS_ROOT = "/tmp/replay-";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
-  options: { arm: { type: "string" }, runs: { type: "string", default: "1" }, first: { type: "string", default: "1" }, variant: { type: "string" } },
+  options: { arm: { type: "string" }, runs: { type: "string", default: "1" }, first: { type: "string", default: "1" }, variant: { type: "string" }, kits: { type: "string", default: "/tmp/replay-124" } },
 });
 
 function isArm(value: string | undefined): value is Arm {
@@ -30,9 +31,9 @@ interface Protocol {
   maxTurns: number;
 }
 
-function protocolFor(replay: ReplayCase, arm: Arm, n: number, variant: Variant | undefined): Protocol {
+function protocolFor(replay: ReplayCase, arm: Arm, n: number, variant: Variant | undefined, kits: string): Protocol {
   if (variant === undefined) return { kit: `/tmp/replay-118-${replay.pr}-${arm}-${n}`, evidence: join(EVIDENCE, String(replay.pr), `${arm}-${n}`), task: "task.md", maxTurns: 30 };
-  return { variant, kit: `/tmp/replay-124-${replay.pr}-${variant}-${arm}-${n}`, evidence: join(EVIDENCE, "v2", String(replay.pr), variant, `${arm}-${n}`), task: `${variant}.md`, maxTurns: 50 };
+  return { variant, kit: `${kits}-${replay.pr}-${variant}-${arm}-${n}`, evidence: join(EVIDENCE, "v2", String(replay.pr), variant, `${arm}-${n}`), task: `${variant}.md`, maxTurns: 50 };
 }
 
 function sh(argv: string[], cwd: string, env: Record<string, string | undefined> = process.env) {
@@ -78,7 +79,7 @@ function stopCoherenceServers(dir: string) {
 const PRIVATE_KEYS = new Set(["signature"]);
 
 function trimmed(value: unknown): unknown {
-  if (typeof value === "string") return value.length > TRIM_AT ? `${value.slice(0, TRIM_AT)}…[trimmed ${value.length - TRIM_AT} chars]` : value;
+  if (typeof value === "string") return value.length > TRIM_AT ? `${value.slice(0, TRIM_AT)}${TRIMMED_MARK}${value.length - TRIM_AT} chars]` : value;
   if (Array.isArray(value)) return value.map(trimmed);
   if (value !== null && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([key]) => !PRIVATE_KEYS.has(key)).map(([key, inner]) => [key, trimmed(inner)]));
   return value;
@@ -139,7 +140,8 @@ const coherenceConfig = z.object({ lint: z.record(z.string(), z.object({ command
 function lintFinal(worktree: string, replay: ReplayCase): string {
   const config = coherenceConfig.parse(JSON.parse(readFileSync(join(worktree, "coherence.config.json"), "utf8")));
   const command = Object.values(config.lint)[0]?.command ?? [];
-  const argv = [...command.filter((arg) => arg !== KIT_LINT_TARGET), replay.file];
+  const target = lintTarget(replay) ?? KIT_LINT_TARGET;
+  const argv = [...command.filter((arg) => arg !== target), replay.file];
   const result = sh(argv, worktree);
   return `$ ${argv.join(" ")}\n${result.stdout}${result.stderr}[exit ${result.code}]\n`;
 }
@@ -222,8 +224,13 @@ const recordedRun = z.object({
 
 function rescored(folder: string): RunRecord {
   const recorded = recordedRun.parse(JSON.parse(readFileSync(join(folder, "run.json"), "utf8")));
-  const session = readSession(readFileSync(join(folder, "transcript.jsonl"), "utf8"), loadCase(String(recorded.pr)));
-  if (session.introduced !== recorded.session.introduced || session.flagged !== recorded.session.flagged) throw new Error(`${folder}: the trimmed transcript no longer reads as the session run.json recorded`);
+  const evidence = (file: string) => readFileSync(join(folder, file), "utf8");
+  let session: Session;
+  try {
+    session = rereadSession(evidence("transcript.jsonl"), evidence("hooks.jsonl"), recorded, loadCase(String(recorded.pr)));
+  } catch (error) {
+    throw new Error(`${folder}: ${error instanceof Error ? error.message : String(error)}`);
+  }
   const record: RunRecord = { ...recorded, session };
   writeFileSync(join(folder, "run.json"), `${JSON.stringify(record, null, 2)}\n`);
   return record;
@@ -260,11 +267,21 @@ function commandAudit(folders: string[]): CommandAudit {
   };
 }
 
+const V2_CASES = ["64506", "68756"];
+const V3_CASES = ["53044"];
+
+function ofCases(folders: string[], prs: string[]): string[] {
+  return folders.filter((folder) => prs.includes(basename(dirname(dirname(folder)))));
+}
+
+function protocolReport(render: typeof renderV2, prs: string[]): string {
+  const folders = ofCases(v2Folders(), prs);
+  return render(folders.map(rescored), prs.map(loadCase), commandAudit(folders));
+}
+
 function writeReport() {
-  const cases = ["64506", "68756"].map(loadCase);
-  const v2 = v2Folders();
-  const v1Report = renderReport(v1Folders().map(rescored), cases);
-  writeFileSync(join(EVIDENCE, "report.md"), `${v1Report}\n${renderV2(v2.map(rescored), cases, commandAudit(v2))}`);
+  const v1Report = renderReport(v1Folders().map(rescored), V2_CASES.map(loadCase));
+  writeFileSync(join(EVIDENCE, "report.md"), `${v1Report}\n${protocolReport(renderV2, V2_CASES)}\n${protocolReport(renderV3, V3_CASES)}`);
 }
 
 async function main() {
@@ -280,14 +297,14 @@ async function main() {
     process.exit(64);
   }
   const variant = values.variant;
-  if (variant !== undefined && !isVariant(variant)) {
+  if ((variant !== undefined && !isVariant(variant)) || !values.kits.startsWith(KITS_ROOT)) {
     console.error(USAGE);
     process.exit(64);
   }
   const replay = loadCase(command);
   const baseline = posthogState(replay.ref);
   for (let n = first; n < first + runs; n++) {
-    const record = await replayOnce(replay, values.arm, n, protocolFor(replay, values.arm, n, variant), baseline);
+    const record = await replayOnce(replay, values.arm, n, protocolFor(replay, values.arm, n, variant, values.kits), baseline);
     console.log(JSON.stringify(record));
   }
 }

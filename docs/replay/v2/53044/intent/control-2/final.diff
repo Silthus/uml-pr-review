@@ -1,0 +1,287 @@
+diff --git a/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx b/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
+index 410b9bab92d..ce537216c12 100644
+--- a/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
++++ b/frontend/src/scenes/notebooks/Notebook/TableMenu.tsx
+@@ -1,56 +1,242 @@
+-import { BubbleMenu } from '@tiptap/react/menus'
++import { ChainedCommands } from '@tiptap/core'
+ import { useValues } from 'kea'
++import { MouseEvent as ReactMouseEvent, useEffect, useState } from 'react'
+ 
+ import { IconTrash } from '@posthog/icons'
+-import { LemonButton, LemonDivider } from '@posthog/lemon-ui'
++import { LemonButton, LemonMenu, LemonMenuItems } from '@posthog/lemon-ui'
+ 
+ import { richContentEditorLogic } from 'lib/components/RichContentEditor/richContentEditorLogic'
++import { TTEditor } from 'lib/components/RichContentEditor/types'
++import { IconDragHandle } from 'lib/lemon-ui/icons'
++import { cn } from 'lib/utils/css-classes'
++
++type HandleKind = 'row' | 'column'
++
++type HoveredCell = {
++    cell: HTMLTableCellElement
++    table: HTMLTableElement
++}
++
++// Width of the invisible wrapper around each handle. It spans the whole gap between the handle and the
++// table, so moving the pointer from a cell to its handle never leaves a hover target and the handles don't flicker.
++const HANDLE_WRAPPER_SIZE = 28
++const HANDLE_WRAPPER_CLASS = 'NotebookTableMenu__handle'
++
++function findHoveredCell(target: EventTarget | null, root: HTMLElement): HoveredCell | 'table' | null {
++    if (!(target instanceof Element) || !root.contains(target)) {
++        return null
++    }
++    // Tables rendered by notebook nodes (e.g. LemonTable) are not editable tables
++    if (target.closest('.NotebookNode')) {
++        return null
++    }
++    const table = target.closest('table')
++    if (!table) {
++        return null
++    }
++    const cell = target.closest<HTMLTableCellElement>('td, th')
++    // Borders and padding between cells have no cell target, keep the current handles there
++    return cell ? { cell, table } : 'table'
++}
++
++function isHandleWrapper(target: EventTarget | null): boolean {
++    return target instanceof Element && !!target.closest(`.${HANDLE_WRAPPER_CLASS}`)
++}
++
++function runOnCell(
++    editor: TTEditor,
++    cell: HTMLTableCellElement,
++    command: (chain: ChainedCommands) => ChainedCommands
++): void {
++    const $pos = editor.state.doc.resolve(editor.view.posAtDOM(cell, 0))
++    for (let depth = $pos.depth; depth > 0; depth--) {
++        const tableRole = $pos.node(depth).type.spec.tableRole
++        if (tableRole === 'cell' || tableRole === 'header_cell') {
++            // Commands act on the selection, so select the hovered cell rather than wherever the cursor happens to be
++            command(editor.chain().focus().setCellSelection({ anchorCell: $pos.before(depth) })).run()
++            return
++        }
++    }
++}
+ 
+ export function TableMenu(): JSX.Element | null {
+     const { ttEditor } = useValues(richContentEditorLogic)
++    const [hovered, setHovered] = useState<HoveredCell | null>(null)
++    const [openMenu, setOpenMenu] = useState<HandleKind | null>(null)
++    // Handles are positioned from live DOM rects, so re-render on scroll while a menu is pinned open
++    const [, setLayoutTick] = useState(0)
++
++    useEffect(() => {
++        if (!ttEditor) {
++            return
++        }
++        const root = ttEditor.view.dom
++
++        const onMouseMove = (event: MouseEvent): void => {
++            if (openMenu || !ttEditor.isEditable) {
++                return
++            }
++            const result = findHoveredCell(event.target, root)
++            if (result === 'table') {
++                return
++            }
++            setHovered((current) =>
++                current?.cell === result?.cell && current?.table === result?.table ? current : result
++            )
++        }
++        const onMouseLeave = (event: MouseEvent): void => {
++            if (openMenu || isHandleWrapper(event.relatedTarget)) {
++                return
++            }
++            setHovered(null)
++        }
++        const onScroll = (): void => {
++            if (openMenu) {
++                setLayoutTick((tick) => tick + 1)
++            } else {
++                setHovered(null)
++            }
++        }
+ 
+-    if (!ttEditor) {
++        root.addEventListener('mousemove', onMouseMove)
++        root.addEventListener('mouseleave', onMouseLeave)
++        window.addEventListener('scroll', onScroll, true)
++        window.addEventListener('resize', onScroll)
++        return () => {
++            root.removeEventListener('mousemove', onMouseMove)
++            root.removeEventListener('mouseleave', onMouseLeave)
++            window.removeEventListener('scroll', onScroll, true)
++            window.removeEventListener('resize', onScroll)
++        }
++    }, [ttEditor, openMenu])
++
++    if (!ttEditor || !hovered || !hovered.cell.isConnected) {
+         return null
+     }
+ 
++    const { cell, table } = hovered
++    const row = cell.closest('tr') ?? cell
++    const tableRect = table.getBoundingClientRect()
++    const rowRect = row.getBoundingClientRect()
++    const cellRect = cell.getBoundingClientRect()
++
++    const run = (command: (chain: ChainedCommands) => ChainedCommands): void => runOnCell(ttEditor, cell, command)
++
++    const deleteTableSection = {
++        items: [
++            {
++                label: 'Delete table',
++                icon: <IconTrash />,
++                status: 'danger' as const,
++                onClick: () => run((chain) => chain.deleteTable()),
++            },
++        ],
++    }
++
++    const rowItems: LemonMenuItems = [
++        {
++            items: [
++                { label: 'Insert row above', onClick: () => run((chain) => chain.addRowBefore()) },
++                { label: 'Insert row below', onClick: () => run((chain) => chain.addRowAfter()) },
++                {
++                    label: 'Delete row',
++                    icon: <IconTrash />,
++                    status: 'danger',
++                    onClick: () => run((chain) => chain.deleteRow()),
++                },
++            ],
++        },
++        deleteTableSection,
++    ]
++
++    const columnItems: LemonMenuItems = [
++        {
++            items: [
++                { label: 'Insert column left', onClick: () => run((chain) => chain.addColumnBefore()) },
++                { label: 'Insert column right', onClick: () => run((chain) => chain.addColumnAfter()) },
++                {
++                    label: 'Delete column',
++                    icon: <IconTrash />,
++                    status: 'danger',
++                    onClick: () => run((chain) => chain.deleteColumn()),
++                },
++            ],
++        },
++        deleteTableSection,
++    ]
++
++    const onWrapperMouseLeave = (event: ReactMouseEvent): void => {
++        const next = event.relatedTarget
++        if (openMenu || isHandleWrapper(next) || (next instanceof Node && table.contains(next))) {
++            return
++        }
++        setHovered(null)
++    }
++
++    const onVisibilityChange =
++        (kind: HandleKind) =>
++        (visible: boolean): void => {
++            setOpenMenu(visible ? kind : null)
++            if (!visible) {
++                // The pointer may be far from the table by now, the next mousemove over a cell brings the handles back
++                setHovered(null)
++            }
++        }
++
+     return (
+-        <BubbleMenu
+-            editor={ttEditor}
+-            shouldShow={({ editor }) => {
+-                return editor.isEditable && editor.isActive('table')
+-            }}
+-            options={{ placement: 'top-start' }}
+-        >
+-            <div className="NotebookTableMenu flex bg-surface-primary rounded border items-center text-secondary p-1 gap-x-0.5 text-xs">
+-                <LemonButton onClick={() => ttEditor.chain().focus().addRowBefore().run()} size="small">
+-                    Add row above
+-                </LemonButton>
+-                <LemonButton onClick={() => ttEditor.chain().focus().addRowAfter().run()} size="small">
+-                    Add row below
+-                </LemonButton>
+-                <LemonDivider vertical />
+-                <LemonButton onClick={() => ttEditor.chain().focus().addColumnBefore().run()} size="small">
+-                    Add column left
+-                </LemonButton>
+-                <LemonButton onClick={() => ttEditor.chain().focus().addColumnAfter().run()} size="small">
+-                    Add column right
+-                </LemonButton>
+-                <LemonDivider vertical />
+-                <LemonButton onClick={() => ttEditor.chain().focus().deleteRow().run()} size="small" status="danger">
+-                    Delete row
+-                </LemonButton>
+-                <LemonButton onClick={() => ttEditor.chain().focus().deleteColumn().run()} size="small" status="danger">
+-                    Delete column
+-                </LemonButton>
+-                <LemonDivider vertical />
+-                <LemonButton
+-                    onClick={() => ttEditor.chain().focus().deleteTable().run()}
+-                    icon={<IconTrash />}
+-                    status="danger"
+-                    size="small"
+-                    tooltip="Delete entire table"
+-                />
++        <div className="NotebookTableMenu" contentEditable={false}>
++            <div
++                className={cn(HANDLE_WRAPPER_CLASS, 'fixed z-10 flex items-center justify-start')}
++                // eslint-disable-next-line react/forbid-dom-props
++                style={{
++                    left: tableRect.left - HANDLE_WRAPPER_SIZE,
++                    top: rowRect.top,
++                    width: HANDLE_WRAPPER_SIZE,
++                    height: rowRect.height,
++                }}
++                onMouseLeave={onWrapperMouseLeave}
++            >
++                <LemonMenu
++                    items={rowItems}
++                    placement="left-start"
++                    visible={openMenu === 'row'}
++                    onVisibilityChange={onVisibilityChange('row')}
++                >
++                    <LemonButton
++                        size="xsmall"
++                        icon={<IconDragHandle />}
++                        tooltip="Row actions"
++                        active={openMenu === 'row'}
++                        data-attr="notebook-table-row-handle"
++                    />
++                </LemonMenu>
++            </div>
++            <div
++                className={cn(HANDLE_WRAPPER_CLASS, 'fixed z-10 flex items-start justify-center')}
++                // eslint-disable-next-line react/forbid-dom-props
++                style={{
++                    left: cellRect.left,
++                    top: tableRect.top - HANDLE_WRAPPER_SIZE,
++                    width: cellRect.width,
++                    height: HANDLE_WRAPPER_SIZE,
++                }}
++                onMouseLeave={onWrapperMouseLeave}
++            >
++                <LemonMenu
++                    items={columnItems}
++                    placement="top-start"
++                    visible={openMenu === 'column'}
++                    onVisibilityChange={onVisibilityChange('column')}
++                >
++                    <LemonButton
++                        size="xsmall"
++                        icon={<IconDragHandle className="rotate-90" />}
++                        tooltip="Column actions"
++                        active={openMenu === 'column'}
++                        data-attr="notebook-table-column-handle"
++                    />
++                </LemonMenu>
+             </div>
+-        </BubbleMenu>
++        </div>
+     )
+ }

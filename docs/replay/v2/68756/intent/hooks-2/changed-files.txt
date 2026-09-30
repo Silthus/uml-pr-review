@@ -1,0 +1,17 @@
+ M .claude/settings.json
+ M posthog/admin/admins/team_admin.py
+ M posthog/admin/test_team_admin.py
+ M posthog/api/file_system/file_system_logging.py
+ M posthog/event_usage.py
+ M posthog/models/activity_logging/activity_log.py
+ M products/signals/backend/views.py
+?? .coherence/run/http.json
+?? .coherence/run/server.json
+?? .coherence/run/server.lock
+?? .coherence/runs/9ab711f1-17b2-422f-89d3-233662abf90b.jsonl
+?? .coherence/runs/kit-witness.jsonl
+?? .coherence/runs/replay-final.jsonl
+?? .coherence/traces/9ab711f1-17b2-422f-89d3-233662abf90b.jsonl
+?? coherence.config.json
+?? posthog/helpers/Helpers.spec.md
+?? posthog/templates/admin/posthog/team/ai_gateway_recent_top_ups.html

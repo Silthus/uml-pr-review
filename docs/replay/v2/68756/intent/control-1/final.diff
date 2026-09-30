@@ -1,0 +1,134 @@
+diff --git a/posthog/admin/admins/team_admin.py b/posthog/admin/admins/team_admin.py
+index ee3f941ed09..c505f2db1ee 100644
+--- a/posthog/admin/admins/team_admin.py
++++ b/posthog/admin/admins/team_admin.py
+@@ -33,9 +33,16 @@ from posthog.admin.inlines.organization_member_for_related_inline import Organiz
+ from posthog.admin.inlines.team_experiments_config_inline import TeamExperimentsConfigInline
+ from posthog.admin.inlines.team_marketing_analytics_config_inline import TeamMarketingAnalyticsConfigInline
+ from posthog.admin.inlines.user_product_list_inline import UserProductListInline
+-from posthog.llm.gateway_internal_client import AIGatewayInternalError, AIGatewayNotConfigured, add_credit, get_wallet
++from posthog.llm.gateway_internal_client import (
++    AIGatewayInternalError,
++    AIGatewayNotConfigured,
++    CreditResult,
++    add_credit,
++    get_wallet,
++)
+ from posthog.models import Team
+-from posthog.models.activity_logging.activity_log import ActivityContextBase, Detail, log_activity
++from posthog.models.activity_logging.activity_log import ActivityContextBase, ActivityLog, Detail, log_activity
++from posthog.models.activity_logging.model_activity import is_impersonated_session
+ from posthog.models.group_type_mapping import invalidate_group_types_cache
+ from posthog.models.remote_config import RemoteConfig
+ from posthog.models.team.team import DEPRECATED_ATTRS
+@@ -63,12 +70,24 @@ logger = get_logger()
+ # Upper bound on a single admin AI gateway top-up, to catch fat-fingered amounts.
+ MAX_CREDIT_USD = Decimal("1000000")
+ 
++# Staff-only activity log scope for admin top-ups (see activity_visibility_restrictions).
++AI_GATEWAY_CREDIT_SCOPE = "AIGatewayCredit"
++AI_GATEWAY_CREDIT_ACTIVITY = "credit_added"
++RECENT_AI_GATEWAY_TOPUPS_LIMIT = 10
++
+ 
+ @dataclasses.dataclass(frozen=True)
+ class ReplayActivityContext(ActivityContextBase):
+     reason: str
+ 
+ 
++@dataclasses.dataclass(frozen=True)
++class AIGatewayCreditActivityContext(ActivityContextBase):
++    amount_usd: str
++    reason: str
++    balance_usd: str
++
++
+ class TeamAdminForm(ModelForm):
+     def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+@@ -141,6 +160,7 @@ class TeamAdmin(admin.ModelAdmin):
+         "admit_state",
+         "ai_gateway_actions",
+         "ai_gateway_wallet",
++        "ai_gateway_recent_topups",
+         "policy_cache_blob",
+         "group_type_mappings_display",
+     ]
+@@ -278,6 +298,7 @@ class TeamAdmin(admin.ModelAdmin):
+                     "admit_state",
+                     "ai_gateway_actions",
+                     "ai_gateway_wallet",
++                    "ai_gateway_recent_topups",
+                     "policy_cache_blob",
+                 ],
+                 "description": mark_safe(
+@@ -687,6 +708,7 @@ class TeamAdmin(admin.ModelAdmin):
+             duplicate=result.duplicate,
+             triggered_by=request.user.email,
+         )
++        self._record_ai_gateway_credit(request, team, result, reason)
+         if result.duplicate:
+             messages.info(
+                 request,
+@@ -699,6 +721,61 @@ class TeamAdmin(admin.ModelAdmin):
+             )
+         return redirect(reverse("admin:posthog_team_change", args=[object_id]))
+ 
++    def _record_ai_gateway_credit(self, request, team: Team, result: CreditResult, reason: str) -> None:
++        # The credit is committed on the gateway, so it can't share a transaction with this
++        # record. Keying on the ledger entry lets an idempotent replay backfill a record the
++        # first submit failed to write, without duplicating one that already exists.
++        already_recorded = ActivityLog.objects.filter(
++            team_id=team.id,
++            scope=AI_GATEWAY_CREDIT_SCOPE,
++            activity=AI_GATEWAY_CREDIT_ACTIVITY,
++            item_id=result.entry_id,
++        ).exists()
++        if already_recorded:
++            return
++        log_activity(
++            organization_id=team.organization_id,
++            team_id=team.id,
++            user=request.user,
++            was_impersonated=is_impersonated_session(request),
++            item_id=result.entry_id,
++            scope=AI_GATEWAY_CREDIT_SCOPE,
++            activity=AI_GATEWAY_CREDIT_ACTIVITY,
++            detail=Detail(
++                name=f"AI gateway credit ${result.amount_usd}",
++                type="admin_add_ai_gateway_credit",
++                context=AIGatewayCreditActivityContext(
++                    amount_usd=result.amount_usd,
++                    reason=reason,
++                    balance_usd=result.balance_usd,
++                ),
++            ),
++        )
++
++    @admin.display(description="Recent top-ups")
++    def ai_gateway_recent_topups(self, team: Team):
++        if not team.pk:
++            return "-"
++        entries = (
++            ActivityLog.objects.select_related("user")
++            .filter(team_id=team.pk, scope=AI_GATEWAY_CREDIT_SCOPE, activity=AI_GATEWAY_CREDIT_ACTIVITY)
++            .order_by("-created_at")[:RECENT_AI_GATEWAY_TOPUPS_LIMIT]
++        )
++        topups = []
++        for entry in entries:
++            context = (entry.detail or {}).get("context") or {}
++            topups.append(
++                {
++                    "created_at": entry.created_at,
++                    "user_email": entry.user.email if entry.user else None,
++                    "was_impersonated": bool(entry.was_impersonated),
++                    "amount_usd": context.get("amount_usd"),
++                    "reason": context.get("reason"),
++                }
++            )
++        # nosemgrep: python.django.security.audit.avoid-mark-safe.avoid-mark-safe (admin-only, renders trusted template)
++        return mark_safe(render_to_string("admin/posthog/team/ai_gateway_recent_topups.html", {"topups": topups}))
++
+     @admin.display(description="Actions")
+     def ai_gateway_actions(self, team: Team):
+         if not team.pk:

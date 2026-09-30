@@ -1,0 +1,43 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/v2.test.ts:
+104 | 
+105 |   test("the command audit says how many transcripts it read and names every outward command", () => {
+106 |     const runs = [record("draft", "hooks", 1, "fixed", 40, 7)];
+107 |     const cases = [loadCase("64506")];
+108 | 
+109 |     expect(renderV2(runs, cases, { transcripts: 6, commands: [] })).toContain("Command audit: 0 Bash calls in 6 transcripts tried `gh`, `git push`, `git commit`, `curl`, `wget`, `flox`, a package manager, or `uv`.");
+                                                                          ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "Command audit: 0 Bash calls in 6 transcripts tried `gh`, `git push`, `git commit`, `curl`, `wget`, `flox`, a package manager, or `uv`."
+Received: "## v2: protocol without the confound\n\nv1 above could not meet criterion 2: its task dictated the file and kept the change to that file, so the fix it asked the hooks arm for was one the task forbade. v2 changes three things and keeps the rest of v1's method.\n\n1. **Prompts that allow the fix.** Each case has two variants, with 3 hooks and 3 control runs each:\n   - **draft**: v1's task with two sentences changed. The file's `before` content is given as \"my draft of `<file>` to start from\", and the task ends \"Make this change; follow the codebase's conventions. Do not run git.\" The code block is v1's, byte for byte. It no longer says \"exactly\" or keeps the change to one file.\n   - **intent**: the PR's title and intent, plus what the change does in the commented file, in prose. No code is given, so this variant measures whether the violation arises at all.\n2. **The edit hook only.** `setup.ts --hooks` runs `coherence hooks install --host claude`, which wires six events. For the hooks arm, `keepOnlyEditHook` in `benchmark/replay/v2.ts` then deletes Coherence's entries for `SessionStart`, `SubagentStart`, `UserPromptSubmit`, `Stop`, and `SubagentStop` from the `/tmp` worktree's `.claude/settings.json`, and keeps `PostToolUse`. Hooks that are not Coherence's stay. Each hooks run's `witness.txt` records the line that names what was turned off.\n   - Why not `.coherence/hooks/<Event>.override.md`: Coherence applies an override to the text only, after the event has done its work. In `runHook` (`src/lifecycle/hook.ts`), `SessionStart` computes `lexiconCoverage` and waits on `gapReading` before `voiced` applies the override, and `Stop` still checks the changed files. An empty override silences the event but keeps its cost. `coherence hooks install` has no per-event option, so deleting the entries is the only way to turn an event off. `coherence hooks check` would name the deleted events as missing.\n3. **Criterion 2 without the route.** A hooks run meets it when an edit hook names the invariant after the bypassing edit, the session ends without the bypass, and `run` passes. The reviewer's-route column is informational.\n\nThe rest is v1's method: a fresh kit per run, the identical declaration in both arms, the witness red then green, PostHog's own SessionStart scripts removed in both arms, the same headless `claude -p` command with `acceptEdits`, and the `~/posthog` check after every run. Kits are `/tmp/replay-124-<pr>-<variant>-<arm>-<n>`, and evidence is in `docs/replay/v2/<pr>/<variant>/<arm>-<n>/`. The command was `bun benchmark/replay/run.ts <pr> --arm hooks|control --runs 3 --variant draft|intent`.\n\nDeviations from v1:\n\n- `--max-turns` is 50, not 30, because the intent prompts leave the agent to explore. A run that hit the limit says `error_max_turns` in its row.\n- The eight arm-and-variant processes ran at the same time. Wall times include that contention, in both arms.\n\n**Adoption cost** compares the medians of the hooks arm and the control arm in one variant: wall time, turns, and the edit hook's own time per `Write`, `Edit`, or `MultiEdit`. The SessionStart / Stop column reads `off` for v2 hooks runs, because those hooks were not installed.\n\n**A separate finding, not re-measured here: the full install's SessionStart.** With every Coherence hook installed, v1's SessionStart hit its 60 s timeout in 6 of 6 hooks runs (the SessionStart / Stop column in v1's tables above), so its context never reached the agent, and Stop was cancelled in 3 of 3 Python runs. That cost at least 60 s per session. v2 does not install those hooks, so it neither repeats nor re-measures that number.\n\nThreats to validity:\n\n- **The declaration is visible in both arms.** Both arms carry the spec and the lint entry, uncommitted in the `/tmp` worktree, so the control arm is \"declared, without the hook\", not \"undeclared\". An agent free to explore can read the spec, or diff the lint config, before it writes. v1's dictated task hid this effect.\n- **The sample is small.** Three runs per arm and variant describe these runs. They do not give a rate.\n\n### #64506: `nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts`\n\nInvariant: `nodejs/src/ingestion/ingestion never reaches cdp`, at PostHog `645e1a781407`. Prompts: [draft](../../benchmark/replay/cases/64506/draft.md), [intent](../../benchmark/replay/cases/64506/intent.md).\n\n#### draft\n\n| Run | Violation introduced | Hook named the invariant after it | Fixed in session | Final `run` verdict | Reviewer's route | Turns | Wall time | Ended | Edit hook latency (median, max) | SessionStart / Stop hooks | Evidence |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| [hooks 1](v2/64506/draft/hooks-1/) | yes | yes | yes | pass | no | 7 | 40 s | success, exit 0 | 3.1 s (max 3.9 s) | off | [transcript](v2/64506/draft/hooks-1/transcript.jsonl), [hooks](v2/64506/draft/hooks-1/hooks.jsonl), [diff](v2/64506/draft/hooks-1/final.diff), [run --status](v2/64506/draft/hooks-1/run-status.txt), [lint](v2/64506/draft/hooks-1/lint.txt), [witness](v2/64506/draft/hooks-1/witness.txt) |\n\n1. Control: 0 of 0 runs end with the bypass in the final diff and `run` failing the invariant.\n2. Hooks: 1 of 1 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.\n\nThe violation arose in 0 of 0 control runs and 1 of 1 hooks runs.\nAdoption cost: not measured, an arm has no runs.\n\n**Verdict (draft): incomplete**\n\n#### intent\n\n| Run | Violation introduced | Hook named the invariant after it | Fixed in session | Final `run` verdict | Reviewer's route | Turns | Wall time | Ended | Edit hook latency (median, max) | SessionStart / Stop hooks | Evidence |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n\n1. Control: 0 of 0 runs end with the bypass in the final diff and `run` failing the invariant.\n2. Hooks: 0 of 0 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.\n\nThe violation arose in 0 of 0 control runs and 0 of 0 hooks runs.\nAdoption cost: not measured, an arm has no runs.\n\n**Verdict (intent): incomplete**\n\n**Case verdict for #64506: draft incomplete, intent incomplete.**\n"
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:109:69)
+(fail) the v2 report > the command audit says how many transcripts it read and names every outward command [0.43ms]
+115 |   test("names Bash calls that could reach the network or write outside the worktree, and nothing else", () => {
+116 |     const bash = (command: string) => ({ type: "assistant", message: { content: [{ type: "tool_use", id: command, name: "Bash", input: { command } }] } });
+117 |     const commands = ["ls nodejs/src", "cd posthog && gh issue create --title x", "git diff -- a.json", "git push origin HEAD", "flox activate", "grep -rn 'gh ' src"];
+118 |     const transcript = commands.map((command) => JSON.stringify(bash(command))).join("\n");
+119 | 
+120 |     expect(outwardCommands(transcript)).toEqual(["cd posthog && gh issue create --title x", "git push origin HEAD", "flox activate"]);
+                                              ^
+error: expect(received).toEqual(expected)
+
+- [
+-   "cd posthog && gh issue create --title x",
+-   "git push origin HEAD",
+-   "flox activate",
+- ]
++ []
+
+- Expected  - 5
++ Received  + 1
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:120:41)
+(fail) auditing a transcript's commands > names Bash calls that could reach the network or write outside the worktree, and nothing else [0.19ms]
+
+ 5 pass
+ 2 fail
+ 12 expect() calls
+Ran 7 tests across 1 file. [34.00ms]

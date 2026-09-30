@@ -1,0 +1,2 @@
+$ /home/coder/.local/bin/uvx ruff@0.15.20 check --force-exclude --output-format json posthog/admin/admins/team_admin.py
+[][exit 0]

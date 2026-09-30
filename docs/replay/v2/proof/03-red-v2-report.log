@@ -1,0 +1,22 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/v2.test.ts:
+75 | 
+76 | describe("the v2 report", () => {
+77 |   test("a variant meets criterion 2 when flagged hooks runs end without the bypass and pass run, whatever route they take", () => {
+78 |     const report = draftReport(["bypassed", "bypassed", "bypassed"], ["fixed", "fixed", "bypassed"]);
+79 | 
+80 |     expect(report).toContain("2. Hooks: 2 of 3 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.");
+                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "2. Hooks: 2 of 3 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`."
+Received: ""
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:80:20)
+(fail) the v2 report > a variant meets criterion 2 when flagged hooks runs end without the bypass and pass run, whatever route they take [1.87ms]
+
+ 1 pass
+ 1 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [41.00ms]

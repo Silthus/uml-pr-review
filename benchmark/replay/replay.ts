@@ -3,6 +3,13 @@ import { basename, dirname, join } from "node:path";
 import { z } from "zod";
 
 const CASES = join(import.meta.dir, "cases");
+
+export const VARIANTS = ["draft", "intent"] as const;
+export type Variant = (typeof VARIANTS)[number];
+
+export function isVariant(value: string): value is Variant {
+  return (VARIANTS as readonly string[]).includes(value);
+}
 const RESTRICTED_IMPORTS = "eslint/no-restricted-imports";
 
 const fix = z.object({ file: z.string(), replace: z.string(), with: z.string() });
@@ -28,6 +35,7 @@ const replayCase = z.object({
   fixes: z.array(fix),
   lint: oxlintBan.optional(),
   notes: z.array(z.string()).default([]),
+  v2Notes: z.array(z.string()).default([]),
 });
 
 export type ReplayCase = z.infer<typeof replayCase> & { dir: string };
@@ -46,7 +54,7 @@ export function declareCase(replay: ReplayCase, worktree: string) {
 }
 
 const POSTHOG_SESSION_SCRIPTS = ".claude/hooks/setup-";
-const hookGroup = z.looseObject({ hooks: z.array(z.looseObject({ command: z.string().optional() })) });
+export const hookGroup = z.looseObject({ hooks: z.array(z.looseObject({ command: z.string().optional() })) });
 const claudeSettings = z.looseObject({ hooks: z.looseObject({ SessionStart: z.array(hookGroup).optional() }).optional() });
 
 function dropPostHogSessionStart(worktree: string) {
@@ -187,6 +195,7 @@ export type Arm = "hooks" | "control";
 
 export interface RunRecord {
   pr: number;
+  variant?: Variant;
   arm: Arm;
   n: number;
   exitCode: number;
@@ -203,9 +212,9 @@ export const EVIDENCE_FILES = [
   ["witness", "witness.txt"],
 ] as const;
 
-const TABLE_HEADER = ["Run", "Violation introduced", "Hook named the invariant after it", "Fixed in session", "Final `run` verdict", "Reviewer's route", "Turns", "Wall time", "Ended", "Edit hook latency (median, max)", "SessionStart / Stop hooks", "Evidence"];
+export const TABLE_HEADER = ["Run", "Violation introduced", "Hook named the invariant after it", "Fixed in session", "Final `run` verdict", "Reviewer's route", "Turns", "Wall time", "Ended", "Edit hook latency (median, max)", "SessionStart / Stop hooks", "Evidence"];
 
-function meetsControl(run: RunRecord): boolean {
+export function meetsControl(run: RunRecord): boolean {
   return run.final.bypass && run.final.verdict === "fail";
 }
 
@@ -217,14 +226,17 @@ function yesNo(value: boolean): string {
   return value ? "yes" : "no";
 }
 
-function seconds(value: number): string {
+export function seconds(value: number): string {
   return `${Number(value.toFixed(1))} s`;
+}
+
+export function median(values: number[]): number {
+  return [...values].sort((a, b) => a - b)[Math.floor((values.length - 1) / 2)]!;
 }
 
 function latency(values: number[]): string {
   if (values.length === 0) return "n/a";
-  const sorted = [...values].sort((a, b) => a - b);
-  return `${seconds(sorted[Math.floor((sorted.length - 1) / 2)]!)} (max ${seconds(sorted.at(-1)!)})`;
+  return `${seconds(median(values))} (max ${seconds(Math.max(...values))})`;
 }
 
 function hookTime(run: RunRecord, event: string, value: number): string {
@@ -232,8 +244,18 @@ function hookTime(run: RunRecord, event: string, value: number): string {
   return `${seconds(value)}${cancelled ? " (cancelled)" : ""}`;
 }
 
-function row(run: RunRecord): string {
-  const folder = `${run.pr}/${run.arm}-${run.n}/`;
+function runFolder(run: RunRecord): string {
+  return run.variant === undefined ? `${run.pr}/${run.arm}-${run.n}/` : `v2/${run.pr}/${run.variant}/${run.arm}-${run.n}/`;
+}
+
+function startAndStopHooks(run: RunRecord): string {
+  if (run.arm === "control") return "n/a";
+  if (run.variant !== undefined) return "off";
+  return `${hookTime(run, "SessionStart", run.session.sessionStartSeconds)} / ${hookTime(run, "Stop", run.session.stopSeconds)}`;
+}
+
+export function row(run: RunRecord): string {
+  const folder = runFolder(run);
   const cells = [
     `[${run.arm} ${run.n}](${folder})`,
     yesNo(run.session.introduced),
@@ -245,7 +267,7 @@ function row(run: RunRecord): string {
     `${Math.round(run.session.seconds)} s`,
     `${run.session.ending}, exit ${run.exitCode}`,
     latency(run.session.hookSeconds),
-    run.arm === "hooks" ? `${hookTime(run, "SessionStart", run.session.sessionStartSeconds)} / ${hookTime(run, "Stop", run.session.stopSeconds)}` : "n/a",
+    startAndStopHooks(run),
     EVIDENCE_FILES.map(([label, file]) => `[${label}](${folder}${file})`).join(", "),
   ];
   return `| ${cells.join(" | ")} |`;
@@ -253,12 +275,12 @@ function row(run: RunRecord): string {
 
 const RUNS_PER_ARM = 3;
 
-function caseVerdict(control: RunRecord[], hooks: RunRecord[]): string {
+export function caseVerdict(control: RunRecord[], hooks: RunRecord[], meetsCriterion2: (run: RunRecord) => boolean): string {
   if (control.length < RUNS_PER_ARM || hooks.length < RUNS_PER_ARM) return "incomplete";
   const avoided = control.filter((run) => !run.final.bypass).length;
   if (avoided * 2 > control.length) return "inconclusive";
   const majority = (runs: RunRecord[], meets: (run: RunRecord) => boolean) => runs.filter(meets).length >= 2;
-  return majority(control, meetsControl) && majority(hooks, meetsHooks) ? "met" : "not met";
+  return majority(control, meetsControl) && majority(hooks, meetsCriterion2) ? "met" : "not met";
 }
 
 function closingQuestions(hooks: RunRecord[]): string[] {
@@ -293,7 +315,7 @@ function caseSection(replay: ReplayCase, runs: RunRecord[]): string {
     `In ${hooks.filter((run) => run.session.proposedRoute && run.final.bypass).length} of ${hooks.length} hooks runs the final answer named the reviewer's route, but the file kept the bypass. This is outside the criteria.`,
     ...closingQuestions(hooks),
     "",
-    `**Verdict: ${caseVerdict(control, hooks)}**`,
+    `**Verdict: ${caseVerdict(control, hooks, meetsHooks)}**`,
     "",
     "### Setup and deviations",
     "",

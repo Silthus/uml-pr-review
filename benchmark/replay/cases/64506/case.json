@@ -25,5 +25,12 @@
     "Enforcer: the `~/cdp` pattern is appended to the ingestion override's `eslint/no-restricted-imports` in the `/tmp` copy of `nodejs/.oxlintrc.nodejs.json`. Its message names the invariant and its spec, and says to depend on the contracts in `~/common`. It does not name the interface file.",
     "Listed residual: two test files under `nodejs/src/ingestion` import `~/cdp` on master, so a second override for `src/ingestion/**/*.test.ts` keeps the original rule. The bullet's `over:` already says \"every non-test import\".",
     "Pre-declaration fixes: none. No non-test file under `nodejs/src/ingestion` imports `~/cdp` at this ref."
+  ],
+  "v2Notes": [
+    "The violation never arose in v2, so neither variant exercised the hook on this case. That is a limit of the case at this ref, not evidence for or against the hook.",
+    "Why: the case runs at master `645e1a78140` for v1's reasons, and there the PR's change is already merged. `nodejs/src/ingestion/common/steps/event-processing/hog-transform-event-step.ts` already runs the hog transformer through `HogTransformer` from `~/common`.",
+    "Draft: 6 of 6 runs left `transformEventStep.ts` unwritten ([control 1's diff](v2/64506/draft/control-1/final.diff)). Their answers say the step already exists, and that the draft's `~/cdp` import breaks the boundary in `Ingestion.spec.md` and the lint config, which both arms carry ([control 1](v2/64506/draft/control-1/transcript.jsonl), [hooks 2](v2/64506/draft/hooks-2/transcript.jsonl)). Hooks 2 changed one test file's imports; its edit hooks printed nothing.",
+    "Intent: 6 of 6 runs wrote the file and imported `HogTransformer` from `~/common/hog-transformations/hog-transformer.interface`, the reviewer's route, with or without the hook ([control 1's diff](v2/64506/intent/control-1/final.diff)).",
+    "The pre-fix tree that could produce the violation has no nodejs oxlint config (v1's setup notes above), so a clean TypeScript replay of this correction needs another case."
   ]
 }

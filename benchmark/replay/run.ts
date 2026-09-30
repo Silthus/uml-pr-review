@@ -1,13 +1,13 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { defaultEnvironment, setUp, tearDown, witness } from "./kit/kit.ts";
-import { declareCase, EVIDENCE_FILES, invariantName, loadCase, readSession, renderReport, type Arm, type ReplayCase, type RunRecord } from "./replay.ts";
+import { declareCase, EVIDENCE_FILES, invariantName, isVariant, loadCase, readSession, renderReport, VARIANTS, type Arm, type ReplayCase, type RunRecord, type Variant } from "./replay.ts";
+import { auditTranscript, keepOnlyEditHook, renderV2, type CommandAudit } from "./v2.ts";
 
-const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>]\n       bun benchmark/replay/run.ts report";
-const KIT_PREFIX = "/tmp/replay-118";
+const USAGE = "usage: bun benchmark/replay/run.ts <pr> --arm hooks|control --runs <n> [--first <k>] [--variant draft|intent]\n       bun benchmark/replay/run.ts report";
 const EVIDENCE = resolve(import.meta.dir, "../../docs/replay");
 const POSTHOG = join(homedir(), "posthog");
 const SESSION_TIMEOUT_MS = 20 * 60 * 1000;
@@ -15,11 +15,24 @@ const TRIM_AT = 4000;
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
-  options: { arm: { type: "string" }, runs: { type: "string", default: "1" }, first: { type: "string", default: "1" } },
+  options: { arm: { type: "string" }, runs: { type: "string", default: "1" }, first: { type: "string", default: "1" }, variant: { type: "string" } },
 });
 
 function isArm(value: string | undefined): value is Arm {
   return value === "hooks" || value === "control";
+}
+
+interface Protocol {
+  variant?: Variant;
+  kit: string;
+  evidence: string;
+  task: string;
+  maxTurns: number;
+}
+
+function protocolFor(replay: ReplayCase, arm: Arm, n: number, variant: Variant | undefined): Protocol {
+  if (variant === undefined) return { kit: `/tmp/replay-118-${replay.pr}-${arm}-${n}`, evidence: join(EVIDENCE, String(replay.pr), `${arm}-${n}`), task: "task.md", maxTurns: 30 };
+  return { variant, kit: `/tmp/replay-124-${replay.pr}-${variant}-${arm}-${n}`, evidence: join(EVIDENCE, "v2", String(replay.pr), variant, `${arm}-${n}`), task: `${variant}.md`, maxTurns: 50 };
 }
 
 function sh(argv: string[], cwd: string, env: Record<string, string | undefined> = process.env) {
@@ -88,12 +101,12 @@ function stamped(lines: string[], started: number): string[] {
   return lines.filter((line) => line.trim() !== "").map((line) => JSON.stringify({ ...publicRecord(line), received_ms: received }));
 }
 
-async function runSession(dir: string, task: string): Promise<{ lines: string[]; exitCode: number }> {
+async function runSession(dir: string, task: string, maxTurns: number): Promise<{ lines: string[]; exitCode: number }> {
   const env: Record<string, string | undefined> = { ...process.env, COHERENCE_HOME: join(dir, "coherence") };
   for (const key of ["CLAUDE_CODE_REMOTE", "CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT"]) delete env[key];
   const argv = ["claude", "-p", task, "--model", "claude-opus-5-5", "--permission-mode", "acceptEdits", "--setting-sources", "project"];
   const started = performance.now();
-  const child = Bun.spawn([...argv, "--output-format", "stream-json", "--verbose", "--include-hook-events", "--max-turns", "30"], { cwd: join(dir, "posthog"), env, stdout: "pipe", stderr: "inherit" });
+  const child = Bun.spawn([...argv, "--output-format", "stream-json", "--verbose", "--include-hook-events", "--max-turns", String(maxTurns)], { cwd: join(dir, "posthog"), env, stdout: "pipe", stderr: "inherit" });
   const timer = setTimeout(() => child.kill(), SESSION_TIMEOUT_MS);
   const lines: string[] = [];
   const reader = child.stdout.getReader();
@@ -157,9 +170,8 @@ async function cleanUp(dir: string, baseline: PostHogState, ref: string) {
   if (failures.length > 0) throw new AggregateError(failures, `cleaning up ${dir} failed`);
 }
 
-async function replayOnce(replay: ReplayCase, arm: Arm, n: number, baseline: PostHogState): Promise<RunRecord> {
-  const dir = `${KIT_PREFIX}-${replay.pr}-${arm}-${n}`;
-  const evidence = join(EVIDENCE, String(replay.pr), `${arm}-${n}`);
+async function replayOnce(replay: ReplayCase, arm: Arm, n: number, protocol: Protocol, baseline: PostHogState): Promise<RunRecord> {
+  const { kit: dir, evidence } = protocol;
   rmSync(evidence, { recursive: true, force: true });
   mkdirSync(evidence, { recursive: true });
   const kitLog: string[] = [];
@@ -167,10 +179,11 @@ async function replayOnce(replay: ReplayCase, arm: Arm, n: number, baseline: Pos
   try {
     const worktree = join(dir, "posthog");
     declareCase(replay, worktree);
+    if (arm === "hooks" && protocol.variant !== undefined) kitLog.push(`Coherence hooks turned off in .claude/settings.json, only PostToolUse kept: ${keepOnlyEditHook(worktree).join(", ")}`);
     const witnessed = await witness(dir, replay.invariant, (line) => kitLog.push(line));
     writeFileSync(join(evidence, "witness.txt"), `${kitLog.join("\n")}\n`);
     if (!witnessed) throw new Error(`the witness did not go red then green for ${replay.invariant}; see ${evidence}/witness.txt`);
-    const session = await runSession(dir, readFileSync(join(replay.dir, "task.md"), "utf8"));
+    const session = await runSession(dir, readFileSync(join(replay.dir, protocol.task), "utf8"), protocol.maxTurns);
     writeFileSync(join(evidence, "transcript.jsonl"), `${session.lines.map((line) => JSON.stringify(trimmed(JSON.parse(line)))).join("\n")}\n`);
     writeFileSync(join(evidence, "hooks.jsonl"), `${session.lines.filter((line) => line.includes('"subtype":"hook_')).join("\n")}\n`);
     const name = invariantName(replay);
@@ -183,6 +196,7 @@ async function replayOnce(replay: ReplayCase, arm: Arm, n: number, baseline: Pos
     const content = existsSync(join(worktree, replay.file)) ? readFileSync(join(worktree, replay.file), "utf8") : "";
     const record: RunRecord = {
       pr: replay.pr,
+      ...(protocol.variant === undefined ? {} : { variant: protocol.variant }),
       arm,
       n,
       exitCode: session.exitCode,
@@ -198,6 +212,7 @@ async function replayOnce(replay: ReplayCase, arm: Arm, n: number, baseline: Pos
 
 const recordedRun = z.object({
   pr: z.number(),
+  variant: z.enum(VARIANTS).optional(),
   arm: z.enum(["hooks", "control"]),
   n: z.number(),
   exitCode: z.number(),
@@ -218,18 +233,44 @@ function isComplete(folder: string): boolean {
   return ["run.json", ...EVIDENCE_FILES.map(([, file]) => file)].every((file) => existsSync(join(folder, file)));
 }
 
-function recordedRuns(): RunRecord[] {
-  return readdirSync(EVIDENCE, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && /^\d+$/.test(entry.name))
-    .flatMap((pr) => readdirSync(join(EVIDENCE, pr.name)).map((run) => join(EVIDENCE, pr.name, run)))
-    .filter(isComplete)
-    .map(rescored);
+function subfolders(folder: string): string[] {
+  if (!existsSync(folder)) return [];
+  return readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => join(folder, entry.name));
+}
+
+function prFolders(root: string): string[] {
+  return subfolders(root).filter((folder) => /^\d+$/.test(basename(folder)));
+}
+
+function v1Folders(): string[] {
+  return prFolders(EVIDENCE).flatMap(subfolders).filter(isComplete);
+}
+
+function v2Folders(): string[] {
+  return prFolders(join(EVIDENCE, "v2")).flatMap(subfolders).flatMap(subfolders).filter(isComplete);
+}
+
+function commandAudit(folders: string[]): CommandAudit {
+  const audits = folders.map((folder) => ({ run: relative(EVIDENCE, folder), ...auditTranscript(readFileSync(join(folder, "transcript.jsonl"), "utf8")) }));
+  return {
+    transcripts: folders.length,
+    calls: audits.reduce((sum, audit) => sum + audit.calls, 0),
+    ran: audits.reduce((sum, audit) => sum + audit.ran, 0),
+    notReadOnly: audits.flatMap((audit) => audit.notReadOnly.map((command) => ({ run: audit.run, command }))),
+  };
+}
+
+function writeReport() {
+  const cases = ["64506", "68756"].map(loadCase);
+  const v2 = v2Folders();
+  const v1Report = renderReport(v1Folders().map(rescored), cases);
+  writeFileSync(join(EVIDENCE, "report.md"), `${v1Report}\n${renderV2(v2.map(rescored), cases, commandAudit(v2))}`);
 }
 
 async function main() {
   const [command] = positionals;
   if (command === "report") {
-    writeFileSync(join(EVIDENCE, "report.md"), renderReport(recordedRuns(), ["64506", "68756"].map(loadCase)));
+    writeReport();
     return;
   }
   const runs = Number(values.runs);
@@ -238,10 +279,15 @@ async function main() {
     console.error(USAGE);
     process.exit(64);
   }
+  const variant = values.variant;
+  if (variant !== undefined && !isVariant(variant)) {
+    console.error(USAGE);
+    process.exit(64);
+  }
   const replay = loadCase(command);
   const baseline = posthogState(replay.ref);
   for (let n = first; n < first + runs; n++) {
-    const record = await replayOnce(replay, values.arm, n, baseline);
+    const record = await replayOnce(replay, values.arm, n, protocolFor(replay, values.arm, n, variant), baseline);
     console.log(JSON.stringify(record));
   }
 }

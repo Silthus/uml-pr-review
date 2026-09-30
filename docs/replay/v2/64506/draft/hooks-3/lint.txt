@@ -1,0 +1,9 @@
+$ /home/coder/posthog/node_modules/.bin/oxlint -c nodejs/.oxlintrc.nodejs.json --format json nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts
+No files found to lint. Please check your paths and ignore patterns.
+{ "diagnostics": [],
+              "number_of_files": 0,
+              "number_of_rules": 31,
+              "threads_count": 16,
+              "start_time": 0.216718775
+            }
+            [exit 1]

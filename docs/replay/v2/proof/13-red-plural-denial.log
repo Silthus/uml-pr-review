@@ -1,0 +1,28 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/v2.test.ts:
+126 |       bash("flox activate"),
+127 |       answer("flox activate", "✅ You are now using the environment", false),
+128 |       bash("grep -rn 'gh ' src"),
+129 |     ];
+130 | 
+131 |     expect(outwardCommands(records.map((record) => JSON.stringify(record)).join("\n"))).toEqual([
+                                                                                              ^
+error: expect(received).toEqual(expected)
+
+@@ -3,3 +3,3 @@
+      "command": "cd posthog && gh issue create --title x",
+-     "ran": false,
++     "ran": true,
+    },
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:131:89)
+(fail) auditing a transcript's commands > names Bash calls that could reach the network or write outside the worktree, and whether each ran [1.89ms]
+
+ 6 pass
+ 1 fail
+ 13 expect() calls
+Ran 7 tests across 1 file. [36.00ms]

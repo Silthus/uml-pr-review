@@ -1,0 +1,19 @@
+diff --git a/nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts b/nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts
+new file mode 100644
+index 00000000000..ae686cd4101
+--- /dev/null
++++ b/nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts
+@@ -0,0 +1,13 @@
++import { HogTransformationResult, HogTransformer } from '~/common/hog-transformations/hog-transformer.interface'
++import { PluginEvent } from '~/plugin-scaffold'
++
++export async function transformEventStep(
++    event: PluginEvent,
++    hogTransformer: Pick<HogTransformer, 'transformEventAndProduceMessages'> | null
++): Promise<HogTransformationResult> {
++    if (!hogTransformer) {
++        return { event, invocationResults: [] }
++    }
++
++    return await hogTransformer.transformEventAndProduceMessages(event)
++}

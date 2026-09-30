@@ -1,0 +1,31 @@
+bun test v1.4.2 (744846f84)
+
+benchmark/replay/v2.test.ts:
+25 |     const hooks = Object.fromEntries(events.map((event) => [event, [coherenceHook(event)]]));
+26 |     const worktree = worktreeWithSettings({ hooks: { ...hooks, SessionStart: [signing, coherenceHook("SessionStart")] }, enabledPlugins: { lsp: false } });
+27 | 
+28 |     const turnedOff = keepOnlyEditHook(worktree);
+29 | 
+30 |     expect(turnedOff).toEqual(["SessionStart", "SubagentStart", "UserPromptSubmit", "Stop", "SubagentStop"]);
+                           ^
+error: expect(received).toEqual(expected)
+
+- [
+-   "SessionStart",
+-   "SubagentStart",
+-   "UserPromptSubmit",
+-   "Stop",
+-   "SubagentStop",
+- ]
++ []
+
+- Expected  - 7
++ Received  + 1
+
+      at <anonymous> (/home/coder/dev/uml-pr-review/.claude/worktrees/agent-a9e0b4d0cb2ec724f/benchmark/replay/v2.test.ts:30:23)
+(fail) the minimal hooks arm > keeps only Coherence's edit hook, leaves hooks that are not Coherence's, and names what it turned off [1.03ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [8.00ms]

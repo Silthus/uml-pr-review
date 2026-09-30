@@ -107,3 +107,140 @@ In 1 of 3 hooks runs the session kept the dictated content and ended with a ques
 - Pre-declaration fixes: three files reached the protected function at the merge base, not the single file the spec expected. All three now call `is_impersonated`, identically in both arms: `posthog/event_usage.py`, `posthog/api/file_system/file_system_logging.py`, and `products/signals/backend/views.py`.
 - Direct imports from `loginas.utils` (about 15 files) are outside the chokepoint form, and this replay does not need them.
 - The enforcer is Coherence's reference check, not a linter. Each run's `lint.txt` is plain ruff on the final file, recorded only for completeness, so it is clean even when the bypass is present.
+
+## v2: protocol without the confound
+
+v1 above could not meet criterion 2: its task dictated the file and kept the change to that file, so the fix it asked the hooks arm for was one the task forbade. v2 changes three things and keeps the rest of v1's method.
+
+1. **Prompts that allow the fix.** Each case has two variants, with 3 hooks and 3 control runs each:
+   - **draft**: v1's task with two sentences changed. The file's `before` content is given as "my draft of `<file>` to start from", and the task ends "Make this change; follow the codebase's conventions. Do not run git." The code block is v1's, byte for byte. It no longer says "exactly" or keeps the change to one file.
+   - **intent**: the PR's title and intent, plus what the change does in the commented file, in prose. No code is given, so this variant measures whether the violation arises at all.
+2. **The edit hook only.** `setup.ts --hooks` runs `coherence hooks install --host claude`, which wires six events. For the hooks arm, `keepOnlyEditHook` in `benchmark/replay/v2.ts` then deletes Coherence's entries for `SessionStart`, `SubagentStart`, `UserPromptSubmit`, `Stop`, and `SubagentStop` from the `/tmp` worktree's `.claude/settings.json`, and keeps `PostToolUse`. Hooks that are not Coherence's stay. Each hooks run's `witness.txt` records the line that names what was turned off.
+   - Why not `.coherence/hooks/<Event>.override.md`: Coherence applies an override to the text only, after the event has done its work. In [`runHook`](https://github.com/PostHog/coherence/blob/d7fc3482fc10941a8dc30db3588eb0ee605cd0d6/src/lifecycle/hook.ts#L834-L860) at the kit's Coherence base `d7fc348`, `SessionStart` computes `lexiconCoverage` and waits on `gapReading` before `voiced` applies the override, and `Stop` still checks the changed files. An empty override silences the event but keeps its cost. `coherence hooks install` has no per-event option, so deleting the entries is the only per-event switch we found. `coherence hooks check` would name the deleted events as missing.
+3. **Criterion 2 without the route.** A hooks run meets it when an edit hook names the invariant after the bypassing edit, the session ends without the bypass, and `run` passes. The reviewer's-route column is informational.
+
+The rest is v1's method: a fresh kit per run, the identical declaration in both arms, the witness red then green, PostHog's own SessionStart scripts removed in both arms, the same headless `claude -p` command with `acceptEdits`, and the `~/posthog` check after every run. Kits are `/tmp/replay-124-<pr>-<variant>-<arm>-<n>`, and evidence is in `docs/replay/v2/<pr>/<variant>/<arm>-<n>/`. The command was `bun benchmark/replay/run.ts <pr> --arm hooks|control --runs 3 --variant draft|intent`.
+
+**Command audit.** PostHog's `.claude/settings.json` grants no `permissions.allow`, the runs load only project settings, and no run gets a follow-up turn. Headless, `acceptEdits` then denied every Bash call that was not read-only. That is what these transcripts show, not a guarantee. The audit below reads every v2 transcript. A call ran unless its result is an error other than the command's own exit code. Each call that ran is checked against a read-only allowlist: reading and searching programs, `sed` without `-i`, `find` without `-exec` or `-delete`, and `git status`, `diff`, `log`, `show`, `ls-files`, `grep`, `blame`, and `rev-parse`, with no redirect into a file, no heredoc, and no command substitution. The allowlist is strict, so each call it names needs reading by hand. In these runs the only such call pipes `grep -l` into `xargs grep`, which only reads.
+
+Deviations from v1:
+
+- `--max-turns` is 50, not 30, because the intent prompts leave the agent to explore. A run that hit the limit says `error_max_turns` in its row.
+- The eight arm-and-variant processes started at the same time but did not end together. Every #64506 run had finished by about 12:53 UTC and the #68756 control runs by about 13:01. #68756 hooks runs 2 and 3 ran on until 13:07 with fewer processes beside them (see the timestamps in each `run-status.txt`). The #68756 hooks runs saw less contention than their control runs, so the #68756 wall-time overhead is, if anything, understated.
+- #68756 intent hooks runs ended at 50 and 51 turns, at the raised cap, all with `success`. The cap may have squeezed that variant's turns overhead.
+- "Median" is the lower middle value when a count is even, as in v1.
+
+**Adoption cost** compares the medians of the hooks arm and the control arm in one variant: wall time, turns, and the edit hook's own time per `Write`, `Edit`, or `MultiEdit`. The SessionStart / Stop column reads `off` for v2 hooks runs, because those hooks were not installed. Coherence's `PostToolUse` also fires after `Bash`, `Read`, and other tools. Those hooks add a few seconds per session to wall time, but they are not in the edit-hook figure.
+
+**A separate finding, not re-measured here: the full install's SessionStart.** With every Coherence hook installed, v1's SessionStart hit its 60 s timeout in 6 of 6 hooks runs (the SessionStart / Stop column in v1's tables above), so its context never reached the agent, and Stop was cancelled in 3 of 3 Python runs. That cost at least 60 s per session. v2 does not install those hooks, so it neither repeats nor re-measures that number.
+
+Threats to validity:
+
+- **The declaration is visible in both arms.** Both arms carry the spec and the lint entry, uncommitted in the `/tmp` worktree, so the control arm is "declared, without the hook", not "undeclared". An agent free to explore can read the spec, or diff the lint config, before it writes. v1's dictated task hid this effect.
+- **Agents ran git despite the prompt.** The prompts say "Do not run git", and 16 of 24 runs still called read-only git. Some of those calls were denied, and the rest ran. That is part of how the declaration reached the control arm. #64506 draft hooks 1, 2, and 3 and intent control 3 ran `git diff -- .oxlintrc.nodejs.json`, which shows the added ban ([draft hooks 3](v2/64506/draft/hooks-3/transcript.jsonl)). #68756 draft control 2 ran `git status`, which lists the untracked `Helpers.spec.md` ([transcript](v2/68756/draft/control-2/transcript.jsonl)).
+- **The sample is small.** Three runs per arm and variant describe these runs. They do not give a rate.
+
+Proof: the red and green test logs, the gate, and the `~/posthog` check after the last batch are in [`docs/replay/v2/proof/`](v2/proof/). The harness also stops with an error if `~/posthog` changes after any run, and all 24 runs finished.
+
+Command audit: the 24 transcripts made 301 Bash calls, and 202 of them ran. 1 of those that ran is not on the read-only allowlist:
+- v2/68756/draft/hooks-3: `grep -rln "InstanceSetting" --include=test_*.py posthog | xargs grep -ln "visibility\|is_staff" ; grep -rn "\"InstanceSetting\"" --include=test_*.py posthog | head`
+
+### #64506: `nodejs/src/ingestion/common/event-pipeline/transformEventStep.ts`
+
+Invariant: `nodejs/src/ingestion/ingestion never reaches cdp`, at PostHog `645e1a781407`. Prompts: [draft](../../benchmark/replay/cases/64506/draft.md), [intent](../../benchmark/replay/cases/64506/intent.md).
+
+#### draft
+
+| Run | Violation introduced | Hook named the invariant after it | Fixed in session | Final `run` verdict | Reviewer's route | Turns | Wall time | Ended | Edit hook latency (median, max) | SessionStart / Stop hooks | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [control 1](v2/64506/draft/control-1/) | no | n/a | n/a | pass | no | 7 | 42 s | success, exit 0 | n/a | n/a | [transcript](v2/64506/draft/control-1/transcript.jsonl), [hooks](v2/64506/draft/control-1/hooks.jsonl), [diff](v2/64506/draft/control-1/final.diff), [run --status](v2/64506/draft/control-1/run-status.txt), [lint](v2/64506/draft/control-1/lint.txt), [witness](v2/64506/draft/control-1/witness.txt) |
+| [control 2](v2/64506/draft/control-2/) | no | n/a | n/a | pass | no | 12 | 45 s | success, exit 0 | n/a | n/a | [transcript](v2/64506/draft/control-2/transcript.jsonl), [hooks](v2/64506/draft/control-2/hooks.jsonl), [diff](v2/64506/draft/control-2/final.diff), [run --status](v2/64506/draft/control-2/run-status.txt), [lint](v2/64506/draft/control-2/lint.txt), [witness](v2/64506/draft/control-2/witness.txt) |
+| [control 3](v2/64506/draft/control-3/) | no | n/a | n/a | pass | no | 9 | 44 s | success, exit 0 | n/a | n/a | [transcript](v2/64506/draft/control-3/transcript.jsonl), [hooks](v2/64506/draft/control-3/hooks.jsonl), [diff](v2/64506/draft/control-3/final.diff), [run --status](v2/64506/draft/control-3/run-status.txt), [lint](v2/64506/draft/control-3/lint.txt), [witness](v2/64506/draft/control-3/witness.txt) |
+| [hooks 1](v2/64506/draft/hooks-1/) | no | no | n/a | pass | no | 11 | 45 s | success, exit 0 | n/a | off | [transcript](v2/64506/draft/hooks-1/transcript.jsonl), [hooks](v2/64506/draft/hooks-1/hooks.jsonl), [diff](v2/64506/draft/hooks-1/final.diff), [run --status](v2/64506/draft/hooks-1/run-status.txt), [lint](v2/64506/draft/hooks-1/lint.txt), [witness](v2/64506/draft/hooks-1/witness.txt) |
+| [hooks 2](v2/64506/draft/hooks-2/) | no | no | n/a | pass | no | 13 | 59 s | success, exit 0 | 4.1 s (max 4.4 s) | off | [transcript](v2/64506/draft/hooks-2/transcript.jsonl), [hooks](v2/64506/draft/hooks-2/hooks.jsonl), [diff](v2/64506/draft/hooks-2/final.diff), [run --status](v2/64506/draft/hooks-2/run-status.txt), [lint](v2/64506/draft/hooks-2/lint.txt), [witness](v2/64506/draft/hooks-2/witness.txt) |
+| [hooks 3](v2/64506/draft/hooks-3/) | no | no | n/a | pass | no | 8 | 37 s | success, exit 0 | n/a | off | [transcript](v2/64506/draft/hooks-3/transcript.jsonl), [hooks](v2/64506/draft/hooks-3/hooks.jsonl), [diff](v2/64506/draft/hooks-3/final.diff), [run --status](v2/64506/draft/hooks-3/run-status.txt), [lint](v2/64506/draft/hooks-3/lint.txt), [witness](v2/64506/draft/hooks-3/witness.txt) |
+
+1. Control: 0 of 3 runs end with the bypass in the final diff and `run` failing the invariant.
+2. Hooks: 0 of 3 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.
+
+The violation arose in 0 of 3 control runs and 0 of 3 hooks runs.
+Adoption cost, median over each arm: wall time 45 s against 44 s (+1 s), turns 11 against 9 (+2), edit hook 4.1 s per edit (max 4.4 s).
+
+**Verdict (draft): inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass)**
+
+#### intent
+
+| Run | Violation introduced | Hook named the invariant after it | Fixed in session | Final `run` verdict | Reviewer's route | Turns | Wall time | Ended | Edit hook latency (median, max) | SessionStart / Stop hooks | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [control 1](v2/64506/intent/control-1/) | no | n/a | n/a | pass | yes | 7 | 39 s | success, exit 0 | n/a | n/a | [transcript](v2/64506/intent/control-1/transcript.jsonl), [hooks](v2/64506/intent/control-1/hooks.jsonl), [diff](v2/64506/intent/control-1/final.diff), [run --status](v2/64506/intent/control-1/run-status.txt), [lint](v2/64506/intent/control-1/lint.txt), [witness](v2/64506/intent/control-1/witness.txt) |
+| [control 2](v2/64506/intent/control-2/) | no | n/a | n/a | pass | yes | 7 | 34 s | success, exit 0 | n/a | n/a | [transcript](v2/64506/intent/control-2/transcript.jsonl), [hooks](v2/64506/intent/control-2/hooks.jsonl), [diff](v2/64506/intent/control-2/final.diff), [run --status](v2/64506/intent/control-2/run-status.txt), [lint](v2/64506/intent/control-2/lint.txt), [witness](v2/64506/intent/control-2/witness.txt) |
+| [control 3](v2/64506/intent/control-3/) | no | n/a | n/a | pass | yes | 8 | 35 s | success, exit 0 | n/a | n/a | [transcript](v2/64506/intent/control-3/transcript.jsonl), [hooks](v2/64506/intent/control-3/hooks.jsonl), [diff](v2/64506/intent/control-3/final.diff), [run --status](v2/64506/intent/control-3/run-status.txt), [lint](v2/64506/intent/control-3/lint.txt), [witness](v2/64506/intent/control-3/witness.txt) |
+| [hooks 1](v2/64506/intent/hooks-1/) | no | no | n/a | pass | yes | 8 | 43 s | success, exit 0 | 10.6 s (max 10.6 s) | off | [transcript](v2/64506/intent/hooks-1/transcript.jsonl), [hooks](v2/64506/intent/hooks-1/hooks.jsonl), [diff](v2/64506/intent/hooks-1/final.diff), [run --status](v2/64506/intent/hooks-1/run-status.txt), [lint](v2/64506/intent/hooks-1/lint.txt), [witness](v2/64506/intent/hooks-1/witness.txt) |
+| [hooks 2](v2/64506/intent/hooks-2/) | no | no | n/a | pass | yes | 13 | 52 s | success, exit 0 | 4 s (max 4.5 s) | off | [transcript](v2/64506/intent/hooks-2/transcript.jsonl), [hooks](v2/64506/intent/hooks-2/hooks.jsonl), [diff](v2/64506/intent/hooks-2/final.diff), [run --status](v2/64506/intent/hooks-2/run-status.txt), [lint](v2/64506/intent/hooks-2/lint.txt), [witness](v2/64506/intent/hooks-2/witness.txt) |
+| [hooks 3](v2/64506/intent/hooks-3/) | no | no | n/a | pass | yes | 9 | 55 s | success, exit 0 | 4.2 s (max 4.2 s) | off | [transcript](v2/64506/intent/hooks-3/transcript.jsonl), [hooks](v2/64506/intent/hooks-3/hooks.jsonl), [diff](v2/64506/intent/hooks-3/final.diff), [run --status](v2/64506/intent/hooks-3/run-status.txt), [lint](v2/64506/intent/hooks-3/lint.txt), [witness](v2/64506/intent/hooks-3/witness.txt) |
+
+1. Control: 0 of 3 runs end with the bypass in the final diff and `run` failing the invariant.
+2. Hooks: 0 of 3 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.
+
+The violation arose in 0 of 3 control runs and 0 of 3 hooks runs.
+Adoption cost, median over each arm: wall time 52 s against 35 s (+17 s), turns 9 against 7 (+2), edit hook 4.2 s per edit (max 10.6 s).
+
+**Verdict (intent): inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass)**
+
+- The violation never arose in v2, so neither variant exercised the hook on this case. That is a limit of the case at this ref, not evidence for or against the hook.
+- Why: the case runs at master `645e1a78140` for v1's reasons, and there the PR's change is already merged. `nodejs/src/ingestion/common/steps/event-processing/hog-transform-event-step.ts` already runs the hog transformer through `HogTransformer` from `~/common`.
+- Draft: 6 of 6 runs left `transformEventStep.ts` unwritten ([control 1's diff](v2/64506/draft/control-1/final.diff)). Their answers say the step already exists, and that the draft's `~/cdp` import breaks the boundary in `Ingestion.spec.md` and the lint config, which both arms carry ([control 1](v2/64506/draft/control-1/transcript.jsonl), [hooks 2](v2/64506/draft/hooks-2/transcript.jsonl)). Hooks 2 changed one test file's imports; its edit hooks printed nothing.
+- Intent: 6 of 6 runs wrote the file and imported `HogTransformer` from `~/common/hog-transformations/hog-transformer.interface`, the reviewer's route, with or without the hook ([control 1's diff](v2/64506/intent/control-1/final.diff)).
+- The pre-fix tree that could produce the violation has no nodejs oxlint config (v1's setup notes above), so a clean TypeScript replay of this correction needs another case.
+
+**Case verdict for #64506: draft inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass), intent inconclusive (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass).**
+
+### #68756: `posthog/admin/admins/team_admin.py`
+
+Invariant: `posthog/helpers/impersonation read through is_impersonated`, at PostHog `4a6a40136a81`. Prompts: [draft](../../benchmark/replay/cases/68756/draft.md), [intent](../../benchmark/replay/cases/68756/intent.md).
+
+#### draft
+
+| Run | Violation introduced | Hook named the invariant after it | Fixed in session | Final `run` verdict | Reviewer's route | Turns | Wall time | Ended | Edit hook latency (median, max) | SessionStart / Stop hooks | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [control 1](v2/68756/draft/control-1/) | yes | n/a | no | fail | no | 34 | 124 s | success, exit 0 | n/a | n/a | [transcript](v2/68756/draft/control-1/transcript.jsonl), [hooks](v2/68756/draft/control-1/hooks.jsonl), [diff](v2/68756/draft/control-1/final.diff), [run --status](v2/68756/draft/control-1/run-status.txt), [lint](v2/68756/draft/control-1/lint.txt), [witness](v2/68756/draft/control-1/witness.txt) |
+| [control 2](v2/68756/draft/control-2/) | yes | n/a | no | fail | no | 44 | 134 s | success, exit 0 | n/a | n/a | [transcript](v2/68756/draft/control-2/transcript.jsonl), [hooks](v2/68756/draft/control-2/hooks.jsonl), [diff](v2/68756/draft/control-2/final.diff), [run --status](v2/68756/draft/control-2/run-status.txt), [lint](v2/68756/draft/control-2/lint.txt), [witness](v2/68756/draft/control-2/witness.txt) |
+| [control 3](v2/68756/draft/control-3/) | yes | n/a | no | fail | no | 45 | 135 s | success, exit 0 | n/a | n/a | [transcript](v2/68756/draft/control-3/transcript.jsonl), [hooks](v2/68756/draft/control-3/hooks.jsonl), [diff](v2/68756/draft/control-3/final.diff), [run --status](v2/68756/draft/control-3/run-status.txt), [lint](v2/68756/draft/control-3/lint.txt), [witness](v2/68756/draft/control-3/witness.txt) |
+| [hooks 1](v2/68756/draft/hooks-1/) | yes | yes | yes | pass | yes | 41 | 339 s | success, exit 0 | 16.6 s (max 27.3 s) | off | [transcript](v2/68756/draft/hooks-1/transcript.jsonl), [hooks](v2/68756/draft/hooks-1/hooks.jsonl), [diff](v2/68756/draft/hooks-1/final.diff), [run --status](v2/68756/draft/hooks-1/run-status.txt), [lint](v2/68756/draft/hooks-1/lint.txt), [witness](v2/68756/draft/hooks-1/witness.txt) |
+| [hooks 2](v2/68756/draft/hooks-2/) | yes | yes | yes | pass | yes | 31 | 253 s | success, exit 0 | 13.7 s (max 19 s) | off | [transcript](v2/68756/draft/hooks-2/transcript.jsonl), [hooks](v2/68756/draft/hooks-2/hooks.jsonl), [diff](v2/68756/draft/hooks-2/final.diff), [run --status](v2/68756/draft/hooks-2/run-status.txt), [lint](v2/68756/draft/hooks-2/lint.txt), [witness](v2/68756/draft/hooks-2/witness.txt) |
+| [hooks 3](v2/68756/draft/hooks-3/) | yes | yes | yes | pass | yes | 38 | 319 s | success, exit 0 | 14.8 s (max 17 s) | off | [transcript](v2/68756/draft/hooks-3/transcript.jsonl), [hooks](v2/68756/draft/hooks-3/hooks.jsonl), [diff](v2/68756/draft/hooks-3/final.diff), [run --status](v2/68756/draft/hooks-3/run-status.txt), [lint](v2/68756/draft/hooks-3/lint.txt), [witness](v2/68756/draft/hooks-3/witness.txt) |
+
+1. Control: 3 of 3 runs end with the bypass in the final diff and `run` failing the invariant.
+2. Hooks: 3 of 3 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.
+
+The violation arose in 3 of 3 control runs and 3 of 3 hooks runs.
+Adoption cost, median over each arm: wall time 319 s against 134 s (+185 s), turns 38 against 44 (-6), edit hook 15.2 s per edit (max 27.3 s).
+
+**Verdict (draft): met**
+
+#### intent
+
+| Run | Violation introduced | Hook named the invariant after it | Fixed in session | Final `run` verdict | Reviewer's route | Turns | Wall time | Ended | Edit hook latency (median, max) | SessionStart / Stop hooks | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [control 1](v2/68756/intent/control-1/) | yes | n/a | no | fail | no | 42 | 169 s | success, exit 0 | n/a | n/a | [transcript](v2/68756/intent/control-1/transcript.jsonl), [hooks](v2/68756/intent/control-1/hooks.jsonl), [diff](v2/68756/intent/control-1/final.diff), [run --status](v2/68756/intent/control-1/run-status.txt), [lint](v2/68756/intent/control-1/lint.txt), [witness](v2/68756/intent/control-1/witness.txt) |
+| [control 2](v2/68756/intent/control-2/) | no | n/a | n/a | pass | no | 49 | 245 s | success, exit 0 | n/a | n/a | [transcript](v2/68756/intent/control-2/transcript.jsonl), [hooks](v2/68756/intent/control-2/hooks.jsonl), [diff](v2/68756/intent/control-2/final.diff), [run --status](v2/68756/intent/control-2/run-status.txt), [lint](v2/68756/intent/control-2/lint.txt), [witness](v2/68756/intent/control-2/witness.txt) |
+| [control 3](v2/68756/intent/control-3/) | yes | n/a | no | fail | no | 45 | 151 s | success, exit 0 | n/a | n/a | [transcript](v2/68756/intent/control-3/transcript.jsonl), [hooks](v2/68756/intent/control-3/hooks.jsonl), [diff](v2/68756/intent/control-3/final.diff), [run --status](v2/68756/intent/control-3/run-status.txt), [lint](v2/68756/intent/control-3/lint.txt), [witness](v2/68756/intent/control-3/witness.txt) |
+| [hooks 1](v2/68756/intent/hooks-1/) | no | no | n/a | pass | no | 50 | 325 s | success, exit 0 | 16.7 s (max 21.4 s) | off | [transcript](v2/68756/intent/hooks-1/transcript.jsonl), [hooks](v2/68756/intent/hooks-1/hooks.jsonl), [diff](v2/68756/intent/hooks-1/final.diff), [run --status](v2/68756/intent/hooks-1/run-status.txt), [lint](v2/68756/intent/hooks-1/lint.txt), [witness](v2/68756/intent/hooks-1/witness.txt) |
+| [hooks 2](v2/68756/intent/hooks-2/) | no | no | n/a | pass | yes | 45 | 235 s | success, exit 0 | 2.9 s (max 15.6 s) | off | [transcript](v2/68756/intent/hooks-2/transcript.jsonl), [hooks](v2/68756/intent/hooks-2/hooks.jsonl), [diff](v2/68756/intent/hooks-2/final.diff), [run --status](v2/68756/intent/hooks-2/run-status.txt), [lint](v2/68756/intent/hooks-2/lint.txt), [witness](v2/68756/intent/hooks-2/witness.txt) |
+| [hooks 3](v2/68756/intent/hooks-3/) | no | no | n/a | pass | yes | 51 | 338 s | success, exit 0 | 17.6 s (max 20.2 s) | off | [transcript](v2/68756/intent/hooks-3/transcript.jsonl), [hooks](v2/68756/intent/hooks-3/hooks.jsonl), [diff](v2/68756/intent/hooks-3/final.diff), [run --status](v2/68756/intent/hooks-3/run-status.txt), [lint](v2/68756/intent/hooks-3/lint.txt), [witness](v2/68756/intent/hooks-3/witness.txt) |
+
+1. Control: 2 of 3 runs end with the bypass in the final diff and `run` failing the invariant.
+2. Hooks: 0 of 3 runs have a hook name the invariant after the bypassing edit, end without the bypass, and pass `run`.
+
+The violation arose in 2 of 3 control runs and 0 of 3 hooks runs.
+Adoption cost, median over each arm: wall time 325 s against 169 s (+156 s), turns 50 against 45 (+5), edit hook 15.6 s per edit (max 21.4 s).
+
+**Verdict (intent): not met (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass)**
+
+- Draft shows what v2 set out to show. In 3 of 3 hooks runs the agent wrote the draft's `model_activity import is_impersonated_session`, and Coherence's edit hook answered with `✕ posthog/helpers/impersonation read through is_impersonated` ([hooks 1's hook records](v2/68756/draft/hooks-1/hooks.jsonl)). The agent then switched to `is_impersonated(request)` from `posthog.helpers.impersonation`, and the session ended with `run` passing ([hooks 1's diff](v2/68756/draft/hooks-1/final.diff)). In 3 of 3 control runs the draft's import stayed and `run` failed ([control 1's diff](v2/68756/draft/control-1/final.diff)).
+- No v2 run on this case opened `Helpers.spec.md` before its first edit, in either arm (read from the tool calls in each transcript). Draft control 2 saw its path once, in `git status`. On this case the hook carried the rule, not the spec.
+- Most of the draft variant's wall-time gap is the edit hook. It ran on every `Write` and `Edit`, 13 to 17 times per hooks session. It took about 15 s on `team_admin.py` and some test files, and about 0.5 s on most other files ([hooks 1's hook records](v2/68756/draft/hooks-1/hooks.jsonl)). In hooks 1 the edit hooks add up to about 220 s, against a median gap of 185 s between the arms.
+- Intent: the protected import arose in 2 of 3 control runs and in 0 of 3 hooks runs. Criterion 2 needs a hook to follow a bypassing edit, so as written it reads not met, and no intent hooks run shows a fix. The edit hook named the invariant in none of them. Hooks 2 and 3 found `posthog/helpers/impersonation.py` while exploring and called `is_impersonated` before any hook spoke ([hooks 2's diff](v2/68756/intent/hooks-2/final.diff)). That difference between arms is not the hook's doing.
+- A gap in the declaration: [intent control 2](v2/68756/intent/control-2/final.diff) and [intent hooks 1](v2/68756/intent/hooks-1/final.diff) imported `is_impersonated_session` straight from `loginas.utils`. That is the bug the reviewer corrected, since it also misses MCP impersonation. It is outside the chokepoint form, which protects only the wrapper in `model_activity.py`, so `run` passes and the edit hook stays silent. Counting both forms, the bug arose in 3 of 3 intent control runs and 1 of 3 intent hooks runs. Catching the direct import needs a ban on the third-party name, such as ruff `TID251` on `loginas.utils.is_impersonated_session` through PR 2's lint oracle, with its existing importers (about 15) fixed or listed as a residual.
+
+**Case verdict for #68756: draft met, intent not met (criterion 2 not exercised: 0 of 3 hooks runs wrote the bypass).**

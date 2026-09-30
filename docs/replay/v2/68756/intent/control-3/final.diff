@@ -1,0 +1,142 @@
+diff --git a/posthog/admin/admins/team_admin.py b/posthog/admin/admins/team_admin.py
+index ee3f941ed09..9d5c25543b2 100644
+--- a/posthog/admin/admins/team_admin.py
++++ b/posthog/admin/admins/team_admin.py
+@@ -21,7 +21,7 @@ from django.shortcuts import redirect, render
+ from django.template.loader import render_to_string
+ from django.urls import NoReverseMatch, path, reverse
+ from django.utils import timezone
+-from django.utils.html import escapejs, format_html
++from django.utils.html import escapejs, format_html, format_html_join
+ from django.utils.safestring import mark_safe
+ 
+ from structlog import get_logger
+@@ -33,9 +33,16 @@ from posthog.admin.inlines.organization_member_for_related_inline import Organiz
+ from posthog.admin.inlines.team_experiments_config_inline import TeamExperimentsConfigInline
+ from posthog.admin.inlines.team_marketing_analytics_config_inline import TeamMarketingAnalyticsConfigInline
+ from posthog.admin.inlines.user_product_list_inline import UserProductListInline
+-from posthog.llm.gateway_internal_client import AIGatewayInternalError, AIGatewayNotConfigured, add_credit, get_wallet
++from posthog.llm.gateway_internal_client import (
++    AIGatewayInternalError,
++    AIGatewayNotConfigured,
++    CreditResult,
++    add_credit,
++    get_wallet,
++)
+ from posthog.models import Team
+-from posthog.models.activity_logging.activity_log import ActivityContextBase, Detail, log_activity
++from posthog.models.activity_logging.activity_log import ActivityContextBase, ActivityLog, Detail, log_activity
++from posthog.models.activity_logging.model_activity import is_impersonated_session
+ from posthog.models.group_type_mapping import invalidate_group_types_cache
+ from posthog.models.remote_config import RemoteConfig
+ from posthog.models.team.team import DEPRECATED_ATTRS
+@@ -63,12 +70,23 @@ logger = get_logger()
+ # Upper bound on a single admin AI gateway top-up, to catch fat-fingered amounts.
+ MAX_CREDIT_USD = Decimal("1000000")
+ 
++AI_GATEWAY_CREDIT_SCOPE = "AIGatewayCredit"
++AI_GATEWAY_CREDIT_ACTIVITY = "credit_added"
++AI_GATEWAY_CREDIT_HISTORY_LIMIT = 10
++
+ 
+ @dataclasses.dataclass(frozen=True)
+ class ReplayActivityContext(ActivityContextBase):
+     reason: str
+ 
+ 
++@dataclasses.dataclass(frozen=True)
++class AIGatewayCreditActivityContext(ActivityContextBase):
++    amount_usd: str
++    reason: str
++    balance_usd: str
++
++
+ class TeamAdminForm(ModelForm):
+     def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+@@ -141,6 +159,7 @@ class TeamAdmin(admin.ModelAdmin):
+         "admit_state",
+         "ai_gateway_actions",
+         "ai_gateway_wallet",
++        "ai_gateway_credit_history",
+         "policy_cache_blob",
+         "group_type_mappings_display",
+     ]
+@@ -278,6 +297,7 @@ class TeamAdmin(admin.ModelAdmin):
+                     "admit_state",
+                     "ai_gateway_actions",
+                     "ai_gateway_wallet",
++                    "ai_gateway_credit_history",
+                     "policy_cache_blob",
+                 ],
+                 "description": mark_safe(
+@@ -687,6 +707,7 @@ class TeamAdmin(admin.ModelAdmin):
+             duplicate=result.duplicate,
+             triggered_by=request.user.email,
+         )
++        self._log_ai_gateway_credit(request, team, result, amount, reason)
+         if result.duplicate:
+             messages.info(
+                 request,
+@@ -699,6 +720,61 @@ class TeamAdmin(admin.ModelAdmin):
+             )
+         return redirect(reverse("admin:posthog_team_change", args=[object_id]))
+ 
++    def _log_ai_gateway_credit(self, request, team: Team, result: CreditResult, amount: Decimal, reason: str) -> None:
++        # The ledger lives in the gateway, so this row can't share its transaction. Write it
++        # whenever it's missing, so an idempotent replay backfills a top-up whose audit write failed.
++        already_logged = ActivityLog.objects.filter(
++            team_id=team.id,
++            scope=AI_GATEWAY_CREDIT_SCOPE,
++            activity=AI_GATEWAY_CREDIT_ACTIVITY,
++            item_id=result.entry_id,
++        ).exists()
++        if already_logged:
++            return
++        amount_usd = result.amount_usd or str(amount)
++        log_activity(
++            organization_id=team.organization_id,
++            team_id=team.id,
++            user=request.user,
++            was_impersonated=is_impersonated_session(request),
++            item_id=result.entry_id,
++            scope=AI_GATEWAY_CREDIT_SCOPE,
++            activity=AI_GATEWAY_CREDIT_ACTIVITY,
++            detail=Detail(
++                name=f"AI gateway credit ${amount_usd}",
++                type="admin_add_ai_gateway_credit",
++                context=AIGatewayCreditActivityContext(
++                    amount_usd=amount_usd,
++                    reason=reason,
++                    balance_usd=result.balance_usd,
++                ),
++            ),
++        )
++
++    @admin.display(description="Recent top-ups")
++    def ai_gateway_credit_history(self, team: Team):
++        if not team.pk:
++            return "-"
++        entries = (
++            ActivityLog.objects.filter(team_id=team.pk, scope=AI_GATEWAY_CREDIT_SCOPE, activity=AI_GATEWAY_CREDIT_ACTIVITY)
++            .select_related("user")
++            .order_by("-created_at")[:AI_GATEWAY_CREDIT_HISTORY_LIMIT]
++        )
++        rows = []
++        for entry in entries:
++            context = (entry.detail or {}).get("context") or {}
++            who = entry.user.email if entry.user else "(deleted user)"
++            if entry.was_impersonated:
++                who = f"{who} (impersonated)"
++            rows.append((entry.created_at.isoformat(), who, context.get("amount_usd", ""), context.get("reason", "")))
++        if not rows:
++            return format_html("<em>No top-ups recorded</em>")
++        return format_html(
++            "<table><thead><tr><th>When</th><th>Who</th><th>Amount (USD)</th><th>Reason</th></tr></thead>"
++            "<tbody>{}</tbody></table>",
++            format_html_join("", "<tr><td>{}</td><td>{}</td><td>${}</td><td>{}</td></tr>", rows),
++        )
++
+     @admin.display(description="Actions")
+     def ai_gateway_actions(self, team: Team):
+         if not team.pk:
